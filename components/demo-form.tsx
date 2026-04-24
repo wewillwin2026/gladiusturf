@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 type Status = "idle" | "submitting" | "success" | "error";
@@ -49,12 +50,15 @@ export function DemoForm() {
 
   if (status === "success") {
     return (
-      <div className="rounded-[12px] border border-moss bg-bone p-8">
-        <h3 className="font-serif text-[28px] text-forest">Got it.</h3>
-        <p className="mt-4 text-[16px] leading-[1.6] text-stone">
+      <div className="rounded-2xl border border-moss/40 bg-moss/[0.05] p-8">
+        <h3 className="font-serif text-2xl font-semibold text-bone">Got it.</h3>
+        <p className="mt-4 text-[15px] leading-[1.6] text-bone/75">
           A founder will email you within the business day with two or three
           30-minute slots. If you need us faster, text{" "}
-          <a className="underline" href="tel:+18134420253">
+          <a
+            className="text-moss-bright underline underline-offset-2"
+            href="tel:+18134420253"
+          >
             (813) 442-0253
           </a>
           .
@@ -66,7 +70,7 @@ export function DemoForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col gap-5 rounded-[12px] border border-[rgba(15,61,46,0.12)] bg-paper p-8 shadow-card"
+      className="flex flex-col gap-5 rounded-2xl border border-bone/10 bg-bone/[0.02] p-8"
     >
       <Field label="Crew / shop name">
         <input
@@ -106,7 +110,9 @@ export function DemoForm() {
         <select name="currentSoftware" required className={inputCls} defaultValue="">
           <option value="" disabled>Pick one</option>
           {CURRENT_SOFTWARE.map((v) => (
-            <option key={v} value={v}>{v}</option>
+            <option key={v} value={v}>
+              {v}
+            </option>
           ))}
         </select>
       </Field>
@@ -115,7 +121,9 @@ export function DemoForm() {
         <select name="crewSize" required className={inputCls} defaultValue="">
           <option value="" disabled>Pick one</option>
           {CREW_SIZES.map((v) => (
-            <option key={v} value={v}>{v}</option>
+            <option key={v} value={v}>
+              {v}
+            </option>
           ))}
         </select>
       </Field>
@@ -124,16 +132,26 @@ export function DemoForm() {
         type="submit"
         disabled={status === "submitting"}
         className={cn(
-          "mt-2 inline-flex items-center justify-center rounded-[8px] bg-forest px-6 py-3 text-sm font-medium text-bone transition-colors hover:bg-forest/90",
+          "group mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-lime-bright px-6 py-3 text-sm font-semibold text-forest-deep shadow-cta transition-all hover:bg-lime hover:shadow-cta-hover",
           status === "submitting" && "cursor-wait opacity-70"
         )}
       >
         {status === "submitting" ? "Sending..." : "Request my demo"}
+        {status !== "submitting" && (
+          <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+        )}
       </button>
 
       {error && (
-        <p className="text-[13px] text-forest">
-          {error}. Try again, or email founders@gladiusturf.com.
+        <p className="text-[13px] text-bone/80">
+          {error}. Try again, or email{" "}
+          <a
+            href="mailto:founders@gladiusturf.com"
+            className="text-moss-bright underline underline-offset-2"
+          >
+            founders@gladiusturf.com
+          </a>
+          .
         </p>
       )}
     </form>
@@ -141,12 +159,12 @@ export function DemoForm() {
 }
 
 const inputCls =
-  "h-11 w-full rounded-[8px] border border-[rgba(15,61,46,0.18)] bg-paper px-3 text-[15px] text-forest placeholder:text-stone/70 focus:border-moss focus:outline-none";
+  "h-11 w-full rounded-md border border-bone/10 bg-bone/[0.04] px-3 text-[15px] text-bone placeholder:text-bone/40 focus:border-moss/60 focus:outline-none focus:ring-2 focus:ring-moss/20";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="flex flex-col gap-2">
-      <span className="text-[12px] uppercase tracking-[0.15em] text-stone">
+      <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-bone/55">
         {label}
       </span>
       {children}

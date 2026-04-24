@@ -1,32 +1,55 @@
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { ScrollReveal } from "@/components/scroll-reveal";
+import { TopographicBg } from "@/components/topographic-bg";
+
 export function CtaBand() {
   return (
-    <section className="bg-forest text-bone">
-      <div className="mx-auto max-w-content px-6 py-20 md:py-section">
-        <p className="mb-6 text-sm uppercase tracking-tagline text-moss">
-          The whiteboard has served its time.
-        </p>
-        <h2 className="max-w-3xl font-serif text-h2-md md:text-h2-lg">
-          Switch in 48 hours. Keep your QuickBooks.
-        </h2>
-        <p className="mt-8 max-w-2xl text-[17px] leading-[1.6] text-bone/80">
-          We&apos;ll migrate your Jobber, LMN, or Service Autopilot data
-          tonight. Your crew opens GladiusTurf Monday morning and doesn&apos;t
-          miss a mow.
-        </p>
-        <div className="mt-10 flex flex-wrap items-center gap-6">
-          <a
-            href="/demo"
-            className="inline-flex items-center rounded-[8px] bg-moss px-6 py-3 text-sm font-medium text-forest transition-colors hover:bg-moss/90"
-          >
-            Start with GladiusTurf
-          </a>
-          <a
-            href="/surplus-yard"
-            className="text-sm font-medium text-bone underline underline-offset-4 hover:text-moss"
-          >
-            Browse Surplus Yard →
-          </a>
-        </div>
+    <section className="relative overflow-hidden border-t border-bone/10 bg-forest-deep py-32">
+      {/* Topographic backdrop */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+        <TopographicBg />
+      </div>
+      {/* Lime under-glow */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-1/2 -z-10 h-[600px] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(198,243,82,0.10),transparent_65%)]"
+      />
+
+      <div className="relative mx-auto max-w-5xl px-6 text-center">
+        <ScrollReveal>
+          <h2 className="font-serif text-5xl font-semibold tracking-[-0.02em] text-bone md:text-7xl">
+            Stop losing the revenue
+            <br />
+            your software is{" "}
+            <span className="text-moss-bright">missing</span>.
+          </h2>
+        </ScrollReveal>
+
+        <ScrollReveal delay={0.1}>
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-bone/70 md:text-xl">
+            Switch in 48 hours. Keep your QuickBooks. The first leak we close
+            usually pays for the year.
+          </p>
+        </ScrollReveal>
+
+        <ScrollReveal delay={0.2}>
+          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Link
+              href="/demo"
+              className="group inline-flex items-center gap-2 rounded-full bg-lime-bright px-8 py-4 text-lg font-semibold text-forest-deep shadow-cta transition-all hover:bg-lime hover:shadow-cta-hover"
+            >
+              Book a 30-minute demo
+              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+            </Link>
+            <Link
+              href="/pricing"
+              className="text-base text-bone/65 transition-colors hover:text-moss-bright"
+            >
+              Or see pricing →
+            </Link>
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   );

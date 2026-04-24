@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { CtaBand } from "@/components/cta-band";
 import { Footer } from "@/components/footer";
 import { Nav } from "@/components/nav";
-import { PricingTier } from "@/components/pricing-tier";
 import { BDC_ADDON, TIERS } from "@/content/pricing";
 
 export const metadata: Metadata = {
@@ -62,75 +61,170 @@ const FAQ: { q: string; a: string }[] = [
   },
 ];
 
+function CheckIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M3 8 L7 12 L13 5"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ArrowRightIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M3 8h10M9 3l5 5-5 5"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function SparklesIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M8 1.5l1.4 3.6L13 6.5l-3.6 1.4L8 11.5 6.6 7.9 3 6.5l3.6-1.4L8 1.5zM12.5 11l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7.7-1.8z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
 export default function PricingPage() {
   return (
     <>
       <Nav />
-      <main className="bg-paper">
-        {/* Hero */}
-        <section className="border-b border-[rgba(15,61,46,0.12)]">
-          <div className="mx-auto max-w-content px-6 py-20 md:py-section">
-            <p className="mb-6 text-sm uppercase tracking-tagline text-stone">
-              Pricing
-            </p>
-            <h1 className="max-w-4xl font-serif text-display-md text-forest md:text-display-lg">
-              Flat per crew. No per-seat tax. No usage gotchas.
-            </h1>
-            <p className="mt-8 max-w-2xl text-[18px] leading-[1.6] text-stone">
-              Three tiers. One price per crew per month. Everyone on the crew
-              gets a seat — the foreman, the laborer, the irrigation tech, the
-              office admin checking schedules from her phone. No surprise
-              charges for SMS volume, photo storage, or the AI assistant
-              answering your phone at 7pm. The number you see is the number
-              you pay.
-            </p>
-            <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 text-[14px] text-stone">
-              <span className="flex items-center gap-2">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-moss" />
-                Month-to-month, cancel any time
-              </span>
-              <span className="flex items-center gap-2">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-moss" />
-                Unlimited seats per crew
-              </span>
-              <span className="flex items-center gap-2">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-moss" />
-                14-day pilot at Professional pricing
-              </span>
-              <span className="flex items-center gap-2">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-moss" />
-                Free 48-hour migration from Jobber / LMN / Aspire
-              </span>
-            </div>
-          </div>
-        </section>
-
-        {/* Three-tier comparison */}
-        <section
-          id="tiers"
-          className="border-b border-[rgba(15,61,46,0.12)] bg-paper"
-        >
-          <div className="mx-auto max-w-content px-6 py-20 md:py-section">
-            <p className="mb-6 text-sm uppercase tracking-tagline text-stone">
-              The three tiers
-            </p>
-            <h2 className="max-w-3xl font-serif text-h2-md text-forest md:text-h2-lg">
-              Pick the one that matches the crews you actually run today. Move
-              up, down, or sideways whenever your operation changes.
-            </h2>
-
-            <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-3">
-              {TIERS.map((t) => (
-                <PricingTier key={t.id} tier={t} />
-              ))}
+      <main className="bg-forest-deep text-bone">
+        {/* Hero + scarcity band + tier grid */}
+        <section className="py-28">
+          <div className="mx-auto max-w-7xl px-6">
+            {/* Scarcity band */}
+            <div className="mx-auto mb-12 flex max-w-3xl flex-col items-center justify-center gap-3 rounded-2xl border border-moss/25 bg-moss/[0.03] px-6 py-4 text-center sm:flex-row sm:gap-6 sm:text-left">
+              <div className="flex items-center gap-3">
+                <span className="relative flex h-2 w-2 flex-none">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-moss-bright opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-moss-bright" />
+                </span>
+                <div>
+                  <div className="text-sm font-semibold text-bone">
+                    Q2 2026 onboarding · 8 of 20 founding crew slots remaining
+                  </div>
+                  <div className="text-xs text-bone/40">
+                    Founder-led white-glove setup.
+                  </div>
+                </div>
+              </div>
+              <div className="hidden h-8 w-px bg-bone/10 sm:block" />
+              <div className="text-xs text-bone/60">
+                <span className="font-semibold text-bone">
+                  No 3-year contract.
+                </span>{" "}
+                Cancel anytime after month 3.
+              </div>
             </div>
 
-            <div className="mt-16 grid grid-cols-1 gap-10 md:grid-cols-3">
+            {/* Hero copy */}
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-moss/30 bg-moss/5 px-3 py-1 text-xs font-medium text-moss-bright">
+                <SparklesIcon className="h-3 w-3" />
+                Pricing
+              </p>
+              <h1 className="font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
+                Flat per crew. No per-seat tax. No usage gotchas.
+              </h1>
+              <p className="mt-6 text-lg text-bone/60">
+                Every plan ships with all seven engines. No add-on tax. No
+                usage caps. The number you see is the number you pay.
+              </p>
+            </div>
+
+            {/* Three-tier pricing grid */}
+            <div className="mx-auto mt-16 grid max-w-5xl gap-6 md:grid-cols-3">
+              {TIERS.map((tier) => {
+                const featured = Boolean(tier.featured);
+                return (
+                  <div
+                    key={tier.id}
+                    className={
+                      featured
+                        ? "relative flex h-full flex-col rounded-2xl border border-moss/50 bg-gradient-to-b from-moss/10 to-transparent p-8 shadow-pop"
+                        : "relative flex h-full flex-col rounded-2xl border border-bone/10 bg-bone/[0.02] p-8"
+                    }
+                  >
+                    {featured ? (
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-lime-bright px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-forest">
+                        Most popular
+                      </div>
+                    ) : null}
+                    <h3 className="font-serif text-2xl text-bone">
+                      {tier.name}
+                    </h3>
+                    <p className="mt-1 text-sm text-bone/40">{tier.tagline}</p>
+                    <div className="mt-6 flex items-baseline gap-1.5">
+                      <span className="font-serif text-5xl text-bone">
+                        ${tier.price.toLocaleString()}
+                      </span>
+                      <span className="text-sm text-bone/40">/mo</span>
+                    </div>
+                    <p className="mt-1 text-xs text-bone/30">
+                      per crew, billed monthly
+                    </p>
+                    <a
+                      href={tier.id === "enterprise" ? "/demo?tier=enterprise" : "/demo"}
+                      className={
+                        featured
+                          ? "mt-8 inline-flex items-center justify-center gap-1.5 rounded-lg bg-lime-bright px-4 py-3 text-sm font-semibold text-forest shadow-cta transition-colors hover:bg-moss"
+                          : "mt-8 inline-flex items-center justify-center gap-1.5 rounded-lg border border-bone/10 px-4 py-3 text-sm font-semibold text-bone transition-colors hover:bg-bone/5"
+                      }
+                    >
+                      {tier.cta}
+                      <ArrowRightIcon className="h-3.5 w-3.5" />
+                    </a>
+                    <ul className="mt-8 space-y-3 text-sm text-bone/70">
+                      {tier.features.map((f) => (
+                        <li key={f} className="flex items-start gap-2.5">
+                          <CheckIcon className="mt-0.5 h-4 w-4 flex-none text-moss-bright" />
+                          <span>{f}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Tier rationale row */}
+            <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-10 md:grid-cols-3">
               <div>
-                <p className="text-[12px] uppercase tracking-tagline text-moss">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright">
                   Independent — $397
                 </p>
-                <p className="mt-3 text-[15px] leading-[1.65] text-stone">
+                <p className="mt-3 text-sm leading-[1.65] text-bone/60">
                   Built for the solo operator running one truck and one crew.
                   All seven engines on day one — Quote Intercept, Site Memory,
                   Weather Pivot, Referral Radar, Upsell Whisperer, Surplus
@@ -140,10 +234,10 @@ export default function PricingPage() {
                 </p>
               </div>
               <div>
-                <p className="text-[12px] uppercase tracking-tagline text-moss">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright">
                   Professional — $997
                 </p>
-                <p className="mt-3 text-[15px] leading-[1.65] text-stone">
+                <p className="mt-3 text-sm leading-[1.65] text-bone/60">
                   The tier where the math gets brutal. 2 to 5 crews, priority
                   support with 1-hour weekday response, and a dedicated
                   Customer Success Manager assigned at month 3 once your
@@ -153,10 +247,10 @@ export default function PricingPage() {
                 </p>
               </div>
               <div>
-                <p className="text-[12px] uppercase tracking-tagline text-moss">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright">
                   Enterprise — $2,997
                 </p>
-                <p className="mt-3 text-[15px] leading-[1.65] text-stone">
+                <p className="mt-3 text-sm leading-[1.65] text-bone/60">
                   6 or more crews, multi-location, white-glove onboarding
                   with a named project manager, custom integrations to your
                   existing accounting, telematics, or HR systems, and a
@@ -171,137 +265,155 @@ export default function PricingPage() {
         </section>
 
         {/* BDC Addon */}
-        <section className="border-b border-[rgba(15,61,46,0.12)] bg-bone">
-          <div className="mx-auto max-w-content px-6 py-20 md:py-section">
+        <section className="border-t border-bone/5 bg-forest-mid py-28">
+          <div className="mx-auto max-w-7xl px-6">
             <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
               <div className="md:col-span-5">
-                <p className="mb-6 text-sm uppercase tracking-tagline text-stone">
+                <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-moss/30 bg-moss/5 px-3 py-1 text-xs font-medium text-moss-bright">
                   Optional addon
                 </p>
-                <h2 className="font-serif text-h2-md text-forest md:text-h2-lg">
+                <h2 className="font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
                   GladiusBDC for Turf
                 </h2>
                 <div className="mt-8 flex items-baseline gap-2">
-                  <span className="font-mono text-[56px] leading-none text-forest">
+                  <span className="font-serif text-6xl text-bone">
                     ${BDC_ADDON.price}
                   </span>
-                  <span className="text-[14px] text-stone">
+                  <span className="text-sm text-bone/40">
                     {BDC_ADDON.period}
                   </span>
                 </div>
-                <p className="mt-2 text-[13px] uppercase tracking-tagline text-stone">
+                <p className="mt-2 text-xs uppercase tracking-[0.2em] text-bone/40">
                   Per company, not per crew
                 </p>
                 <a
                   href="/demo?addon=bdc"
-                  className="mt-10 inline-flex items-center justify-center rounded-[8px] bg-forest px-6 py-3 text-sm font-medium text-bone transition-colors hover:bg-forest/90"
+                  className="mt-10 inline-flex items-center justify-center gap-1.5 rounded-lg bg-lime-bright px-6 py-3 text-sm font-semibold text-forest shadow-cta transition-colors hover:bg-moss"
                 >
                   Add BDC to a pilot
+                  <ArrowRightIcon className="h-3.5 w-3.5" />
                 </a>
               </div>
               <div className="md:col-span-7">
-                <p className="text-[17px] leading-[1.65] text-forest">
-                  A Business Development Center is the inside-sales muscle big
-                  operators have always had and small ones never could afford.
-                  We rent you ours. The BDC addon plugs into any tier and
-                  gives you outbound coverage your competitors aren&apos;t
-                  running.
-                </p>
-                <ul className="mt-8 flex flex-col gap-5 text-[15px] leading-[1.6] text-stone">
-                  <li>
-                    <span className="font-medium text-forest">
-                      Outbound winter service campaigns.
-                    </span>{" "}
-                    Snow contracts, holiday lighting, hardscape design
-                    consults, dormant tree pruning. We dial your existing
-                    customer base in November and book January revenue while
-                    your crews are still wrapping fall cleanups.
-                  </li>
-                  <li>
-                    <span className="font-medium text-forest">
-                      Dormant-customer reactivation.
-                    </span>{" "}
-                    Every shop has 200 to 800 customers who didn&apos;t renew
-                    last spring. We work that list with a structured 4-touch
-                    cadence and book consultations directly into your
-                    foreman&apos;s calendar. The reactivation rate averages
-                    18 to 24 percent.
-                  </li>
-                  <li>
-                    <span className="font-medium text-forest">
-                      Manned weekend phone coverage.
-                    </span>{" "}
-                    Saturday morning is when 31% of new landscaping leads
-                    call. Most shops send those calls to a voicemail box
-                    nobody checks until Monday. We answer them live, qualify
-                    them, and put them on your Monday morning estimate
-                    schedule.
-                  </li>
-                  <li>
-                    <span className="font-medium text-forest">
-                      Spring-rush overflow.
-                    </span>{" "}
-                    March through May, your office gets 4x the call volume.
-                    We absorb the spillover so your admin isn&apos;t fielding
-                    new-quote calls while a $40,000 customer is on hold trying
-                    to add an irrigation repair.
-                  </li>
-                </ul>
+                <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-8">
+                  <p className="text-base leading-[1.65] text-bone/70">
+                    A Business Development Center is the inside-sales muscle
+                    big operators have always had and small ones never could
+                    afford. We rent you ours. The BDC addon plugs into any
+                    tier and gives you outbound coverage your competitors
+                    aren&apos;t running.
+                  </p>
+                  <ul className="mt-8 flex flex-col gap-5 text-sm leading-[1.65] text-bone/60">
+                    <li className="flex gap-3">
+                      <CheckIcon className="mt-1 h-4 w-4 flex-none text-moss-bright" />
+                      <span>
+                        <span className="font-semibold text-bone">
+                          Outbound winter service campaigns.
+                        </span>{" "}
+                        Snow contracts, holiday lighting, hardscape design
+                        consults, dormant tree pruning. We dial your existing
+                        customer base in November and book January revenue
+                        while your crews are still wrapping fall cleanups.
+                      </span>
+                    </li>
+                    <li className="flex gap-3">
+                      <CheckIcon className="mt-1 h-4 w-4 flex-none text-moss-bright" />
+                      <span>
+                        <span className="font-semibold text-bone">
+                          Dormant-customer reactivation.
+                        </span>{" "}
+                        Every shop has 200 to 800 customers who didn&apos;t
+                        renew last spring. We work that list with a structured
+                        4-touch cadence and book consultations directly into
+                        your foreman&apos;s calendar. The reactivation rate
+                        averages 18 to 24 percent.
+                      </span>
+                    </li>
+                    <li className="flex gap-3">
+                      <CheckIcon className="mt-1 h-4 w-4 flex-none text-moss-bright" />
+                      <span>
+                        <span className="font-semibold text-bone">
+                          Manned weekend phone coverage.
+                        </span>{" "}
+                        Saturday morning is when 31% of new landscaping leads
+                        call. Most shops send those calls to a voicemail box
+                        nobody checks until Monday. We answer them live,
+                        qualify them, and put them on your Monday morning
+                        estimate schedule.
+                      </span>
+                    </li>
+                    <li className="flex gap-3">
+                      <CheckIcon className="mt-1 h-4 w-4 flex-none text-moss-bright" />
+                      <span>
+                        <span className="font-semibold text-bone">
+                          Spring-rush overflow.
+                        </span>{" "}
+                        March through May, your office gets 4x the call
+                        volume. We absorb the spillover so your admin
+                        isn&apos;t fielding new-quote calls while a $40,000
+                        customer is on hold trying to add an irrigation
+                        repair.
+                      </span>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ROI calculator narrative */}
-        <section className="border-b border-[rgba(15,61,46,0.12)] bg-paper">
-          <div className="mx-auto max-w-content px-6 py-20 md:py-section">
-            <p className="mb-6 text-sm uppercase tracking-tagline text-stone">
-              The math
-            </p>
-            <h2 className="max-w-3xl font-serif text-h2-md text-forest md:text-h2-lg">
-              One recovered Quote Intercept payback covers a Professional tier
-              for fourteen months.
-            </h2>
+        {/* ROI walkthrough */}
+        <section className="py-28">
+          <div className="mx-auto max-w-7xl px-6">
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-moss/30 bg-moss/5 px-3 py-1 text-xs font-medium text-moss-bright">
+                The math
+              </p>
+              <h2 className="font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
+                One recovered Quote Intercept payback covers a Professional
+                tier for fourteen months.
+              </h2>
+            </div>
 
-            <div className="mt-16 grid grid-cols-1 gap-10 md:grid-cols-3">
-              <div className="rounded-[12px] border border-[rgba(15,61,46,0.12)] bg-paper p-8 shadow-card">
-                <p className="text-[12px] uppercase tracking-tagline text-stone">
+            <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-3">
+              <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-8">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-bone/40">
                   Quote Intercept
                 </p>
-                <p className="mt-4 font-mono text-stat-sm text-forest">
+                <p className="mt-4 font-mono text-5xl text-moss-bright">
                   $14,200
                 </p>
-                <p className="text-[13px] text-stone">recovered per month</p>
-                <p className="mt-6 text-[14px] leading-[1.6] text-stone">
+                <p className="text-sm text-bone/40">recovered per month</p>
+                <p className="mt-6 text-sm leading-[1.65] text-bone/60">
                   Estimates that go cold the moment a customer doesn&apos;t
                   hear back inside 24 hours. SMS routing pulls them back.
                   Average shop sees this in week two.
                 </p>
               </div>
-              <div className="rounded-[12px] border border-moss bg-bone p-8 shadow-card">
-                <p className="text-[12px] uppercase tracking-tagline text-forest">
+              <div className="rounded-2xl border border-moss/50 bg-gradient-to-b from-moss/10 to-transparent p-8 shadow-pop">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright">
                   Upsell Whisperer
                 </p>
-                <p className="mt-4 font-mono text-stat-sm text-forest">
+                <p className="mt-4 font-mono text-5xl text-moss-bright">
                   +$38,000
                 </p>
-                <p className="text-[13px] text-stone">added monthly revenue</p>
-                <p className="mt-6 text-[14px] leading-[1.6] text-forest">
+                <p className="text-sm text-bone/60">added monthly revenue</p>
+                <p className="mt-6 text-sm leading-[1.65] text-bone/70">
                   AI scoring on every visit. The customer who needs aeration,
-                  the one ready for a fall fertilization upsell, the one whose
-                  irrigation timer is on its last season — flagged for the
-                  foreman before they roll.
+                  the one ready for a fall fertilization upsell, the one
+                  whose irrigation timer is on its last season — flagged for
+                  the foreman before they roll.
                 </p>
               </div>
-              <div className="rounded-[12px] border border-[rgba(15,61,46,0.12)] bg-paper p-8 shadow-card">
-                <p className="text-[12px] uppercase tracking-tagline text-stone">
+              <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-8">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-bone/40">
                   Referral Radar
                 </p>
-                <p className="mt-4 font-mono text-stat-sm text-forest">
+                <p className="mt-4 font-mono text-5xl text-moss-bright">
                   $180,000
                 </p>
-                <p className="text-[13px] text-stone">net new annual revenue</p>
-                <p className="mt-6 text-[14px] leading-[1.6] text-stone">
+                <p className="text-sm text-bone/40">net new annual revenue</p>
+                <p className="mt-6 text-sm leading-[1.65] text-bone/60">
                   Neighbor outreach the day your crew is on someone&apos;s
                   lawn. Geo-fenced postcards, SMS intros, satellite-property
                   matching. Highest-LTV channel in landscaping.
@@ -309,100 +421,118 @@ export default function PricingPage() {
               </div>
             </div>
 
-            <div className="mt-16 max-w-3xl">
-              <p className="text-[17px] leading-[1.7] text-forest">
+            <div className="mx-auto mt-16 max-w-3xl">
+              <p className="text-base leading-[1.7] text-bone/80">
                 Run the numbers for the Professional tier. Two crews at $997
                 each is{" "}
-                <span className="font-mono text-forest">$1,994</span> per
+                <span className="font-mono text-moss-bright">$1,994</span> per
                 month — call it{" "}
-                <span className="font-mono text-forest">$23,928</span> a year.
-                The Quote Intercept engine alone, at the average{" "}
-                <span className="font-mono text-forest">$14,200</span> in
+                <span className="font-mono text-moss-bright">$23,928</span> a
+                year. The Quote Intercept engine alone, at the average{" "}
+                <span className="font-mono text-moss-bright">$14,200</span> in
                 recovered estimates per month, returns{" "}
-                <span className="font-mono text-forest">$170,400</span>{" "}
-                annually. That&apos;s a 7.1x payback on the engine that
-                installs itself in week one. Add Upsell Whisperer&apos;s
-                $38,000-a-month and Referral Radar&apos;s $180,000-a-year and
-                the conversation stops being about subscription cost. It
-                becomes a question of how fast you can train the foremen to
-                use it.
+                <span className="font-mono text-moss-bright">$170,400</span>{" "}
+                annually. That&apos;s a{" "}
+                <span className="font-mono text-moss-bright">7.1x</span>{" "}
+                payback on the engine that installs itself in week one. Add
+                Upsell Whisperer&apos;s $38,000-a-month and Referral
+                Radar&apos;s $180,000-a-year and the conversation stops being
+                about subscription cost. It becomes a question of how fast
+                you can train the foremen to use it.
               </p>
-              <p className="mt-6 text-[17px] leading-[1.7] text-forest">
-                A single recovered $14,200 month covers your Professional tier
-                fourteen times over. We&apos;re not pricing this as software.
-                We&apos;re pricing it as a percentage of the leak we plug.
-                Anyone charging less is selling you a CRM that doesn&apos;t
-                do the work. Anyone charging more is selling you ten years of
-                accumulated middleware and a sales rep&apos;s commission.
+              <p className="mt-6 text-base leading-[1.7] text-bone/80">
+                A single recovered $14,200 month covers your Professional
+                tier{" "}
+                <span className="font-mono text-moss-bright">14x</span> over.
+                We&apos;re not pricing this as software. We&apos;re pricing
+                it as a percentage of the leak we plug. Anyone charging less
+                is selling you a CRM that doesn&apos;t do the work. Anyone
+                charging more is selling you ten years of accumulated
+                middleware and a sales rep&apos;s commission.
               </p>
-              <p className="mt-6 text-[15px] leading-[1.6] text-stone">
+              <p className="mt-6 text-sm leading-[1.65] text-bone/40">
                 Numbers above are 90-day cohort averages from operators
-                running 2–6 crews after engine tuning. Your mileage will vary
-                with route density, average ticket size, and how disciplined
-                your foremen are about closing tickets in the field. We will
-                show you a 30/60/90 model on the demo with your route count
-                plugged in.
+                running 2–6 crews after engine tuning. Your mileage will
+                vary with route density, average ticket size, and how
+                disciplined your foremen are about closing tickets in the
+                field. We will show you a 30/60/90 model on the demo with
+                your route count plugged in.
               </p>
             </div>
           </div>
         </section>
 
         {/* FAQ */}
-        <section className="border-b border-[rgba(15,61,46,0.12)] bg-paper">
-          <div className="mx-auto max-w-content px-6 py-20 md:py-section">
-            <p className="mb-6 text-sm uppercase tracking-tagline text-stone">
-              Pricing FAQ
-            </p>
-            <h2 className="max-w-3xl font-serif text-h2-md text-forest md:text-h2-lg">
-              The questions every owner asks before they sign.
-            </h2>
+        <section className="border-t border-bone/5 bg-forest-mid py-28">
+          <div className="mx-auto max-w-7xl px-6">
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-moss/30 bg-moss/5 px-3 py-1 text-xs font-medium text-moss-bright">
+                Pricing FAQ
+              </p>
+              <h2 className="font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
+                The questions every owner asks before they sign.
+              </h2>
+            </div>
 
-            <dl className="mt-12 grid grid-cols-1 gap-x-12 gap-y-2 md:grid-cols-2">
+            <div className="mx-auto mt-14 grid max-w-5xl grid-cols-1 gap-x-6 gap-y-3 md:grid-cols-2">
               {FAQ.map((f) => (
-                <div
+                <details
                   key={f.q}
-                  className="border-t border-[rgba(15,61,46,0.12)] py-7"
+                  className="group rounded-2xl border border-bone/10 bg-bone/[0.02] p-6 open:border-moss/30 open:bg-moss/[0.03]"
                 >
-                  <dt className="text-[17px] font-medium text-forest">
-                    {f.q}
-                  </dt>
-                  <dd className="mt-3 text-[15px] leading-[1.65] text-stone">
+                  <summary className="flex cursor-pointer list-none items-start justify-between gap-4 text-bone font-medium">
+                    <span>{f.q}</span>
+                    <span className="mt-1 flex-none text-moss-bright transition-transform group-open:rotate-45">
+                      <svg
+                        viewBox="0 0 16 16"
+                        className="h-4 w-4"
+                        fill="none"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M8 3v10M3 8h10"
+                          stroke="currentColor"
+                          strokeWidth="1.75"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                    </span>
+                  </summary>
+                  <p className="mt-4 text-sm leading-[1.65] text-bone/60">
                     {f.a}
-                  </dd>
-                </div>
+                  </p>
+                </details>
               ))}
-            </dl>
+            </div>
           </div>
         </section>
 
-        {/* Talk to founders CTA */}
-        <section className="bg-forest text-bone">
-          <div className="mx-auto max-w-content px-6 py-20 md:py-section">
-            <p className="mb-6 text-sm uppercase tracking-tagline text-moss">
+        {/* Final CTA — talk to founders */}
+        <section className="relative overflow-hidden border-t border-bone/5 bg-forest-deep py-32">
+          <div className="mx-auto max-w-4xl px-6 text-center">
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-moss/30 bg-moss/5 px-3 py-1 text-xs font-medium text-moss-bright">
               Talk to founders
             </p>
-            <h2 className="max-w-3xl font-serif text-h2-md md:text-h2-lg">
-              Still have a question the page didn&apos;t answer? Get on a call
-              with the people who built this.
+            <h2 className="font-serif text-5xl tracking-[-0.02em] text-bone md:text-7xl">
+              Twenty minutes. Zero pressure.
             </h2>
-            <p className="mt-8 max-w-2xl text-[17px] leading-[1.6] text-bone/80">
-              Thirty minutes, screen-shared. We&apos;ll plug your route count
-              and average ticket into the model and walk you through a
-              30/60/90 payback. If we&apos;re not a fit, we&apos;ll tell you
-              that on the call instead of after a contract. No sales rep, no
-              SDR — the founders run every demo until it stops scaling, and
-              we&apos;re nowhere close.
+            <p className="mx-auto mt-6 max-w-2xl text-lg text-bone/60 md:text-xl">
+              Screen-shared. We&apos;ll plug your route count and average
+              ticket into the model and walk you through a 30/60/90 payback.
+              No sales rep, no SDR — the founders run every demo until it
+              stops scaling, and we&apos;re nowhere close.
             </p>
-            <div className="mt-10 flex flex-wrap items-center gap-6">
+            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <a
                 href="/demo"
-                className="inline-flex items-center rounded-[8px] bg-moss px-6 py-3 text-sm font-medium text-forest transition-colors hover:bg-moss/90"
+                className="group inline-flex items-center gap-2 rounded-full bg-lime-bright px-8 py-4 text-lg font-semibold text-forest shadow-cta transition-colors hover:bg-moss"
               >
                 Book the founder demo
+                <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </a>
               <a
                 href="mailto:founders@gladiusturf.com"
-                className="text-sm font-medium text-bone underline underline-offset-4 hover:text-moss"
+                className="text-base text-bone/60 transition-colors hover:text-bone"
               >
                 Or email founders@gladiusturf.com →
               </a>

@@ -5,8 +5,12 @@
 @layer base {
   :root {
     --color-forest: #0F3D2E;
+    --color-forest-deep: #062018;
+    --color-forest-mid: #0A2D22;
     --color-moss: #7FE27A;
+    --color-moss-bright: #9DFF8A;
     --color-lime: #C6F352;
+    --color-lime-bright: #D4FF4A;
     --color-bone: #F5F1E8;
     --color-obsidian: #0C0C0C;
     --color-paper: #FAFAF7;
@@ -14,14 +18,15 @@
   }
 
   html {
-    color-scheme: light;
+    color-scheme: dark;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    background-color: var(--color-forest-deep);
   }
 
   body {
-    background-color: var(--color-paper);
-    color: var(--color-forest);
+    background-color: var(--color-forest-deep);
+    color: var(--color-bone);
     font-family: var(--font-inter), system-ui, sans-serif;
     font-size: 16px;
     line-height: 1.7;
@@ -29,12 +34,12 @@
   }
 
   ::selection {
-    background-color: var(--color-lime);
+    background-color: var(--color-lime-bright);
     color: var(--color-forest);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-moss);
+    outline: 2px solid var(--color-lime-bright);
     outline-offset: 2px;
     border-radius: 2px;
   }

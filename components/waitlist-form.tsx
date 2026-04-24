@@ -35,7 +35,7 @@ export function WaitlistForm({ source }: { source: string }) {
 
   if (status === "success") {
     return (
-      <p className="rounded-[8px] border border-moss bg-bone px-4 py-3 text-[15px] text-forest">
+      <p className="rounded-md border border-moss/40 bg-moss/[0.06] px-4 py-3 text-[15px] text-bone">
         On the list. We&apos;ll email you when it opens.
       </p>
     );
@@ -49,19 +49,19 @@ export function WaitlistForm({ source }: { source: string }) {
         required
         autoComplete="email"
         placeholder="your@email.com"
-        className="h-12 flex-1 rounded-[8px] border border-[rgba(15,61,46,0.18)] bg-paper px-4 text-[15px] text-forest placeholder:text-stone/70 focus:border-moss focus:outline-none"
+        className="h-12 flex-1 rounded-md border border-bone/10 bg-bone/[0.04] px-4 text-[15px] text-bone placeholder:text-bone/40 focus:border-moss/60 focus:outline-none focus:ring-2 focus:ring-moss/20"
       />
       <button
         type="submit"
         disabled={status === "submitting"}
         className={cn(
-          "inline-flex h-12 items-center justify-center rounded-[8px] bg-forest px-6 text-sm font-medium text-bone transition-colors hover:bg-forest/90",
+          "inline-flex h-12 items-center justify-center rounded-full bg-lime-bright px-6 text-sm font-semibold text-forest-deep shadow-cta transition-all hover:bg-lime hover:shadow-cta-hover",
           status === "submitting" && "cursor-wait opacity-70"
         )}
       >
         {status === "submitting" ? "..." : "Join waitlist"}
       </button>
-      {error && <p className="text-[13px] text-forest">{error}</p>}
+      {error && <p className="text-[13px] text-bone/80">{error}</p>}
     </form>
   );
 }

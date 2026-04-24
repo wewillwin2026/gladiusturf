@@ -1,43 +1,83 @@
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { Eyebrow } from "@/components/eyebrow";
 import { PricingTier } from "@/components/pricing-tier";
+import { ScrollReveal } from "@/components/scroll-reveal";
 import { BDC_ADDON, TIERS } from "@/content/pricing";
 
 export function PricingSection() {
   return (
-    <section id="pricing" className="border-b border-[rgba(15,61,46,0.12)] bg-paper">
-      <div className="mx-auto max-w-content px-6 py-20 md:py-section">
-        <p className="mb-6 text-sm uppercase tracking-tagline text-stone">
-          Pricing · Flat per crew · Unlimited seats
-        </p>
-        <h2 className="max-w-3xl font-serif text-h2-md text-forest md:text-h2-lg">
-          Pick a crew size. Everyone on the crew gets a seat. No per-user math.
-        </h2>
+    <section
+      id="pricing"
+      className="border-t border-bone/10 bg-forest-mid py-28"
+    >
+      <div className="mx-auto max-w-7xl px-6">
+        {/* Scarcity band */}
+        <ScrollReveal>
+          <div className="mx-auto mb-12 flex max-w-3xl flex-col items-center justify-center gap-3 rounded-2xl border border-moss/25 bg-moss/[0.04] px-6 py-4 text-center sm:flex-row sm:gap-6 sm:text-left">
+            <div className="flex items-center gap-3">
+              <span className="flex h-2 w-2 flex-none rounded-full bg-moss-bright shadow-[0_0_10px_rgba(157,255,138,0.7)]" />
+              <div>
+                <div className="text-sm font-semibold text-bone">
+                  Q2 2026 onboarding · 4 of 12 founding crew slots remaining
+                </div>
+                <div className="text-xs text-bone/55">
+                  Founder-led white-glove setup. May cohort starts Apr 22.
+                </div>
+              </div>
+            </div>
+            <div className="hidden h-8 w-px bg-bone/10 sm:block" />
+            <div className="text-xs text-bone/65">
+              <span className="font-semibold text-bone">No 3-year contract.</span>{" "}
+              Cancel anytime after month 3.
+            </div>
+          </div>
+        </ScrollReveal>
 
-        <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-3">
-          {TIERS.map((t) => (
-            <PricingTier key={t.id} tier={t} />
+        <ScrollReveal>
+          <div className="mx-auto max-w-2xl text-center">
+            <Eyebrow className="mb-3">Pricing</Eyebrow>
+            <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
+              Flat per crew. Unlimited seats. Forever.
+            </h2>
+            <p className="mt-4 text-lg text-bone/65">
+              Every plan ships with all seven engines. No per-user fees. No
+              add-on tax.
+            </p>
+          </div>
+        </ScrollReveal>
+
+        <div className="mx-auto mt-16 grid max-w-5xl gap-6 md:grid-cols-3">
+          {TIERS.map((t, i) => (
+            <ScrollReveal key={t.id} delay={i * 0.08}>
+              <PricingTier tier={t} />
+            </ScrollReveal>
           ))}
         </div>
 
-        <div className="mt-10 flex flex-col items-start gap-4 rounded-[12px] border border-[rgba(15,61,46,0.12)] bg-bone px-6 py-6 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-[14px] font-medium text-forest">
-              {BDC_ADDON.name} —{" "}
-              <span className="font-mono text-forest">
-                ${BDC_ADDON.price}
-              </span>
-              <span className="text-stone">{BDC_ADDON.period}</span>
-            </p>
-            <p className="mt-1 text-[13px] leading-[1.5] text-stone">
-              {BDC_ADDON.description}
-            </p>
+        <ScrollReveal delay={0.25}>
+          <div className="mt-10 flex flex-col items-start gap-4 rounded-2xl border border-bone/10 bg-bone/[0.02] px-6 py-6 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-sm font-medium text-bone">
+                {BDC_ADDON.name} —{" "}
+                <span className="font-mono text-moss-bright">
+                  ${BDC_ADDON.price}
+                </span>
+                <span className="text-bone/50">{BDC_ADDON.period}</span>
+              </p>
+              <p className="mt-1 text-[13px] leading-[1.5] text-bone/60">
+                {BDC_ADDON.description}
+              </p>
+            </div>
+            <Link
+              href="/demo?addon=bdc"
+              className="group inline-flex items-center gap-1.5 rounded-full border border-moss/40 px-4 py-2 text-sm font-medium text-moss-bright transition-all hover:border-moss-bright hover:bg-moss/10"
+            >
+              Add BDC
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+            </Link>
           </div>
-          <a
-            href="/demo?addon=bdc"
-            className="inline-flex items-center rounded-[8px] border border-forest bg-paper px-4 py-2 text-sm font-medium text-forest hover:bg-bone/70"
-          >
-            Add BDC
-          </a>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );

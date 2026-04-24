@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ComparisonTable } from "@/components/comparison-table";
+import { ArrowRight, Check, Minus } from "lucide-react";
 import { CtaBand } from "@/components/cta-band";
 import { Footer } from "@/components/footer";
 import { Nav } from "@/components/nav";
@@ -43,7 +43,8 @@ const FEATURES: FeatureRow[] = [
   },
   {
     feature: "Referral Radar",
-    detail: "Detects neighbor opportunities from active job sites and triggers outreach",
+    detail:
+      "Detects neighbor opportunities from active job sites and triggers outreach",
     gladius: "yes",
     aspire: "no",
     lmn: "no",
@@ -61,7 +62,8 @@ const FEATURES: FeatureRow[] = [
   },
   {
     feature: "Site Memory",
-    detail: "Per-property memory: gate codes, dog names, where the irrigation valve hides",
+    detail:
+      "Per-property memory: gate codes, dog names, where the irrigation valve hides",
     gladius: "yes",
     aspire: "partial",
     lmn: "partial",
@@ -204,14 +206,25 @@ const COMPETITORS: Competitor[] = [
   },
 ];
 
-function MarkCell({ value }: { value: Support }) {
+function MarkCell({ value, highlight = false }: { value: Support; highlight?: boolean }) {
   if (value === "yes") {
     return (
       <span
         aria-label="Included"
-        className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-moss text-[14px] font-medium text-forest"
+        className={
+          highlight
+            ? "inline-flex h-7 w-7 items-center justify-center rounded-full bg-moss-bright/15 ring-1 ring-moss-bright/40"
+            : "inline-flex h-6 w-6 items-center justify-center"
+        }
       >
-        +
+        <Check
+          className={
+            highlight
+              ? "h-4 w-4 text-moss-bright"
+              : "h-5 w-5 text-moss-bright"
+          }
+          strokeWidth={highlight ? 3 : 2.5}
+        />
       </span>
     );
   }
@@ -219,7 +232,7 @@ function MarkCell({ value }: { value: Support }) {
     return (
       <span
         aria-label="Partial"
-        className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-forest/30 text-[12px] font-medium text-forest"
+        className="inline-flex h-6 w-6 items-center justify-center text-[14px] font-semibold text-lime-bright"
       >
         ~
       </span>
@@ -228,40 +241,40 @@ function MarkCell({ value }: { value: Support }) {
   return (
     <span
       aria-label="Not included"
-      className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-stone/30 text-[14px] font-medium text-stone"
+      className="inline-flex h-6 w-6 items-center justify-center"
     >
-      −
+      <Minus className="h-5 w-5 text-bone/20" strokeWidth={2} />
     </span>
   );
 }
 
 const STEPS = [
   {
-    day: "Day 0",
+    week: "Week 0",
     title: "Discovery and export",
     body:
       "30-minute call. We pull your export from Aspire, LMN, Jobber, Service Autopilot, Real Green, or your spreadsheets. You give us read-only QuickBooks access. No commitment yet.",
   },
   {
-    day: "Days 1–3",
+    week: "Week 1",
     title: "Data normalization",
     body:
       "Our import team maps your customers, properties, services, crews, and 12 months of revenue into GladiusTurf. We surface duplicates, stalled quotes, and missing service addresses while we are in there.",
   },
   {
-    day: "Days 4–7",
+    week: "Week 2",
     title: "Configuration and training",
     body:
       "We configure your service catalog, routes, crews, pricing, and compliance rules. Two 60-minute training sessions — one for the office, one for the foremen. Your team logs in and runs a real Monday.",
   },
   {
-    day: "Days 8–21",
+    week: "Week 3",
     title: "Parallel run",
     body:
       "You run GladiusTurf and your old system side by side. We reconcile every job and every dollar daily so finance signs off before the cutover. Most crews bail on the old system by day 14 anyway.",
   },
   {
-    day: "Days 22–30",
+    week: "Week 4",
     title: "Cutover and revenue review",
     body:
       "Old system goes read-only. We run a revenue intelligence review — stalled quote recovery, upsell opportunities surfaced, referral radar set live, applicator shield on. You see the first dollar that came back.",
@@ -272,16 +285,17 @@ export default function ComparePage() {
   return (
     <>
       <Nav />
-      <main className="bg-paper">
-        <section className="border-b border-[rgba(15,61,46,0.12)]">
-          <div className="mx-auto max-w-content px-6 py-20 md:py-section">
-            <p className="mb-6 text-sm uppercase tracking-tagline text-stone">
+      <main className="bg-forest-deep">
+        {/* Hero */}
+        <section className="border-b border-bone/10 bg-forest-deep">
+          <div className="mx-auto max-w-7xl px-6 py-28">
+            <p className="mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright">
               Compare
             </p>
-            <h1 className="max-w-5xl font-serif text-display-md text-forest md:text-display-lg">
-              Why crews leave Aspire, LMN, Service Autopilot, and Jobber for GladiusTurf.
+            <h1 className="max-w-5xl font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-6xl">
+              Why crews are leaving Aspire, LMN, Service Autopilot, and Jobber.
             </h1>
-            <div className="mt-10 grid max-w-3xl gap-6 text-[18px] leading-[1.6] text-stone">
+            <div className="mt-10 grid max-w-3xl gap-6 text-lg leading-[1.6] text-bone/60 md:text-xl">
               <p>
                 GladiusTurf is not another all-in-one landscaping ERP. We are
                 not trying to replace Aspire&apos;s job-costing engine,
@@ -304,167 +318,262 @@ export default function ComparePage() {
           </div>
         </section>
 
-        <ComparisonTable />
+        {/* Feature comparison table */}
+        <section className="border-b border-bone/10 bg-forest-deep">
+          <div className="mx-auto max-w-7xl px-6 py-28">
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright">
+                Feature by feature
+              </p>
+              <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
+                The capabilities that change a crew&apos;s revenue, side by side.
+              </h2>
+              <p className="mt-4 text-lg text-bone/60">
+                Lime check means shipped and supported. Tilde means partial —
+                the platform technically does it, but not at the depth a
+                serious landscape operator needs. Dim minus means not
+                available.
+              </p>
+            </div>
 
-        <section className="border-b border-[rgba(15,61,46,0.12)] bg-bone">
-          <div className="mx-auto max-w-content px-6 py-20 md:py-section">
-            <p className="mb-6 text-sm uppercase tracking-tagline text-stone">
-              Honest competitor reviews
-            </p>
-            <h2 className="max-w-3xl font-serif text-h2-md text-forest md:text-h2-lg">
-              What each platform does well — and where the revenue leaks out.
-            </h2>
-            <p className="mt-6 max-w-3xl text-[16px] leading-[1.6] text-stone">
-              We have helped operators leave every platform on this page. The
-              assessments below are written by people who have done the
-              imports, not by a marketing team trying to win a bake-off.
-            </p>
-
-            <div className="mt-12 grid gap-10 md:gap-12">
-              {COMPETITORS.map((c) => (
-                <article
-                  key={c.name}
-                  className="rounded-[12px] border border-[rgba(15,61,46,0.12)] bg-paper p-8 md:p-10"
-                >
-                  <p className="text-sm uppercase tracking-tagline text-stone">
-                    {c.positioning}
-                  </p>
-                  <h3 className="mt-3 font-serif text-h2-md text-forest">
-                    {c.name}
-                  </h3>
-                  <p className="mt-6 max-w-3xl text-[16px] leading-[1.65] text-forest">
-                    {c.strengths}
-                  </p>
-
-                  <p className="mt-8 text-sm uppercase tracking-tagline text-stone">
-                    Where GladiusTurf is the better fit
-                  </p>
-                  <ul className="mt-4 grid gap-3">
-                    {c.weaknesses.map((w) => (
-                      <li
-                        key={w}
-                        className="flex gap-3 text-[16px] leading-[1.6] text-forest"
-                      >
-                        <span
+            <div className="relative mt-14 rounded-2xl border border-bone/10 bg-forest-deep p-6 md:p-8">
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[860px] border-collapse">
+                  <thead>
+                    <tr className="border-b border-bone/10">
+                      <th className="py-5 pr-6 text-left text-xs font-semibold uppercase tracking-[0.14em] text-bone/40">
+                        Capability
+                      </th>
+                      <th className="relative py-5 text-center">
+                        <div
                           aria-hidden
-                          className="mt-[10px] inline-block h-[6px] w-[6px] flex-shrink-0 rounded-full bg-moss"
+                          className="absolute inset-x-2 inset-y-0 -z-10 rounded-t-xl bg-gradient-to-b from-moss-bright/15 to-transparent"
                         />
-                        <span>{w}</span>
-                      </li>
+                        <div className="font-serif text-lg font-semibold text-moss-bright">
+                          GladiusTurf
+                        </div>
+                        <div className="mt-1 text-[10px] font-medium uppercase tracking-wider text-moss-bright/70">
+                          Revenue layer
+                        </div>
+                      </th>
+                      <th className="py-5 text-center">
+                        <div className="text-sm font-semibold text-bone">
+                          Aspire
+                        </div>
+                        <div className="mt-1 text-[10px] text-bone/40">
+                          Enterprise ERP
+                        </div>
+                      </th>
+                      <th className="py-5 text-center">
+                        <div className="text-sm font-semibold text-bone">
+                          LMN
+                        </div>
+                        <div className="mt-1 text-[10px] text-bone/40">
+                          Estimate &amp; schedule
+                        </div>
+                      </th>
+                      <th className="py-5 text-center">
+                        <div className="text-sm font-semibold text-bone">
+                          Jobber
+                        </div>
+                        <div className="mt-1 text-[10px] text-bone/40">
+                          Generic field service
+                        </div>
+                      </th>
+                      <th className="py-5 text-center">
+                        <div className="text-sm font-semibold text-bone">
+                          Service Autopilot
+                        </div>
+                        <div className="mt-1 text-[10px] text-bone/40">
+                          Multi-trade
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {FEATURES.map((row, i) => (
+                      <tr
+                        key={row.feature}
+                        className={`border-b border-bone/5 align-top ${
+                          i % 2 === 0 ? "" : "bg-bone/[0.015]"
+                        }`}
+                      >
+                        <td className="py-4 pr-6">
+                          <p className="text-sm font-medium text-bone">
+                            {row.feature}
+                          </p>
+                          <p className="mt-1 text-[13px] leading-[1.5] text-bone/60">
+                            {row.detail}
+                          </p>
+                        </td>
+                        <td className="relative py-4">
+                          <div
+                            aria-hidden
+                            className="absolute inset-x-2 inset-y-0 -z-10 bg-moss-bright/[0.04]"
+                          />
+                          <div className="flex justify-center text-bone/80">
+                            <MarkCell value={row.gladius} highlight />
+                          </div>
+                        </td>
+                        <td className="py-4">
+                          <div className="flex justify-center text-bone/80">
+                            <MarkCell value={row.aspire} />
+                          </div>
+                        </td>
+                        <td className="py-4">
+                          <div className="flex justify-center text-bone/80">
+                            <MarkCell value={row.lmn} />
+                          </div>
+                        </td>
+                        <td className="py-4">
+                          <div className="flex justify-center text-bone/80">
+                            <MarkCell value={row.jobber} />
+                          </div>
+                        </td>
+                        <td className="py-4">
+                          <div className="flex justify-center text-bone/80">
+                            <MarkCell value={row.serviceAutopilot} />
+                          </div>
+                        </td>
+                      </tr>
                     ))}
-                  </ul>
+                  </tbody>
+                </table>
+              </div>
+              {/* Mobile scroll affordance */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-y-6 right-6 w-12 rounded-r-2xl bg-gradient-to-l from-forest-deep to-transparent md:hidden"
+              />
+            </div>
+            <p className="mt-3 text-center text-xs text-bone/40 md:hidden">
+              Swipe the table to compare →
+            </p>
+          </div>
+        </section>
 
-                  <div className="mt-8 rounded-[8px] bg-bone px-5 py-4">
-                    <p className="text-[12px] uppercase tracking-tagline text-stone">
-                      Migration path
+        {/* Honest competitor reviews — alternating sections */}
+        <section className="border-b border-bone/10 bg-forest-deep">
+          <div className="mx-auto max-w-7xl px-6 py-28">
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright">
+                Honest competitor reviews
+              </p>
+              <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
+                What each platform does well — and where the revenue leaks out.
+              </h2>
+              <p className="mt-4 text-lg text-bone/60">
+                We have helped operators leave every platform on this page. The
+                assessments below are written by people who have done the
+                imports, not by a marketing team trying to win a bake-off.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {COMPETITORS.map((c, idx) => {
+          const isAlt = idx % 2 === 1;
+          return (
+            <section
+              key={c.name}
+              className={`border-b border-bone/10 ${
+                isAlt ? "bg-forest-mid" : "bg-forest-deep"
+              }`}
+            >
+              <div className="mx-auto max-w-7xl px-6 py-28">
+                <div className="grid gap-10 md:grid-cols-2 md:gap-16">
+                  {/* Left: competitor strengths */}
+                  <div className={isAlt ? "md:order-2" : ""}>
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-bone/40">
+                      {c.positioning}
                     </p>
-                    <p className="mt-2 text-[15px] leading-[1.6] text-forest">
-                      {c.migration}
+                    <h3 className="mt-4 font-serif text-3xl font-semibold tracking-[-0.01em] text-bone md:text-4xl">
+                      {c.name}
+                    </h3>
+                    <p className="mt-6 text-base leading-[1.7] text-bone/60 md:text-lg">
+                      {c.strengths}
+                    </p>
+
+                    <div className="mt-8 rounded-2xl border border-bone/10 bg-bone/[0.02] p-6">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-moss-bright">
+                        Migration path
+                      </p>
+                      <p className="mt-2 text-sm leading-[1.6] text-bone/80">
+                        {c.migration}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Right: GladiusTurf advantages */}
+                  <div className={isAlt ? "md:order-1" : ""}>
+                    <div className="rounded-2xl border border-moss/30 bg-gradient-to-b from-moss/5 to-transparent p-6 md:p-8">
+                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright">
+                        Where GladiusTurf is the better fit
+                      </p>
+                      <h4 className="mt-4 font-serif text-2xl font-semibold text-bone">
+                        Revenue intelligence the legacy stack does not ship.
+                      </h4>
+                      <ul className="mt-6 grid gap-4">
+                        {c.weaknesses.map((w) => (
+                          <li
+                            key={w}
+                            className="flex gap-3 text-sm leading-[1.65] text-bone/80 md:text-base"
+                          >
+                            <Check
+                              aria-hidden
+                              className="mt-1 h-4 w-4 flex-shrink-0 text-moss-bright"
+                              strokeWidth={3}
+                            />
+                            <span>{w}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          );
+        })}
+
+        {/* 30-day switch timeline */}
+        <section className="border-b border-bone/10 bg-forest-deep">
+          <div className="mx-auto max-w-7xl px-6 py-28">
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright">
+                30-day switch
+              </p>
+              <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
+                Running on GladiusTurf inside a month. Most crews inside two weeks.
+              </h2>
+              <p className="mt-4 text-lg text-bone/60">
+                Switching software is the most common reason crews stay on a
+                platform they have already outgrown. We have built the import
+                and parallel-run process so the cost of leaving your current
+                system is genuinely smaller than the cost of staying another
+                quarter. We pay your overlap month if it takes longer than 30
+                days — that has not happened yet.
+              </p>
+            </div>
+
+            <div className="mt-14 flex flex-col gap-6 md:flex-row md:gap-4">
+              {STEPS.map((s, i) => (
+                <div
+                  key={s.week}
+                  className="relative flex-1 rounded-2xl border border-bone/10 bg-bone/[0.02] p-6 md:p-8"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-moss-bright/15 text-[11px] font-semibold text-moss-bright ring-1 ring-moss-bright/30">
+                      {i + 1}
+                    </span>
+                    <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-moss-bright">
+                      {s.week}
                     </p>
                   </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="border-b border-[rgba(15,61,46,0.12)] bg-paper">
-          <div className="mx-auto max-w-content px-6 py-20 md:py-section">
-            <p className="mb-6 text-sm uppercase tracking-tagline text-stone">
-              Feature by feature
-            </p>
-            <h2 className="max-w-3xl font-serif text-h2-md text-forest md:text-h2-lg">
-              The capabilities that change a crew&apos;s revenue, side by side.
-            </h2>
-            <p className="mt-6 max-w-3xl text-[16px] leading-[1.6] text-stone">
-              Plus sign means shipped and supported. Tilde means partial — the
-              platform technically does it, but not at the depth a serious
-              landscape operator needs. Minus sign means not available.
-            </p>
-
-            <div className="mt-12 overflow-x-auto rounded-[12px] border border-[rgba(15,61,46,0.12)]">
-              <table className="w-full min-w-[860px] border-collapse">
-                <thead>
-                  <tr className="bg-bone text-left text-[12px] uppercase tracking-[0.12em] text-stone">
-                    <th className="px-4 py-4 font-medium">Capability</th>
-                    <th className="px-4 py-4 text-center font-medium text-forest">
-                      GladiusTurf
-                    </th>
-                    <th className="px-4 py-4 text-center font-medium">Aspire</th>
-                    <th className="px-4 py-4 text-center font-medium">LMN</th>
-                    <th className="px-4 py-4 text-center font-medium">Jobber</th>
-                    <th className="px-4 py-4 text-center font-medium">
-                      Service Autopilot
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {FEATURES.map((row) => (
-                    <tr
-                      key={row.feature}
-                      className="border-t border-[rgba(15,61,46,0.08)] align-top"
-                    >
-                      <td className="px-4 py-5">
-                        <p className="text-[14px] font-medium text-forest">
-                          {row.feature}
-                        </p>
-                        <p className="mt-1 text-[13px] leading-[1.5] text-stone">
-                          {row.detail}
-                        </p>
-                      </td>
-                      <td className="px-4 py-5 text-center">
-                        <MarkCell value={row.gladius} />
-                      </td>
-                      <td className="px-4 py-5 text-center">
-                        <MarkCell value={row.aspire} />
-                      </td>
-                      <td className="px-4 py-5 text-center">
-                        <MarkCell value={row.lmn} />
-                      </td>
-                      <td className="px-4 py-5 text-center">
-                        <MarkCell value={row.jobber} />
-                      </td>
-                      <td className="px-4 py-5 text-center">
-                        <MarkCell value={row.serviceAutopilot} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        <section className="border-b border-[rgba(15,61,46,0.12)] bg-bone">
-          <div className="mx-auto max-w-content px-6 py-20 md:py-section">
-            <p className="mb-6 text-sm uppercase tracking-tagline text-stone">
-              30-day switch
-            </p>
-            <h2 className="max-w-3xl font-serif text-h2-md text-forest md:text-h2-lg">
-              You will be running on GladiusTurf inside a month. Most crews are running on it inside two weeks.
-            </h2>
-            <p className="mt-6 max-w-3xl text-[16px] leading-[1.6] text-stone">
-              Switching software is the most common reason crews stay on a
-              platform they have already outgrown. We have built the import
-              and parallel-run process so the cost of leaving your current
-              system is genuinely smaller than the cost of staying another
-              quarter. We pay your overlap month if it takes longer than 30
-              days — that has not happened yet.
-            </p>
-
-            <div className="mt-12 grid gap-6 md:grid-cols-5">
-              {STEPS.map((s) => (
-                <div
-                  key={s.day}
-                  className="rounded-[12px] border border-[rgba(15,61,46,0.12)] bg-paper p-6"
-                >
-                  <p className="font-mono text-[12px] uppercase tracking-tagline text-stone">
-                    {s.day}
-                  </p>
-                  <h3 className="mt-3 font-serif text-[20px] leading-[1.25] text-forest">
+                  <h3 className="mt-4 font-serif text-xl font-semibold leading-[1.25] text-bone">
                     {s.title}
                   </h3>
-                  <p className="mt-3 text-[14px] leading-[1.6] text-stone">
+                  <p className="mt-3 text-sm leading-[1.6] text-bone/60">
                     {s.body}
                   </p>
                 </div>
@@ -473,34 +582,38 @@ export default function ComparePage() {
           </div>
         </section>
 
-        <section className="bg-forest text-bone">
-          <div className="mx-auto max-w-content px-6 py-20 md:py-section">
-            <p className="mb-6 text-sm uppercase tracking-tagline text-moss">
-              See it on your data
-            </p>
-            <h2 className="max-w-3xl font-serif text-h2-md md:text-h2-lg">
-              Free 30-minute demo. We&apos;ll run it on your customers, your routes, your numbers.
-            </h2>
-            <p className="mt-8 max-w-2xl text-[17px] leading-[1.6] text-bone/80">
-              Send us a CSV from Aspire, LMN, Jobber, Service Autopilot, Real
-              Green, or a Google Sheet — anything. We will load it before the
-              call and walk you through the stalled quotes, missed upsells,
-              and referral opportunities sitting in your own book of business.
-              No slides. No sales script. Your data, your dollars.
-            </p>
-            <div className="mt-10 flex flex-wrap items-center gap-6">
-              <a
-                href="/demo"
-                className="inline-flex items-center rounded-[8px] bg-moss px-6 py-3 text-sm font-medium text-forest transition-colors hover:bg-moss/90"
-              >
-                Book a 30-minute demo
-              </a>
-              <a
-                href="/pricing"
-                className="text-sm font-medium text-bone underline underline-offset-4 hover:text-moss"
-              >
-                See per-crew pricing →
-              </a>
+        {/* Final CTA */}
+        <section className="bg-forest-mid">
+          <div className="mx-auto max-w-7xl px-6 py-28">
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright">
+                See it on your data
+              </p>
+              <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
+                30 minutes. Founders run the call.
+              </h2>
+              <p className="mt-6 text-lg leading-[1.6] text-bone/60">
+                Send us a CSV from Aspire, LMN, Jobber, Service Autopilot, Real
+                Green, or a Google Sheet — anything. We will load it before the
+                call and walk you through the stalled quotes, missed upsells,
+                and referral opportunities sitting in your own book of
+                business. No slides. No sales script. Your data, your dollars.
+              </p>
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-6">
+                <a
+                  href="/demo"
+                  className="inline-flex items-center gap-2 rounded-lg bg-lime-bright px-6 py-3 text-sm font-semibold text-forest-deep transition-colors hover:bg-lime-bright/90"
+                >
+                  Book a 30-minute demo
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+                <a
+                  href="/pricing"
+                  className="text-sm font-medium text-bone underline underline-offset-4 hover:text-moss-bright"
+                >
+                  See per-crew pricing →
+                </a>
+              </div>
             </div>
           </div>
         </section>

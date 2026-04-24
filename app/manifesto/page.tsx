@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import { CtaBand } from "@/components/cta-band";
+import { Quote, X } from "lucide-react";
+import { CtaButton } from "@/components/cta-button";
+import { Eyebrow } from "@/components/eyebrow";
 import { Footer } from "@/components/footer";
 import { Nav } from "@/components/nav";
-import { QuoteBlock } from "@/components/quote-block";
+import { Pill } from "@/components/pill";
 
 export const metadata: Metadata = {
   title: "Manifesto",
@@ -16,11 +18,13 @@ const COMMANDMENTS: { headline: string; body: string }[] = [
     body: "The owner signs the invoice, but the crew has to live in the software at 5:47 AM with cold hands and a cracked phone. If a foreman can't run his day from the truck without calling the office, the product has failed before payroll prints.",
   },
   {
-    headline: "Revenue you didn't capture is more expensive than revenue you didn't book.",
+    headline:
+      "Revenue you didn't capture is more expensive than revenue you didn't book.",
     body: "Booked revenue you missed costs you the job. Captured revenue you missed — the upsell, the renewal, the referral, the follow-up irrigation tune — costs you the customer. We design for the second number, because the second number is where shops actually die.",
   },
   {
-    headline: "The forgotten quote is the largest line item on every landscaping P&L.",
+    headline:
+      "The forgotten quote is the largest line item on every landscaping P&L.",
     body: "The average shop sends quotes that never close, never die, and never get a second touch. That pile is six figures a year, sitting in an inbox, paying nobody. The first job of this software is to make sure no quote ever gets forgotten again.",
   },
   {
@@ -40,7 +44,8 @@ const COMMANDMENTS: { headline: string; body: string }[] = [
     body: "Rain happens. Frost happens. The wind picks up at 11:14 and the spray window closes. Software that pretends otherwise is software written by people who have never lost a Tuesday. We build for the storm, not the brochure.",
   },
   {
-    headline: "Every site has memory. Every customer has a story. Treat both as assets.",
+    headline:
+      "Every site has memory. Every customer has a story. Treat both as assets.",
     body: "The hedge that always grows back ugly on the south side. The dog that bites. The gate code that changes every April. That knowledge belongs to your business, not to a foreman who quits in the fall. We make memory portable, durable, and crew-shaped.",
   },
   {
@@ -48,7 +53,8 @@ const COMMANDMENTS: { headline: string; body: string }[] = [
     body: "Every truck-hour is a unit of capacity, and every unit of capacity has a margin. Treating the route as a Google Maps problem instead of a P&L problem is how shops grow revenue while losing money. We optimize for dollars per windshield-minute, not miles.",
   },
   {
-    headline: "Surplus pallets, slabs, sod, and stone are someone else's pipeline. Make the marketplace.",
+    headline:
+      "Surplus pallets, slabs, sod, and stone are someone else's pipeline. Make the marketplace.",
     body: "Every shop in America has a back lot of half-pallets, leftover sod rolls, takeoff stone, and unused mulch. That inventory is cash, sitting in the rain. We turn it into a regional marketplace, because the trade should not be subsidizing big-box returns desks.",
   },
 ];
@@ -84,22 +90,32 @@ const NEVERS: string[] = [
   "We will never sell, syndicate, or resell your customer list, your crew data, your route data, or your pricing. Not to a competitor, not to a private equity acquirer, not to a marketing partner. Not ever.",
 ];
 
+// The featured commandment we pull as the band quote — Commandment III is the
+// rallying cry of the company.
+const FEATURED_COMMANDMENT_INDEX = 2;
+
 export default function ManifestoPage() {
   return (
     <>
       <Nav />
-      <main className="bg-paper">
+      <main className="bg-forest-deep">
         {/* HERO */}
-        <section className="border-b border-[rgba(15,61,46,0.12)]">
-          <div className="mx-auto max-w-content px-6 py-20 md:py-section">
-            <p className="mb-8 text-sm uppercase tracking-tagline text-stone">
-              The GladiusTurf Manifesto
-            </p>
-            <h1 className="max-w-5xl font-serif text-display-md text-forest md:text-display-lg">
+        <section className="relative overflow-hidden">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 top-0 -z-0 h-[700px] bg-[radial-gradient(ellipse_at_top,rgba(127,226,122,0.12),transparent_60%)]"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 top-0 -z-0 h-[600px] opacity-[0.08] [background-image:linear-gradient(to_right,rgba(245,241,232,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(245,241,232,0.06)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:radial-gradient(ellipse_at_top,black_30%,transparent_75%)]"
+          />
+          <div className="relative mx-auto max-w-5xl px-6 py-28 md:py-32">
+            <Pill className="mb-8">Manifesto</Pill>
+            <h1 className="font-serif text-5xl tracking-[-0.02em] leading-[1.05] text-bone md:text-7xl">
               Landscaping is a $115B industry run on spreadsheets, paper
               invoices, and forgotten quotes.
             </h1>
-            <p className="mt-10 max-w-3xl text-[19px] leading-[1.55] text-stone">
+            <p className="mt-10 max-w-2xl text-xl leading-relaxed text-bone/70">
               We are the first software company that thinks that&apos;s a
               scandal — and the last one that will treat it like a feature
               backlog instead of a fight.
@@ -108,12 +124,9 @@ export default function ManifestoPage() {
         </section>
 
         {/* OPENING DECLARATION */}
-        <section className="border-b border-[rgba(15,61,46,0.12)]">
-          <div className="mx-auto max-w-3xl px-6 py-20 md:py-section">
-            <p className="mb-8 text-sm uppercase tracking-tagline text-forest">
-              Why we&apos;re here
-            </p>
-            <div className="flex flex-col gap-7 text-[18px] leading-[1.7] text-forest">
+        <section className="border-t border-bone/5">
+          <div className="mx-auto max-w-3xl px-6 py-28">
+            <div className="flex flex-col gap-8 text-xl leading-relaxed text-bone/70">
               <p>
                 The trade is the most underleveraged service business in
                 America. Two and a half million workers. A hundred and fifteen
@@ -153,59 +166,85 @@ export default function ManifestoPage() {
         </section>
 
         {/* THE TEN COMMANDMENTS */}
-        <section className="border-b border-[rgba(15,61,46,0.12)] bg-bone">
-          <div className="mx-auto max-w-content px-6 py-20 md:py-section">
-            <p className="mb-6 text-sm uppercase tracking-tagline text-forest">
-              The Ten Commandments
-            </p>
-            <h2 className="max-w-3xl font-serif text-h2-md text-forest md:text-h2-lg">
-              Ten rules we build by. We will not break any of them for any
-              customer, investor, or quarter.
-            </h2>
+        <section className="border-t border-bone/5 bg-forest-mid">
+          <div className="mx-auto max-w-7xl px-6 py-28">
+            <div className="mx-auto max-w-3xl text-center">
+              <Eyebrow className="mb-6">The Ten Commandments</Eyebrow>
+              <h2 className="font-serif text-4xl tracking-[-0.01em] leading-[1.1] text-bone md:text-5xl">
+                Ten rules we build by. We will not break any of them for any
+                customer, investor, or quarter.
+              </h2>
+            </div>
 
-            <ol className="mt-16 grid gap-12 md:grid-cols-2 md:gap-x-16 md:gap-y-14">
-              {COMMANDMENTS.map((c, i) => (
-                <li key={c.headline} className="flex flex-col gap-4">
-                  <div className="flex items-baseline gap-5">
-                    <span className="font-mono text-[13px] uppercase tracking-tagline text-moss">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <h3 className="font-serif text-[22px] leading-[1.25] text-forest md:text-[26px]">
-                      {c.headline}
-                    </h3>
-                  </div>
-                  <p className="pl-12 text-[16px] leading-[1.6] text-forest/80">
-                    {c.body}
-                  </p>
-                </li>
-              ))}
+            <ol className="mt-24 flex flex-col gap-8">
+              {COMMANDMENTS.map((c, i) => {
+                const isFeatured = i === FEATURED_COMMANDMENT_INDEX;
+                const cardCls = isFeatured
+                  ? "rounded-2xl border border-moss/30 bg-gradient-to-b from-moss/10 to-transparent p-8 md:p-12"
+                  : "rounded-2xl border border-bone/10 bg-bone/[0.02] p-8 md:p-12";
+                return (
+                  <li key={c.headline} className={cardCls}>
+                    <div className="grid gap-6 md:grid-cols-[auto_1fr] md:gap-12">
+                      <div className="font-mono text-7xl leading-none text-moss-bright/40 md:text-8xl">
+                        {String(i + 1).padStart(2, "0")}
+                      </div>
+                      <div className="flex flex-col gap-4">
+                        <h3 className="font-serif text-3xl tracking-[-0.01em] leading-[1.15] text-bone md:text-4xl">
+                          {c.headline}
+                        </h3>
+                        <p className="text-lg leading-relaxed text-bone/60">
+                          {c.body}
+                        </p>
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
             </ol>
           </div>
         </section>
 
-        <QuoteBlock />
+        {/* PULL-QUOTE BAND */}
+        <section className="border-t border-bone/5 bg-forest-mid">
+          <div className="mx-auto max-w-5xl px-6 py-28">
+            <Quote
+              className="mb-8 h-12 w-12 text-moss-bright/60"
+              aria-hidden
+            />
+            <blockquote className="font-serif text-3xl tracking-[-0.01em] leading-[1.15] text-bone md:text-5xl">
+              &ldquo;{COMMANDMENTS[FEATURED_COMMANDMENT_INDEX].headline}&rdquo;
+            </blockquote>
+            <p className="mt-10 text-xs font-semibold uppercase tracking-[0.2em] text-bone/40">
+              — Commandment{" "}
+              {String(FEATURED_COMMANDMENT_INDEX + 1).padStart(2, "0")}
+            </p>
+          </div>
+        </section>
 
         {/* WHAT WE BELIEVE */}
-        <section className="border-b border-[rgba(15,61,46,0.12)]">
-          <div className="mx-auto max-w-content px-6 py-20 md:py-section">
-            <p className="mb-6 text-sm uppercase tracking-tagline text-forest">
-              What we believe
-            </p>
-            <h2 className="max-w-3xl font-serif text-h2-md text-forest md:text-h2-lg">
-              Five positions we&apos;ll defend in public, in writing, and in
-              the product.
-            </h2>
+        <section className="border-t border-bone/5">
+          <div className="mx-auto max-w-7xl px-6 py-28">
+            <div className="mx-auto max-w-3xl text-center">
+              <Eyebrow className="mb-6">What we believe</Eyebrow>
+              <h2 className="font-serif text-4xl tracking-[-0.01em] leading-[1.1] text-bone md:text-5xl">
+                Five positions we&apos;ll defend in public, in writing, and in
+                the product.
+              </h2>
+            </div>
 
-            <div className="mt-16 grid gap-10 md:grid-cols-2 md:gap-x-16">
-              {BELIEFS.map((b) => (
+            <div className="mt-20 grid gap-6 md:grid-cols-2">
+              {BELIEFS.map((b, i) => (
                 <div
                   key={b.headline}
-                  className="border-l-2 border-moss pl-6"
+                  className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-8"
                 >
-                  <h3 className="font-serif text-[20px] leading-[1.3] text-forest md:text-[22px]">
+                  <div className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-moss-bright">
+                    {String(i + 1).padStart(2, "0")} / Belief
+                  </div>
+                  <h3 className="mt-4 font-serif text-2xl tracking-[-0.01em] leading-[1.2] text-bone md:text-3xl">
                     {b.headline}
                   </h3>
-                  <p className="mt-3 text-[16px] leading-[1.6] text-forest/80">
+                  <p className="mt-4 text-lg leading-relaxed text-bone/60">
                     {b.body}
                   </p>
                 </div>
@@ -215,25 +254,31 @@ export default function ManifestoPage() {
         </section>
 
         {/* WHAT WE WILL NEVER DO */}
-        <section className="border-b border-[rgba(15,61,46,0.12)] bg-forest text-bone">
-          <div className="mx-auto max-w-content px-6 py-20 md:py-section">
-            <p className="mb-6 text-sm uppercase tracking-tagline text-moss">
-              What we will never do
-            </p>
-            <h2 className="max-w-3xl font-serif text-h2-md md:text-h2-lg">
-              Five hard nos. Read them. Hold us to them.
+        <section className="border-t border-bone/5 bg-forest-mid">
+          <div className="mx-auto max-w-5xl px-6 py-28">
+            <Eyebrow className="mb-6">Hard nos</Eyebrow>
+            <h2 className="font-serif text-4xl tracking-[-0.01em] leading-[1.1] text-bone md:text-5xl">
+              Five things we will never do.
             </h2>
+            <p className="mt-6 max-w-2xl text-lg text-bone/60">
+              Read them. Hold us to them.
+            </p>
 
             <ul className="mt-16 flex flex-col">
               {NEVERS.map((n, i) => (
                 <li
                   key={i}
-                  className="flex items-start gap-6 border-t border-bone/15 py-7 last:border-b"
+                  className="flex items-start gap-6 border-t border-bone/10 py-8 last:border-b"
                 >
-                  <span className="font-mono text-[13px] uppercase tracking-tagline text-moss">
-                    No.{String(i + 1).padStart(2, "0")}
+                  <span
+                    className="mt-2 inline-flex h-10 w-10 flex-none items-center justify-center rounded-full border border-lime-bright/30 bg-lime-bright/10 text-lime-bright"
+                    aria-hidden
+                  >
+                    <X className="h-5 w-5" strokeWidth={2.5} />
                   </span>
-                  <p className="text-[18px] leading-[1.55] text-bone">{n}</p>
+                  <p className="font-serif text-2xl leading-[1.25] text-bone">
+                    {n}
+                  </p>
                 </li>
               ))}
             </ul>
@@ -241,17 +286,14 @@ export default function ManifestoPage() {
         </section>
 
         {/* WHO WE ARE */}
-        <section className="border-b border-[rgba(15,61,46,0.12)]">
-          <div className="mx-auto max-w-3xl px-6 py-20 md:py-section">
-            <p className="mb-6 text-sm uppercase tracking-tagline text-forest">
-              Who we are
-            </p>
-            <h2 className="max-w-3xl font-serif text-h2-md text-forest md:text-h2-lg">
-              Built by people who&apos;ve ridden in trucks at 5 AM and watched
-              quotes die in inboxes.
+        <section className="border-t border-bone/5">
+          <div className="mx-auto max-w-3xl px-6 py-28">
+            <Eyebrow className="mb-6">Who we are</Eyebrow>
+            <h2 className="font-serif text-4xl tracking-[-0.01em] leading-[1.05] text-bone md:text-5xl">
+              Built by people who&apos;ve ridden in trucks at 5 AM.
             </h2>
 
-            <div className="mt-12 flex flex-col gap-7 text-[18px] leading-[1.7] text-forest">
+            <div className="mt-12 flex flex-col gap-7 text-xl leading-relaxed text-bone/70">
               <p>
                 We are a small team that grew up around the trade. We&apos;ve
                 pulled weeds at our father&apos;s shop, ridden the route on
@@ -274,14 +316,40 @@ export default function ManifestoPage() {
                 fairways together — and we are building it the way we&apos;d
                 want it built if our name were on the truck.
               </p>
-              <p className="pt-4 font-serif italic text-stone">
+              <p className="pt-4 font-serif text-lg italic text-bone/40">
                 — The founders, GladiusTurf
               </p>
             </div>
           </div>
         </section>
 
-        <CtaBand />
+        {/* FINAL CTA */}
+        <section className="relative border-t border-bone/5 bg-forest-mid">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 top-0 -z-0 h-[400px] bg-[radial-gradient(ellipse_at_top,rgba(217,250,108,0.10),transparent_70%)]"
+          />
+          <div className="relative mx-auto max-w-5xl px-6 py-28 text-center">
+            <Eyebrow tone="lime" className="mb-6">
+              If this sounds right
+            </Eyebrow>
+            <h2 className="mx-auto max-w-3xl font-serif text-4xl tracking-[-0.02em] leading-[1.05] text-bone md:text-6xl">
+              See the demo.
+            </h2>
+            <p className="mx-auto mt-8 max-w-xl text-lg leading-relaxed text-bone/60">
+              Twenty minutes. Your shop&apos;s real numbers. We&apos;ll show
+              you exactly which engine pays for itself first.
+            </p>
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-6">
+              <CtaButton href="/demo" size="lg">
+                Book the demo
+              </CtaButton>
+              <CtaButton href="/product" variant="ghost">
+                See the product
+              </CtaButton>
+            </div>
+          </div>
+        </section>
       </main>
       <Footer />
     </>

@@ -3,8 +3,10 @@ import { cn } from "@/lib/cn";
 type LogoMarkProps = {
   className?: string;
   size?: number;
-  /** forest (on light) or moss (on dark) */
+  /** Color of the mark stroke. */
   tone?: "forest" | "moss" | "bone";
+  /** Render context. "dark" defaults tone to bone, "light" to forest. */
+  theme?: "dark" | "light";
   withWordmark?: boolean;
 };
 
@@ -17,11 +19,18 @@ type LogoMarkProps = {
 export function LogoMark({
   className,
   size = 48,
-  tone = "forest",
+  tone,
+  theme = "dark",
   withWordmark = false,
 }: LogoMarkProps) {
+  // Default tone follows theme: dark → bone, light → forest.
+  const resolvedTone = tone ?? (theme === "dark" ? "bone" : "forest");
   const stroke =
-    tone === "forest" ? "#0F3D2E" : tone === "moss" ? "#7FE27A" : "#F5F1E8";
+    resolvedTone === "forest"
+      ? "#0F3D2E"
+      : resolvedTone === "moss"
+      ? "#7FE27A"
+      : "#F5F1E8";
 
   return (
     <span

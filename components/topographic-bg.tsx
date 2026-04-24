@@ -1,5 +1,5 @@
-// Subtle moss-at-8% SVG contour pattern behind the hero.
-// Server component, no client JS, no photo.
+// Subtle moss SVG contour pattern used behind hero/CTA bands.
+// Server component, no client JS, no photo. Tuned for dark backgrounds.
 export function TopographicBg() {
   return (
     <svg
@@ -10,7 +10,7 @@ export function TopographicBg() {
       stroke="#7FE27A"
       strokeWidth="0.8"
       aria-hidden="true"
-      style={{ opacity: 0.08 }}
+      style={{ opacity: 0.12 }}
     >
       {Array.from({ length: 10 }).map((_, i) => {
         const offset = 40 + i * 34;
