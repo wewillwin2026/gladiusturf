@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
+  CalendarClock,
+  LayoutDashboard,
   Phone,
   Sparkles,
   Users,
@@ -21,7 +23,7 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 
 export const metadata: Metadata = {
   description:
-    "GladiusTurf is the seven-engine revenue intelligence layer that catches every forgotten quote, missed upsell, and dropped referral your current stack is letting walk.",
+    "GladiusTurf is the nine-engine revenue intelligence layer that catches every forgotten quote, missed upsell, late invoice, and dropped referral your current stack is letting walk.",
 };
 
 const FOUNDING_CREWS = [
@@ -59,6 +61,10 @@ type ProductBlock = {
   bullets: string[];
   proof: string;
   flip: boolean;
+  /** Accent color for headline span, proof, mock. Defaults to moss. */
+  accent?: "moss" | "honey";
+  /** Optional custom mock renderer instead of generic preview. */
+  mock?: "portal" | "cadence";
 };
 
 const PRODUCT_BLOCKS: ProductBlock[] = [
@@ -101,7 +107,157 @@ const PRODUCT_BLOCKS: ProductBlock[] = [
     proof: "$180,000/yr in referral revenue most crews have no idea they're losing.",
     flip: false,
   },
+  {
+    eyebrow: "Client Portal",
+    icon: <LayoutDashboard className="h-3 w-3" />,
+    headline: "The phone stops ringing for status updates.",
+    body: "Your branded portal lives at your domain, in your colors. Homeowners reschedule visits, book new services, pay invoices, and approve change orders themselves — and every action lands in your dispatch board in real time.",
+    bullets: [
+      "Reschedule, book, and pay from one branded link",
+      "Change orders approved by the homeowner in 2 taps",
+      "Job history, photos, and invoices self-serve 24/7",
+    ],
+    proof: "73% fewer 'when are you coming?' calls inside the first 60 days.",
+    flip: true,
+    accent: "honey",
+    mock: "portal",
+  },
+  {
+    eyebrow: "Cadence",
+    icon: <CalendarClock className="h-3 w-3" />,
+    headline: "The follow-up brain that catches what the office misses.",
+    body: "Post-service feedback fires within six hours. Late-payment cadences warm before they escalate — Day 3, Day 7, Day 14, then a human handoff with full context. NOAA-timed seasonal reminders pull from Site Memory so every message reads like the owner wrote it.",
+    bullets: [
+      "Late-payment cadence recovers $12,800/mo on average",
+      "Day 3 / Day 7 / Day 14 warm before human handoff",
+      "Seasonal reminders timed to NOAA, scripted from Site Memory",
+    ],
+    proof: "+24% retention and $12,800/mo recovered in late invoices.",
+    flip: false,
+    accent: "moss",
+    mock: "cadence",
+  },
 ];
+
+function PortalMock() {
+  const rows = [
+    { date: "Tue · Jul 30", service: "Mow + edge", action: "Reschedule" },
+    { date: "Fri · Aug 02", service: "Bed mulch refresh", action: "Pay invoice" },
+    { date: "Wed · Aug 14", service: "Aeration + overseed", action: "Book service" },
+  ];
+  return (
+    <div className="flex h-full w-full flex-col gap-3 rounded-lg bg-forest-mid/60 p-4 text-left">
+      <div className="flex items-center justify-between">
+        <span className="font-serif text-sm font-semibold text-honey-bright">
+          Pinehurst Greens · Client Portal
+        </span>
+        <span className="rounded-full bg-honey/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.2em] text-honey-bright">
+          Live
+        </span>
+      </div>
+      <p className="text-[11px] text-bone/55">
+        Welcome back, Carla — your next visit is Tuesday.
+      </p>
+      <table className="mt-1 w-full table-fixed text-[11px]">
+        <thead>
+          <tr className="text-left text-[9px] font-semibold uppercase tracking-[0.16em] text-bone/40">
+            <th className="pb-2">When</th>
+            <th className="pb-2">Service</th>
+            <th className="pb-2 text-right">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr key={r.date} className="border-t border-bone/5">
+              <td className="py-2 pr-2 text-bone/70">{r.date}</td>
+              <td className="py-2 pr-2 text-bone/85">{r.service}</td>
+              <td className="py-2 text-right">
+                <span className="rounded-full border border-honey-bright/40 bg-honey/5 px-2 py-0.5 text-[10px] font-semibold text-honey-bright">
+                  {r.action}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div className="mt-auto flex items-center justify-between border-t border-bone/10 pt-3 text-[10px] text-bone/50">
+        <span>Self-serve · 24/7</span>
+        <span className="text-honey-bright">73% fewer status calls</span>
+      </div>
+    </div>
+  );
+}
+
+function CadenceMock() {
+  const steps = [
+    {
+      day: "Day 3",
+      label: "Soft nudge",
+      copy: "Hey Carla — invoice #2118 still outstanding. One-tap pay link.",
+      status: "sent",
+    },
+    {
+      day: "Day 7",
+      label: "Warmer reminder",
+      copy: "Quick check-in — anything we got wrong on visit #14?",
+      status: "sent",
+    },
+    {
+      day: "Day 14",
+      label: "Human handoff",
+      copy: "Riley calls. Full thread + Site Memory in front of him.",
+      status: "queued",
+    },
+  ];
+  return (
+    <div className="flex h-full w-full flex-col gap-3 rounded-lg bg-forest-mid/60 p-4 text-left">
+      <div className="flex items-center justify-between">
+        <span className="font-serif text-sm font-semibold text-moss-bright">
+          Cadence · Late invoice $1,840
+        </span>
+        <span className="rounded-full bg-moss/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.2em] text-moss-bright">
+          Active
+        </span>
+      </div>
+      <p className="text-[11px] text-bone/55">
+        Carla Brown · 12 Pine Hollow Lane · last paid Apr 2
+      </p>
+      <ul className="mt-1 flex flex-col gap-2.5">
+        {steps.map((s, i) => (
+          <li key={s.day} className="flex items-start gap-3">
+            <span
+              className={`mt-1 h-2 w-2 flex-none rounded-full ${
+                s.status === "sent"
+                  ? i % 2 === 0
+                    ? "bg-moss-bright"
+                    : "bg-honey-bright"
+                  : "bg-bone/30"
+              }`}
+            />
+            <div className="flex-1">
+              <div className="flex items-baseline justify-between">
+                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-bone/55">
+                  {s.day}
+                </span>
+                <span className="text-[10px] text-bone/40">
+                  {s.status === "sent" ? "delivered" : "queued"}
+                </span>
+              </div>
+              <div className="text-[11px] font-semibold text-bone">
+                {s.label}
+              </div>
+              <div className="text-[10px] text-bone/55">{s.copy}</div>
+            </div>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-auto flex items-center justify-between border-t border-bone/10 pt-3 text-[10px] text-bone/50">
+        <span>NOAA · Site Memory · Stripe</span>
+        <span className="text-moss-bright">$12,800/mo recovered</span>
+      </div>
+    </div>
+  );
+}
 
 export default function HomePage() {
   return (
@@ -194,7 +350,7 @@ export default function HomePage() {
                       className={
                         stat.accent
                           ? "font-serif text-6xl font-semibold tracking-tight text-moss-bright md:text-7xl"
-                          : "font-serif text-6xl font-semibold tracking-tight text-bone md:text-7xl"
+                          : "font-serif text-6xl font-semibold tracking-tight text-honey-bright md:text-7xl"
                       }
                     >
                       <AnimatedCounter
@@ -231,7 +387,9 @@ export default function HomePage() {
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="mx-auto max-w-3xl text-center">
-                <Eyebrow className="mb-3">The product</Eyebrow>
+                <Eyebrow className="mb-3" tone="honey">
+                  The product
+                </Eyebrow>
                 <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   Every engine is a specific number
                   <br />
@@ -242,63 +400,91 @@ export default function HomePage() {
               </div>
             </ScrollReveal>
 
-            {PRODUCT_BLOCKS.map((b, i) => (
-              <div
-                key={b.eyebrow}
-                className={
-                  i === 0
-                    ? "mt-24 grid items-center gap-12 md:grid-cols-2"
-                    : "mt-32 grid items-center gap-12 md:grid-cols-2"
-                }
-              >
-                <ScrollReveal className={b.flip ? "md:order-2" : undefined}>
-                  <div>
-                    <Pill className="mb-4">
-                      {b.icon}
-                      {b.eyebrow}
-                    </Pill>
-                    <h3 className="font-serif text-3xl font-semibold tracking-tight text-bone md:text-4xl">
-                      {b.headline}
-                    </h3>
-                    <p className="mt-4 text-lg text-bone/70">{b.body}</p>
-                    <ul className="mt-6 space-y-3 text-sm text-bone/85">
-                      {b.bullets.map((item) => (
-                        <li key={item} className="flex items-start gap-3">
-                          <span className="mt-2 h-1.5 w-1.5 flex-none rounded-full bg-moss-bright" />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                    <div className="mt-6 inline-block rounded-full border border-bone/10 bg-bone/[0.03] px-3 py-1 text-xs text-bone/80">
-                      <span className="font-semibold text-moss-bright">
-                        {b.proof}
-                      </span>
-                    </div>
-                  </div>
-                </ScrollReveal>
+            {PRODUCT_BLOCKS.map((b, i) => {
+              const accent = b.accent ?? (i % 2 === 0 ? "moss" : "honey");
+              const accentText =
+                accent === "honey" ? "text-honey-bright" : "text-moss-bright";
+              const accentBullet =
+                accent === "honey" ? "bg-honey-bright" : "bg-moss-bright";
+              const accentGradient =
+                accent === "honey"
+                  ? "from-honey/[0.08] via-bone/[0.02] to-transparent"
+                  : "from-moss/[0.06] via-bone/[0.02] to-transparent";
 
-                <ScrollReveal
-                  delay={0.1}
-                  className={b.flip ? "md:order-1" : undefined}
+              return (
+                <div
+                  key={b.eyebrow}
+                  className={
+                    i === 0
+                      ? "mt-24 grid items-center gap-12 md:grid-cols-2"
+                      : "mt-32 grid items-center gap-12 md:grid-cols-2"
+                  }
                 >
-                  <div className="aspect-[4/3] overflow-hidden rounded-2xl border border-bone/10 bg-gradient-to-br from-moss/[0.06] via-bone/[0.02] to-transparent p-1">
-                    <div className="flex h-full w-full items-center justify-center rounded-xl bg-forest-deep">
-                      <div className="flex flex-col items-center gap-3 px-8 text-center">
-                        <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-bone/40">
-                          Product preview
-                        </span>
-                        <span className="font-serif text-3xl font-semibold text-bone">
-                          {b.eyebrow}
-                        </span>
-                        <span className="font-mono text-sm text-moss-bright">
-                          {b.proof.split("Founding crews ").pop()}
+                  <ScrollReveal className={b.flip ? "md:order-2" : undefined}>
+                    <div>
+                      <Pill className="mb-4" tone={accent}>
+                        {b.icon}
+                        {b.eyebrow}
+                      </Pill>
+                      <h3 className="font-serif text-3xl font-semibold tracking-tight text-bone md:text-4xl">
+                        {b.headline}
+                      </h3>
+                      <p className="mt-4 text-lg text-bone/70">{b.body}</p>
+                      <ul className="mt-6 space-y-3 text-sm text-bone/85">
+                        {b.bullets.map((item, idx) => (
+                          <li key={item} className="flex items-start gap-3">
+                            <span
+                              className={`mt-2 h-1.5 w-1.5 flex-none rounded-full ${
+                                idx % 2 === 0
+                                  ? accentBullet
+                                  : accent === "honey"
+                                    ? "bg-moss-bright"
+                                    : "bg-honey-bright"
+                              }`}
+                            />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                      <div className="mt-6 inline-block rounded-full border border-bone/10 bg-bone/[0.03] px-3 py-1 text-xs text-bone/80">
+                        <span className={`font-semibold ${accentText}`}>
+                          {b.proof}
                         </span>
                       </div>
                     </div>
-                  </div>
-                </ScrollReveal>
-              </div>
-            ))}
+                  </ScrollReveal>
+
+                  <ScrollReveal
+                    delay={0.1}
+                    className={b.flip ? "md:order-1" : undefined}
+                  >
+                    <div
+                      className={`aspect-[4/3] overflow-hidden rounded-2xl border border-bone/10 bg-gradient-to-br p-1 ${accentGradient}`}
+                    >
+                      <div className="flex h-full w-full items-center justify-center rounded-xl bg-forest-deep p-6">
+                        {b.mock === "portal" ? (
+                          <PortalMock />
+                        ) : b.mock === "cadence" ? (
+                          <CadenceMock />
+                        ) : (
+                          <div className="flex flex-col items-center gap-3 px-8 text-center">
+                            <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-bone/40">
+                              Product preview
+                            </span>
+                            <span className="font-serif text-3xl font-semibold text-bone">
+                              {b.eyebrow}
+                            </span>
+                            <span className={`font-mono text-sm ${accentText}`}>
+                              {b.proof.split("Founding crews ").pop()}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </ScrollReveal>
+                </div>
+              );
+            })}
           </div>
         </section>
 
@@ -322,7 +508,7 @@ export default function HomePage() {
             <ScrollReveal delay={0.15}>
               <Link
                 href="/pricing"
-                className="group mt-10 inline-flex items-center gap-2 rounded-full border border-moss/40 bg-moss/5 px-7 py-3.5 text-base font-medium text-moss-bright transition-all hover:border-moss-bright hover:bg-moss/10"
+                className="group mt-10 inline-flex items-center gap-2 rounded-full border border-honey-bright/40 bg-honey/5 px-7 py-3.5 text-base font-medium text-honey-bright transition-all hover:border-honey-bright hover:bg-honey/10"
               >
                 Run your numbers
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -336,7 +522,9 @@ export default function HomePage() {
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="mx-auto max-w-3xl text-center">
-                <Eyebrow className="mb-3">Compare</Eyebrow>
+                <Eyebrow className="mb-3" tone="honey">
+                  Compare
+                </Eyebrow>
                 <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   What you&apos;re paying now vs.
                   <br />

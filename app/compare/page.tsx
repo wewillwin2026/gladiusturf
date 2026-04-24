@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ArrowRight, Check, Minus } from "lucide-react";
 import { CtaBand } from "@/components/cta-band";
+import { Eyebrow } from "@/components/eyebrow";
 import { Footer } from "@/components/footer";
 import { Nav } from "@/components/nav";
 
@@ -71,6 +72,26 @@ const FEATURES: FeatureRow[] = [
     serviceAutopilot: "partial",
   },
   {
+    feature: "Client Portal",
+    detail:
+      "White-labeled self-serve portal — schedule, reschedule, and pay without a phone call",
+    gladius: "yes",
+    aspire: "partial",
+    lmn: "no",
+    jobber: "partial",
+    serviceAutopilot: "no",
+  },
+  {
+    feature: "Intelligent follow-up cadences",
+    detail:
+      "NOAA-timed, Site-Memory personalized cadences — not template blasts",
+    gladius: "yes",
+    aspire: "no",
+    lmn: "no",
+    jobber: "partial",
+    serviceAutopilot: "partial",
+  },
+  {
     feature: "Weather Pivot",
     detail: "Storm-aware re-routing with automatic client communication",
     gladius: "yes",
@@ -123,6 +144,7 @@ type Competitor = {
   strengths: string;
   weaknesses: string[];
   migration: string;
+  tone: "moss" | "honey";
 };
 
 const COMPETITORS: Competitor[] = [
@@ -135,9 +157,11 @@ const COMPETITORS: Competitor[] = [
       "Implementation runs three to six months and a five-figure professional services bill before you write a single ticket. Most owner-operators do not have that runway.",
       "The pricing model penalizes growth — every new estimator, foreman, or office admin is another seat fee, which encourages owners to limit access instead of expanding it.",
       "Revenue intelligence is missing. Aspire reports on jobs that already happened. It does not intercept stalled quotes, surface neighbor referrals from active jobs, or scan property photos for upsell. You still run those motions on a whiteboard.",
+      "Customer portal is basic and Aspire-branded, with no native Stripe collection — your clients see a vendor logo, not yours, and your CSR still chases card numbers by phone.",
     ],
     migration:
       "We import your Aspire opportunities, work tickets, properties, and YTD revenue in a single ETL pass and run the two systems in parallel for 30 days so your CFO never loses a number.",
+    tone: "honey",
   },
   {
     name: "LMN",
@@ -148,9 +172,11 @@ const COMPETITORS: Competitor[] = [
       "LMN ends at the schedule. There is no upsell engine, no referral capture, no SLA on dead quotes, no compliance shield. The revenue side of the business stays in your head.",
       "The UI shows its age — it is a desktop-first product retrofitted for mobile, and crews complain about the field app.",
       "Pesticide and chemical compliance is logging only. If you run lawn care or tree services in a regulated state, you still maintain a separate paper or Real Green workflow.",
+      "No customer portal and no automated follow-up cadence engine — every reschedule, payment reminder, and seasonal renewal still rides on a CSR's task list.",
     ],
     migration:
       "We pull your LMN customers, jobs, estimates, and crew records via their export, normalize them into GladiusTurf, and keep your QuickBooks integration intact.",
+    tone: "moss",
   },
   {
     name: "Service Autopilot",
@@ -161,9 +187,11 @@ const COMPETITORS: Competitor[] = [
       "Versatility is also the weakness. Because Service Autopilot serves four industries, none of the workflows are tuned for landscape revenue specifically — you bend the tool to fit your business instead of the other way around.",
       "The interface is dense and the learning curve is steep. Most shops only use 30 to 40 percent of what they pay for.",
       "Per-user pricing on top of the base platform fee means a 6-person office and 4 crews quickly crosses $1,000 per month before you have shipped a single estimate.",
+      "Customer portal is not included with the base platform — it is sold as a separate product, and the cadence module ships templates without AI personalization.",
     ],
     migration:
       "We map Service Autopilot accounts, jobs, services, and route plans into GladiusTurf in 7 days, and keep your existing payment processor connected.",
+    tone: "moss",
   },
   {
     name: "Jobber",
@@ -174,9 +202,11 @@ const COMPETITORS: Competitor[] = [
       "Jobber serves plumbers, painters, dog groomers, and landscapers from the same template. There is no soil-and-seasonality intelligence, no chemical compliance, no crew-scale routing.",
       "The reporting is shallow. You can see what you billed, but not why your renewal rate dropped in August or which crew leaks the most upsell on stop-three of the route.",
       "Per-user pricing scales painfully. A 4-crew operation with foremen on the app is paying more for Jobber than they would pay GladiusTurf for the entire revenue layer.",
+      "The cadence engine is template-only — no AI personalization off Site Memory, no NOAA-aware timing — so your follow-ups land on the same Tuesday morning regardless of weather, season, or what the property actually needs.",
     ],
     migration:
       "Jobber has a clean export. We import clients, properties, jobs, and invoices in under 48 hours and your team is in production by the next Monday.",
+    tone: "honey",
   },
   {
     name: "Real Green",
@@ -187,9 +217,11 @@ const COMPETITORS: Competitor[] = [
       "The interface is genuinely dated and most younger office staff resist using it, which becomes a hiring problem.",
       "Upsell is ad-hoc — service add-ons live in CSRs' heads or paper notes, not in a system that scores accounts and routes the next-best offer.",
       "The platform is built for lawn care only. If you also run hardscape, irrigation, or landscape design, you operate two systems.",
+      "Cadence templates are not personalized to property memory — every customer gets the same seasonal email regardless of soil type, last service, or what the foreman noted on the last visit.",
     ],
     migration:
       "We mirror your Real Green customer file, service history, and chemical log into GladiusTurf and stand up Applicator Shield with your state's current label library on day one.",
+    tone: "honey",
   },
   {
     name: "Spreadsheets, paper, and QuickBooks",
@@ -200,9 +232,11 @@ const COMPETITORS: Competitor[] = [
       "Every quote that does not close lives in a notebook nobody re-reads. We typically find $80K to $180K of stalled estimates within 90 days of import.",
       "The owner is the system. When the owner takes a Friday off, intake stalls, dispatch drifts, and renewals get missed.",
       "Compliance and crew safety records depend on whoever picks up the clipboard last — and state inspectors do not accept that.",
+      "There is no portal at all — every reschedule, payment, and seasonal renewal is a phone call, and at scale that becomes a part-time CSR you did not budget for.",
     ],
     migration:
       "We sit with you for one afternoon, ingest your spreadsheets, route sheets, and last 12 months of QuickBooks, and you are running on GladiusTurf inside a week with zero data lost.",
+    tone: "moss",
   },
 ];
 
@@ -221,7 +255,7 @@ function MarkCell({ value, highlight = false }: { value: Support; highlight?: bo
           className={
             highlight
               ? "h-4 w-4 text-moss-bright"
-              : "h-5 w-5 text-moss-bright"
+              : "h-5 w-5 text-honey-bright"
           }
           strokeWidth={highlight ? 3 : 2.5}
         />
@@ -232,7 +266,11 @@ function MarkCell({ value, highlight = false }: { value: Support; highlight?: bo
     return (
       <span
         aria-label="Partial"
-        className="inline-flex h-6 w-6 items-center justify-center text-[14px] font-semibold text-lime-bright"
+        className={
+          highlight
+            ? "inline-flex h-6 w-6 items-center justify-center text-[14px] font-semibold text-moss-bright"
+            : "inline-flex h-6 w-6 items-center justify-center text-[14px] font-semibold text-honey-bright/60"
+        }
       >
         ~
       </span>
@@ -289,9 +327,9 @@ export default function ComparePage() {
         {/* Hero */}
         <section className="border-b border-bone/10 bg-forest-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
-            <p className="mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright">
+            <Eyebrow tone="honey" className="mb-6">
               Compare
-            </p>
+            </Eyebrow>
             <h1 className="max-w-5xl font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-6xl">
               Why crews are leaving Aspire, LMN, Service Autopilot, and Jobber.
             </h1>
@@ -312,7 +350,11 @@ export default function ComparePage() {
                 upsells, neighbor referrals on active job sites, surplus
                 materials sitting in the yard, compliance lapses that turn
                 into fines. The incumbents report on what already happened.
-                GladiusTurf intervenes before the dollar walks.
+                GladiusTurf intervenes before the dollar walks. And yes — it
+                includes a branded client portal for self-serve reschedule and
+                pay, plus an intelligent cadence engine for automated follow-ups
+                and reminders. Things our competitors charge as bolt-ons or do
+                not offer at all.
               </p>
             </div>
           </div>
@@ -329,10 +371,11 @@ export default function ComparePage() {
                 The capabilities that change a crew&apos;s revenue, side by side.
               </h2>
               <p className="mt-4 text-lg text-bone/60">
-                Lime check means shipped and supported. Tilde means partial —
-                the platform technically does it, but not at the depth a
-                serious landscape operator needs. Dim minus means not
-                available.
+                Moss check in the GladiusTurf column means shipped and
+                supported. Honey check in a vendor column means they have it
+                too. Tilde means partial — the platform technically does it,
+                but not at the depth a serious landscape operator needs. Dim
+                minus means not available.
               </p>
             </div>
 
@@ -473,6 +516,17 @@ export default function ComparePage() {
 
         {COMPETITORS.map((c, idx) => {
           const isAlt = idx % 2 === 1;
+          const isHoney = c.tone === "honey";
+          const migrationEyebrow = isHoney
+            ? "text-honey-bright"
+            : "text-moss-bright";
+          const advantageBorder = isHoney
+            ? "border-honey/30 bg-gradient-to-b from-honey/5 to-transparent"
+            : "border-moss/30 bg-gradient-to-b from-moss/5 to-transparent";
+          const advantageEyebrow = isHoney
+            ? "text-honey-bright"
+            : "text-moss-bright";
+          const checkColor = isHoney ? "text-honey-bright" : "text-moss-bright";
           return (
             <section
               key={c.name}
@@ -495,7 +549,9 @@ export default function ComparePage() {
                     </p>
 
                     <div className="mt-8 rounded-2xl border border-bone/10 bg-bone/[0.02] p-6">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-moss-bright">
+                      <p
+                        className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${migrationEyebrow}`}
+                      >
                         Migration path
                       </p>
                       <p className="mt-2 text-sm leading-[1.6] text-bone/80">
@@ -506,8 +562,12 @@ export default function ComparePage() {
 
                   {/* Right: GladiusTurf advantages */}
                   <div className={isAlt ? "md:order-1" : ""}>
-                    <div className="rounded-2xl border border-moss/30 bg-gradient-to-b from-moss/5 to-transparent p-6 md:p-8">
-                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright">
+                    <div
+                      className={`rounded-2xl border ${advantageBorder} p-6 md:p-8`}
+                    >
+                      <p
+                        className={`text-xs font-semibold uppercase tracking-[0.2em] ${advantageEyebrow}`}
+                      >
                         Where GladiusTurf is the better fit
                       </p>
                       <h4 className="mt-4 font-serif text-2xl font-semibold text-bone">
@@ -521,7 +581,7 @@ export default function ComparePage() {
                           >
                             <Check
                               aria-hidden
-                              className="mt-1 h-4 w-4 flex-shrink-0 text-moss-bright"
+                              className={`mt-1 h-4 w-4 flex-shrink-0 ${checkColor}`}
                               strokeWidth={3}
                             />
                             <span>{w}</span>
@@ -557,27 +617,38 @@ export default function ComparePage() {
             </div>
 
             <div className="mt-14 flex flex-col gap-6 md:flex-row md:gap-4">
-              {STEPS.map((s, i) => (
-                <div
-                  key={s.week}
-                  className="relative flex-1 rounded-2xl border border-bone/10 bg-bone/[0.02] p-6 md:p-8"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-moss-bright/15 text-[11px] font-semibold text-moss-bright ring-1 ring-moss-bright/30">
-                      {i + 1}
-                    </span>
-                    <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-moss-bright">
-                      {s.week}
+              {STEPS.map((s, i) => {
+                const isHoney = i % 2 === 1;
+                const dotCls = isHoney
+                  ? "bg-honey-bright/15 text-honey-bright ring-honey-bright/30"
+                  : "bg-moss-bright/15 text-moss-bright ring-moss-bright/30";
+                const labelCls = isHoney ? "text-honey-bright" : "text-moss-bright";
+                return (
+                  <div
+                    key={s.week}
+                    className="relative flex-1 rounded-2xl border border-bone/10 bg-bone/[0.02] p-6 md:p-8"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-semibold ring-1 ${dotCls}`}
+                      >
+                        {i + 1}
+                      </span>
+                      <p
+                        className={`font-mono text-[11px] font-semibold uppercase tracking-[0.18em] ${labelCls}`}
+                      >
+                        {s.week}
+                      </p>
+                    </div>
+                    <h3 className="mt-4 font-serif text-xl font-semibold leading-[1.25] text-bone">
+                      {s.title}
+                    </h3>
+                    <p className="mt-3 text-sm leading-[1.6] text-bone/60">
+                      {s.body}
                     </p>
                   </div>
-                  <h3 className="mt-4 font-serif text-xl font-semibold leading-[1.25] text-bone">
-                    {s.title}
-                  </h3>
-                  <p className="mt-3 text-sm leading-[1.6] text-bone/60">
-                    {s.body}
-                  </p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
@@ -609,9 +680,9 @@ export default function ComparePage() {
                 </a>
                 <a
                   href="/pricing"
-                  className="text-sm font-medium text-bone underline underline-offset-4 hover:text-moss-bright"
+                  className="inline-flex items-center gap-2 rounded-lg border border-honey/40 px-6 py-3 text-sm font-semibold text-honey-bright transition-colors hover:bg-honey/10"
                 >
-                  See per-crew pricing →
+                  Or see pricing →
                 </a>
               </div>
             </div>

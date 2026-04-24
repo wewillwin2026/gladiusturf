@@ -1,7 +1,7 @@
 import { LogoMark } from "@/components/logo-mark";
 
 const PRODUCT_LINKS = [
-  { href: "/product", label: "Seven engines" },
+  { href: "/product", label: "Nine engines" },
   { href: "/pricing", label: "Pricing" },
   { href: "/compare", label: "Compare" },
   { href: "/surplus-yard", label: "Surplus Yard" },
@@ -43,7 +43,7 @@ function Column({
           <li key={l.href}>
             <a
               href={l.href}
-              className="text-bone/70 transition-colors hover:text-moss-bright"
+              className="text-bone/70 transition-colors hover:text-honey-bright"
             >
               {l.label}
             </a>
@@ -62,14 +62,14 @@ export function Footer() {
           <div className="col-span-2 md:col-span-2">
             <LogoMark size={40} theme="dark" tone="bone" withWordmark />
             <p className="mt-6 max-w-xs text-[13px] leading-[1.6] text-bone/60">
-              Landscaping Revenue Intelligence. Seven engines for crew owners
+              Landscaping Revenue Intelligence. Nine engines for crew owners
               done leaking revenue to the gaps in their software.
             </p>
             <div className="mt-6 flex items-center gap-4 text-[12px] text-bone/50">
               <a
                 href="https://x.com/gladiusturf"
                 aria-label="GladiusTurf on X"
-                className="transition-colors hover:text-moss-bright"
+                className="transition-colors hover:text-honey-bright"
               >
                 X
               </a>
@@ -79,7 +79,7 @@ export function Footer() {
               <a
                 href="https://www.linkedin.com/company/gladiusturf"
                 aria-label="GladiusTurf on LinkedIn"
-                className="transition-colors hover:text-moss-bright"
+                className="transition-colors hover:text-honey-bright"
               >
                 LinkedIn
               </a>
@@ -89,7 +89,7 @@ export function Footer() {
               <a
                 href="https://www.youtube.com/@gladiusturf"
                 aria-label="GladiusTurf on YouTube"
-                className="transition-colors hover:text-moss-bright"
+                className="transition-colors hover:text-honey-bright"
               >
                 YouTube
               </a>
@@ -110,7 +110,7 @@ export function Footer() {
                 <li key={l.href}>
                   <a
                     href={l.href}
-                    className="transition-colors hover:text-moss-bright"
+                    className="transition-colors hover:text-honey-bright"
                   >
                     {l.label}
                   </a>

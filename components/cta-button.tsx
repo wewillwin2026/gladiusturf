@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/cn";
 
-type Variant = "primary" | "ghost";
+type Variant = "primary" | "ghost" | "ghost-honey";
 type Size = "md" | "lg";
 
 type CtaButtonProps = {
@@ -37,7 +37,9 @@ export function CtaButton({
   const variantCls =
     variant === "primary"
       ? "bg-lime-bright text-forest-deep shadow-cta hover:shadow-cta-hover hover:bg-lime"
-      : "border border-moss/40 text-moss-bright hover:border-moss-bright hover:bg-moss/10";
+      : variant === "ghost-honey"
+        ? "border border-honey-bright/40 text-honey-bright hover:border-honey-bright hover:bg-honey/10"
+        : "border border-moss/40 text-moss-bright hover:border-moss-bright hover:bg-moss/10";
 
   const cls = cn(
     "group inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-200",

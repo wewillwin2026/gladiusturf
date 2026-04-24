@@ -6,9 +6,9 @@ import { TopographicBg } from "@/components/topographic-bg";
 import { ENGINES } from "@/content/engines";
 
 export const metadata: Metadata = {
-  title: "Product · The seven-engine operating system for landscaping revenue",
+  title: "Product · The nine-engine operating system for landscaping revenue",
   description:
-    "GladiusTurf replaces Jobber, LMN, Service Autopilot and a stack of point tools with seven outcome-driven engines that share one data spine — quote to schedule to crew to invoice to review to upsell.",
+    "GladiusTurf replaces Jobber, LMN, Service Autopilot and a stack of point tools with nine outcome-driven engines that share one data spine — quote to schedule to crew to invoice to review to upsell to retain.",
 };
 
 // ─── Inline SVG icons (lucide style, RSC-safe, no extra deps) ──────
@@ -208,6 +208,47 @@ function IconChevronRight({ className }: IconProps) {
   );
 }
 
+function IconLayout({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect width="18" height="18" x="3" y="3" rx="2" />
+      <path d="M3 9h18" />
+      <path d="M9 21V9" />
+    </svg>
+  );
+}
+
+function IconClock({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="12 6 12 12 16 14" />
+    </svg>
+  );
+}
+
 // ─── Engine icon map ───────────────────────────────────────────────
 
 const ENGINE_ICONS: Record<string, (p: IconProps) => React.ReactElement> = {
@@ -218,6 +259,8 @@ const ENGINE_ICONS: Record<string, (p: IconProps) => React.ReactElement> = {
   "site-memory": IconBrain,
   "weather-pivot": IconCloudRain,
   "surplus-yard": IconBoxes,
+  "client-portal": IconLayout,
+  cadence: IconClock,
 };
 
 // ─── Engine deep copy (kept verbatim from prior page) ──────────────
@@ -335,7 +378,58 @@ const ENGINE_COPY: EngineCopy[] = [
       "Inventory write-offs reclassified to revenue line — your CFO will smile",
     ],
   },
+  {
+    slug: "client-portal",
+    tagline: "Your customers stop calling to ask &ldquo;when are you coming?&rdquo;",
+    paragraphs: [
+      "A branded portal for the homeowner. They reschedule visits, book new services, pay invoices, approve change orders, view job history — all from one self-serve link. Your crew&rsquo;s logo, your colors. Stripe handles payments. SMS and email alerts close the loop.",
+      "The phone stops ringing for status updates, and your office staff stops drowning in reschedule emails on Monday morning. The customer feels like they hired a real company — not a guy with a truck and a clipboard.",
+    ],
+    features: [
+      "Self-serve scheduling — customer picks from your live availability",
+      "One-tap invoice payment via Stripe — ACH + card",
+      "Approve change orders, sign waivers, request add-ons",
+      "White-labeled with your logo, colors, and crew photos",
+    ],
+  },
+  {
+    slug: "cadence",
+    tagline: "The follow-up that doesn&rsquo;t sound like follow-up.",
+    paragraphs: [
+      "The intelligent follow-up brain. Post-service feedback prompts fire within six hours of the crew leaving — when the lawn still looks fresh and the customer remembers the work. Late-payment cadences warm up before they escalate (Day 3 friendly nudge, Day 7 reminder, Day 14 firmer ask, then human handoff to your office).",
+      "Seasonal service reminders timed to NOAA — fall cleanup before the leaf drop, snow contracts before the first frost, spring fert before crab grass germinates, mosquito before mid-May. Every message is personalized from Site Memory: the dog&rsquo;s name, the gate code, the back zone they hate weeds in.",
+    ],
+    features: [
+      "Six-hour post-service feedback cadence",
+      "Late-pay warm-up sequence (Day 3 / 7 / 14, then human)",
+      "Seasonal reminders timed to NOAA forecasts",
+      "Dormant-customer reactivation — quiet for 90 days? We know.",
+    ],
+  },
 ];
+
+// ─── Local extension to the imported ENGINES array (blocks 8 + 9) ──
+
+const EXTRA_ENGINES = [
+  {
+    number: "08",
+    slug: "client-portal",
+    name: "Client Portal",
+    outcome: "73% fewer status calls",
+    description:
+      "A branded self-serve hub where homeowners reschedule visits, pay invoices, approve change orders, and book new services without ever picking up the phone. Your colors, your logo, your crew — Stripe handles the money.",
+  },
+  {
+    number: "09",
+    slug: "cadence",
+    name: "Cadence",
+    outcome: "+24% retention · $12,800/mo recovered",
+    description:
+      "The intelligent follow-up brain. Six-hour feedback prompts, warm late-pay sequences, and NOAA-timed seasonal reminders — every message personalized from Site Memory so the customer never feels like they&rsquo;re on a list.",
+  },
+];
+
+const ALL_ENGINES = [...ENGINES, ...EXTRA_ENGINES];
 
 const INTEGRATIONS: { name: string; line: string }[] = [
   {
@@ -391,6 +485,10 @@ function FeatureMock({ slug }: { slug: string }) {
       return <MockWeatherRoute />;
     case "surplus-yard":
       return <MockSurplusBoard />;
+    case "client-portal":
+      return <MockClientPortal />;
+    case "cadence":
+      return <MockCadenceTimeline />;
     default:
       return null;
   }
@@ -671,6 +769,97 @@ function MockSurplusBoard() {
   );
 }
 
+function MockClientPortal() {
+  const tiles = [
+    { label: "Reschedule", line: "Next visit · Thu 9–11a", value: "2 slots open" },
+    { label: "Pay invoice", line: "Mar mowing + aeration", value: "$1,840" },
+    { label: "Book new service", line: "Mulch refresh · front bed", value: "$420 est." },
+  ];
+  return (
+    <div className={MOCK_FRAME}>
+      <div className="mb-4 flex items-center justify-between">
+        <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-honey-bright">
+          412 Maple · client portal
+        </span>
+        <span className="font-mono text-[11px] text-bone/40">self-serve</span>
+      </div>
+      <div className="rounded-xl border border-honey-bright/30 bg-bone/[0.03] p-3">
+        <div className="mb-3 flex items-center justify-between">
+          <span className="font-mono text-[10px] uppercase tracking-wider text-bone/40">
+            Henderson Lawn &amp; Turf
+          </span>
+          <span className="font-mono text-[10px] text-honey-bright">v · live</span>
+        </div>
+        <div className="space-y-2">
+          {tiles.map((t) => (
+            <div
+              key={t.label}
+              className="flex items-center justify-between rounded-lg border border-bone/5 bg-forest-deep/50 px-3 py-2.5"
+            >
+              <div className="flex flex-col">
+                <span className="font-mono text-[10px] uppercase tracking-wider text-honey-bright">
+                  {t.label}
+                </span>
+                <span className="text-[12px] text-bone/70">{t.line}</span>
+              </div>
+              <span className="font-mono text-[12px] font-semibold text-honey-bright">
+                {t.value}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-bone/40">
+        White-labeled · Stripe rails · SMS receipts
+      </p>
+    </div>
+  );
+}
+
+function MockCadenceTimeline() {
+  const steps = [
+    { day: "Day 0", label: "Service complete", status: "sent" as const, ts: "11:42a" },
+    { day: "Day 0 + 6h", label: "Feedback prompt sent", status: "sent" as const, ts: "5:42p" },
+    { day: "Day 3", label: "Friendly invoice nudge", status: "queued" as const, ts: "9:00a" },
+    { day: "Day 7", label: "Reminder", status: "upcoming" as const, ts: "9:00a" },
+    { day: "Day 14", label: "Final auto-ask", status: "upcoming" as const, ts: "9:00a" },
+    { day: "Day 14+", label: "Office takeover", status: "upcoming" as const, ts: "human" },
+  ];
+  return (
+    <div className={MOCK_FRAME}>
+      <div className="mb-4 flex items-center justify-between">
+        <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-moss-bright">
+          Cadence · 27 Henderson
+        </span>
+        <span className="font-mono text-[11px] text-bone/40">6 steps · live</span>
+      </div>
+      <div className="space-y-1.5">
+        {steps.map((s) => {
+          const dot =
+            s.status === "sent"
+              ? "bg-moss-bright"
+              : s.status === "queued"
+                ? "bg-honey-bright"
+                : "bg-bone/30";
+          return (
+            <div
+              key={s.day}
+              className="flex items-center gap-3 rounded-lg border border-bone/5 bg-forest-deep/40 px-3 py-2"
+            >
+              <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />
+              <span className="w-[68px] shrink-0 font-mono text-[10px] uppercase tracking-wider text-bone/40">
+                {s.day}
+              </span>
+              <span className="flex-1 text-[12px] text-bone/80">{s.label}</span>
+              <span className="font-mono text-[10px] text-bone/40">{s.ts}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ─── Page ──────────────────────────────────────────────────────────
 
 export default function ProductPage() {
@@ -682,17 +871,18 @@ export default function ProductPage() {
         <section className="relative overflow-hidden border-b border-bone/5 bg-forest-deep">
           <TopographicBg />
           <div className="relative mx-auto max-w-7xl px-6 py-28">
-            <span className="inline-flex items-center gap-2 rounded-full border border-moss/30 bg-moss/5 px-3 py-1 text-xs font-medium text-moss-bright">
+            <span className="inline-flex items-center gap-2 rounded-full border border-honey/30 bg-honey/5 px-3 py-1 text-xs font-medium text-honey-bright">
               <IconSparkles className="h-3 w-3" /> The product
             </span>
             <h1 className="mt-6 max-w-5xl font-serif text-5xl tracking-[-0.02em] text-bone md:text-6xl">
-              The seven-engine operating system for landscaping revenue.
+              The <span className="text-moss-bright">nine-engine</span>{" "}
+              operating system for landscaping revenue.
             </h1>
             <p className="mt-8 max-w-3xl text-lg leading-[1.55] text-bone/60">
               GladiusTurf replaces the scattered stack — Jobber for jobs, LMN for
               estimates, Service Autopilot for routes, a CRM for clients, a
               compliance binder for the state, a whiteboard for everything else
-              — with one revenue intelligence layer. Seven engines, one data
+              — with one revenue intelligence layer. Nine engines, one data
               spine, one number going into your bank account every month.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-5">
@@ -704,7 +894,7 @@ export default function ProductPage() {
               </a>
               <a
                 href="/pricing"
-                className="inline-flex items-center gap-2 rounded-full border border-bone/15 px-6 py-3.5 text-base font-medium text-bone/80 hover:border-moss-bright hover:text-moss-bright transition-colors"
+                className="inline-flex items-center gap-2 rounded-full border border-bone/15 px-6 py-3.5 text-base font-medium text-bone/80 hover:border-honey-bright hover:text-honey-bright transition-colors"
               >
                 See pricing <IconArrowRight className="h-4 w-4" />
               </a>
@@ -738,10 +928,11 @@ export default function ProductPage() {
                   retire it. That&rsquo;s the deal.
                 </p>
                 <p className="mt-6 text-base leading-[1.7] text-bone/40">
-                  The seven engines below share one data spine: every quote,
-                  every schedule, every crew note, every invoice, every review
-                  feeds the next loop. There is no double-entry. There is no
-                  &ldquo;export to CSV.&rdquo; There is one revenue brain.
+                  The nine engines below share one data spine: every quote,
+                  every schedule, every crew note, every invoice, every review,
+                  every payment, every follow-up feeds the next loop. There is
+                  no double-entry. There is no &ldquo;export to CSV.&rdquo;
+                  There is one revenue brain.
                 </p>
               </div>
             </div>
@@ -749,11 +940,11 @@ export default function ProductPage() {
         </section>
 
         {/* 3. Engines section header */}
-        <section id="engines" aria-label="Seven engines, in detail" className="bg-forest-deep">
+        <section id="engines" aria-label="Nine engines, in detail" className="bg-forest-deep">
           <div className="mx-auto max-w-7xl px-6 pt-28">
             <div className="mx-auto max-w-3xl text-center">
-              <span className="inline-flex items-center gap-2 rounded-full border border-moss/30 bg-moss/5 px-3 py-1 text-xs font-medium text-moss-bright">
-                <IconZap className="h-3 w-3" /> Seven engines, one spine
+              <span className="inline-flex items-center gap-2 rounded-full border border-honey/30 bg-honey/5 px-3 py-1 text-xs font-medium text-honey-bright">
+                <IconZap className="h-3 w-3" /> Nine engines, one spine
               </span>
               <h2 className="mt-6 font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
                 Every revenue gap your stack is leaking through.
@@ -765,11 +956,19 @@ export default function ProductPage() {
 
           {/* 4. Per-engine alternating blocks */}
           <div className="mx-auto max-w-7xl px-6 pb-28">
-            {ENGINES.map((engine, i) => {
+            {ALL_ENGINES.map((engine, i) => {
               const copy = ENGINE_COPY.find((c) => c.slug === engine.slug);
               if (!copy) return null;
               const Icon = ENGINE_ICONS[engine.slug] ?? IconSparkles;
               const reverse = i % 2 === 1;
+              // Engines 01,03,05,07,09 (odd by number) use moss; 02,04,06,08 use honey.
+              const engineNum = parseInt(engine.number, 10);
+              const isMoss = engineNum % 2 === 1;
+              const pillCls = isMoss
+                ? "border-moss/30 bg-moss/5 text-moss-bright"
+                : "border-honey/30 bg-honey/5 text-honey-bright";
+              const accentText = isMoss ? "text-moss-bright" : "text-honey-bright";
+              const dotCls = isMoss ? "bg-moss-bright" : "bg-honey-bright";
               return (
                 <article
                   key={engine.slug}
@@ -778,17 +977,20 @@ export default function ProductPage() {
                 >
                   {/* Copy side */}
                   <div className={reverse ? "md:order-2" : "md:order-1"}>
-                    <span className="inline-flex items-center gap-2 rounded-full border border-moss/30 bg-moss/5 px-3 py-1 text-xs font-medium text-moss-bright">
+                    <span
+                      className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium ${pillCls}`}
+                    >
                       <Icon className="h-3 w-3" />
                       <span className="font-mono">
                         {engine.number} · {engine.name}
                       </span>
                     </span>
-                    <h3 className="mt-5 font-serif text-3xl tracking-tight text-bone md:text-4xl">
-                      {copy.tagline}
-                    </h3>
+                    <h3
+                      className="mt-5 font-serif text-3xl tracking-tight text-bone md:text-4xl"
+                      dangerouslySetInnerHTML={dangerouslyHTML(copy.tagline)}
+                    />
                     <p className="mt-5 text-lg leading-[1.55] text-bone/60">
-                      {engine.description}
+                      <span dangerouslySetInnerHTML={dangerouslyHTML(engine.description)} />
                     </p>
                     {copy.paragraphs.map((p, idx) => (
                       <p
@@ -805,7 +1007,7 @@ export default function ProductPage() {
                         >
                           <span
                             aria-hidden="true"
-                            className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-moss-bright"
+                            className={`mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full ${dotCls}`}
                           />
                           <span dangerouslySetInnerHTML={dangerouslyHTML(f)} />
                         </li>
@@ -815,7 +1017,9 @@ export default function ProductPage() {
                       <span className="font-mono text-[11px] uppercase tracking-wider text-bone/40">
                         Outcome
                       </span>
-                      <span className="font-mono text-[13px] font-semibold text-moss-bright">
+                      <span
+                        className={`font-mono text-[13px] font-semibold ${accentText}`}
+                      >
                         {engine.outcome}
                       </span>
                     </div>
@@ -838,11 +1042,12 @@ export default function ProductPage() {
         >
           <div className="mx-auto max-w-7xl px-6 py-28">
             <div className="mx-auto max-w-3xl text-center">
-              <span className="inline-flex items-center gap-2 rounded-full border border-moss/30 bg-moss/5 px-3 py-1 text-xs font-medium text-moss-bright">
+              <span className="inline-flex items-center gap-2 rounded-full border border-honey/30 bg-honey/5 px-3 py-1 text-xs font-medium text-honey-bright">
                 <IconBrain className="h-3 w-3" /> Architecture
               </span>
               <h2 className="mt-6 font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
-                One spine. Seven engines.
+                One spine.{" "}
+                <span className="text-honey-bright">Nine engines.</span>
               </h2>
               <p className="mt-6 text-lg leading-[1.6] text-bone/60">
                 The same property record feeds every screen. The same client
@@ -861,7 +1066,7 @@ export default function ProductPage() {
                     <p className="mt-1 font-serif text-lg text-bone">{step}</p>
                   </div>
                   {idx < ARCHITECTURE_STEPS.length - 1 && (
-                    <IconChevronRight className="h-5 w-5 text-moss-bright" />
+                    <IconChevronRight className="h-5 w-5 text-honey-bright" />
                   )}
                 </div>
               ))}
@@ -882,7 +1087,7 @@ export default function ProductPage() {
         >
           <div className="mx-auto max-w-7xl px-6 py-28">
             <div className="mx-auto max-w-3xl text-center">
-              <span className="inline-flex items-center gap-2 rounded-full border border-moss/30 bg-moss/5 px-3 py-1 text-xs font-medium text-moss-bright">
+              <span className="inline-flex items-center gap-2 rounded-full border border-honey/30 bg-honey/5 px-3 py-1 text-xs font-medium text-honey-bright">
                 <IconBoxes className="h-3 w-3" /> Integrations
               </span>
               <h2 className="mt-6 font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
@@ -899,9 +1104,9 @@ export default function ProductPage() {
               {INTEGRATIONS.map((it) => (
                 <li
                   key={it.name}
-                  className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-5 transition-colors hover:border-moss/30"
+                  className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-5 transition-colors hover:border-honey/30"
                 >
-                  <h3 className="font-mono text-sm font-semibold uppercase tracking-wider text-moss-bright">
+                  <h3 className="font-mono text-sm font-semibold uppercase tracking-wider text-honey-bright">
                     {it.name}
                   </h3>
                   <p

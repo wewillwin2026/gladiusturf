@@ -8,7 +8,7 @@ export function QuoteBlock() {
       <div className="mx-auto max-w-5xl px-6">
         <ScrollReveal>
           <div className="rounded-3xl border border-bone/10 bg-gradient-to-br from-moss/[0.06] via-transparent to-transparent p-10 md:p-14">
-            <Quote className="h-10 w-10 text-lime-bright" aria-hidden />
+            <Quote className="h-10 w-10 text-honey-bright" aria-hidden />
             <blockquote className="mt-6 font-serif text-2xl font-medium leading-snug tracking-[-0.01em] text-bone md:text-3xl">
               &ldquo;We killed five subscriptions in our first 30 days on
               GladiusTurf and added $43K in upsell revenue we would have left
@@ -27,7 +27,7 @@ export function QuoteBlock() {
                 </div>
               </div>
               <div className="ml-auto text-left sm:text-right">
-                <div className="font-serif text-3xl font-semibold text-moss-bright">
+                <div className="font-serif text-3xl font-semibold text-honey-bright">
                   +$43K
                 </div>
                 <div className="text-xs text-bone/55">

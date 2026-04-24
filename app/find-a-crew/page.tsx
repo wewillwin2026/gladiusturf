@@ -116,7 +116,7 @@ export default function FindACrewPage() {
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
               <div className="mx-auto max-w-3xl text-center">
-                <Eyebrow>The math on the leads you kill</Eyebrow>
+                <Eyebrow tone="honey">The math on the leads you kill</Eyebrow>
                 <h2 className="mt-6 font-serif text-3xl md:text-5xl text-bone tracking-[-0.02em] leading-[1.1]">
                   Ten to thirty percent of your inbound dies on the voicemail.
                 </h2>
@@ -171,7 +171,13 @@ export default function FindACrewPage() {
               {STEPS.map((s, i) => (
                 <ScrollReveal key={s.n} delay={i * 0.05}>
                   <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-8 h-full">
-                    <p className="font-mono text-6xl md:text-7xl text-moss-bright/40 leading-none">
+                    <p
+                      className={`font-mono text-6xl md:text-7xl leading-none ${
+                        i % 2 === 0
+                          ? "text-honey-bright/40"
+                          : "text-moss-bright/40"
+                      }`}
+                    >
                       {s.n}
                     </p>
                     <h3 className="mt-6 font-serif text-xl text-bone">
@@ -191,7 +197,7 @@ export default function FindACrewPage() {
         <section className="border-b border-bone/10 bg-forest-mid">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
-              <Eyebrow>Founding cities</Eyebrow>
+              <Eyebrow tone="honey">Founding cities</Eyebrow>
               <h2 className="mt-6 max-w-3xl font-serif text-3xl md:text-5xl text-bone tracking-[-0.02em] leading-[1.1]">
                 We&apos;re starting with 10 metros.
               </h2>
@@ -204,17 +210,17 @@ export default function FindACrewPage() {
             <div className="mt-16 grid grid-cols-2 gap-4 md:grid-cols-5">
               {FOUNDING_CITIES.map((city, i) => (
                 <ScrollReveal key={city} delay={i * 0.03}>
-                  <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-5 transition-colors hover:border-moss/30">
-                    <MapPin className="h-4 w-4 text-moss-bright" />
+                  <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-5 transition-colors hover:border-honey/30">
+                    <MapPin className="h-4 w-4 text-honey-bright" />
                     <p className="mt-3 font-serif text-lg text-bone">{city}</p>
                   </div>
                 </ScrollReveal>
               ))}
             </div>
             <ScrollReveal delay={0.1}>
-              <div className="mt-12 flex h-64 items-center justify-center rounded-2xl border border-bone/10 bg-bone/[0.02]">
+              <div className="mt-12 flex h-64 items-center justify-center rounded-2xl border border-honey-bright/20 bg-bone/[0.02]">
                 <div className="text-center">
-                  <MapPin className="mx-auto h-8 w-8 text-moss-bright/60" />
+                  <MapPin className="mx-auto h-8 w-8 text-honey-bright/60" />
                   <p className="mt-3 font-mono text-sm tracking-[0.15em] text-bone/40">
                     COVERAGE MAP · LIVE AT LAUNCH
                   </p>
@@ -251,9 +257,13 @@ export default function FindACrewPage() {
             <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-2">
               {TRUST_POINTS.map((t, i) => (
                 <ScrollReveal key={t.n} delay={i * 0.04}>
-                  <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-8 h-full">
+                  <div className="rounded-2xl border border-honey-bright/20 bg-bone/[0.02] p-8 h-full">
                     <div className="flex items-baseline gap-4">
-                      <p className="font-mono text-sm tracking-[0.15em] text-moss-bright">
+                      <p
+                        className={`font-mono text-sm tracking-[0.15em] ${
+                          i % 2 === 0 ? "text-honey-bright" : "text-moss-bright"
+                        }`}
+                      >
                         {t.n}
                       </p>
                       <Shield className="h-4 w-4 text-bone/40" />
@@ -275,7 +285,7 @@ export default function FindACrewPage() {
         <section className="border-b border-bone/10">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
-              <Eyebrow>Two sides of the network</Eyebrow>
+              <Eyebrow tone="honey">Two sides of the network</Eyebrow>
               <h2 className="mt-6 max-w-3xl font-serif text-3xl md:text-5xl text-bone tracking-[-0.02em] leading-[1.1]">
                 Pick the side you&apos;re on. Or both — most crews are.
               </h2>
@@ -301,8 +311,8 @@ export default function FindACrewPage() {
                 </div>
               </ScrollReveal>
               <ScrollReveal delay={0.05}>
-                <div className="rounded-2xl border border-moss/40 bg-gradient-to-b from-moss/10 to-transparent shadow-pop p-8 md:p-10 h-full">
-                  <Pill>
+                <div className="rounded-2xl border border-honey/40 bg-gradient-to-b from-honey/10 to-transparent shadow-pop-honey p-8 md:p-10 h-full">
+                  <Pill tone="honey">
                     <Sparkles className="h-3 w-3" />
                     Receivers
                   </Pill>

@@ -12,9 +12,9 @@ export function EnginesGrid() {
       <div className="mx-auto max-w-7xl px-6">
         <ScrollReveal>
           <div className="mx-auto max-w-3xl text-center">
-            <Eyebrow className="mb-3">The seven engines</Eyebrow>
+            <Eyebrow className="mb-3">The nine engines</Eyebrow>
             <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
-              One spine. Seven revenue engines.
+              One spine. Nine revenue engines.
             </h2>
             <p className="mt-5 text-lg text-bone/65">
               We don&apos;t ship features. We ship engines. Each one replaces a

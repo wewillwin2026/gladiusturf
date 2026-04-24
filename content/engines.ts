@@ -63,4 +63,20 @@ export const ENGINES: Engine[] = [
     description:
       "Leftover sod, mulch, stone, trees, equipment — the stuff that rots in the yard becomes revenue. Post it to the Surplus Yard marketplace, sell it to a crew across town, collect payment without leaving the app.",
   },
+  {
+    number: "08",
+    slug: "client-portal",
+    name: "Client Portal",
+    outcome: "73% fewer 'when are you coming?' calls",
+    description:
+      "Your branded portal for the homeowner. They reschedule visits, book new services, pay invoices, approve change orders, and see job history — all from one self-serve link. Your crew's logo, your colors. The phone stops ringing for status updates.",
+  },
+  {
+    number: "09",
+    slug: "cadence",
+    name: "Cadence",
+    outcome: "+24% retention · $12,800/mo recovered late invoices",
+    description:
+      "The intelligent follow-up brain. Post-service feedback within six hours. Late-payment cadences that warm before they escalate (Day 3 / 7 / 14, then human handoff). Seasonal reminders timed to NOAA — fall cleanup, snow contracts, spring fert, mosquito, leaf. Every message personalized from Site Memory.",
+  },
 ];

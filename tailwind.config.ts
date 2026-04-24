@@ -18,6 +18,10 @@ const config: Config = {
       "moss-bright": "#9DFF8A",
       lime: "#C6F352",
       "lime-bright": "#D4FF4A",
+      honey: "#E8B86B",
+      "honey-deep": "#B8893E",
+      "honey-bright": "#F4CC85",
+      copper: "#C68A56",
       bone: "#F5F1E8",
       obsidian: "#0C0C0C",
       paper: "#FAFAF7",
@@ -48,6 +52,8 @@ const config: Config = {
       boxShadow: {
         card: "0 1px 3px rgba(15,61,46,0.08)",
         pop: "0 0 0 1px rgba(127,226,122,0.2), 0 30px 80px -20px rgba(127,226,122,0.3)",
+        "pop-honey":
+          "0 0 0 1px rgba(232,184,107,0.2), 0 30px 80px -20px rgba(232,184,107,0.3)",
         cta: "0 0 0 1px rgba(198,243,82,0.4), 0 20px 40px -12px rgba(198,243,82,0.6)",
         "cta-hover":
           "0 0 0 1px rgba(198,243,82,0.7), 0 24px 48px -12px rgba(198,243,82,0.8)",

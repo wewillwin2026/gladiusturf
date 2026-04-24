@@ -67,9 +67,10 @@ export function Hero() {
             {...fadeUp(0.15)}
             className="mx-auto mt-8 max-w-2xl text-lg text-bone/70 md:text-xl"
           >
-            GladiusTurf is the seven-engine revenue intelligence layer that
-            catches every forgotten quote, missed upsell, and dropped referral
-            your current stack is letting walk.
+            Nine engines — including a branded client portal where customers
+            reschedule, book, and pay themselves, plus an intelligent follow-up
+            brain that catches late invoices and dormant accounts before they
+            walk.
           </motion.p>
 
           <motion.div
@@ -85,7 +86,7 @@ export function Hero() {
             </Link>
             <Link
               href="/pricing"
-              className="group inline-flex items-center gap-2 rounded-full border border-moss/40 px-7 py-3.5 text-base font-medium text-moss-bright transition-all hover:border-moss-bright hover:bg-moss/10"
+              className="group inline-flex items-center gap-2 rounded-full border border-honey-bright/40 px-7 py-3.5 text-base font-medium text-honey-bright transition-all hover:border-honey-bright hover:bg-honey/10"
             >
               See pricing →
             </Link>

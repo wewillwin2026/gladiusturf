@@ -66,8 +66,9 @@ const BRING_ITEMS = [
   },
 ];
 
-const eyebrowCls =
-  "text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright";
+const eyebrowBase = "text-xs font-semibold uppercase tracking-[0.2em]";
+const eyebrowMoss = `${eyebrowBase} text-moss-bright`;
+const eyebrowHoney = `${eyebrowBase} text-honey-bright`;
 
 export default function DemoPage() {
   return (
@@ -78,7 +79,7 @@ export default function DemoPage() {
         <section className="border-b border-bone/10">
           <div className="mx-auto grid max-w-7xl grid-cols-1 gap-16 px-6 py-28 lg:grid-cols-[1.1fr_1fr] lg:items-start">
             <div>
-              <p className={eyebrowCls}>Live demo</p>
+              <p className={eyebrowMoss}>Live demo</p>
               <h1 className="mt-6 font-serif text-4xl tracking-[-0.02em] leading-[1.05] text-bone md:text-6xl">
                 See it on your data. 30 minutes. Founders run the call.
               </h1>
@@ -86,7 +87,7 @@ export default function DemoPage() {
                 You won&apos;t see a deck. You&apos;ll see GladiusTurf running
                 live against your own quote pipeline, your own customer list,
                 and the last 90 days of jobs you&apos;ve already done. We
-                screen-share the seven engines, point them at your numbers, and
+                screen-share the nine engines, point them at your numbers, and
                 read the recovered revenue out loud.
               </p>
               <p className="mt-6 max-w-xl text-lg leading-[1.6] text-bone/60">
@@ -99,7 +100,7 @@ export default function DemoPage() {
 
               <ul className="mt-10 flex flex-col gap-3 text-[15px] leading-[1.6] text-bone/70">
                 <li className="flex items-start gap-3">
-                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-moss-bright" />
+                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-honey-bright" />
                   14-day pilot, no card on file
                 </li>
                 <li className="flex items-start gap-3">
@@ -107,7 +108,7 @@ export default function DemoPage() {
                   48-hour migration from Jobber / LMN / Service Autopilot
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-moss-bright" />
+                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-honey-bright" />
                   We pay your overlap month
                 </li>
                 <li className="flex items-start gap-3">
@@ -134,7 +135,7 @@ export default function DemoPage() {
         {/* WHAT WE'LL COVER */}
         <section className="border-b border-bone/10">
           <div className="mx-auto max-w-7xl px-6 py-28">
-            <p className={eyebrowCls}>What we&apos;ll cover</p>
+            <p className={eyebrowHoney}>What we&apos;ll cover</p>
             <h2 className="mt-6 max-w-3xl font-serif text-4xl tracking-[-0.02em] leading-[1.05] text-bone md:text-5xl">
               Thirty minutes. Five proofs.
             </h2>
@@ -145,7 +146,11 @@ export default function DemoPage() {
                   key={step.title}
                   className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-8"
                 >
-                  <p className="font-mono text-xs uppercase tracking-[0.2em] text-moss-bright">
+                  <p
+                    className={`font-mono text-xs uppercase tracking-[0.2em] ${
+                      i % 2 === 0 ? "text-honey-bright" : "text-moss-bright"
+                    }`}
+                  >
                     {String(i + 1).padStart(2, "0")}
                   </p>
                   <h3 className="mt-4 font-serif text-[22px] leading-[1.25] text-bone">
@@ -163,7 +168,7 @@ export default function DemoPage() {
         {/* WHO RUNS THE DEMO */}
         <section className="border-b border-bone/10 bg-forest-mid">
           <div className="mx-auto max-w-7xl px-6 py-28">
-            <p className={eyebrowCls}>Founders only</p>
+            <p className={eyebrowMoss}>Founders only</p>
             <h2 className="mt-6 max-w-4xl font-serif text-4xl tracking-[-0.02em] leading-[1.05] text-bone md:text-5xl">
               No SDR. No junior CSM. Until rep number twenty.
             </h2>
@@ -191,7 +196,7 @@ export default function DemoPage() {
               {[0, 1, 2].map((n) => (
                 <div
                   key={n}
-                  className="aspect-[4/5] rounded-2xl border border-bone/10 bg-bone/[0.02] p-8"
+                  className="aspect-[4/5] rounded-2xl border border-honey-bright/20 bg-bone/[0.02] p-8"
                 >
                   <div className="flex h-full flex-col justify-end">
                     <p className="font-mono text-xs uppercase tracking-[0.2em] text-bone/40">
@@ -213,7 +218,7 @@ export default function DemoPage() {
         {/* WHAT YOU NEED TO BRING */}
         <section className="border-b border-bone/10">
           <div className="mx-auto max-w-7xl px-6 py-28">
-            <p className={eyebrowCls}>What you need to bring</p>
+            <p className={eyebrowHoney}>What you need to bring</p>
             <h2 className="mt-6 max-w-3xl font-serif text-4xl tracking-[-0.02em] leading-[1.05] text-bone md:text-5xl">
               Three things to bring on the call.
             </h2>
@@ -221,17 +226,21 @@ export default function DemoPage() {
             <ul className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-3">
               {BRING_ITEMS.map((item, i) => {
                 const Icon = item.icon;
+                const accent =
+                  i % 2 === 0 ? "text-honey-bright" : "text-moss-bright";
                 return (
                   <li
                     key={item.title}
                     className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-8"
                   >
                     <div className="flex items-center justify-between">
-                      <p className="font-mono text-xs uppercase tracking-[0.2em] text-moss-bright">
+                      <p
+                        className={`font-mono text-xs uppercase tracking-[0.2em] ${accent}`}
+                      >
                         {String(i + 1).padStart(2, "0")}
                       </p>
                       <Icon
-                        className="h-5 w-5 text-moss-bright"
+                        className={`h-5 w-5 ${accent}`}
                         aria-hidden
                       />
                     </div>

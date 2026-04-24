@@ -44,7 +44,7 @@ export function CtaBand() {
             </Link>
             <Link
               href="/pricing"
-              className="text-base text-bone/65 transition-colors hover:text-moss-bright"
+              className="group inline-flex items-center gap-2 rounded-full border border-honey-bright/40 px-7 py-3.5 text-base font-medium text-honey-bright transition-all hover:border-honey-bright hover:bg-honey/10"
             >
               Or see pricing →
             </Link>

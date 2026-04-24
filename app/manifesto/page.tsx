@@ -28,8 +28,8 @@ const COMMANDMENTS: { headline: string; body: string }[] = [
     body: "The average shop sends quotes that never close, never die, and never get a second touch. That pile is six figures a year, sitting in an inbox, paying nobody. The first job of this software is to make sure no quote ever gets forgotten again.",
   },
   {
-    headline: "One spine, seven engines. Not one app per workflow.",
-    body: "Your shop is not seven shops. Quoting, scheduling, routing, chemicals, billing, retention, and surplus are one business — they share a customer, a property, a crew, and a clock. We refuse to ship a stack of disconnected tools that pretend otherwise.",
+    headline: "One spine, nine engines. Not one app per workflow.",
+    body: "Your shop is not nine shops. Quoting, scheduling, routing, chemicals, billing, retention, and surplus are one business — they share a customer, a property, a crew, and a clock. We refuse to ship a stack of disconnected tools that pretend otherwise.",
   },
   {
     headline: "Per-crew pricing or it's a tax on growth.",
@@ -79,6 +79,10 @@ const BELIEFS: { headline: string; body: string }[] = [
   {
     headline: "Trust is a six-month exercise, not a launch event.",
     body: "We will earn your data, your team, and your retention week by week. The day we stop earning it is the day we deserve to be cancelled.",
+  },
+  {
+    headline: "The customer should never have to call to ask 'when are you coming.'",
+    body: "Customers should never have to call to ask 'when are you coming.' That's why every plan ships with a branded client portal and an intelligent cadence engine.",
   },
 ];
 
@@ -152,7 +156,7 @@ export default function ManifestoPage() {
               </p>
               <p>
                 We&apos;re building the opposite. GladiusTurf is one spine,
-                seven engines, priced per crew, designed for the foreman first
+                nine engines, priced per crew, designed for the foreman first
                 and the office second. It is not a CRM. A CRM is a rolodex
                 with a calendar bolted on. What landscape shops actually need
                 is a system that watches the property, watches the crew,
@@ -169,7 +173,7 @@ export default function ManifestoPage() {
         <section className="border-t border-bone/5 bg-forest-mid">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <div className="mx-auto max-w-3xl text-center">
-              <Eyebrow className="mb-6">The Ten Commandments</Eyebrow>
+              <Eyebrow tone="honey" className="mb-6">The Ten Commandments</Eyebrow>
               <h2 className="font-serif text-4xl tracking-[-0.01em] leading-[1.1] text-bone md:text-5xl">
                 Ten rules we build by. We will not break any of them for any
                 customer, investor, or quarter.
@@ -182,10 +186,14 @@ export default function ManifestoPage() {
                 const cardCls = isFeatured
                   ? "rounded-2xl border border-moss/30 bg-gradient-to-b from-moss/10 to-transparent p-8 md:p-12"
                   : "rounded-2xl border border-bone/10 bg-bone/[0.02] p-8 md:p-12";
+                const numeralCls =
+                  (i + 1) % 2 === 1
+                    ? "text-moss-bright/40"
+                    : "text-honey-bright/40";
                 return (
                   <li key={c.headline} className={cardCls}>
                     <div className="grid gap-6 md:grid-cols-[auto_1fr] md:gap-12">
-                      <div className="font-mono text-7xl leading-none text-moss-bright/40 md:text-8xl">
+                      <div className={`font-mono text-7xl leading-none md:text-8xl ${numeralCls}`}>
                         {String(i + 1).padStart(2, "0")}
                       </div>
                       <div className="flex flex-col gap-4">
@@ -208,7 +216,7 @@ export default function ManifestoPage() {
         <section className="border-t border-bone/5 bg-forest-mid">
           <div className="mx-auto max-w-5xl px-6 py-28">
             <Quote
-              className="mb-8 h-12 w-12 text-moss-bright/60"
+              className="mb-8 h-12 w-12 text-honey-bright/60"
               aria-hidden
             />
             <blockquote className="font-serif text-3xl tracking-[-0.01em] leading-[1.15] text-bone md:text-5xl">
@@ -227,7 +235,7 @@ export default function ManifestoPage() {
             <div className="mx-auto max-w-3xl text-center">
               <Eyebrow className="mb-6">What we believe</Eyebrow>
               <h2 className="font-serif text-4xl tracking-[-0.01em] leading-[1.1] text-bone md:text-5xl">
-                Five positions we&apos;ll defend in public, in writing, and in
+                Six positions we&apos;ll defend in public, in writing, and in
                 the product.
               </h2>
             </div>
@@ -238,7 +246,11 @@ export default function ManifestoPage() {
                   key={b.headline}
                   className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-8"
                 >
-                  <div className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-moss-bright">
+                  <div
+                    className={`font-mono text-sm font-semibold uppercase tracking-[0.2em] ${
+                      i % 2 === 0 ? "text-honey-bright" : "text-moss-bright"
+                    }`}
+                  >
                     {String(i + 1).padStart(2, "0")} / Belief
                   </div>
                   <h3 className="mt-4 font-serif text-2xl tracking-[-0.01em] leading-[1.2] text-bone md:text-3xl">
@@ -256,7 +268,7 @@ export default function ManifestoPage() {
         {/* WHAT WE WILL NEVER DO */}
         <section className="border-t border-bone/5 bg-forest-mid">
           <div className="mx-auto max-w-5xl px-6 py-28">
-            <Eyebrow className="mb-6">Hard nos</Eyebrow>
+            <Eyebrow tone="honey" className="mb-6">Hard nos</Eyebrow>
             <h2 className="font-serif text-4xl tracking-[-0.01em] leading-[1.1] text-bone md:text-5xl">
               Five things we will never do.
             </h2>
@@ -265,22 +277,28 @@ export default function ManifestoPage() {
             </p>
 
             <ul className="mt-16 flex flex-col">
-              {NEVERS.map((n, i) => (
-                <li
-                  key={i}
-                  className="flex items-start gap-6 border-t border-bone/10 py-8 last:border-b"
-                >
-                  <span
-                    className="mt-2 inline-flex h-10 w-10 flex-none items-center justify-center rounded-full border border-lime-bright/30 bg-lime-bright/10 text-lime-bright"
-                    aria-hidden
+              {NEVERS.map((n, i) => {
+                const isEven = i % 2 === 0;
+                const xCls = isEven
+                  ? "border-honey-bright/40 bg-honey-bright/10 text-honey-bright"
+                  : "border-moss-bright/40 bg-moss-bright/10 text-moss-bright";
+                return (
+                  <li
+                    key={i}
+                    className="flex items-start gap-6 border-t border-bone/10 py-8 last:border-b"
                   >
-                    <X className="h-5 w-5" strokeWidth={2.5} />
-                  </span>
-                  <p className="font-serif text-2xl leading-[1.25] text-bone">
-                    {n}
-                  </p>
-                </li>
-              ))}
+                    <span
+                      className={`mt-2 inline-flex h-10 w-10 flex-none items-center justify-center rounded-full border ${xCls}`}
+                      aria-hidden
+                    >
+                      <X className="h-5 w-5" strokeWidth={2.5} />
+                    </span>
+                    <p className="font-serif text-2xl leading-[1.25] text-bone">
+                      {n}
+                    </p>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </section>
@@ -344,7 +362,7 @@ export default function ManifestoPage() {
               <CtaButton href="/demo" size="lg">
                 Book the demo
               </CtaButton>
-              <CtaButton href="/product" variant="ghost">
+              <CtaButton href="/product" variant="ghost-honey">
                 See the product
               </CtaButton>
             </div>

@@ -33,13 +33,13 @@ export function Nav() {
           <a className="transition-colors hover:text-moss-bright" href="/product">
             Product
           </a>
-          <a className="transition-colors hover:text-moss-bright" href="/pricing">
+          <a className="transition-colors hover:text-honey-bright" href="/pricing">
             Pricing
           </a>
           <a className="transition-colors hover:text-moss-bright" href="/compare">
             Compare
           </a>
-          <a className="transition-colors hover:text-moss-bright" href="/manifesto">
+          <a className="transition-colors hover:text-honey-bright" href="/manifesto">
             Manifesto
           </a>
           <a className="transition-colors hover:text-moss-bright" href="/find-a-crew">

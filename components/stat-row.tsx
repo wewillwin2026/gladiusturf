@@ -80,7 +80,7 @@ export function StatRow({ stats = DEFAULT_STATS }: { stats?: Stat[] }) {
                 <div
                   className={cn(
                     "font-serif text-5xl font-semibold tracking-tight md:text-6xl",
-                    stat.accent ? "text-moss-bright" : "text-bone"
+                    stat.accent ? "text-moss-bright" : "text-honey-bright"
                   )}
                 >
                   <AnimatedCounter

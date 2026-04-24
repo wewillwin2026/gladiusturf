@@ -17,7 +17,7 @@ function YesNoCell({
         <Check
           className={cn(
             "h-4 w-4 flex-none",
-            featured ? "text-lime-bright" : "text-moss-bright"
+            featured ? "text-moss-bright" : "text-honey-bright"
           )}
         />
         <span className={featured ? "text-bone" : "text-bone/75"}>{label}</span>

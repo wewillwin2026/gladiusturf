@@ -151,7 +151,7 @@ export default function SurplusYardPage() {
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
               <div className="mx-auto max-w-3xl text-center">
-                <Eyebrow>The math on your yard</Eyebrow>
+                <Eyebrow tone="honey">The math on your yard</Eyebrow>
                 <h2 className="mt-6 font-serif text-3xl md:text-5xl text-bone tracking-[-0.02em] leading-[1.1]">
                   Every yard is a quiet warehouse of dead capital.
                 </h2>
@@ -205,7 +205,13 @@ export default function SurplusYardPage() {
               {STEPS.map((s, i) => (
                 <ScrollReveal key={s.n} delay={i * 0.05}>
                   <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-8 h-full">
-                    <p className="font-mono text-6xl md:text-7xl text-moss-bright/40 leading-none">
+                    <p
+                      className={`font-mono text-6xl md:text-7xl leading-none ${
+                        i % 2 === 0
+                          ? "text-honey-bright/40"
+                          : "text-moss-bright/40"
+                      }`}
+                    >
                       {s.n}
                     </p>
                     <h3 className="mt-6 font-serif text-xl text-bone">
@@ -225,7 +231,7 @@ export default function SurplusYardPage() {
         <section className="border-b border-bone/10">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
-              <Eyebrow>What you can list</Eyebrow>
+              <Eyebrow tone="honey">What you can list</Eyebrow>
               <h2 className="mt-6 max-w-3xl font-serif text-3xl md:text-5xl text-bone tracking-[-0.02em] leading-[1.1]">
                 If it&apos;s on your yard and it&apos;s not on a truck this week, it can be listed.
               </h2>
@@ -233,10 +239,21 @@ export default function SurplusYardPage() {
             <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {CATEGORIES.map((c, i) => {
                 const Icon = c.icon;
+                const isEven = i % 2 === 0;
+                const iconCls = isEven
+                  ? "border-honey/30 bg-honey/10 text-honey-bright"
+                  : "border-moss/30 bg-moss/10 text-moss-bright";
+                const hoverCls = isEven
+                  ? "hover:border-honey/30"
+                  : "hover:border-moss/30";
                 return (
                   <ScrollReveal key={c.label} delay={i * 0.04}>
-                    <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-8 h-full transition-colors hover:border-moss/30">
-                      <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-moss/30 bg-moss/10 text-moss-bright">
+                    <div
+                      className={`rounded-2xl border border-bone/10 bg-bone/[0.02] p-8 h-full transition-colors ${hoverCls}`}
+                    >
+                      <div
+                        className={`inline-flex h-10 w-10 items-center justify-center rounded-lg border ${iconCls}`}
+                      >
                         <Icon className="h-5 w-5" />
                       </div>
                       <h3 className="mt-6 font-serif text-xl text-bone">
@@ -270,9 +287,13 @@ export default function SurplusYardPage() {
             <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-2">
               {TRUST_POINTS.map((t, i) => (
                 <ScrollReveal key={t.n} delay={i * 0.04}>
-                  <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-8 h-full">
+                  <div className="rounded-2xl border border-honey-bright/20 bg-bone/[0.02] p-8 h-full">
                     <div className="flex items-baseline gap-4">
-                      <p className="font-mono text-sm tracking-[0.15em] text-moss-bright">
+                      <p
+                        className={`font-mono text-sm tracking-[0.15em] ${
+                          i % 2 === 0 ? "text-honey-bright" : "text-moss-bright"
+                        }`}
+                      >
                         {t.n}
                       </p>
                       <Shield className="h-4 w-4 text-bone/40" />
@@ -295,7 +316,7 @@ export default function SurplusYardPage() {
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
               <div className="mx-auto max-w-3xl rounded-2xl border border-moss/40 bg-gradient-to-b from-moss/10 to-transparent shadow-pop p-8 md:p-12">
-                <Pill>
+                <Pill tone="honey">
                   <Sparkles className="h-3 w-3" />
                   Founder pricing
                 </Pill>

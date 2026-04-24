@@ -7,7 +7,24 @@ import { BDC_ADDON, TIERS } from "@/content/pricing";
 export const metadata: Metadata = {
   title: "Pricing — Flat per crew. No per-seat tax. No usage gotchas.",
   description:
-    "GladiusTurf pricing: $397 Independent, $997 Professional, $2,997 Enterprise per crew per month. Unlimited seats. Optional $499 BDC addon. Month-to-month, no contract.",
+    "GladiusTurf pricing: $397 Independent, $997 Professional, $2,997 Enterprise per crew per month. All nine engines included. Unlimited seats. Optional $499 BDC addon. Month-to-month, no contract.",
+};
+
+// Per-tier extra feature rows for the new Client Portal + Cadence engines.
+// Held in page.tsx so we don't touch content/pricing.ts on this pass.
+const TIER_EXTRAS: Record<"independent" | "professional" | "enterprise", string[]> = {
+  independent: [
+    "Client Portal — branded for your crew, included",
+    "Cadence — automated follow-up + reminders, included",
+  ],
+  professional: [
+    "Client Portal — branded for your crew, included",
+    "Cadence — automated follow-up + reminders, included",
+  ],
+  enterprise: [
+    "Client Portal — multi-location white-label",
+    "Cadence — custom seasonal cadences",
+  ],
 };
 
 const FAQ: { q: string; a: string }[] = [
@@ -58,6 +75,14 @@ const FAQ: { q: string; a: string }[] = [
   {
     q: "What happens if my crew count drops in the off-season?",
     a: "Adjust your subscription. Drop from 5 crews to 2 in November, scale back up in March. We don't punish seasonality — that would be insane in landscaping. You can right-size your bill on the dashboard or by emailing support. The Surplus Yard, Site Memory, and Referral Radar engines keep working all winter on every active crew, which is exactly why dormant-customer reactivation pays for itself in Q1.",
+  },
+  {
+    q: "How does the Client Portal work?",
+    a: "It's white-labeled with your crew's logo and colors. Customers get a single magic-link login (no passwords). They reschedule visits, pay invoices via Stripe (card or ACH), approve change orders, and view job history. SMS + email confirmations close the loop. Included on every tier.",
+  },
+  {
+    q: "What's the difference between Cadence and a CRM cadence engine?",
+    a: "Most CRMs ship a basic 'send email at Day 7' rule. Cadence reads from Site Memory — the dog's name, the gate code, the back zone — and personalizes every touch. It's also tuned for landscaping rhythms (NOAA-timed seasonal reminders, applicator-aware messaging) instead of generic SaaS cadences.",
   },
 ];
 
@@ -124,11 +149,11 @@ export default function PricingPage() {
         <section className="py-28">
           <div className="mx-auto max-w-7xl px-6">
             {/* Scarcity band */}
-            <div className="mx-auto mb-12 flex max-w-3xl flex-col items-center justify-center gap-3 rounded-2xl border border-moss/25 bg-moss/[0.03] px-6 py-4 text-center sm:flex-row sm:gap-6 sm:text-left">
+            <div className="mx-auto mb-12 flex max-w-3xl flex-col items-center justify-center gap-3 rounded-2xl border border-honey/25 bg-honey/[0.03] px-6 py-4 text-center sm:flex-row sm:gap-6 sm:text-left">
               <div className="flex items-center gap-3">
                 <span className="relative flex h-2 w-2 flex-none">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-moss-bright opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-moss-bright" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-honey-bright opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-honey-bright" />
                 </span>
                 <div>
                   <div className="text-sm font-semibold text-bone">
@@ -158,8 +183,9 @@ export default function PricingPage() {
                 Flat per crew. No per-seat tax. No usage gotchas.
               </h1>
               <p className="mt-6 text-lg text-bone/60">
-                Every plan ships with all seven engines. No add-on tax. No
-                usage caps. The number you see is the number you pay.
+                Every plan ships with all nine engines — including the new
+                Client Portal and Cadence. No add-on tax. No usage caps. The
+                number you see is the number you pay.
               </p>
             </div>
 
@@ -206,9 +232,15 @@ export default function PricingPage() {
                       <ArrowRightIcon className="h-3.5 w-3.5" />
                     </a>
                     <ul className="mt-8 space-y-3 text-sm text-bone/70">
-                      {tier.features.map((f) => (
+                      {[...tier.features, ...TIER_EXTRAS[tier.id]].map((f, i) => (
                         <li key={f} className="flex items-start gap-2.5">
-                          <CheckIcon className="mt-0.5 h-4 w-4 flex-none text-moss-bright" />
+                          <CheckIcon
+                            className={
+                              i % 2 === 0
+                                ? "mt-0.5 h-4 w-4 flex-none text-moss-bright"
+                                : "mt-0.5 h-4 w-4 flex-none text-honey-bright"
+                            }
+                          />
                           <span>{f}</span>
                         </li>
                       ))}
@@ -221,16 +253,17 @@ export default function PricingPage() {
             {/* Tier rationale row */}
             <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-10 md:grid-cols-3">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-honey-bright">
                   Independent — $397
                 </p>
                 <p className="mt-3 text-sm leading-[1.65] text-bone/60">
                   Built for the solo operator running one truck and one crew.
-                  All seven engines on day one — Quote Intercept, Site Memory,
+                  All nine engines on day one — Quote Intercept, Site Memory,
                   Weather Pivot, Referral Radar, Upsell Whisperer, Surplus
-                  Yard, Applicator Shield. Email and in-app chat support with
-                  a 4-hour weekday response. The same product the
-                  $15M-revenue shops use, sized for a one-crew leak rate.
+                  Yard, Applicator Shield, Client Portal, and Cadence. Email
+                  and in-app chat support with a 4-hour weekday response. The
+                  same product the $15M-revenue shops use, sized for a
+                  one-crew leak rate.
                 </p>
               </div>
               <div>
@@ -247,7 +280,7 @@ export default function PricingPage() {
                 </p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-honey-bright">
                   Enterprise — $2,997
                 </p>
                 <p className="mt-3 text-sm leading-[1.65] text-bone/60">
@@ -269,7 +302,7 @@ export default function PricingPage() {
           <div className="mx-auto max-w-7xl px-6">
             <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
               <div className="md:col-span-5">
-                <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-moss/30 bg-moss/5 px-3 py-1 text-xs font-medium text-moss-bright">
+                <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-honey/30 bg-honey/5 px-3 py-1 text-xs font-medium text-honey-bright">
                   Optional addon
                 </p>
                 <h2 className="font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
@@ -295,7 +328,7 @@ export default function PricingPage() {
                 </a>
               </div>
               <div className="md:col-span-7">
-                <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-8">
+                <div className="rounded-2xl border border-honey/30 bg-bone/[0.02] p-8">
                   <p className="text-base leading-[1.65] text-bone/70">
                     A Business Development Center is the inside-sales muscle
                     big operators have always had and small ones never could
@@ -303,9 +336,19 @@ export default function PricingPage() {
                     tier and gives you outbound coverage your competitors
                     aren&apos;t running.
                   </p>
+                  <p className="mt-4 text-sm leading-[1.65] text-honey-bright">
+                    Cadence (included on every tier) handles the automated
+                    follow-up cadences — SMS, email, NOAA-timed seasonal
+                    nudges. The BDC addon stacks on top with{" "}
+                    <span className="font-semibold">manned weekend phone
+                    coverage</span>{" "}
+                    and live human dialing. The two are complementary, not
+                    redundant: software handles the 80% that automates,
+                    humans handle the 20% that closes.
+                  </p>
                   <ul className="mt-8 flex flex-col gap-5 text-sm leading-[1.65] text-bone/60">
                     <li className="flex gap-3">
-                      <CheckIcon className="mt-1 h-4 w-4 flex-none text-moss-bright" />
+                      <CheckIcon className="mt-1 h-4 w-4 flex-none text-honey-bright" />
                       <span>
                         <span className="font-semibold text-bone">
                           Outbound winter service campaigns.
@@ -317,7 +360,7 @@ export default function PricingPage() {
                       </span>
                     </li>
                     <li className="flex gap-3">
-                      <CheckIcon className="mt-1 h-4 w-4 flex-none text-moss-bright" />
+                      <CheckIcon className="mt-1 h-4 w-4 flex-none text-honey-bright" />
                       <span>
                         <span className="font-semibold text-bone">
                           Dormant-customer reactivation.
@@ -330,7 +373,7 @@ export default function PricingPage() {
                       </span>
                     </li>
                     <li className="flex gap-3">
-                      <CheckIcon className="mt-1 h-4 w-4 flex-none text-moss-bright" />
+                      <CheckIcon className="mt-1 h-4 w-4 flex-none text-honey-bright" />
                       <span>
                         <span className="font-semibold text-bone">
                           Manned weekend phone coverage.
@@ -343,7 +386,7 @@ export default function PricingPage() {
                       </span>
                     </li>
                     <li className="flex gap-3">
-                      <CheckIcon className="mt-1 h-4 w-4 flex-none text-moss-bright" />
+                      <CheckIcon className="mt-1 h-4 w-4 flex-none text-honey-bright" />
                       <span>
                         <span className="font-semibold text-bone">
                           Spring-rush overflow.
@@ -375,7 +418,7 @@ export default function PricingPage() {
               </h2>
             </div>
 
-            <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
               <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-8">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-bone/40">
                   Quote Intercept
@@ -390,11 +433,11 @@ export default function PricingPage() {
                   Average shop sees this in week two.
                 </p>
               </div>
-              <div className="rounded-2xl border border-moss/50 bg-gradient-to-b from-moss/10 to-transparent p-8 shadow-pop">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright">
+              <div className="rounded-2xl border border-honey/40 bg-gradient-to-b from-honey/10 to-transparent p-8 shadow-pop-honey">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-honey-bright">
                   Upsell Whisperer
                 </p>
-                <p className="mt-4 font-mono text-5xl text-moss-bright">
+                <p className="mt-4 font-mono text-5xl text-honey-bright">
                   +$38,000
                 </p>
                 <p className="text-sm text-bone/60">added monthly revenue</p>
@@ -419,6 +462,24 @@ export default function PricingPage() {
                   matching. Highest-LTV channel in landscaping.
                 </p>
               </div>
+              <div className="rounded-2xl border border-honey/40 bg-gradient-to-b from-honey/10 to-transparent p-8 shadow-pop-honey">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-honey-bright">
+                  Cadence · NEW
+                </p>
+                <p className="mt-4 font-mono text-5xl text-honey-bright">
+                  $12,800
+                </p>
+                <p className="text-sm text-bone/60">
+                  recovered per month from late invoices
+                </p>
+                <p className="mt-6 text-sm leading-[1.65] text-bone/70">
+                  Personalized SMS + email reminders that pull on Site Memory
+                  context — the gate code, the dog&apos;s name, the back zone.
+                  Drives <span className="text-honey-bright">+24% retention</span>.
+                  A single Cadence rescue covers the Professional tier{" "}
+                  <span className="font-mono">12.8x</span> over.
+                </p>
+              </div>
             </div>
 
             <div className="mx-auto mt-16 max-w-3xl">
@@ -427,23 +488,24 @@ export default function PricingPage() {
                 each is{" "}
                 <span className="font-mono text-moss-bright">$1,994</span> per
                 month — call it{" "}
-                <span className="font-mono text-moss-bright">$23,928</span> a
+                <span className="font-mono text-honey-bright">$23,928</span> a
                 year. The Quote Intercept engine alone, at the average{" "}
                 <span className="font-mono text-moss-bright">$14,200</span> in
                 recovered estimates per month, returns{" "}
-                <span className="font-mono text-moss-bright">$170,400</span>{" "}
+                <span className="font-mono text-honey-bright">$170,400</span>{" "}
                 annually. That&apos;s a{" "}
                 <span className="font-mono text-moss-bright">7.1x</span>{" "}
                 payback on the engine that installs itself in week one. Add
-                Upsell Whisperer&apos;s $38,000-a-month and Referral
-                Radar&apos;s $180,000-a-year and the conversation stops being
+                Upsell Whisperer&apos;s $38,000-a-month, Referral Radar&apos;s
+                $180,000-a-year, and Cadence&apos;s $12,800-a-month in
+                recovered late invoices, and the conversation stops being
                 about subscription cost. It becomes a question of how fast
                 you can train the foremen to use it.
               </p>
               <p className="mt-6 text-base leading-[1.7] text-bone/80">
                 A single recovered $14,200 month covers your Professional
                 tier{" "}
-                <span className="font-mono text-moss-bright">14x</span> over.
+                <span className="font-mono text-honey-bright">14x</span> over.
                 We&apos;re not pricing this as software. We&apos;re pricing
                 it as a percentage of the leak we plug. Anyone charging less
                 is selling you a CRM that doesn&apos;t do the work. Anyone
@@ -478,11 +540,11 @@ export default function PricingPage() {
               {FAQ.map((f) => (
                 <details
                   key={f.q}
-                  className="group rounded-2xl border border-bone/10 bg-bone/[0.02] p-6 open:border-moss/30 open:bg-moss/[0.03]"
+                  className="group rounded-2xl border border-bone/10 bg-bone/[0.02] p-6 open:border-honey/30 open:bg-honey/[0.03]"
                 >
                   <summary className="flex cursor-pointer list-none items-start justify-between gap-4 text-bone font-medium">
                     <span>{f.q}</span>
-                    <span className="mt-1 flex-none text-moss-bright transition-transform group-open:rotate-45">
+                    <span className="mt-1 flex-none text-honey-bright transition-transform group-open:rotate-45">
                       <svg
                         viewBox="0 0 16 16"
                         className="h-4 w-4"
