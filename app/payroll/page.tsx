@@ -166,11 +166,11 @@ export default function PayrollPage() {
                   See Payroll on a 30-min demo
                 </CtaButton>
                 <CtaButton
-                  href="#flow"
+                  href="/payroll/demo"
                   variant="ghost-champagne"
                   withArrow
                 >
-                  Read the workflow
+                  Try the live sandbox
                 </CtaButton>
               </div>
             </ScrollReveal>

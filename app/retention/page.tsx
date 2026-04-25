@@ -203,6 +203,9 @@ export default function RetentionPage() {
                 <CtaButton href="/demo" variant="primary" size="lg">
                   See Save Play on a 30-min demo
                 </CtaButton>
+                <CtaButton href="/retention/demo" variant="ghost-champagne" withArrow>
+                  Try the live sandbox
+                </CtaButton>
                 <CtaButton href="#signals" variant="ghost-champagne" withArrow>
                   Read the signals
                 </CtaButton>

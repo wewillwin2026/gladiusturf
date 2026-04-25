@@ -241,6 +241,9 @@ export default function BooksPage() {
                 <CtaButton href="/demo" variant="primary" size="lg">
                   See Books on a 30-min demo
                 </CtaButton>
+                <CtaButton href="/books/demo" variant="ghost-champagne" withArrow>
+                  Try the live sandbox
+                </CtaButton>
                 <CtaButton href="#data-spine" variant="ghost-champagne" withArrow>
                   Read the architecture
                 </CtaButton>
