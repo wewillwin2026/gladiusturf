@@ -55,22 +55,20 @@ export function Hero() {
               Precision · Groundskeeping
             </motion.p>
 
-            {/* Crest — centered, soft sage+champagne halo */}
+            {/* Crest — centered, no frame; bigger so the prestige reads */}
             <motion.div
               {...fadeUp(0.05)}
               className="mb-10 flex items-center justify-center"
             >
-              <div className="relative inline-flex items-center justify-center rounded-full shadow-crest-glow">
-                <Image
-                  src="/crest.png"
-                  alt="GladiusTurf crest"
-                  width={360}
-                  height={360}
-                  priority
-                  sizes="(min-width: 768px) 180px, 140px"
-                  className="h-[140px] w-auto select-none md:h-[180px]"
-                />
-              </div>
+              <Image
+                src="/crest.png"
+                alt="GladiusTurf crest"
+                width={520}
+                height={693}
+                priority
+                sizes="(min-width: 1024px) 360px, (min-width: 768px) 300px, 220px"
+                className="h-[220px] w-auto select-none md:h-[300px] lg:h-[360px]"
+              />
             </motion.div>
 
             <motion.h1
