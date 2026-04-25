@@ -17,6 +17,7 @@ import { Eyebrow } from "@/components/eyebrow";
 import { Footer } from "@/components/footer";
 import { FounderVideo } from "@/components/founder-video";
 import { Hero } from "@/components/hero";
+import { HowItWorks } from "@/components/how-it-works";
 import { Nav } from "@/components/nav";
 import { Pill } from "@/components/pill";
 import { PricingSection } from "@/components/pricing-section";
@@ -415,26 +416,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* d. Engines grid — with a blurred crest watermark behind the section H2 */}
-        <div className="relative">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute left-1/2 top-24 -z-0 -translate-x-1/2"
-          >
-            <Image
-              src="/crest.png"
-              alt=""
-              width={520}
-              height={520}
-              className="h-auto w-[520px] opacity-30 blur-[6px] select-none"
-            />
-          </div>
-          <div className="relative">
-            <EnginesGrid />
-          </div>
-        </div>
-
-        {/* e. Three alternating product blocks */}
+        {/* d. Product highlights — five marquee engines, moved ahead of the engines grid so the prospect's "is this real?" question lands before the depth dump */}
         <section
           id="product"
           className="border-t border-bone/10 bg-slate-deep py-28"
@@ -543,7 +525,29 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* f. ROI tease */}
+        {/* e. How it works — 3-step ladder, between product highlights and the depth-dump engines grid */}
+        <HowItWorks />
+
+        {/* f. Engines grid — with a blurred crest watermark behind the section H2 */}
+        <div className="relative">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 top-24 -z-0 -translate-x-1/2"
+          >
+            <Image
+              src="/crest.png"
+              alt=""
+              width={520}
+              height={520}
+              className="h-auto w-[520px] opacity-30 blur-[6px] select-none"
+            />
+          </div>
+          <div className="relative">
+            <EnginesGrid />
+          </div>
+        </div>
+
+        {/* g. ROI tease */}
         <section className="border-t border-bone/10 bg-pitch py-24">
           <div className="mx-auto max-w-5xl px-6 text-center">
             <ScrollReveal>
@@ -572,7 +576,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* g. Comparison preview */}
+        {/* h. Comparison preview */}
         <section className="border-t border-bone/10 bg-slate-deep py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
@@ -636,7 +640,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* h. Pricing */}
+        {/* i. Pricing */}
         <PricingSection />
 
         {/* j. Final CTA */}
