@@ -1,7 +1,8 @@
+import type { ReactNode } from "react";
 import { Eyebrow } from "@/components/eyebrow";
 import { ScrollReveal } from "@/components/scroll-reveal";
 
-type FaqItem = { q: string; a: string };
+type FaqItem = { q: string; a: ReactNode };
 
 const FAQS: FaqItem[] = [
   {
@@ -26,8 +27,20 @@ const FAQS: FaqItem[] = [
   },
   {
     q: "Who's the founder and why landscape?",
-    /* TODO: replace with real founder bio — 2 sentences, the "why landscape" thesis */
-    a: "Founder bio coming soon. The thesis: $100B industry running on field-service software built for HVAC, with a labor crisis, a generational ownership transition, and zero AI-native tooling. We built the operating system the trade actually deserves.",
+    a: (
+      <>
+        {/* PASTE FOUNDER BIO HERE — 2-3 sentences. Lead with the personal reason, then the thesis. */}
+        {/* Sentence 1: Who you are + the personal connection to landscape ops. */}
+        {/* Sentence 2: Why now — what you saw that made this the moment. */}
+        <p>
+          The thesis is simple: $100B industry, running on field-service
+          software built for HVAC, with a labor crisis, a generational
+          ownership transition, and zero AI-native tooling. The window is open
+          for exactly one operating system to claim the category. We&rsquo;re
+          building it.
+        </p>
+      </>
+    ),
   },
   {
     q: "Why “33 engines” instead of just calling them features?",
@@ -35,8 +48,7 @@ const FAQS: FaqItem[] = [
   },
   {
     q: "Do you have customers in my service area?",
-    /* TODO: update [N] when we publish the real cohort count */
-    a: "Founding cohort spans multiple states. We're geographic-agnostic — the engines work the same in Florida as they do in Minnesota. NOAA-timed seasonal logic auto-adjusts to your climate.",
+    a: "Founding cohort spans the East Coast, Midwest, and Texas — and we're geographic-agnostic by design. The engines work the same in Florida as they do in Minnesota. NOAA-timed seasonal logic auto-adjusts to your zone, your frost dates, your storm windows. Snow-belt shops get snow-contract automations on Day 1; Sun Belt shops get year-round irrigation logic instead.",
   },
 ];
 
@@ -71,9 +83,9 @@ export function HomeFaq() {
                     +
                   </span>
                 </summary>
-                <p className="mt-4 text-[15px] leading-[1.6] text-bone/70">
+                <div className="mt-4 text-[15px] leading-[1.6] text-bone/70">
                   {item.a}
-                </p>
+                </div>
               </details>
             ))}
           </div>
