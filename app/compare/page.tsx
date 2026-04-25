@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title:
     "Why crews leave Aspire, LMN, Service Autopilot, and Jobber — 33-engine comparison",
   description:
-    "Honest, side-by-side: GladiusTurf's 33 engines vs. Aspire, LMN, Service Autopilot, Jobber, Real Green. Field Crew PWA, Client Portal, LRI Score.",
+    "Honest, side-by-side: GladiusTurf's 33 engines vs. Aspire, LMN, Service Autopilot, Jobber, Real Green. Field Crew PWA, Client Portal, The Crew Score.",
   alternates: { canonical: "/compare" },
 };
 
@@ -749,6 +749,14 @@ export default function ComparePage() {
             </div>
             <p className="mt-3 text-center text-xs text-bone/40 md:hidden">
               Swipe the table to compare →
+            </p>
+            {/* ServiceTitan ownership footnote — three "competitors" share one parent. */}
+            <p className="mx-auto mt-8 max-w-3xl text-center text-xs italic leading-relaxed text-bone/50">
+              <span className="text-bone/65">
+                ServiceTitan, Aspire, and FieldRoutes are all owned by
+                ServiceTitan, Inc.
+              </span>{" "}
+              Three brands, one architecture, all built before AI was real.
             </p>
           </div>
         </section>

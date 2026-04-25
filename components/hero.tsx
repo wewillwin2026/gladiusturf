@@ -84,9 +84,10 @@ export function Hero() {
               {...fadeUp(0.18)}
               className="mx-auto mt-8 max-w-3xl text-lg text-parchment/70 md:text-xl"
             >
-              Thirty-three engines across five tiers — revenue, lifecycle,
-              intelligence, operations, marketplace. The first landscaping
-              operating system that gets smarter every night.
+              Thirty-three engines across five layers — winning the work,
+              keeping the customer, getting smarter, running the crew, and
+              building the network. The first landscape system that learns
+              your shop.
             </motion.p>
 
             <motion.div
@@ -123,7 +124,9 @@ export function Hero() {
               {...fadeUp(0.34)}
               className="mt-12 text-xs uppercase tracking-crest text-bone/40"
             >
-              <span>Trusted by founding crews</span>
+              <span className="text-champagne-bright/85">
+                Founding cohort · 12 of 20 May 2026 slots remaining
+              </span>
               <span className="mx-3 text-bone/25">·</span>
               <span>Built on Stripe</span>
               <span className="mx-3 text-bone/25">·</span>

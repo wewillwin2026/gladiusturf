@@ -18,7 +18,7 @@ import { Pill } from "@/components/pill";
 import { ScrollReveal } from "@/components/scroll-reveal";
 
 export const metadata: Metadata = {
-  title: "LRI Score — The 0–100 metric every crew lives by.",
+  title: "The Crew Score — The 0–100 metric every crew lives by.",
   description:
     "Landscaping Revenue Intelligence. One score. Five subscores. Benchmark your shop against your peer cohort. Portable across employers.",
 };
@@ -226,7 +226,7 @@ function ScoreRingHero({ value }: { value: number }) {
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
         <p className="text-[11px] font-semibold uppercase tracking-crest text-bone/50">
-          LRI Score
+          The Crew Score
         </p>
         <p className="mt-3 font-mono text-[140px] leading-none text-bone">
           {value}
@@ -407,7 +407,7 @@ export default function ScorePage() {
           <div className="grid items-center gap-16 lg:grid-cols-[1.1fr_0.9fr]">
             <div>
               <ScrollReveal>
-                <Eyebrow tone="champagne">LRI Score · Beta</Eyebrow>
+                <Eyebrow tone="champagne">The Crew Score · Beta</Eyebrow>
               </ScrollReveal>
               <ScrollReveal delay={0.05}>
                 <h1 className="mt-6 font-serif text-6xl leading-[1.0] tracking-[-0.02em] text-bone md:text-8xl">

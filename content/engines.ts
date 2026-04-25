@@ -15,7 +15,7 @@ export type Engine = {
 };
 
 export const ENGINES: Engine[] = [
-  // ─── TIER 1: Revenue ───
+  // ─── TIER 1: Win the work ───
   {
     number: "01",
     slug: "quote-intercept",
@@ -28,10 +28,10 @@ export const ENGINES: Engine[] = [
   {
     number: "02",
     slug: "quickhook",
-    name: "QuickHook",
+    name: "InstantText",
     outcome: "60-second first-touch · +21% same-week conversion",
     description:
-      "Service inquiry arrives. Within 60 seconds, AI texts the customer with crew availability + click-to-book link. Pre-fills service type, season, and customer timezone before your phone rings. Industry first-touch is 98 minutes; ours is sub-1.",
+      "Inbound text or web inquiry arrives. Within 60 seconds, AI texts the customer back with crew availability + click-to-book link. Pre-fills service type, season, and customer timezone before your phone rings. Industry first-touch is 98 minutes; ours is sub-1.",
     tier: "revenue",
   },
   {
@@ -67,7 +67,7 @@ export const ENGINES: Engine[] = [
     name: "Property Hunter",
     outcome: "+15-20% acquisition rate vs cold",
     description:
-      "Paste a Zillow URL or a phone number. AI drafts a property-specific intro: \"We manage 12 yards on your block — can we quote yours?\" Tracks negotiation stage (queued / sent / replied / negotiating / converted). Auto-escalates hot prospects to managers.",
+      "Paste a Zillow URL or a phone number. AI drafts a property-specific intro: \"We manage 12 yards on your block — can we quote yours?\" Tracks the conversation through every stage (queued / sent / replied / negotiating / converted). Auto-escalates hot prospects to managers.",
     tier: "revenue",
   },
   {
@@ -76,7 +76,7 @@ export const ENGINES: Engine[] = [
     name: "Ghost Recovery",
     outcome: "+51% quote-to-close on dead leads · 90-day win rate +47%",
     description:
-      "Customer ghosted on a quote. Day 1: pattern-interrupt SMS. Day 3: value drop with before/after photos. Day 7: no-oriented question (Voss). Day 14: new service hook. 50% of \"dead\" landscape leads buy within 90 days — Ghost Recovery catches them.",
+      "Customer ghosted on a quote. Day 1: a short SMS that doesn't read like a sales chase. Day 3: before/after photos from a job you actually finished. Day 7: a no-pressure question that lets them say no without ghosting. Day 14: a new-service hook tuned to the season. 50% of \"dead\" landscape leads buy within 90 days — Ghost Recovery catches them.",
     tier: "revenue",
   },
   {
@@ -85,11 +85,11 @@ export const ENGINES: Engine[] = [
     name: "ServiceMagnet",
     outcome: "+48% reactivation · 6-month-old leads converted",
     description:
-      "You add a new service (spring aeration, deck sealing, hardscape design). ServiceMagnet semantically matches every past lead who showed interest — even 180 days back — and pings them: \"Just launched aeration + overseed. Saw you were asking last spring. Want pricing?\" Sales from customers you'd already written off.",
+      "You add a new service (spring aeration, deck sealing, hardscape design). ServiceMagnet AI matches every past lead who showed interest in anything close — even 180 days back — and pings them: \"Just launched aeration + overseed. Saw you were asking last spring. Want pricing?\" Sales from customers you'd already written off.",
     tier: "revenue",
   },
 
-  // ─── TIER 2: Lifecycle ───
+  // ─── TIER 2: Keep the work ───
   {
     number: "09",
     slug: "client-portal",
@@ -102,10 +102,10 @@ export const ENGINES: Engine[] = [
   {
     number: "10",
     slug: "cadence",
-    name: "Cadence",
+    name: "The FollowUp",
     outcome: "+24% retention · $12,800/mo recovered late invoices",
     description:
-      "The intelligent follow-up brain. Post-service feedback within six hours. Late-payment cadences that warm before they escalate (Day 3 / 7 / 14, then human handoff). Seasonal reminders timed to NOAA — fall cleanup, snow contracts, spring fert, mosquito, leaf. Every message personalized from Site Memory.",
+      "The follow-up that doesn't sound like follow-up. Post-service check-ins within six hours. Late-invoice nudges that warm up before they escalate (Day 3 / 7 / 14, then a human takes over). Seasonal reminders timed to NOAA — fall cleanup, snow contracts, spring fert, mosquito, leaf. Every message reads like the owner wrote it because Site Memory feeds the draft.",
     tier: "lifecycle",
   },
   {
@@ -129,39 +129,39 @@ export const ENGINES: Engine[] = [
   {
     number: "13",
     slug: "showrate-max",
-    name: "ShowRate Max",
+    name: "ShowRate",
     outcome: "38% → 71% show rate · -58% no-shows",
     description:
-      "Seven-touch confirmation lifecycle: book → instant SMS → day-before reminder → morning-of nudge → hour-before pre-arrival → 15-min-late recovery → 30-min no-show rebook → next-day rescue. Each touch is archetype-aware: BUSY_PRO gets terse, ANXIOUS_FIRST_TIMER gets reassurance.",
+      "Seven-touch confirmation flow: book → instant SMS → day-before reminder → morning-of nudge → hour-before pre-arrival → 15-min-late recovery → 30-min no-show rebook → next-day rescue. Different reminder for the busy contractor vs the first-timer — the system knows the difference.",
     tier: "lifecycle",
   },
   {
     number: "14",
     slug: "lifehook",
-    name: "LifeHook",
+    name: "LifeMoments",
     outcome: "+76% conversion on life-event touches",
     description:
       "AI listens for life triggers in customer conversations: moved, getting married, new baby, downsizing. Triggers specialty playbooks. \"Congrats on the new house — our spring refresh includes soil testing and irrigation. Want a same-week quote?\" Messages that hit the moment outperform generic by 76%.",
     tier: "lifecycle",
   },
 
-  // ─── TIER 3: Intelligence ───
+  // ─── TIER 3: Get smarter ───
   {
     number: "15",
     slug: "intent-scorer",
-    name: "Intent Scorer",
+    name: "LeadGrade",
     outcome: "+34% appointment show rate · 67% first-touch conversion",
     description:
-      "Every service inquiry is scored 1-100 (intent), classified (mowing / fert / irrigation / hardscape), sentiment-flagged (urgent / budget-conscious / premium), and gets a Claude-drafted first-touch SMS — before your crew chief opens the app.",
+      "Every service inquiry gets graded 1-100 — real lead vs tire kicker — and classified (mowing / fert / irrigation / hardscape) and flagged for vibe (urgent / budget-conscious / premium). The first-touch SMS is drafted before your crew chief opens the app.",
     tier: "intelligence",
   },
   {
     number: "16",
     slug: "urgencysync",
-    name: "UrgencySync",
+    name: "RedFlag",
     outcome: "Crew dispatch -48% time · emergency accuracy +71%",
     description:
-      "Real-time 0-100 temperature score on every inbound message. \"My lawn's been dead two weeks\" spikes red. Dispatcher sees the queued jobs color-coded: RED (emergency callout), YELLOW (premium upsell), GREEN (routine). Lawn care has never had this.",
+      "Real-time 0-100 temperature on every inbound message. \"My lawn's been dead two weeks\" spikes red. Dispatcher sees the queued jobs color-coded: RED (emergency callout), YELLOW (premium upsell), GREEN (routine). Lawn care has never had this.",
     tier: "intelligence",
   },
   {
@@ -170,16 +170,16 @@ export const ENGINES: Engine[] = [
     name: "ToneRadar",
     outcome: "73% accurate ghost prediction · -72% engagement-drop latency",
     description:
-      "Reads the meta of how customers write. 40-word messages collapse to 3-word replies = ghosting predictor fires. Pronoun shifts (\"I\" → \"we\") flag a decision-unit expansion. Triggers Ghost Recovery before contact dies.",
+      "Reads the meta of how customers write. 40-word messages collapse to 3-word replies = ghosting predictor fires. Pronoun shifts (\"I\" → \"we\") flag couples deciding together vs a solo buyer. Triggers Ghost Recovery before contact dies.",
     tier: "intelligence",
   },
   {
     number: "18",
     slug: "winmemory",
-    name: "WinMemory",
+    name: "WinPlaybook",
     outcome: "+22% response quality · +19% deal velocity",
     description:
-      "Every closed deal is embedded into a vector store. New inquiry comes in — AI retrieves the 3 most similar past wins and feeds them as few-shot examples to the response prompt. Your AI literally learns from every win, forever.",
+      "Every closed deal goes into a library the AI can read. New inquiry comes in — the AI pulls the 3 most similar past wins and uses them as the template for the reply. Your AI literally learns from every won bid, forever.",
     tier: "intelligence",
   },
   {
@@ -194,14 +194,14 @@ export const ENGINES: Engine[] = [
   {
     number: "20",
     slug: "lri-score",
-    name: "LRI Score",
+    name: "The Crew Score",
     outcome: "0-100 outcome benchmark · peer cohort visibility",
     description:
-      "Landscaping Revenue Intelligence in a single number. A 0-100 score per crew, per yard. Combines quote win rate, on-time arrival, customer satisfaction, safety incidents, repeat rate. Visible to ops + portable across employers if a crew changes shops.",
+      "Your shop in a single number. 0-100, per crew, per yard. Combines quote win rate, on-time arrival, customer satisfaction, safety incidents, repeat rate. Visible to ops + portable across employers if a crew chief changes shops.",
     tier: "intelligence",
   },
 
-  // ─── TIER 4: Operations ───
+  // ─── TIER 4: Run the crew ───
   {
     number: "21",
     slug: "safety-shield",
@@ -217,7 +217,7 @@ export const ENGINES: Engine[] = [
     name: "Quality Radar",
     outcome: "-15% rework · +$12K/yr margin recovered",
     description:
-      "Pre-work photo set (existing sod, soil grade, irrigation access) + post-work photo set + checklist. AI flags failures before the crew leaves the property. Catch rework on-site, not in a Day-3 customer complaint.",
+      "Pre-work photo set (existing sod, soil grade, irrigation access) + post-work photo set + checklist. AI flags failures before the crew leaves the property. Catch redos on-site, not in a Day-3 customer complaint.",
     tier: "operations",
   },
   {
@@ -244,33 +244,13 @@ export const ENGINES: Engine[] = [
     name: "Job Costing",
     outcome: "discover crew profitability per job",
     description:
-      "Line-item per job: material cost (sod, seed, mulch, fert), labor hours by crew member, equipment burn (mower run-time, aerator passes), site-access premium. Reveal which crews and which sites are actually margin-positive.",
+      "Line-item per job: material cost (sod, seed, mulch, fert), labor hours by crew member, equipment burn (mower run-time, aerator passes), site-access premium. Reveal which crews and which sites quietly lose you money.",
     tier: "operations",
-  },
-
-  // ─── TIER 5: Marketplace ───
-  {
-    number: "26",
-    slug: "surplus-yard",
-    name: "Surplus Yard",
-    outcome: "$20K–$60K/yr recaptured margin",
-    description:
-      "Leftover sod, mulch, stone, trees, equipment — the stuff that rots in the yard becomes revenue. Post it to the Surplus Yard marketplace, sell it to a crew across town, collect payment without leaving the app.",
-    tier: "marketplace",
-  },
-  {
-    number: "27",
-    slug: "knowledge-codex",
-    name: "Knowledge Codex",
-    outcome: "6-month → 6-week onboarding for crew leads",
-    description:
-      "Retiring foreman records a video on overseeding cadence. Auto-transcribed, tagged, indexed. New crew lead searches \"spring fert timing\" — gets the 3 most relevant clips with timestamps. Tribal knowledge becomes company memory.",
-    tier: "marketplace",
   },
 
   // ─── Books · Payroll · Retention (first-party financial spine) ───
   {
-    number: "28",
+    number: "26",
     slug: "books",
     name: "Books",
     outcome: "real-time P&L · zero double-entry",
@@ -279,7 +259,7 @@ export const ENGINES: Engine[] = [
     tier: "operations",
   },
   {
-    number: "29",
+    number: "27",
     slug: "expense-brain",
     name: "Expense Brain",
     outcome: "97% auto-categorized · 4-hr admin/wk reclaimed",
@@ -288,7 +268,7 @@ export const ENGINES: Engine[] = [
     tier: "operations",
   },
   {
-    number: "30",
+    number: "28",
     slug: "payroll",
     name: "Payroll",
     outcome: "GPS-verified hours · W-2 + 1099 ready",
@@ -297,7 +277,7 @@ export const ENGINES: Engine[] = [
     tier: "operations",
   },
   {
-    number: "31",
+    number: "29",
     slug: "tax-engine",
     name: "Tax Engine",
     outcome: "sales tax by ZIP · mileage log · 1099-NEC",
@@ -305,22 +285,42 @@ export const ENGINES: Engine[] = [
       "Sales tax calculated on every invoice by jurisdiction (Stripe Tax integrated, every county). Per-vehicle mileage log auto-generated from GPS data. Schedule C / Schedule E summaries on demand. 1099-NEC packets for the subcontractor cohort prepped by Jan 15.",
     tier: "operations",
   },
+
+  // ─── TIER 5: Build the network ───
+  {
+    number: "30",
+    slug: "surplus-yard",
+    name: "Surplus Yard",
+    outcome: "$20K–$60K/yr recaptured margin",
+    description:
+      "Leftover sod, mulch, stone, trees, equipment — the stuff that rots in the yard becomes revenue. Post it to the Surplus Yard marketplace, sell it to a crew across town, collect payment without leaving the app.",
+    tier: "marketplace",
+  },
+  {
+    number: "31",
+    slug: "knowledge-codex",
+    name: "Foreman's Notebook",
+    outcome: "6-month → 6-week onboarding for crew leads",
+    description:
+      "Retiring foreman records a video on overseeding timing. Auto-transcribed, tagged, indexed. New crew lead searches \"spring fert timing\" — gets the 3 most relevant clips with timestamps. The 30 years of know-how nobody ever wrote down becomes something every new hire can pull up on a phone.",
+    tier: "marketplace",
+  },
   {
     number: "32",
     slug: "retention-radar",
-    name: "Retention Radar",
-    outcome: "churn predicted 60 days out · +18% NRR",
+    name: "Save Play",
+    outcome: "predicts who walks 60 days out · keeps them",
     description:
-      "Watches every customer for churn signals: payment delays, response-time decay (ToneRadar feed), seasonal lapse, declining service revenue, increasing complaint count. Predicts churn 60 days out with a confidence score. Triggers a save play (Cadence personalized cadence + crew chief outreach) before the customer cancels. Net Revenue Retention is the only metric we obsess over.",
+      "Watches every customer for the signals nobody picks up on: payment delays, slower replies (ToneRadar feed), seasonal lapse, declining service revenue, more complaint calls. Predicts who's about to walk 60 days out with a confidence score. Fires a save play — a personalized follow-up plus a phone call from the crew chief — before they cancel. Keeping customers is the only metric we obsess over.",
     tier: "marketplace",
   },
   {
     number: "33",
     slug: "ltv-ledger",
-    name: "LTV Ledger",
-    outcome: "true LTV per customer · payback by segment",
+    name: "Customer Worth",
+    outcome: "true value per customer · payback by segment",
     description:
-      "Per-customer lifetime value computed from real revenue minus real cost (Job Costing feed). Cohort analysis: Q2 2025 customers vs Q2 2026. Segment ROI: weekly mowing customers vs hardscape one-offs vs fert programs. Payback period by acquisition source. The first time landscape ops have known what their customers are actually worth.",
+      "What every customer is actually worth over time — real revenue minus real cost (Job Costing feed). Cohort view: Q2 2025 customers vs Q2 2026. Segment view: weekly mowing customers vs hardscape one-offs vs fert programs. Payback period by acquisition source. The first time landscape ops have known what their customers are actually worth.",
     tier: "marketplace",
   },
 ];

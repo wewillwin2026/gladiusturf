@@ -21,7 +21,7 @@ import { BOOKS_MODULES } from "@/content/books-modules";
 
 export const metadata: Metadata = {
   title:
-    "Retention Radar · churn predicted 60 days out · +18% NRR",
+    "Save Play · churn predicted 60 days out · +18% NRR",
   description:
     "Retention Intelligence for landscape ops. Six churn signals, save plays, NRR dashboard, LTV ledger. Customers don't ghost — they drift. We catch them before they're gone.",
   alternates: { canonical: "/retention" },
@@ -64,7 +64,7 @@ const SIGNALS: Signal[] = [
     name: "Service revenue trend",
     weight: "/16",
     detail:
-      "Customer who used to spend $4,200/month is now spending $1,800. Books knows; Retention Radar surfaces it before the next renewal.",
+      "Customer who used to spend $4,200/month is now spending $1,800. Books knows; Save Play surfaces it before the next renewal.",
     icon: Wallet,
     accent: "champagne",
   },
@@ -97,7 +97,7 @@ const SAVE_PLAY: SaveStep[] = [
   {
     day: "Day -60",
     label: "Detection",
-    body: "Retention Radar fires on three or more signals crossing threshold. Confidence score generated. Customer flagged in the dispatcher dashboard with a save-play queue.",
+    body: "Save Play fires on three or more signals crossing threshold. Confidence score generated. Customer flagged in the dispatcher dashboard with a save-play queue.",
     accent: "champagne",
   },
   {
@@ -137,13 +137,13 @@ const BENCHMARKS: Benchmark[] = [
   {
     pct: "105%",
     label: "Healthy shop NRR",
-    body: "What good ops looks like — every cohort grows in revenue year-over-year through upsell and reactivation, even if a few customers churn. Retention Radar moves you here in two quarters.",
+    body: "What good ops looks like — every cohort grows in revenue year-over-year through upsell and reactivation, even if a few customers churn. Save Play moves you here in two quarters.",
     accent: "champagne",
   },
   {
     pct: "118%",
     label: "Top-shop NRR",
-    body: "The 90th-percentile crew. The customer base compounds 18% on retention alone — before a single new lead lands. This is the bar Retention Radar is built against.",
+    body: "The 90th-percentile crew. The customer base compounds 18% on retention alone — before a single new lead lands. This is the bar Save Play is built against.",
     accent: "moss",
   },
 ];
@@ -165,7 +165,7 @@ export default function RetentionPage() {
           />
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
-              <Eyebrow tone="champagne">Retention Radar · Engine 32</Eyebrow>
+              <Eyebrow tone="champagne">Save Play · Engine 32</Eyebrow>
             </ScrollReveal>
             <ScrollReveal delay={0.05}>
               <h1 className="mt-4 max-w-5xl font-serif text-5xl font-semibold leading-[1.05] tracking-[-0.02em] text-bone md:text-7xl">
@@ -186,7 +186,7 @@ export default function RetentionPage() {
                   next-door neighbor has a new sign in the yard.
                 </p>
                 <p>
-                  Retention Radar watches every customer for the six churn
+                  Save Play watches every customer for the six churn
                   signals that actually predict the cancel: payment delays,
                   response-time decay, seasonal lapse, service-revenue trend,
                   complaint frequency, and ToneRadar interaction collapse.
@@ -201,7 +201,7 @@ export default function RetentionPage() {
             <ScrollReveal delay={0.15}>
               <div className="mt-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
                 <CtaButton href="/demo" variant="primary" size="lg">
-                  See Retention Radar on a 30-min demo
+                  See Save Play on a 30-min demo
                 </CtaButton>
                 <CtaButton href="#signals" variant="ghost-champagne" withArrow>
                   Read the signals
@@ -210,7 +210,7 @@ export default function RetentionPage() {
             </ScrollReveal>
             <ScrollReveal delay={0.2}>
               <div className="mt-10 flex flex-wrap items-center gap-3">
-                <Pill tone="champagne">Engine 32 · Retention Radar</Pill>
+                <Pill tone="champagne">Engine 32 · Save Play</Pill>
                 <Pill tone="champagne">Engine 33 · LTV Ledger</Pill>
                 <Pill tone="moss">+18% NRR shipped</Pill>
               </div>
@@ -615,7 +615,7 @@ export default function RetentionPage() {
                     <span className="text-champagne-bright">Insight:</span> the
                     annual maintenance contract has 1.7x the LTV of weekly
                     mowing — but only if the cohort retains past month 14.
-                    Retention Radar makes that bet bankable.
+                    Save Play makes that bet bankable.
                   </div>
                 </div>
               </ScrollReveal>
@@ -639,7 +639,7 @@ export default function RetentionPage() {
                   We&apos;ve aggregated NRR data across hundreds of landscape
                   shops in the GladiusTurf ecosystem and our sister products.
                   Three benchmarks emerge — the median, the healthy line, and
-                  the top-shop ceiling. Retention Radar is the apparatus that
+                  the top-shop ceiling. Save Play is the apparatus that
                   moves you up the curve.
                 </p>
               </div>
@@ -685,7 +685,7 @@ export default function RetentionPage() {
               <div className="mt-12 text-center text-bone/65">
                 <p className="mx-auto max-w-2xl text-[15px] leading-[1.65]">
                   We move shops up the curve. Median customers who install
-                  Retention Radar see <span className="text-moss-bright">+18 percentage points of NRR</span> within
+                  Save Play see <span className="text-moss-bright">+18 percentage points of NRR</span> within
                   two quarters — without a sales hire, without a discount
                   reset, without a new ad budget.
                 </p>

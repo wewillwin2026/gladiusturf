@@ -62,7 +62,7 @@ export const COMPETITORS: Competitor[] = [
       {
         objection: "Aspire is rolling out AI in 2025.",
         response:
-          "Their AI hires were posted in 2025. Their shipped AI is a help-doc search and a property measurer. We shipped 33 native-AI revenue engines on day one — Quote Intercept, Ghost Recovery, Upsell Whisperer, ToneRadar, Cadence — running on Claude, not on a roadmap slide. The question isn't 'who has AI on the deck' — it's 'whose AI made you money this week?'",
+          "Their AI hires were posted in 2025. Their shipped AI is a help-doc search and a property measurer. We shipped 33 native-AI revenue engines on day one — Quote Intercept, Ghost Recovery, Upsell Whisperer, ToneRadar, The FollowUp — running on Claude, not on a roadmap slide. The question isn't 'who has AI on the deck' — it's 'whose AI made you money this week?'",
       },
     ],
   },
@@ -74,7 +74,7 @@ export const COMPETITORS: Competitor[] = [
     whySwitch: [
       "Crew app that doesn't delete job cards (offline-first PWA, 4.8★ vs LMN's 2.7★)",
       "33 engines vs. estimating + a basic CRM",
-      "Native AI (Cadence, Ghost Recovery, Upsell Whisperer) where LMN has none",
+      "Native AI (The FollowUp, Ghost Recovery, Upsell Whisperer) where LMN has none",
     ],
     weaknessKeywords: [
       "buggy crew app",
@@ -229,7 +229,7 @@ export const COMPETITORS: Competitor[] = [
       {
         objection: "WorkWave just shipped Customer Notifications.",
         response:
-          "An automated SMS sender is 2018 technology. We ship Cadence — adaptive AI sequences that detect ghosted quotes and write the next message in your tone. Customer Notifications sends a reminder. Cadence wins the deal. And our app doesn't make you log in five times a day on a mowing day.",
+          "An automated SMS sender is 2018 technology. We ship The FollowUp — adaptive AI sequences that detect ghosted quotes and write the next message in your tone. Customer Notifications sends a reminder. The FollowUp wins the deal. And our app doesn't make you log in five times a day on a mowing day.",
       },
     ],
   },
@@ -265,7 +265,7 @@ export const COMPETITORS: Competitor[] = [
       {
         objection: "Arborgold just launched Messaging — they're catching up.",
         response:
-          "Messaging in 2025 means everyone has it — that's the floor. Our floor includes ToneRadar (detects the angry-customer tone before you reply), Cadence (writes the next message in your voice), and Quote Intercept (recovers the dead estimate). Catching up on SMS isn't a roadmap, it's debt service.",
+          "Messaging in 2025 means everyone has it — that's the floor. Our floor includes ToneRadar (detects the angry-customer tone before you reply), The FollowUp (writes the next message in your voice), and Quote Intercept (recovers the dead estimate). Catching up on SMS isn't a roadmap, it's debt service.",
       },
       {
         objection:

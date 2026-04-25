@@ -28,7 +28,7 @@ export const TIERS: Tier[] = [
   {
     id: "professional",
     name: "Professional",
-    tagline: "For the 2–10 crew shop that wants to compound.",
+    tagline: "For the 2–10 crew shop ready to add a truck without adding chaos.",
     price: 997,
     period: "/ crew / mo",
     featured: true,

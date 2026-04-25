@@ -73,7 +73,7 @@ const PROBLEM_STATS = [
   {
     value: 33,
     suffix: " engines",
-    label: "across five tiers — one operating system that closes every leak",
+    label: "across five layers — one system that closes every leak",
   },
 ];
 
@@ -147,12 +147,12 @@ const PRODUCT_BLOCKS: ProductBlock[] = [
     mock: "portal",
   },
   {
-    eyebrow: "Cadence",
+    eyebrow: "The FollowUp",
     icon: <CalendarClock className="h-3 w-3" />,
-    headline: "The follow-up brain that catches what the office misses.",
-    body: "Post-service feedback fires within six hours. Late-payment cadences warm before they escalate — Day 3, Day 7, Day 14, then a human handoff with full context. NOAA-timed seasonal reminders pull from Site Memory so every message reads like the owner wrote it.",
+    headline: "The follow-up that catches what the office misses.",
+    body: "Post-service check-ins fire within six hours. Late-invoice nudges warm before they escalate — Day 3, Day 7, Day 14, then a human handoff with full context. NOAA-timed seasonal reminders pull from Site Memory so every message reads like the owner wrote it.",
     bullets: [
-      "Late-payment cadence recovers $12,800/mo on average",
+      "Late-invoice follow-up recovers $12,800/mo on average",
       "Day 3 / Day 7 / Day 14 warm before human handoff",
       "Seasonal reminders timed to NOAA, scripted from Site Memory",
     ],
@@ -237,7 +237,7 @@ function CadenceMock() {
     <div className="flex h-full w-full flex-col gap-3 rounded-lg bg-forest-mid/60 p-4 text-left">
       <div className="flex items-center justify-between">
         <span className="font-serif text-sm font-semibold text-moss-bright">
-          Cadence · Late invoice $1,840
+          The FollowUp · Late invoice $1,840
         </span>
         <span className="rounded-full bg-moss/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.2em] text-moss-bright">
           Active
