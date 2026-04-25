@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useInView, useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "framer-motion";
 
 interface AnimatedCounterProps {
   /** The final numeric value. */
@@ -18,8 +18,9 @@ interface AnimatedCounterProps {
 }
 
 /**
- * Counts up to `value` when scrolled into view. Respects reduced motion
- * (jumps straight to the final value).
+ * Counts up to `value` when scrolled into view. Uses a direct IntersectionObserver
+ * (framer-motion's useInView was silently failing on hydration; the manual observer
+ * is deterministic). Respects reduced motion — jumps to final value.
  */
 export function AnimatedCounter({
   value,
@@ -30,34 +31,61 @@ export function AnimatedCounter({
   className,
 }: AnimatedCounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
   const reduce = useReducedMotion();
   const [display, setDisplay] = useState(reduce ? value : 0);
+  const startedRef = useRef(false);
 
   useEffect(() => {
-    if (!inView || reduce) {
-      if (reduce) setDisplay(value);
+    if (reduce) {
+      setDisplay(value);
       return;
     }
+    const node = ref.current;
+    if (!node) return;
 
-    let raf = 0;
-    const start = performance.now();
-    const from = 0;
+    const start = () => {
+      if (startedRef.current) return;
+      startedRef.current = true;
 
-    const tick = (now: number) => {
-      const elapsed = now - start;
-      const progress = Math.min(elapsed / duration, 1);
-      // easeOutExpo
-      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-      setDisplay(from + (value - from) * eased);
-      if (progress < 1) {
-        raf = requestAnimationFrame(tick);
-      }
+      let raf = 0;
+      const t0 = performance.now();
+      const tick = (now: number) => {
+        const elapsed = now - t0;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+        setDisplay(value * eased);
+        if (progress < 1) raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+      return () => cancelAnimationFrame(raf);
     };
 
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [inView, value, duration, reduce]);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          start();
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "-60px 0px", threshold: 0.01 }
+    );
+    observer.observe(node);
+
+    // Fallback safety: if the observer hasn't fired within 1s but the element
+    // is already in the viewport (hydration race), kick the animation manually.
+    const fallback = setTimeout(() => {
+      if (startedRef.current) return;
+      const rect = node.getBoundingClientRect();
+      const inViewport =
+        rect.top < window.innerHeight && rect.bottom > 0;
+      if (inViewport) start();
+    }, 1000);
+
+    return () => {
+      observer.disconnect();
+      clearTimeout(fallback);
+    };
+  }, [value, duration, reduce]);
 
   const formatted = display.toLocaleString("en-US", {
     minimumFractionDigits: decimals,

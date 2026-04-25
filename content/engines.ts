@@ -312,7 +312,7 @@ export const ENGINES: Engine[] = [
     outcome: "churn predicted 60 days out · +18% NRR",
     description:
       "Watches every customer for churn signals: payment delays, response-time decay (ToneRadar feed), seasonal lapse, declining service revenue, increasing complaint count. Predicts churn 60 days out with a confidence score. Triggers a save play (Cadence personalized cadence + crew chief outreach) before the customer cancels. Net Revenue Retention is the only metric we obsess over.",
-    tier: "intelligence",
+    tier: "marketplace",
   },
   {
     number: "33",
@@ -321,6 +321,6 @@ export const ENGINES: Engine[] = [
     outcome: "true LTV per customer · payback by segment",
     description:
       "Per-customer lifetime value computed from real revenue minus real cost (Job Costing feed). Cohort analysis: Q2 2025 customers vs Q2 2026. Segment ROI: weekly mowing customers vs hardscape one-offs vs fert programs. Payback period by acquisition source. The first time landscape ops have known what their customers are actually worth.",
-    tier: "intelligence",
+    tier: "marketplace",
   },
 ];

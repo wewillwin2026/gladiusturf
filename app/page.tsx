@@ -61,7 +61,7 @@ const PROBLEM_STATS = [
     accent: true,
   },
   {
-    value: 21000,
+    value: 5400,
     prefix: "$",
     label: "lost to missed calls per month at the average shop",
   },
@@ -377,8 +377,8 @@ export default function HomePage() {
 
             <ScrollReveal delay={0.2}>
               <p className="mt-8 text-center text-xs text-bone/40">
-                Sources: Aspire 2026 Commercial Landscape Industry Report;
-                founding-crew pipeline audits, 2026.
+                Source: Gladius founding crew pipeline audits, 2026. Modeled
+                across 12 shops, $1M-$5M ARR, audited Q1 2026.
               </p>
             </ScrollReveal>
           </div>

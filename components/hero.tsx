@@ -77,7 +77,7 @@ export function Hero() {
               {...fadeUp(0.1)}
               className="font-serif text-5xl font-semibold leading-[1.05] tracking-[-0.02em] text-bone md:text-7xl"
             >
-              Your software books the job.
+              Software books the job.
               <br className="hidden sm:block" />
               <span className="text-moss-bright">We close the revenue.</span>
             </motion.h1>
