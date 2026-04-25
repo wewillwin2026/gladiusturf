@@ -67,7 +67,7 @@ export function Hero() {
             {...fadeUp(0.15)}
             className="mx-auto mt-8 max-w-2xl text-lg text-bone/70 md:text-xl"
           >
-            Twenty-seven engines across five tiers — revenue, lifecycle,
+            Thirty-three engines across five tiers — revenue, lifecycle,
             intelligence, operations, marketplace. The first landscaping
             operating system that gets smarter every night.
           </motion.p>

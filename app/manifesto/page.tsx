@@ -28,8 +28,8 @@ const COMMANDMENTS: { headline: string; body: string }[] = [
     body: "The average shop sends quotes that never close, never die, and never get a second touch. That pile is six figures a year, sitting in an inbox, paying nobody. The first job of this software is to make sure no quote ever gets forgotten again.",
   },
   {
-    headline: "One spine, nine engines. Not one app per workflow.",
-    body: "Your shop is not nine shops. Quoting, scheduling, routing, chemicals, billing, retention, and surplus are one business — they share a customer, a property, a crew, and a clock. We refuse to ship a stack of disconnected tools that pretend otherwise.",
+    headline: "One spine, thirty-three engines. Not one app per workflow.",
+    body: "Your shop is not thirty-three shops. Quoting, scheduling, routing, chemicals, billing, books, payroll, retention, and surplus are one business — they share a customer, a property, a crew, and a clock. We refuse to ship a stack of disconnected tools that pretend otherwise.",
   },
   {
     headline: "Per-crew pricing or it's a tax on growth.",
@@ -156,7 +156,7 @@ export default function ManifestoPage() {
               </p>
               <p>
                 We&apos;re building the opposite. GladiusTurf is one spine,
-                nine engines, priced per crew, designed for the foreman first
+                thirty-three engines, priced per crew, designed for the foreman first
                 and the office second. It is not a CRM. A CRM is a rolodex
                 with a calendar bolted on. What landscape shops actually need
                 is a system that watches the property, watches the crew,

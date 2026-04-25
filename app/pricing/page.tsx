@@ -10,12 +10,12 @@ import { BDC_ADDON, TIERS } from "@/content/pricing";
 
 export const metadata: Metadata = {
   title:
-    "Pricing — All twenty-seven engines on every plan. Per crew, no per-seat tax.",
+    "Pricing — All thirty-three engines on every plan. Per crew, no per-seat tax.",
   description:
-    "GladiusTurf pricing: $397 Independent, $997 Professional, $2,997 Enterprise per crew per month. All twenty-seven engines on every plan, including Field Crew App PWA, Client Portal, Cadence, and the LRI Score. Optional $499 BDC addon for manned weekend phone coverage.",
+    "GladiusTurf pricing: $397 Independent, $997 Professional, $2,997 Enterprise per crew per month. All thirty-three engines on every plan, including Field Crew App PWA, Client Portal, Cadence, Books, Payroll, Retention Radar, and the LRI Score. Optional $499 BDC addon for manned weekend phone coverage.",
 };
 
-// Per-tier feature lists for the new 27-engine roster.
+// Per-tier feature lists for the 33-engine roster.
 // Held in page.tsx so we don't touch content/pricing.ts on this pass —
 // content TIERS still drives price + name, this controls the on-page bullets.
 const TIER_FEATURES: Record<
@@ -23,26 +23,27 @@ const TIER_FEATURES: Record<
   string[]
 > = {
   independent: [
-    "All 27 engines included",
+    "All 33 engines included",
     "Up to 1 crew (unlimited seats per crew)",
     "Field Crew App PWA",
     "Client Portal (white-labeled)",
-    "QuickBooks + Stripe + Twilio integrations",
-    "Email support",
+    "Books + Payroll + Tax Engine (no QuickBooks required)",
+    "Stripe + Twilio integrations",
     "Email + chat support, 1 business day response",
   ],
   professional: [
-    "All 27 engines included",
+    "All 33 engines included",
     "Up to 5 crews (unlimited seats per crew)",
     "All Independent features +",
     "Cortex autonomous hypothesis engine",
+    "Retention Radar + LTV Ledger",
     "Operator Score crew passports",
     "Multi-location dashboard",
     "Priority support, 4-hour response",
     "Dedicated CSM at month 3",
   ],
   enterprise: [
-    "All 27 engines + Enterprise extras",
+    "All 33 engines + Enterprise extras",
     "6+ crews, multi-location",
     "Custom integration builds",
     "Custom prompt registry (Cortex tenant)",
@@ -162,7 +163,7 @@ const FAQ: { q: string; a: string }[] = [
     a: "Most CRMs ship a basic 'send email at Day 7' rule. Cadence reads from Site Memory — the dog's name, the gate code, the back zone — and personalizes every touch. It's also tuned for landscaping rhythms (NOAA-timed seasonal reminders, applicator-aware messaging) instead of generic SaaS cadences.",
   },
   {
-    q: "Are all 27 engines really on every plan?",
+    q: "Are all 33 engines really on every plan?",
     a: "Yes. We don't believe in feature-tier extortion. Every plan ships every engine. Tiers differ on crew count, seats, support, and customization — not on what the AI can do for you.",
   },
   {
@@ -217,8 +218,8 @@ function ArrowRightIcon({ className }: { className?: string }) {
 const ENGINE_TIER_COUNTS: Record<string, number> = {
   revenue: 8,
   lifecycle: 6,
-  intelligence: 6,
-  operations: 5,
+  intelligence: 8,
+  operations: 9,
   marketplace: 2,
 };
 
@@ -265,7 +266,7 @@ export default function PricingPage() {
                 Flat per crew. No per-seat tax. No usage gotchas.
               </h1>
               <p className="mt-6 text-lg text-bone/60">
-                All twenty-seven engines on every plan. Per-crew flat pricing,
+                All thirty-three engines on every plan. Per-crew flat pricing,
                 no per-seat tax, no usage gotchas.
               </p>
             </div>
@@ -344,7 +345,7 @@ export default function PricingPage() {
                 </p>
                 <p className="mt-3 text-sm leading-[1.65] text-bone/60">
                   Built for the solo operator running one truck and one crew.
-                  All 27 engines on day one — including the Field Crew App PWA,
+                  All 33 engines on day one — including the Field Crew App PWA,
                   Client Portal, and the LRI Score. The same product the
                   $15M-revenue shops use, sized for a one-crew leak rate.
                   See <a href="/platform" className="text-moss-bright hover:text-bone">/platform</a>{" "}
@@ -575,7 +576,7 @@ export default function PricingPage() {
                 Platform tier breakdown
               </Eyebrow>
               <h2 className="font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
-                Twenty-seven engines, organized into five tiers.
+                Thirty-three engines, organized into five tiers.
               </h2>
               <p className="mt-4 text-base leading-[1.65] text-bone/60">
                 Every tier ships on every plan. Click any card to read the
@@ -694,7 +695,7 @@ export default function PricingPage() {
             <p className="mx-auto mt-6 max-w-2xl text-lg text-bone/60 md:text-xl">
               Screen-shared. We&apos;ll plug your route count and average
               ticket into the model and walk you through a 30/60/90 payback
-              across all 27 engines. No sales rep, no SDR — the founders run
+              across all 33 engines. No sales rep, no SDR — the founders run
               every demo until it stops scaling, and we&apos;re nowhere close.
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">

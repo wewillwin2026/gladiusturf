@@ -87,7 +87,7 @@ export default function DemoPage() {
                 You won&apos;t see a deck. You&apos;ll see GladiusTurf running
                 live against your own quote pipeline, your own customer list,
                 and the last 90 days of jobs you&apos;ve already done. We
-                screen-share the nine engines, point them at your numbers, and
+                screen-share the engines that move your numbers, point them at your data, and
                 read the recovered revenue out loud.
               </p>
               <p className="mt-6 max-w-xl text-lg leading-[1.6] text-bone/60">

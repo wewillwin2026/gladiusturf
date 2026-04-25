@@ -28,7 +28,7 @@ export const ENGINE_TIERS: EngineTier[] = [
     name: "Intelligence",
     tagline: "How the AI gets smarter every night.",
     blurb:
-      "Six engines that score every inquiry, read every message, remember every win, anchor every price, and benchmark every crew. Your software compounds while you sleep.",
+      "Eight engines that score every inquiry, read every message, remember every win, anchor every price, benchmark every crew, predict churn 60 days out, and compute true LTV. Your software compounds while you sleep.",
     accent: "moss",
   },
   {
@@ -36,7 +36,7 @@ export const ENGINE_TIERS: EngineTier[] = [
     name: "Operations",
     tagline: "How the crews actually execute.",
     blurb:
-      "Five engines for compliance, quality, crew reputation, offline field tooling, and per-job costing. The boring stuff that decides whether you make money.",
+      "Nine engines for compliance, quality, crew reputation, offline field tooling, per-job costing, books, expense capture, payroll, and tax. The boring stuff that decides whether you make money.",
     accent: "honey",
   },
   {

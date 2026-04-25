@@ -23,8 +23,17 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 
 export const metadata: Metadata = {
   description:
-    "GladiusTurf is the twenty-seven-engine landscaping operating system across five tiers — revenue, lifecycle, intelligence, operations, marketplace — that catches every forgotten quote, missed upsell, late invoice, and dropped referral your current stack is letting walk.",
+    "GladiusTurf is the thirty-three-engine landscaping operating system across five tiers — revenue, lifecycle, intelligence, operations, marketplace — that catches every forgotten quote, missed upsell, late invoice, and dropped referral your current stack is letting walk.",
 };
+
+const COMING_FROM = [
+  { slug: "aspire", name: "Aspire" },
+  { slug: "lmn", name: "LMN" },
+  { slug: "jobber", name: "Jobber" },
+  { slug: "service-autopilot", name: "Service Autopilot" },
+  { slug: "realgreen", name: "Real Green" },
+  { slug: "servicetitan", name: "ServiceTitan" },
+];
 
 const FOUNDING_CREWS = [
   { name: "Pinehurst Greens", region: "NC · 14 crews" },
@@ -47,7 +56,7 @@ const PROBLEM_STATS = [
     label: "lost to missed calls per month at the average shop",
   },
   {
-    value: 27,
+    value: 33,
     suffix: " engines",
     label: "across five tiers — one operating system that closes every leak",
   },
@@ -554,6 +563,28 @@ export default function HomePage() {
                   See full comparison
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal delay={0.2}>
+              <div className="mt-12 border-t border-bone/10 pt-10">
+                <p className="text-center text-[11px] font-semibold uppercase tracking-[0.22em] text-bone/45">
+                  Coming from
+                </p>
+                <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
+                  {COMING_FROM.map((c) => (
+                    <Link
+                      key={c.slug}
+                      href={`/vs/${c.slug}`}
+                      className="group inline-flex items-center gap-2 rounded-full border border-bone/10 bg-bone/[0.03] px-4 py-2 text-sm text-bone/75 transition-all hover:border-moss-bright/40 hover:bg-moss/10 hover:text-moss-bright"
+                    >
+                      <span className="text-bone/45 group-hover:text-moss-bright/70">
+                        vs.
+                      </span>
+                      {c.name}
+                      <ArrowRight className="h-3 w-3 -translate-x-0.5 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
+                    </Link>
+                  ))}
+                </div>
               </div>
             </ScrollReveal>
           </div>

@@ -24,7 +24,7 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 export const metadata: Metadata = {
   title: "Platform — The infrastructure GladiusTurf runs on",
   description:
-    "27 engines run on a serious platform: Clerk multi-tenant auth, tRPC type-safe API, Prisma + Postgres, Stripe Connect, Twilio voice + SMS, Resend email, Anthropic Claude AI orchestration, BullMQ async workers, Vercel + Railway deploy.",
+    "33 engines run on a serious platform: Clerk multi-tenant auth, tRPC type-safe API, Prisma + Postgres, Stripe Connect, Twilio voice + SMS, Resend email, Anthropic Claude AI orchestration, BullMQ async workers, Vercel + Railway deploy.",
 };
 
 type LayerCard = {
@@ -53,7 +53,7 @@ const LAYERS: LayerCard[] = [
   {
     index: "Layer 02",
     name: "Operating System",
-    tagline: "Twenty-seven engines, five tiers, one orchestrator.",
+    tagline: "Thirty-three engines, five tiers, one orchestrator.",
     body: "Every engine is a self-contained module — its own router, its own schema slice, its own background workers, its own AI prompts. The orchestrator threads them together: an inbound call hits Quote Intercept, fires the Cadence engine, opens a thread in WinMemory, checks Site Memory, scores intent, and queues an outbound SMS. Twenty milliseconds end-to-end. You see one timeline. The platform sees fourteen system calls.",
     bullets: [
       "tRPC routers — one per engine, all type-safe end-to-end",
@@ -301,7 +301,7 @@ export default function PlatformPage() {
             <ScrollReveal delay={0.05}>
               <h1 className="mt-4 max-w-5xl font-serif text-5xl font-semibold leading-[1.05] tracking-[-0.02em] text-bone md:text-7xl">
                 The boring tech that makes{" "}
-                <span className="text-moss-bright">27 engines</span> possible.
+                <span className="text-moss-bright">33 engines</span> possible.
               </h1>
             </ScrollReveal>
             <ScrollReveal delay={0.1}>

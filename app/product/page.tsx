@@ -11,12 +11,12 @@ import { ENGINE_TIERS, type EngineTier } from "@/content/engine-tiers";
 
 export const metadata: Metadata = {
   title:
-    "Product · 27 engines, 5 tiers, one operating system for landscaping",
+    "Product · 33 engines, 5 tiers, one operating system for landscaping",
   description:
-    "GladiusTurf is the first landscaping platform built like a CRM and a BDC stack — 27 AI-orchestrated engines across Revenue, Lifecycle, Intelligence, Operations and Marketplace. Retire your other six tools by month two.",
+    "GladiusTurf is the first landscaping platform built like a CRM and a BDC stack — 33 AI-orchestrated engines across Revenue, Lifecycle, Intelligence, Operations and Marketplace. Retire your other six tools by month two.",
 };
 
-// ─── Engine data (27 engines tagged by tier) ───────────────────────
+// ─── Engine data (33 engines tagged by tier) ───────────────────────
 //
 // This data is intentionally co-located with the deep-dive copy this
 // page renders. Sister agent maintains the canonical short-form list
@@ -248,7 +248,7 @@ const ENGINES_FULL: ProductEngine[] = [
     ],
   },
 
-  // ───── Intelligence (6) ─────
+  // ───── Intelligence (8) ─────
   {
     number: "15",
     slug: "intent-scorer",
@@ -339,8 +339,38 @@ const ENGINES_FULL: ProductEngine[] = [
       "Feeds Cadence and Referral Radar so retention compounds",
     ],
   },
+  {
+    number: "32",
+    slug: "retention-radar",
+    name: "Retention Radar",
+    outcome: "churn predicted 60 days out · +18% NRR",
+    tier: "intelligence",
+    description:
+      "Retention Radar watches every customer for the early signals of churn — payment delays, response-time decay (ToneRadar feed), seasonal lapse, declining service revenue, increasing complaint count — and predicts churn sixty days out with a confidence score. The moment a customer drifts into the at-risk band, Cadence fires a personalized save play and the foreman's queue surfaces a save call before the customer ever picks up the phone to cancel.",
+    features: [
+      "Sixty-day churn forecast per customer with confidence score",
+      "Auto-fires Cadence save plays the moment the at-risk band trips",
+      "Per-crew save queue surfaces the live calls foremen should make today",
+      "Net Revenue Retention dashboard — the only metric we obsess over",
+    ],
+  },
+  {
+    number: "33",
+    slug: "ltv-ledger",
+    name: "LTV Ledger",
+    outcome: "true LTV per customer · payback by segment",
+    tier: "intelligence",
+    description:
+      "Per-customer lifetime value computed from real revenue minus real cost — not a marketing-deck average. LTV Ledger pulls from Job Costing for true cost-of-service, runs cohort analysis (Q2 2025 vs Q2 2026 customers), and segments ROI by service line (weekly mowing vs hardscape one-offs vs fert programs) and acquisition source. The first time landscape ops have known what their customers are actually worth.",
+    features: [
+      "Per-customer true LTV from real revenue minus real cost (Job Costing feed)",
+      "Cohort analysis — quarter-over-quarter customer-cohort comparisons",
+      "Per-service-line ROI: mowing, hardscape, fert, snow, irrigation",
+      "Payback period by acquisition source — finally measurable, finally honest",
+    ],
+  },
 
-  // ───── Operations (5) ─────
+  // ───── Operations (9) ─────
   {
     number: "21",
     slug: "safety-shield",
@@ -414,6 +444,66 @@ const ENGINES_FULL: ProductEngine[] = [
       "Per-service margin curve so you know which ones to retire",
       "Per-crew profitability — labor, drive time, redo cost",
       "Plays back into Quote Intercept's pricing engine in real time",
+    ],
+  },
+  {
+    number: "28",
+    slug: "books",
+    name: "Books",
+    outcome: "real-time P&L · zero double-entry",
+    tier: "operations",
+    description:
+      "First-party general ledger built for landscape ops — not a QuickBooks bolt-on. Every paid invoice, every Stripe payout, every Surplus Yard sale, every fuel receipt flows into a real chart of accounts in real time. AI categorizes expenses from a photo of the receipt, no clerk needed. P&L by service line (mowing / fert / hardscape / snow), per-crew, per-property. Audit-ready balance sheet on demand.",
+    features: [
+      "Native general ledger — not a sync, not a bolt-on",
+      "Real-time P&L by service line, crew, and property",
+      "Receipt-photo to journal-entry in under twenty seconds",
+      "Audit-ready balance sheet, cash flow, and accrual reports",
+    ],
+  },
+  {
+    number: "29",
+    slug: "expense-brain",
+    name: "Expense Brain",
+    outcome: "97% auto-categorized · 4-hr admin/wk reclaimed",
+    tier: "operations",
+    description:
+      "Photograph a fuel receipt, mulch invoice, or equipment repair bill — Expense Brain reads it (Claude vision), categorizes it (Fuel / Materials / Equipment / Subcontractor), matches it to the right job (Job Costing knows which crew was where), and posts the journal entry. The four-hour weekly bookkeeping huddle becomes a fifteen-minute review. Your office manager goes home on Friday.",
+    features: [
+      "Claude-vision receipt parsing — vendor, amount, line items",
+      "Auto-matches receipts to jobs via crew GPS + timestamp",
+      "Per-category, per-vendor, per-crew expense rollups",
+      "97% auto-categorization — humans review only the unsure ones",
+    ],
+  },
+  {
+    number: "30",
+    slug: "payroll",
+    name: "Payroll",
+    outcome: "GPS-verified hours · W-2 + 1099 ready",
+    tier: "operations",
+    description:
+      "Crew hours pulled from Field Crew App GPS clock-in / clock-out — no more paper time sheets, no more 'I was there at 7' disputes. Multi-state tax tables, OT calc, prevailing-wage rules for municipal jobs. W-2 export for full-time crews, 1099-NEC for subcontractors with vendor TIN collection on first job. The shop owner who used to spend Sunday night reconciling timecards gets Sunday night back.",
+    features: [
+      "GPS-verified hours from Field Crew App clock-in / clock-out",
+      "Multi-state tax tables, OT, and prevailing-wage rules",
+      "W-2 + 1099-NEC export with vendor TIN collection",
+      "Direct deposit, paystub portal, and end-of-year packets",
+    ],
+  },
+  {
+    number: "31",
+    slug: "tax-engine",
+    name: "Tax Engine",
+    outcome: "sales tax by ZIP · mileage log · 1099-NEC",
+    tier: "operations",
+    description:
+      "Sales tax calculated on every invoice by jurisdiction (Stripe Tax integrated, every county). Per-vehicle mileage log auto-generated from GPS data. Schedule C and Schedule E summaries on demand. 1099-NEC packets for the subcontractor cohort prepped by January 15. The first time landscape shops have not dreaded April.",
+    features: [
+      "Per-jurisdiction sales tax (Stripe Tax) on every invoice",
+      "Per-vehicle GPS-driven mileage log — IRS-ready",
+      "Schedule C / E summaries available on demand",
+      "1099-NEC packets prepped and dispatched by Jan 15",
     ],
   },
 
@@ -548,7 +638,7 @@ export default function ProductPage() {
             <ScrollReveal>
               <Pill tone="honey">The product</Pill>
               <h1 className="mt-6 max-w-5xl font-serif text-5xl tracking-[-0.02em] text-bone md:text-7xl">
-                Twenty-seven engines.{" "}
+                Thirty-three engines.{" "}
                 <span className="text-moss-bright">Five tiers.</span>{" "}
                 <span className="text-bone/40">One operating system.</span>
               </h1>
@@ -579,7 +669,7 @@ export default function ProductPage() {
                 <span className="text-bone/40">They&rsquo;re a vertical.</span>
               </h2>
               <p className="mt-6 max-w-3xl text-lg leading-[1.6] text-bone/60">
-                Five tiers, twenty-seven engines, one shared data spine. Every
+                Five tiers, thirty-three engines, one shared data spine. Every
                 quote, every schedule, every crew note, every invoice, every
                 review, every payment feeds the next loop. There is no
                 double-entry. There is no &ldquo;export to CSV.&rdquo; There is
@@ -730,7 +820,7 @@ export default function ProductPage() {
               <div className="mx-auto max-w-3xl text-center">
                 <Eyebrow tone="moss">Architecture</Eyebrow>
                 <h2 className="mt-4 font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
-                  Twenty-seven engines.{" "}
+                  Thirty-three engines.{" "}
                   <span className="text-moss-bright">One spine.</span>
                 </h2>
                 <p className="mt-6 text-lg leading-[1.6] text-bone/60">

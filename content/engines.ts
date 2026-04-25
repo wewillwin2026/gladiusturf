@@ -267,4 +267,60 @@ export const ENGINES: Engine[] = [
       "Retiring foreman records a video on overseeding cadence. Auto-transcribed, tagged, indexed. New crew lead searches \"spring fert timing\" — gets the 3 most relevant clips with timestamps. Tribal knowledge becomes company memory.",
     tier: "marketplace",
   },
+
+  // ─── Books · Payroll · Retention (first-party financial spine) ───
+  {
+    number: "28",
+    slug: "books",
+    name: "Books",
+    outcome: "real-time P&L · zero double-entry",
+    description:
+      "First-party general ledger built for landscape ops. Every paid invoice, every Stripe payout, every Surplus Yard sale, every fuel receipt flows into a real chart of accounts in real time. AI categorizes expenses from a photo of the receipt — no clerk needed. P&L by service line (mowing / fert / hardscape / snow), per-crew, per-property. Audit-ready balance sheet on demand.",
+    tier: "operations",
+  },
+  {
+    number: "29",
+    slug: "expense-brain",
+    name: "Expense Brain",
+    outcome: "97% auto-categorized · 4-hr admin/wk reclaimed",
+    description:
+      "Photograph a fuel receipt, mulch invoice, equipment repair bill — Expense Brain reads it (Claude vision), categorizes it (Fuel / Materials / Equipment / Subcontractor), matches it to the right job (Job Costing engine knows which crew was where), and posts the journal entry. The 4-hour weekly bookkeeping huddle becomes a 15-minute review.",
+    tier: "operations",
+  },
+  {
+    number: "30",
+    slug: "payroll",
+    name: "Payroll",
+    outcome: "GPS-verified hours · W-2 + 1099 ready",
+    description:
+      "Crew hours pulled from Field Crew App GPS clock-in / clock-out (no more paper time sheets, no more 'I was there at 7' disputes). Multi-state tax tables, OT calc, prevailing-wage rules for municipal jobs. W-2 export for full-time crews. 1099-NEC for subcontractors, with vendor TIN collection on first job.",
+    tier: "operations",
+  },
+  {
+    number: "31",
+    slug: "tax-engine",
+    name: "Tax Engine",
+    outcome: "sales tax by ZIP · mileage log · 1099-NEC",
+    description:
+      "Sales tax calculated on every invoice by jurisdiction (Stripe Tax integrated, every county). Per-vehicle mileage log auto-generated from GPS data. Schedule C / Schedule E summaries on demand. 1099-NEC packets for the subcontractor cohort prepped by Jan 15.",
+    tier: "operations",
+  },
+  {
+    number: "32",
+    slug: "retention-radar",
+    name: "Retention Radar",
+    outcome: "churn predicted 60 days out · +18% NRR",
+    description:
+      "Watches every customer for churn signals: payment delays, response-time decay (ToneRadar feed), seasonal lapse, declining service revenue, increasing complaint count. Predicts churn 60 days out with a confidence score. Triggers a save play (Cadence personalized cadence + crew chief outreach) before the customer cancels. Net Revenue Retention is the only metric we obsess over.",
+    tier: "intelligence",
+  },
+  {
+    number: "33",
+    slug: "ltv-ledger",
+    name: "LTV Ledger",
+    outcome: "true LTV per customer · payback by segment",
+    description:
+      "Per-customer lifetime value computed from real revenue minus real cost (Job Costing feed). Cohort analysis: Q2 2025 customers vs Q2 2026. Segment ROI: weekly mowing customers vs hardscape one-offs vs fert programs. Payback period by acquisition source. The first time landscape ops have known what their customers are actually worth.",
+    tier: "intelligence",
+  },
 ];

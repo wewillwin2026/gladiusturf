@@ -395,7 +395,7 @@ export default function IntegrationsPage() {
                   have to relearn anything on Monday morning.
                 </p>
                 <p className="mt-5 text-base leading-[1.65] text-bone/60 md:text-lg">
-                  The 27 engines layer on top of what you have — Quote
+                  The 33 engines layer on top of what you have — Quote
                   Intercept reading from your existing CRM, Cadence dialing
                   through your existing Twilio account, Site Memory pulling
                   from CompanyCam photos. Over time, the engines replace what

@@ -1,23 +1,43 @@
 import { LogoMark } from "@/components/logo-mark";
 
 const PRODUCT_LINKS = [
-  { href: "/product", label: "Nine engines" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/compare", label: "Compare" },
+  { href: "/product", label: "Engines" },
+  { href: "/platform", label: "Platform" },
+  { href: "/field", label: "Field Crew App" },
+  { href: "/portal", label: "Client Portal" },
+  { href: "/score", label: "LRI Score" },
   { href: "/surplus-yard", label: "Surplus Yard" },
+  { href: "/find-a-crew", label: "Find a Crew" },
+];
+
+const BOOKS_LINKS = [
+  { href: "/books", label: "Books" },
+  { href: "/payroll", label: "Payroll" },
+  { href: "/retention", label: "Retention" },
 ];
 
 const RESOURCES_LINKS = [
+  { href: "/pricing", label: "Pricing" },
+  { href: "/compare", label: "Compare" },
+  { href: "/integrations", label: "Integrations" },
+  { href: "/security", label: "Security" },
   { href: "/manifesto", label: "Manifesto" },
-  { href: "/find-a-crew", label: "Find a crew" },
-  { href: "/demo", label: "Book a demo" },
 ];
 
 const COMPANY_LINKS = [
+  { href: "/demo", label: "Book a demo" },
   { href: "mailto:founders@gladiusturf.com", label: "Email the founder" },
   { href: "tel:+18134420253", label: "Call (813) 442-0253" },
   { href: "https://gladiusstone.com", label: "GladiusStone" },
   { href: "https://gladiuscrm.com", label: "GladiusCRM" },
+];
+
+const VERSUS_LINKS = [
+  { href: "/vs/aspire", label: "vs. Aspire" },
+  { href: "/vs/lmn", label: "vs. LMN" },
+  { href: "/vs/jobber", label: "vs. Jobber" },
+  { href: "/vs/service-autopilot", label: "vs. Service Autopilot" },
+  { href: "/vs/servicetitan", label: "vs. ServiceTitan" },
 ];
 
 const LEGAL_LINKS = [
@@ -58,12 +78,12 @@ export function Footer() {
   return (
     <footer className="border-t border-bone/10 bg-forest-deep text-bone">
       <div className="mx-auto max-w-7xl px-6 py-20">
-        <div className="grid grid-cols-2 gap-12 md:grid-cols-5">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-12 md:grid-cols-7">
           <div className="col-span-2 md:col-span-2">
             <LogoMark size={40} theme="dark" tone="bone" withWordmark />
             <p className="mt-6 max-w-xs text-[13px] leading-[1.6] text-bone/60">
-              Landscaping Revenue Intelligence. Nine engines for crew owners
-              done leaking revenue to the gaps in their software.
+              Landscaping Revenue Intelligence. Thirty-three engines for crew
+              owners done leaking revenue to the gaps in their software.
             </p>
             <div className="mt-6 flex items-center gap-4 text-[12px] text-bone/50">
               <a
@@ -96,8 +116,10 @@ export function Footer() {
             </div>
           </div>
           <Column title="Product" links={PRODUCT_LINKS} />
+          <Column title="Books" links={BOOKS_LINKS} />
           <Column title="Resources" links={RESOURCES_LINKS} />
           <Column title="Company" links={COMPANY_LINKS} />
+          <Column title="Versus" links={VERSUS_LINKS} />
         </div>
 
         <div className="mt-16 flex flex-col gap-4 border-t border-bone/10 pt-10 md:flex-row md:items-center md:justify-between">

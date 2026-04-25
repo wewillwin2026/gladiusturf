@@ -8,9 +8,9 @@ import { Nav } from "@/components/nav";
 
 export const metadata: Metadata = {
   title:
-    "Why crews leave Aspire, LMN, Service Autopilot, and Jobber — 27-engine comparison",
+    "Why crews leave Aspire, LMN, Service Autopilot, and Jobber — 33-engine comparison",
   description:
-    "An honest, side-by-side comparison of GladiusTurf's 27 engines vs. Aspire, LMN, Service Autopilot, Jobber, and Real Green. Includes the Field Crew App PWA, Client Portal, LRI Score, and the intelligence engines (Intent Scorer, UrgencySync, WinMemory) competitors don't ship at all.",
+    "An honest, side-by-side comparison of GladiusTurf's 33 engines vs. Aspire, LMN, Service Autopilot, Jobber, and Real Green. Includes the Field Crew App PWA, Client Portal, LRI Score, native Books + Payroll, Retention Radar, and the intelligence engines (Intent Scorer, UrgencySync, WinMemory) competitors don't ship at all.",
 };
 
 type Support = "yes" | "partial" | "no";
@@ -355,7 +355,7 @@ const FEATURE_SECTIONS: FeatureSection[] = [
       {
         feature: "Switch from spreadsheets in 7 days",
         detail:
-          "Guided import from QuickBooks, Google Sheets, or paper route sheets — all 27 engines live on day 7",
+          "Guided import from QuickBooks, Google Sheets, or paper route sheets — all 33 engines live on day 7",
         gladius: "yes",
         aspire: "no",
         lmn: "partial",
@@ -530,8 +530,8 @@ const STEPS = [
   },
   {
     week: "Week 1",
-    title: "Data normalization + all 27 engines live",
-    body: "Our import team maps your customers, properties, services, crews, and 12 months of revenue into GladiusTurf. By day 7 every one of the 27 engines is firing on your data — Quote Intercept, the Field Crew App PWA, Intent Scorer, the LRI Score, all of it.",
+    title: "Data normalization + all 33 engines live",
+    body: "Our import team maps your customers, properties, services, crews, and 12 months of revenue into GladiusTurf. By day 7 every one of the 33 engines is firing on your data — Quote Intercept, the Field Crew App PWA, Intent Scorer, Books, Payroll, Retention Radar, the LRI Score, all of it.",
   },
   {
     week: "Week 2",
@@ -559,7 +559,7 @@ export default function ComparePage() {
         <section className="border-b border-bone/10 bg-forest-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <Eyebrow tone="honey" className="mb-6">
-              Compare · 27 engines
+              Compare · 33 engines
             </Eyebrow>
             <h1 className="max-w-5xl font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-6xl">
               Why crews are leaving Aspire, LMN, Service Autopilot, and Jobber.
@@ -573,7 +573,7 @@ export default function ComparePage() {
                 keep working.
               </p>
               <p>
-                What we are is the 27-engine revenue and operations layer that
+                What we are is the 33-engine revenue and operations layer that
                 sits on top of (or in place of) the legacy stack. That includes
                 the Field Crew App PWA, a white-labeled Client Portal, the LRI
                 Score nightly benchmark, and a full intelligence tier — Intent
@@ -593,7 +593,7 @@ export default function ComparePage() {
                 Feature by feature
               </Eyebrow>
               <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
-                Twenty-seven engines, organized into five tiers, against the
+                Thirty-three engines, organized into five tiers, against the
                 legacy stack.
               </h2>
               <p className="mt-4 text-lg text-bone/60">
@@ -622,7 +622,7 @@ export default function ComparePage() {
                           GladiusTurf
                         </div>
                         <div className="mt-1 text-[10px] font-medium uppercase tracking-wider text-moss-bright/70">
-                          27-engine layer
+                          33-engine layer
                         </div>
                       </th>
                       <th className="py-5 text-center">
@@ -872,7 +872,7 @@ export default function ComparePage() {
                         Where GladiusTurf is the better fit
                       </p>
                       <h4 className="mt-4 font-serif text-2xl font-semibold text-bone">
-                        Twenty-seven engines the legacy stack does not ship.
+                        Thirty-three engines the legacy stack does not ship.
                       </h4>
                       <ul className="mt-6 grid gap-4">
                         {c.weaknesses.map((w) => (
@@ -905,7 +905,7 @@ export default function ComparePage() {
                 30-day switch
               </Eyebrow>
               <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
-                All 27 engines live by day 7. Most crews on GladiusTurf inside
+                All 33 engines live by day 7. Most crews on GladiusTurf inside
                 two weeks.
               </h2>
               <p className="mt-4 text-lg text-bone/60">
@@ -992,7 +992,7 @@ export default function ComparePage() {
                   href="/platform"
                   className="inline-flex items-center gap-2 rounded-lg border border-moss/40 px-6 py-3 text-sm font-semibold text-moss-bright transition-colors hover:bg-moss/10"
                 >
-                  Browse all 27 engines →
+                  Browse all 33 engines →
                 </a>
               </div>
             </div>
