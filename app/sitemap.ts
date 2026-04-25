@@ -21,6 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/books",
     "/payroll",
     "/retention",
+    "/roi",
   ];
 
   // /vs/[slug] — one entry per competitor (excludes the noindexed

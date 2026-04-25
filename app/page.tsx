@@ -572,7 +572,7 @@ export default function HomePage() {
             </ScrollReveal>
             <ScrollReveal delay={0.15}>
               <Link
-                href="/pricing"
+                href="/roi"
                 className="group mt-10 inline-flex items-center gap-2 rounded-full border border-champagne-bright/40 bg-champagne/5 px-7 py-3.5 text-base font-medium text-champagne-bright transition-all hover:border-champagne-bright hover:bg-champagne/10"
               >
                 Run your numbers
