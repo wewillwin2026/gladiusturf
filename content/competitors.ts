@@ -62,7 +62,7 @@ export const COMPETITORS: Competitor[] = [
       {
         objection: "Aspire is rolling out AI in 2025.",
         response:
-          "Their AI hires were posted in 2025. Their shipped AI is a help-doc search and a property measurer. We shipped 27 native-AI revenue engines on day one — Quote Intercept, Ghost Recovery, Upsell Whisperer, ToneRadar, Cadence — running on Claude, not on a roadmap slide. The question isn't 'who has AI on the deck' — it's 'whose AI made you money this week?'",
+          "Their AI hires were posted in 2025. Their shipped AI is a help-doc search and a property measurer. We shipped 33 native-AI revenue engines on day one — Quote Intercept, Ghost Recovery, Upsell Whisperer, ToneRadar, Cadence — running on Claude, not on a roadmap slide. The question isn't 'who has AI on the deck' — it's 'whose AI made you money this week?'",
       },
     ],
   },
@@ -103,7 +103,7 @@ export const COMPETITORS: Competitor[] = [
       {
         objection: "We pay $199 for LMN Pro — you'll cost more.",
         response:
-          "Check your invoice — LMN list moved to $297 Starter / $598 Pro in 2026, plus per-user. We're $397/crew (not user) for all 27 engines. At three crews you've passed the LMN Pro list. And LMN's 30-day cancellation usage fee is in your contract today — leaving us is free.",
+          "Check your invoice — LMN list moved to $297 Starter / $598 Pro in 2026, plus per-user. We're $397/crew (not user) for all 33 engines. At three crews you've passed the LMN Pro list. And LMN's 30-day cancellation usage fee is in your contract today — leaving us is free.",
       },
     ],
   },
@@ -145,7 +145,7 @@ export const COMPETITORS: Competitor[] = [
       {
         objection: "Service Autopilot has Genius AI.",
         response:
-          "Pull up their 2025 release notes — Genius AI isn't in any of them. The release shipped Tickets, Wizards, and renames. We shipped 27 AI-native engines. Quote Intercept alone recovers more revenue per quarter than Service Autopilot's AI does in 12 months because it actually exists.",
+          "Pull up their 2025 release notes — Genius AI isn't in any of them. The release shipped Tickets, Wizards, and renames. We shipped 33 AI-native engines. Quote Intercept alone recovers more revenue per quarter than Service Autopilot's AI does in 12 months because it actually exists.",
       },
     ],
   },
@@ -182,7 +182,7 @@ export const COMPETITORS: Competitor[] = [
         objection:
           "Jobber works for everyone in home services. We've used it for years.",
         response:
-          "Generic is the bug. Jobber doesn't know that mowing-day scheduling is weather-bound, that your applicators need state license tracking, or that the riding mower is on truck 3. Safety Shield, Weather Pivot, and Equipment-Aware Routing all assume your business is landscape, not 'home services.' That's why the per-crew price beats your $589 Connect Team bill before our 27 engines kick in.",
+          "Generic is the bug. Jobber doesn't know that mowing-day scheduling is weather-bound, that your applicators need state license tracking, or that the riding mower is on truck 3. Safety Shield, Weather Pivot, and Equipment-Aware Routing all assume your business is landscape, not 'home services.' That's why the per-crew price beats your $589 Connect Team bill before our 33 engines kick in.",
       },
       {
         objection: "Jobber is monthly, no lock-in. We can leave anytime.",
@@ -302,7 +302,7 @@ export const COMPETITORS: Competitor[] = [
       {
         objection: "SingleOps just merged with LMN — they're the category.",
         response:
-          "Mergers under PE create roadmap chaos for 18 months. Granum has to merge two product roadmaps, two sales teams, and two pricing pages — meanwhile we ship 27 engines on a single codebase weekly. The category isn't who consolidates — it's who compounds revenue. Quote Intercept doesn't get faster because two competitors merged.",
+          "Mergers under PE create roadmap chaos for 18 months. Granum has to merge two product roadmaps, two sales teams, and two pricing pages — meanwhile we ship 33 engines on a single codebase weekly. The category isn't who consolidates — it's who compounds revenue. Quote Intercept doesn't get faster because two competitors merged.",
       },
       {
         objection: "We need route optimization — only on Premier ($550).",
@@ -349,7 +349,7 @@ export const COMPETITORS: Competitor[] = [
         objection:
           "We have a great deal at $50/mo + $20/user — switching to $397/crew costs more.",
         response:
-          "$50 + $20×7 users = $190/mo for what reviewers call 'missing key features.' Our $397/crew = unlimited users on that crew + 27 revenue engines. At 7 users you've effectively halved your per-feature cost while gaining tap-to-pay, offline PWA, and Quote Intercept. The cheaper bill becomes the more expensive operation.",
+          "$50 + $20×7 users = $190/mo for what reviewers call 'missing key features.' Our $397/crew = unlimited users on that crew + 33 revenue engines. At 7 users you've effectively halved your per-feature cost while gaining tap-to-pay, offline PWA, and Quote Intercept. The cheaper bill becomes the more expensive operation.",
       },
       {
         objection:
@@ -398,7 +398,7 @@ export const COMPETITORS: Competitor[] = [
       {
         objection: "CLIPitc is cheap — $40/mo entry.",
         response:
-          "$40 entry in a tool with no AI, no offline mode, and a public review history of 'thrown into production without testing' is the most expensive tool you can buy — measured in lost office-manager hours and ghosted quotes. $397/crew with 27 revenue engines pays for itself the first week Quote Intercept fires.",
+          "$40 entry in a tool with no AI, no offline mode, and a public review history of 'thrown into production without testing' is the most expensive tool you can buy — measured in lost office-manager hours and ghosted quotes. $397/crew with 33 revenue engines pays for itself the first week Quote Intercept fires.",
       },
     ],
   },
@@ -526,7 +526,7 @@ export const COMPETITORS: Competitor[] = [
       {
         objection: "Workwave's product breadth (PestPac + RealGreen) is huge.",
         response:
-          "Breadth at the cost of depth. Their linked-document bug went unfixed for 18+ months — that's the rollup tax. We ship one product, weekly releases, no module-by-module upcharge. All 27 engines included.",
+          "Breadth at the cost of depth. Their linked-document bug went unfixed for 18+ months — that's the rollup tax. We ship one product, weekly releases, no module-by-module upcharge. All 33 engines included.",
       },
     ],
   },
@@ -558,7 +558,7 @@ export const COMPETITORS: Competitor[] = [
       {
         objection: "Housecall Pro is the easiest onboarding in the category.",
         response:
-          "Easiest onboarding doesn't mean easiest to grow on. Every feature you'll need next year is a paid add-on. Capterra's #1 churn driver for them is 'cost creep.' Our 27 engines are included from day one — no surprise upgrade conversation in month 6.",
+          "Easiest onboarding doesn't mean easiest to grow on. Every feature you'll need next year is a paid add-on. Capterra's #1 churn driver for them is 'cost creep.' Our 33 engines are included from day one — no surprise upgrade conversation in month 6.",
       },
       {
         objection: "We're cross-vertical — HVAC + landscape + cleaning.",
@@ -602,12 +602,12 @@ export const COMPETITORS: Competitor[] = [
         objection:
           "We run QuickBooks heavy — Method bolts onto it perfectly.",
         response:
-          "We sync to QuickBooks too — and we don't drop ~2% of line items the way Jobber does. The Method moat (QBO integration) is our floor. Above it: 27 landscape-native engines Method doesn't ship.",
+          "We sync to QuickBooks too — and we don't drop ~2% of line items the way Jobber does. The Method moat (QBO integration) is our floor. Above it: 33 landscape-native engines Method doesn't ship.",
       },
       {
         objection: "Method is $28/user — much cheaper than $397/crew.",
         response:
-          "$28/user for a CRM that stores. $397/crew for 27 engines that compound. At 5 users on Method ($140) you've passed half our crew price for none of the revenue intelligence. The math flips in week one.",
+          "$28/user for a CRM that stores. $397/crew for 33 engines that compound. At 5 users on Method ($140) you've passed half our crew price for none of the revenue intelligence. The math flips in week one.",
       },
       {
         objection: "Method is general-purpose — we run multiple business lines.",

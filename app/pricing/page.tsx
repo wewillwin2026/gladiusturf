@@ -13,6 +13,7 @@ export const metadata: Metadata = {
     "Pricing — All thirty-three engines on every plan. Per crew, no per-seat tax.",
   description:
     "GladiusTurf pricing: $397 Independent, $997 Professional, $2,997 Enterprise per crew per month. All thirty-three engines on every plan, including Field Crew App PWA, Client Portal, Cadence, Books, Payroll, Retention Radar, and the LRI Score. Optional $499 BDC addon for manned weekend phone coverage.",
+  alternates: { canonical: "/pricing" },
 };
 
 // Per-tier feature lists for the 33-engine roster.

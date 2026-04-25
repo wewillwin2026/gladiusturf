@@ -25,6 +25,7 @@ export const metadata: Metadata = {
     "Books · First-party accounting built for landscape ops",
   description:
     "Real-time general ledger, AI-categorized expenses, P&L by service line, audit-ready balance sheet. Every paid invoice, every Stripe payout, every fuel receipt — one ledger, zero double-entry.",
+  alternates: { canonical: "/books" },
 };
 
 type ChartSection = {

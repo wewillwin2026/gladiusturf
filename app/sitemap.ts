@@ -28,7 +28,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const versusRoutes = COMPETITORS.map((c) => `/vs/${c.slug}`);
 
   const allRoutes = [...staticRoutes, ...versusRoutes];
-  const lastModified = new Date();
+  // Stable per-deploy lastmod — pinned to the audit/release date so Search
+  // Console doesn't flag noisy build-time churn. Bump this when content
+  // meaningfully changes across the site.
+  const lastModified = new Date("2026-04-25");
   return allRoutes.map((r) => ({
     url: `${base}${r}`,
     lastModified,

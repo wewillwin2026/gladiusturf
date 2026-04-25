@@ -22,6 +22,7 @@ export const metadata: Metadata = {
   title: "Integrations — Plays with the stack you already pay for",
   description:
     "QuickBooks, Stripe, Twilio, Aspire, LMN, Jobber, Service Autopilot, ServiceTitan, Samsara, Real Green imports — and a typed API for everything else.",
+  alternates: { canonical: "/integrations" },
 };
 
 type IntegrationStatus = "Native" | "API" | "CSV" | "Coming";

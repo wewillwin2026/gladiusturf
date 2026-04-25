@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: "Find a Crew — the landscape referral network",
   description:
     "Hand off the jobs you can't take and earn a 10% referral commission when the receiving crew invoices. Built for crews turning down inbound for the wrong region, wrong service, or a fully-booked calendar.",
+  alternates: { canonical: "/find-a-crew" },
 };
 
 const STEPS = [

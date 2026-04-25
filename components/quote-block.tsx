@@ -1,8 +1,40 @@
 import { Quote } from "lucide-react";
 import { ScrollReveal } from "@/components/scroll-reveal";
 
-// TODO: swap placeholder for real beta customer quote before launch.
-export function QuoteBlock() {
+type QuoteBlockProps = {
+  /** The customer quote text. If omitted, the component renders nothing. */
+  quote?: string;
+  /** Author name (e.g. "Jane Smith"). */
+  attribution?: string;
+  /** Author role / org (e.g. "Owner · 14-crew shop, North Carolina"). */
+  role?: string;
+  /** Optional initials shown in the avatar circle. */
+  initials?: string;
+  /** Headline stat (e.g. "+$43K"). */
+  stat?: string;
+  /** Stat caption (e.g. "upsell revenue · first 30 days"). */
+  statLabel?: string;
+};
+
+/**
+ * Founding-crew testimonial block.
+ *
+ * Returns null when no verified quote is provided. We do NOT ship fabricated
+ * customer names or "placeholder" disclaimers to production — see audit
+ * BUG-CONTENT-005 / BUG-CODE-007.
+ */
+export function QuoteBlock({
+  quote,
+  attribution,
+  role,
+  initials,
+  stat,
+  statLabel,
+}: QuoteBlockProps = {}) {
+  if (!quote || !attribution) {
+    return null;
+  }
+
   return (
     <section className="bg-pitch py-28">
       <div className="mx-auto max-w-5xl px-6">
@@ -13,34 +45,33 @@ export function QuoteBlock() {
               aria-hidden
             />
             <blockquote className="mt-6 font-serif text-2xl font-medium italic leading-snug tracking-[-0.01em] text-bone md:text-3xl">
-              &ldquo;We killed five subscriptions in our first 30 days on
-              GladiusTurf and added $43K in upsell revenue we would have left
-              on the table. It pays the crew before it pays itself.&rdquo;
+              &ldquo;{quote}&rdquo;
             </blockquote>
             <div className="mt-8 flex flex-col items-start gap-6 sm:flex-row sm:items-center">
               <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-champagne to-honey-deep font-serif text-lg font-semibold text-pitch">
-                  RB
-                </div>
-                <div>
-                  <div className="font-medium text-bone">Riley Boone</div>
-                  <div className="text-sm text-bone/55">
-                    Owner · 14-crew shop, North Carolina
+                {initials ? (
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-champagne to-honey-deep font-serif text-lg font-semibold text-pitch">
+                    {initials}
                   </div>
+                ) : null}
+                <div>
+                  <div className="font-medium text-bone">{attribution}</div>
+                  {role ? (
+                    <div className="text-sm text-bone/55">{role}</div>
+                  ) : null}
                 </div>
               </div>
-              <div className="ml-auto text-left sm:text-right">
-                <div className="font-serif text-3xl font-semibold text-champagne-bright">
-                  +$43K
+              {stat ? (
+                <div className="ml-auto text-left sm:text-right">
+                  <div className="font-serif text-3xl font-semibold text-champagne-bright">
+                    {stat}
+                  </div>
+                  {statLabel ? (
+                    <div className="text-xs text-bone/55">{statLabel}</div>
+                  ) : null}
                 </div>
-                <div className="text-xs text-bone/55">
-                  upsell revenue · first 30 days
-                </div>
-              </div>
+              ) : null}
             </div>
-            <p className="mt-6 text-[11px] uppercase tracking-crest text-bone/35">
-              Placeholder · swap with verified quote pre-launch
-            </p>
           </div>
         </ScrollReveal>
       </div>

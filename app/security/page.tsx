@@ -21,6 +21,7 @@ export const metadata: Metadata = {
   title: "Security — Multi-tenant by design. Audit-ready by default.",
   description:
     "Postgres RLS, Clerk multi-tenant auth, Stripe-managed PCI, TCPA compliance built in, SOC 2 Type II in progress.",
+  alternates: { canonical: "/security" },
 };
 
 const PRINCIPLES: { headline: string; body: string }[] = [

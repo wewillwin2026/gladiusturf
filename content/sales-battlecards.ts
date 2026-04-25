@@ -30,7 +30,7 @@ export const BATTLECARDS: Battlecard[] = [
       {
         objection: "Aspire is rolling out AI in 2025.",
         response:
-          "Their job posting for AI Automation Engineer went up in 2025. Their shipped AI is a help-doc search and a property measurer. We shipped 27 native-AI revenue engines on Claude. The question isn't 'who has AI on the deck.' It's 'whose AI made you money this week?'",
+          "Their job posting for AI Automation Engineer went up in 2025. Their shipped AI is a help-doc search and a property measurer. We shipped 33 native-AI revenue engines on Claude. The question isn't 'who has AI on the deck.' It's 'whose AI made you money this week?'",
       },
       {
         objection: "ServiceTitan-owned means stability and resources.",
@@ -60,7 +60,7 @@ export const BATTLECARDS: Battlecard[] = [
       {
         objection: "We pay $199 for LMN Pro — you'll cost more.",
         response:
-          "Check your 2026 invoice — LMN list moved to $297 / $598. We're $397/crew for all 27 engines. At three crews you've passed Pro list. And LMN's 30-day cancellation usage fee is in your contract today.",
+          "Check your 2026 invoice — LMN list moved to $297 / $598. We're $397/crew for all 33 engines. At three crews you've passed Pro list. And LMN's 30-day cancellation usage fee is in your contract today.",
       },
     ],
     reframe:
@@ -85,7 +85,7 @@ export const BATTLECARDS: Battlecard[] = [
       {
         objection: "Genius AI is on the roadmap.",
         response:
-          "Pull their April and August 2025 release notes — Genius AI isn't there. We shipped 27 AI-native engines. Quote Intercept alone recovers more revenue per quarter than their AI does in 12 months because it actually exists.",
+          "Pull their April and August 2025 release notes — Genius AI isn't there. We shipped 33 AI-native engines. Quote Intercept alone recovers more revenue per quarter than their AI does in 12 months because it actually exists.",
       },
     ],
     reframe:
@@ -206,7 +206,7 @@ export const BATTLECARDS: Battlecard[] = [
         objection:
           "We have a great deal at $50/mo + $20/user — switching costs more.",
         response:
-          "$50 + $20×7 = $190/mo for a tool reviewers call 'missing key features.' Our $397/crew = unlimited users + 27 revenue engines. Cheaper bill, more expensive operation.",
+          "$50 + $20×7 = $190/mo for a tool reviewers call 'missing key features.' Our $397/crew = unlimited users + 33 revenue engines. Cheaper bill, more expensive operation.",
       },
       {
         objection: "HindSite's Heritage integration is coming.",
@@ -238,7 +238,7 @@ export const BATTLECARDS: Battlecard[] = [
       {
         objection: "CLIPitc is cheap — $40/mo entry.",
         response:
-          "$40 entry for a tool with no AI, no offline, and a public review history of 'thrown into production without testing' is the most expensive software you can buy — measured in ghosted quotes. $397/crew with 27 engines pays for itself the first week Quote Intercept fires.",
+          "$40 entry for a tool with no AI, no offline, and a public review history of 'thrown into production without testing' is the most expensive software you can buy — measured in ghosted quotes. $397/crew with 33 engines pays for itself the first week Quote Intercept fires.",
       },
     ],
     reframe:

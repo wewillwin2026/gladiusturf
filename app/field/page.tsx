@@ -23,6 +23,7 @@ export const metadata: Metadata = {
   title: "Field Crew App — Offline-first PWA for the truck.",
   description:
     "GPS clock-in, before/after photo grids, site memory recall, signature capture. Works in dead zones. Built for the cab, not the office.",
+  alternates: { canonical: "/field" },
 };
 
 // ─── Mock visualization primitives (RSC-safe, inline SVG / styled divs) ───

@@ -32,6 +32,10 @@ export const metadata: Metadata = {
     description:
       "White-labeled portal where homeowners reschedule, book, pay, approve, and refer — without your office staff.",
     type: "article",
+    images: [{ url: "/crest.png", width: 600, height: 800 }],
+  },
+  twitter: {
+    images: ["/crest.png"],
   },
 };
 

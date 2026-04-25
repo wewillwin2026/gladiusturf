@@ -27,7 +27,6 @@ const RESOURCES_LINKS = [
 const COMPANY_LINKS = [
   { href: "/demo", label: "Book a demo" },
   { href: "mailto:founders@gladiusturf.com", label: "Email the founder" },
-  { href: "tel:+18134420253", label: "Call (813) 442-0253" },
   { href: "https://gladiusstone.com", label: "GladiusStone" },
   { href: "https://gladiuscrm.com", label: "GladiusCRM" },
 ];

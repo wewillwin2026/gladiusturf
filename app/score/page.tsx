@@ -349,7 +349,7 @@ function CrewPassport() {
             Crew Passport
           </p>
           <p className="mt-2 font-serif text-2xl text-bone">
-            Crew Chief · placeholder
+            Crew Chief · Mock LRI 87
           </p>
           <p className="mt-1 text-sm text-bone/60">9 seasons · ATL metro</p>
         </div>
@@ -395,6 +395,7 @@ export default function ScorePage() {
   return (
     <div className="bg-obsidian">
       <Nav />
+      <main>
 
       {/* 1. HERO — true black stage with champagne halo (heritage). */}
       <section className="relative overflow-hidden bg-pitch py-28">
@@ -830,6 +831,7 @@ export default function ScorePage() {
       {/* 9. FINAL CTA */}
       <CtaBand />
 
+      </main>
       <Footer />
     </div>
   );

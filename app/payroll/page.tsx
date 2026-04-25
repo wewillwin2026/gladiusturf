@@ -25,6 +25,7 @@ export const metadata: Metadata = {
     "Payroll · GPS-verified hours · W-2 + 1099 ready",
   description:
     "Crew hours pulled from Field Crew App GPS clock-in / clock-out. Multi-state tax tables, OT calc, prevailing-wage rules, 1099-NEC for subcontractors, Stripe Connect direct deposit.",
+  alternates: { canonical: "/payroll" },
 };
 
 type FlowStep = {

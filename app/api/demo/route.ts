@@ -23,6 +23,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
+  // User-facing labels — never leak internal field names back to the client.
+  const FIELD_LABELS: Record<keyof DemoBody, string> = {
+    crewName: "crew name",
+    ownerName: "your name",
+    email: "email",
+    phone: "phone",
+    currentSoftware: "current software",
+    crewSize: "crew size",
+  };
   const required: (keyof DemoBody)[] = [
     "crewName",
     "ownerName",
@@ -33,8 +42,19 @@ export async function POST(req: Request) {
   ];
   const missing = required.filter((k) => !body[k] || !String(body[k]).trim());
   if (missing.length) {
+    const missingLabels = missing.map((k) => FIELD_LABELS[k]).join(", ");
     return NextResponse.json(
-      { error: `Missing: ${missing.join(", ")}` },
+      {
+        error: `Please fill in the following required fields: ${missingLabels}.`,
+      },
+      { status: 400 }
+    );
+  }
+
+  // Basic email format validation — generic message, no internals exposed.
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(body.email).trim())) {
+    return NextResponse.json(
+      { error: "Please enter a valid email address." },
       { status: 400 }
     );
   }

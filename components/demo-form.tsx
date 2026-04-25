@@ -54,14 +54,8 @@ export function DemoForm() {
         <h3 className="font-serif text-2xl font-semibold text-bone">Got it.</h3>
         <p className="mt-4 text-[15px] leading-[1.6] text-bone/75">
           A founder will email you within the business day with two or three
-          30-minute slots. If you need us faster, text{" "}
-          <a
-            className="text-moss-bright underline underline-offset-2"
-            href="tel:+18134420253"
-          >
-            (813) 442-0253
-          </a>
-          .
+          30-minute slots. If you need us faster, reply to that email and
+          we&rsquo;ll move things up.
         </p>
       </div>
     );

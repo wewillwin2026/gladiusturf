@@ -10,12 +10,12 @@ import { DemoForm } from "@/components/demo-form";
 import { Eyebrow } from "@/components/eyebrow";
 import { Footer } from "@/components/footer";
 import { Nav } from "@/components/nav";
-import { QuoteBlock } from "@/components/quote-block";
 
 export const metadata: Metadata = {
   title: "Request a demo",
   description:
     "See GladiusTurf on your own data in 30 minutes. Founders run the call. No SDR, no slides, no junior CSM. ROI projection live on screen.",
+  alternates: { canonical: "/demo" },
 };
 
 const COVER_STEPS = [
@@ -196,24 +196,42 @@ export default function DemoPage() {
               {[0, 1, 2].map((n) => (
                 <div
                   key={n}
-                  className="aspect-[4/5] rounded-2xl border border-champagne-bright/20 bg-bone/[0.02] p-8"
-                >
-                  <div className="flex h-full flex-col justify-end">
-                    <p className="font-mono text-xs uppercase tracking-crest text-bone/40">
-                      Founder {String(n + 1).padStart(2, "0")}
-                    </p>
-                    <p className="mt-2 font-serif text-[18px] text-bone/50">
-                      Photo placeholder
-                    </p>
-                  </div>
-                </div>
+                  aria-hidden
+                  className="aspect-[4/5] rounded-2xl border border-bone/10 bg-bone/[0.04]"
+                />
               ))}
             </div>
           </div>
         </section>
 
-        {/* TESTIMONIAL */}
-        <QuoteBlock />
+        {/* BUILT-WITH TECH BAR */}
+        <section className="border-b border-bone/10 bg-pitch py-16">
+          <div className="mx-auto max-w-7xl px-6">
+            <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-bone/45">
+              Built on infrastructure your shop already trusts
+            </p>
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+              {[
+                "Stripe",
+                "Twilio",
+                "Anthropic Claude",
+                "Vercel",
+                "Supabase",
+                "Resend",
+                "Clerk",
+              ].map((label, i) => (
+                <span
+                  key={label}
+                  className={`font-mono text-[13px] tracking-[0.06em] ${
+                    i % 2 === 0 ? "text-champagne-bright" : "text-moss-bright"
+                  }`}
+                >
+                  {label}
+                </span>
+              ))}
+            </div>
+          </div>
+        </section>
 
         {/* WHAT YOU NEED TO BRING — champagne accents */}
         <section className="border-b border-bone/10">
@@ -260,7 +278,7 @@ export default function DemoPage() {
         <section className="bg-obsidian">
           <div className="mx-auto max-w-7xl px-6 py-20 text-center">
             <a
-              href="#tour"
+              href="/product"
               className="inline-flex items-center gap-2 text-sm font-medium text-bone/60 transition-colors hover:text-champagne-bright"
             >
               Not ready to demo? Watch the 4-minute product tour

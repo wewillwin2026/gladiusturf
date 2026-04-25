@@ -10,7 +10,8 @@ export const metadata: Metadata = {
   title:
     "Why crews leave Aspire, LMN, Service Autopilot, and Jobber — 33-engine comparison",
   description:
-    "An honest, side-by-side comparison of GladiusTurf's 33 engines vs. Aspire, LMN, Service Autopilot, Jobber, and Real Green. Includes the Field Crew App PWA, Client Portal, LRI Score, native Books + Payroll, Retention Radar, and the intelligence engines (Intent Scorer, UrgencySync, WinMemory) competitors don't ship at all.",
+    "Honest, side-by-side: GladiusTurf's 33 engines vs. Aspire, LMN, Service Autopilot, Jobber, Real Green. Field Crew PWA, Client Portal, LRI Score.",
+  alternates: { canonical: "/compare" },
 };
 
 type Support = "yes" | "partial" | "no";

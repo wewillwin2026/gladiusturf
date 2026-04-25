@@ -33,11 +33,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       title: "Versus — competitor not found",
       description: "The competitor comparison page you're looking for doesn't exist.",
+      robots: { index: false, follow: false },
     };
   }
   return {
     title: `GladiusTurf vs ${competitor.name}`,
     description: competitor.killHeadline,
+    alternates: { canonical: `/vs/${slug}` },
   };
 }
 

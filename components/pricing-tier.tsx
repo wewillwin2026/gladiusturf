@@ -3,6 +3,15 @@ import { ArrowRight, Check } from "lucide-react";
 import type { Tier } from "@/content/pricing";
 import { cn } from "@/lib/cn";
 
+// Display labels for the small eyebrow above each tier name. We don't render
+// the raw `tier.id` (lowercase token) because that leaks the data layer to the
+// customer — see audit BUG-CODE-015.
+const TIER_EYEBROWS: Record<Tier["id"], string> = {
+  independent: "Tier 01",
+  professional: "Tier 02",
+  enterprise: "Tier 03",
+};
+
 export function PricingTier({ tier }: { tier: Tier }) {
   return (
     <div
@@ -25,7 +34,7 @@ export function PricingTier({ tier }: { tier: Tier }) {
           tier.featured ? "text-moss-bright" : "text-champagne-bright"
         )}
       >
-        {tier.id}
+        {TIER_EYEBROWS[tier.id]}
       </p>
 
       <h3 className="mt-2 font-serif text-2xl font-semibold text-bone">

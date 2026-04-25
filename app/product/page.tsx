@@ -14,6 +14,7 @@ export const metadata: Metadata = {
     "Product · 33 engines, 5 tiers, one operating system for landscaping",
   description:
     "GladiusTurf is the first landscaping platform built like a CRM and a BDC stack — 33 AI-orchestrated engines across Revenue, Lifecycle, Intelligence, Operations and Marketplace. Retire your other six tools by month two.",
+  alternates: { canonical: "/product" },
 };
 
 // ─── Engine data (33 engines tagged by tier) ───────────────────────

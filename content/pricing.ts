@@ -17,7 +17,7 @@ export const TIERS: Tier[] = [
     price: 397,
     period: "/ crew / mo",
     features: [
-      "All 7 engines",
+      "All 33 engines included",
       "Unlimited seats per crew",
       "Quote Intercept + SMS routing",
       "Site Memory, Weather Pivot",
@@ -34,7 +34,7 @@ export const TIERS: Tier[] = [
     featured: true,
     features: [
       "Everything in Independent",
-      "Applicator Shield compliance",
+      "Safety Shield compliance",
       "Referral Radar + neighbor outreach",
       "Upsell Whisperer AI scoring",
       "Surplus Yard posting",

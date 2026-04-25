@@ -30,20 +30,20 @@ export const metadata: Metadata = {
     template: "%s · GladiusTurf",
   },
   description:
-    "The $180,000 your crew is leaving in the grass every year. Seven revenue engines for landscape crew owners. Flat per-crew pricing.",
+    "Thirty-three revenue engines across five tiers for landscape crew owners. Flat per-crew pricing. Not a CRM.",
   openGraph: {
     type: "website",
     siteName: "GladiusTurf",
-    url: "https://gladiusturf.com",
     title: "GladiusTurf — Landscaping Revenue Intelligence",
     description:
-      "Seven revenue engines for landscape crew owners. Flat per-crew pricing. Not a CRM.",
+      "Thirty-three revenue engines across five tiers for landscape crew owners. Flat per-crew pricing. Not a CRM.",
     images: [{ url: "/crest.png", width: 600, height: 800 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "GladiusTurf — Landscaping Revenue Intelligence",
-    description: "Seven revenue engines. Flat per-crew pricing. Not a CRM.",
+    description:
+      "Thirty-three revenue engines. Flat per-crew pricing. Not a CRM.",
     images: ["/crest.png"],
   },
   icons: {

@@ -124,6 +124,7 @@ export function PortalShell({
             {NAV_ITEMS.map((item) => (
               <SidebarItem
                 key={item.key}
+                navKey={item.key}
                 label={item.label}
                 icon={item.icon}
                 active={item.key === active}
@@ -161,6 +162,7 @@ export function PortalShell({
                 {NAV_ITEMS.map((item) => (
                   <SidebarItem
                     key={item.key}
+                    navKey={item.key}
                     label={item.label}
                     icon={item.icon}
                     active={item.key === active}
@@ -185,17 +187,20 @@ export function PortalShell({
 }
 
 function SidebarItem({
+  navKey,
   label,
   icon,
   active,
 }: {
+  navKey: PortalNavKey;
   label: string;
   icon: React.ReactNode;
   active?: boolean;
 }) {
   return (
-    <button
-      type="button"
+    <a
+      href={`#${navKey}`}
+      aria-current={active ? "page" : undefined}
       className={cn(
         "flex items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition-colors",
         active
@@ -212,6 +217,6 @@ function SidebarItem({
         {icon}
       </span>
       <span className="font-medium">{label}</span>
-    </button>
+    </a>
   );
 }

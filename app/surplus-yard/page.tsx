@@ -21,6 +21,7 @@ export const metadata: Metadata = {
   title: "Surplus Yard — the crew-to-crew materials marketplace",
   description:
     "List the sod, stone, mulch, fertilizer, nursery stock, and idle equipment sitting on your yard. Buy what your job needs by 7 AM tomorrow. A peer-to-peer marketplace for landscape crews.",
+  alternates: { canonical: "/surplus-yard" },
 };
 
 const STEPS = [

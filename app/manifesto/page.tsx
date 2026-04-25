@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: "Manifesto",
   description:
     "Landscaping is a $115B industry run on spreadsheets, paper invoices, and forgotten quotes. Here is what we believe, what we will never do, and the ten rules we build by.",
+  alternates: { canonical: "/manifesto" },
 };
 
 const COMMANDMENTS: { headline: string; body: string }[] = [

@@ -24,7 +24,8 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 export const metadata: Metadata = {
   title: "Platform — The infrastructure GladiusTurf runs on",
   description:
-    "33 engines run on a serious platform: Clerk multi-tenant auth, tRPC type-safe API, Prisma + Postgres, Stripe Connect, Twilio voice + SMS, Resend email, Anthropic Claude AI orchestration, BullMQ async workers, Vercel + Railway deploy.",
+    "33 engines on serious infra: Clerk auth, tRPC, Prisma + Postgres, Stripe Connect, Twilio, Resend, Anthropic Claude, BullMQ, Vercel + Railway.",
+  alternates: { canonical: "/platform" },
 };
 
 type LayerCard = {
@@ -310,7 +311,7 @@ export default function PlatformPage() {
                 <p>
                   Great products are built on serious foundations. The reason a
                   founding crew can install GladiusTurf on Monday morning and
-                  recover a $14,000 voicemail by Tuesday afternoon isn&apos;t
+                  recover a $14,200 voicemail by Tuesday afternoon isn&apos;t
                   the marketing copy — it&apos;s the platform underneath. Every
                   engine is a thin layer over a stack that&apos;s already been
                   hardened in production at our sister products.

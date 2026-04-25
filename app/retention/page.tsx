@@ -24,6 +24,7 @@ export const metadata: Metadata = {
     "Retention Radar · churn predicted 60 days out · +18% NRR",
   description:
     "Retention Intelligence for landscape ops. Six churn signals, save plays, NRR dashboard, LTV ledger. Customers don't ghost — they drift. We catch them before they're gone.",
+  alternates: { canonical: "/retention" },
 };
 
 type Signal = {

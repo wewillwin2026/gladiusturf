@@ -19,12 +19,12 @@ import { Hero } from "@/components/hero";
 import { Nav } from "@/components/nav";
 import { Pill } from "@/components/pill";
 import { PricingSection } from "@/components/pricing-section";
-import { QuoteBlock } from "@/components/quote-block";
 import { ScrollReveal } from "@/components/scroll-reveal";
 
 export const metadata: Metadata = {
   description:
     "GladiusTurf is the thirty-three-engine landscaping operating system across five tiers — revenue, lifecycle, intelligence, operations, marketplace — that catches every forgotten quote, missed upsell, late invoice, and dropped referral your current stack is letting walk.",
+  alternates: { canonical: "/" },
   openGraph: {
     images: [{ url: "/crest.png", width: 600, height: 800 }],
   },
@@ -42,12 +42,15 @@ const COMING_FROM = [
   { slug: "servicetitan", name: "ServiceTitan" },
 ];
 
-const FOUNDING_CREWS = [
-  { name: "Pinehurst Greens", region: "NC · 14 crews" },
-  { name: "Cobblestone Land Co.", region: "TX · 9 crews" },
-  { name: "Riverbend Outdoor", region: "FL · 7 crews" },
-  { name: "Cedarline Property", region: "GA · 12 crews" },
-  { name: "North Forty Lawn", region: "OH · 6 crews" },
+const TECH_STACK = [
+  "Stripe",
+  "Twilio",
+  "Anthropic Claude",
+  "Vercel",
+  "Supabase",
+  "Resend",
+  "Clerk",
+  "Next.js",
 ];
 
 const PROBLEM_STATS = [
@@ -165,7 +168,7 @@ function PortalMock() {
     <div className="flex h-full w-full flex-col gap-3 rounded-lg bg-forest-mid/60 p-4 text-left">
       <div className="flex items-center justify-between">
         <span className="font-serif text-sm font-semibold text-honey-bright">
-          Pinehurst Greens · Client Portal
+          Your Crew · Client Portal
         </span>
         <span className="rounded-full bg-honey/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.2em] text-honey-bright">
           Live
@@ -283,38 +286,27 @@ export default function HomePage() {
         {/* a. Hero */}
         <Hero />
 
-        {/* b. Proof strip — founding crews + tech bar */}
+        {/* b. Built-with technology bar */}
         <section className="border-y border-bone/10 bg-slate-deep py-14">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-bone/45">
-                Trusted by founding crews
+                Built on infrastructure your shop already trusts
               </p>
             </ScrollReveal>
             <ScrollReveal delay={0.1}>
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-x-10 gap-y-5">
-                {FOUNDING_CREWS.map((c) => (
-                  <div
-                    key={c.name}
-                    className="flex flex-col items-center text-center"
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+                {TECH_STACK.map((label, i) => (
+                  <span
+                    key={label}
+                    className={`font-mono text-[13px] tracking-[0.06em] ${
+                      i % 2 === 0 ? "text-champagne-bright" : "text-moss-bright"
+                    }`}
                   >
-                    <span className="font-serif text-base font-semibold tracking-[0.04em] text-bone/85">
-                      {c.name}
-                    </span>
-                    <span className="mt-0.5 text-[10px] uppercase tracking-[0.18em] text-bone/40">
-                      {c.region}
-                    </span>
-                  </div>
+                    {label}
+                  </span>
                 ))}
               </div>
-            </ScrollReveal>
-            <ScrollReveal delay={0.15}>
-              <p className="mt-8 text-center text-xs text-bone/45">
-                Built on infrastructure your shop already trusts ·{" "}
-                <span className="text-bone/65">
-                  Stripe · Twilio · Supabase · QuickBooks · Vercel
-                </span>
-              </p>
             </ScrollReveal>
           </div>
         </section>
@@ -613,10 +605,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* h. Quote block */}
-        <QuoteBlock />
-
-        {/* i. Pricing */}
+        {/* h. Pricing */}
         <PricingSection />
 
         {/* j. Final CTA */}

@@ -19,10 +19,10 @@ export function PricingSection() {
               <span className="flex h-2 w-2 flex-none animate-pulse-dot rounded-full bg-champagne-bright shadow-[0_0_10px_rgba(212,178,122,0.7)]" />
               <div>
                 <div className="text-sm font-semibold text-bone">
-                  Q2 2026 onboarding · 4 of 12 founding crew slots remaining
+                  Founding cohort · 12 of 20 slots remaining
                 </div>
                 <div className="text-xs text-bone/55">
-                  Founder-led white-glove setup. May cohort starts Apr 22.
+                  Founder-led white-glove setup. May 2026 cohort starts May 5.
                 </div>
               </div>
             </div>
