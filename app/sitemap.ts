@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { COMPETITORS } from "@/content/competitors";
+import { FORGE_POSTS } from "@/content/forge-posts";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = "https://gladiusturf.com";
@@ -24,13 +25,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/roi",
     "/loss",
     "/council",
+    "/forge",
   ];
 
   // /vs/[slug] — one entry per competitor (excludes the noindexed
   // /portal/demo/[token] preview route by design).
   const versusRoutes = COMPETITORS.map((c) => `/vs/${c.slug}`);
 
-  const allRoutes = [...staticRoutes, ...versusRoutes];
+  // /forge/[slug] — one entry per Forge post.
+  const forgeRoutes = FORGE_POSTS.map((p) => `/forge/${p.slug}`);
+
+  const allRoutes = [...staticRoutes, ...versusRoutes, ...forgeRoutes];
   // Stable per-deploy lastmod — pinned to the audit/release date so Search
   // Console doesn't flag noisy build-time churn. Bump this when content
   // meaningfully changes across the site.
