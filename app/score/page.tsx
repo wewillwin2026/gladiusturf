@@ -32,6 +32,9 @@ type Subscore = {
   tone: "moss" | "honey";
 };
 
+// Heritage rotation: champagne / moss / champagne / moss / champagne across
+// the five subscores per spec. We re-purpose the existing "honey" slots as
+// "moss" so the alternation lands as champagne-led.
 const SUBSCORES: Subscore[] = [
   {
     name: "Win Rate",
@@ -40,7 +43,7 @@ const SUBSCORES: Subscore[] = [
       "Percentage of quotes that close. Adjusted for service type, ZIP comps, and the season the bid went out in.",
     source: "Source · Quote Intercept",
     icon: Target,
-    tone: "moss",
+    tone: "honey", // legacy field — display reads off index, not this value.
   },
   {
     name: "On-Time Rate",
@@ -49,7 +52,7 @@ const SUBSCORES: Subscore[] = [
       "Crew arrival on or before the promised window. Verified by the Field Crew App's GPS clock-in — not a self-report.",
     source: "Source · Field Crew App",
     icon: TrendingUp,
-    tone: "honey",
+    tone: "moss",
   },
   {
     name: "Customer Satisfaction",
@@ -58,7 +61,7 @@ const SUBSCORES: Subscore[] = [
       "Post-service NPS captured by the Cadence engine. Verified through the customer portal — no review-site scraping.",
     source: "Source · Cadence",
     icon: Sparkles,
-    tone: "moss",
+    tone: "honey",
   },
   {
     name: "Safety",
@@ -67,7 +70,7 @@ const SUBSCORES: Subscore[] = [
       "Days without incident. Pesticide compliance audits. Heat-stress windows respected. Trailer pre-trip checks logged.",
     source: "Source · Safety Shield",
     icon: Shield,
-    tone: "honey",
+    tone: "moss",
   },
   {
     name: "Repeat Rate",
@@ -76,7 +79,7 @@ const SUBSCORES: Subscore[] = [
       "Percentage of customers who book a second service. The truest signal in the score — operations don't fake retention.",
     source: "Source · Cortex outcome graph",
     icon: Repeat,
-    tone: "moss",
+    tone: "honey",
   },
 ];
 
@@ -185,6 +188,8 @@ const FAQ: Faq[] = [
 ];
 
 // Big circular progress ring used in the hero.
+// Heritage: champagne ring stroke + subtle moss-bright inner glow (gold ring,
+// green logo-echo halo).
 function ScoreRingHero({ value }: { value: number }) {
   const size = 360;
   const stroke = 18;
@@ -206,11 +211,12 @@ function ScoreRingHero({ value }: { value: number }) {
           strokeWidth={stroke}
           fill="none"
         />
+        {/* Champagne stroke — heritage gold ring */}
         <circle
           cx={size / 2}
           cy={size / 2}
           r={r}
-          stroke="#9DFF8A"
+          stroke="#D4B27A"
           strokeWidth={stroke}
           strokeLinecap="round"
           strokeDasharray={c}
@@ -219,39 +225,47 @@ function ScoreRingHero({ value }: { value: number }) {
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-bone/50">
+        <p className="text-[11px] font-semibold uppercase tracking-crest text-bone/50">
           LRI Score
         </p>
         <p className="mt-3 font-mono text-[140px] leading-none text-bone">
           {value}
         </p>
-        <p className="mt-3 font-mono text-xs uppercase tracking-[0.2em] text-honey-bright">
+        <p className="mt-3 font-mono text-xs uppercase tracking-crest text-champagne-bright">
           +4 last 30 days
         </p>
       </div>
-      {/* Glow */}
+      {/* Heritage halo: champagne outer + subtle moss-bright inner glow
+          (logo-echo). */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 rounded-full bg-[radial-gradient(circle,rgba(157,255,138,0.18),transparent_65%)]"
+        className="pointer-events-none absolute inset-0 -z-10 rounded-full bg-[radial-gradient(circle,rgba(212,178,122,0.20),transparent_65%)]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-[18%] -z-10 rounded-full bg-[radial-gradient(circle,rgba(157,255,138,0.10),transparent_70%)]"
       />
     </div>
   );
 }
 
-// Compact ring used in view cards.
+// Compact ring used in view cards. Heritage: legacy "honey" tone now renders
+// as champagne — keeps callers backwards compatible while shifting the warm
+// accent from honey to champagne.
 function ScoreRingMini({
   value,
   tone,
 }: {
   value: number;
-  tone: "moss" | "honey";
+  tone: "moss" | "honey" | "champagne";
 }) {
   const size = 140;
   const stroke = 10;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const offset = c - (value / 100) * c;
-  const color = tone === "honey" ? "#F4CC85" : "#9DFF8A";
+  const color =
+    tone === "moss" ? "#9DFF8A" : tone === "champagne" ? "#D4B27A" : "#D4B27A";
   return (
     <div className="relative h-[140px] w-[140px]">
       <svg viewBox={`0 0 ${size} ${size}`} className="h-full w-full -rotate-90">
@@ -363,14 +377,14 @@ function CrewPassport() {
       </div>
 
       <div className="mt-6">
-        <p className="text-[11px] font-mono uppercase tracking-[0.2em] text-bone/50">
+        <p className="text-[11px] font-mono uppercase tracking-crest text-bone/50">
           Strengths
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
-          <Pill tone="moss">On-time 96%</Pill>
-          <Pill tone="honey">Repeat 71%</Pill>
-          <Pill tone="moss">Zero incidents</Pill>
-          <Pill tone="honey">Upsell rate 2.1×</Pill>
+          <Pill tone="champagne">On-time 96%</Pill>
+          <Pill tone="moss">Repeat 71%</Pill>
+          <Pill tone="champagne">Zero incidents</Pill>
+          <Pill tone="moss">Upsell rate 2.1×</Pill>
         </div>
       </div>
     </div>
@@ -379,20 +393,20 @@ function CrewPassport() {
 
 export default function ScorePage() {
   return (
-    <div className="bg-forest-deep">
+    <div className="bg-obsidian">
       <Nav />
 
-      {/* 1. HERO */}
-      <section className="relative overflow-hidden bg-forest-deep py-28">
+      {/* 1. HERO — true black stage with champagne halo (heritage). */}
+      <section className="relative overflow-hidden bg-pitch py-28">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[600px] bg-[radial-gradient(ellipse_at_top,rgba(157,255,138,0.10),transparent_65%)]"
+          className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[600px] bg-[radial-gradient(ellipse_at_top,rgba(212,178,122,0.12),transparent_65%)]"
         />
         <div className="mx-auto max-w-7xl px-6">
           <div className="grid items-center gap-16 lg:grid-cols-[1.1fr_0.9fr]">
             <div>
               <ScrollReveal>
-                <Eyebrow tone="moss">LRI Score · Beta</Eyebrow>
+                <Eyebrow tone="champagne">LRI Score · Beta</Eyebrow>
               </ScrollReveal>
               <ScrollReveal delay={0.05}>
                 <h1 className="mt-6 font-serif text-6xl leading-[1.0] tracking-[-0.02em] text-bone md:text-8xl">
@@ -413,7 +427,7 @@ export default function ScorePage() {
                   </CtaButton>
                   <a
                     href="#methodology"
-                    className="group inline-flex items-center gap-1.5 text-base font-medium text-bone/70 transition-colors hover:text-moss-bright"
+                    className="group inline-flex items-center gap-1.5 text-base font-medium text-bone/70 transition-colors hover:text-champagne-bright"
                   >
                     See methodology
                     <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -429,11 +443,12 @@ export default function ScorePage() {
         </div>
       </section>
 
-      {/* 2. METHODOLOGY — five subscores */}
-      <section id="methodology" className="bg-forest-mid py-28">
+      {/* 2. METHODOLOGY — five subscores. Alternate champagne / moss /
+          champagne / moss / champagne. */}
+      <section id="methodology" className="bg-slate-deep py-28">
         <div className="mx-auto max-w-7xl px-6">
           <ScrollReveal>
-            <Eyebrow tone="moss">Methodology</Eyebrow>
+            <Eyebrow tone="champagne">Methodology</Eyebrow>
           </ScrollReveal>
           <ScrollReveal delay={0.05}>
             <h2 className="mt-4 max-w-3xl font-serif text-5xl leading-[1.05] tracking-[-0.02em] text-bone md:text-6xl">
@@ -451,8 +466,12 @@ export default function ScorePage() {
           <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-5">
             {SUBSCORES.map((s, i) => {
               const Icon = s.icon;
-              const accent =
-                s.tone === "honey" ? "text-honey-bright" : "text-moss-bright";
+              // Even = champagne, odd = moss. With 5 cards this lands as
+              // champagne / moss / champagne / moss / champagne.
+              const useChampagne = i % 2 === 0;
+              const accent = useChampagne
+                ? "text-champagne-bright"
+                : "text-moss-bright";
               return (
                 <ScrollReveal key={s.name} delay={0.05 + i * 0.05}>
                   <div className="flex h-full flex-col rounded-2xl border border-bone/10 bg-bone/[0.02] p-6">
@@ -468,7 +487,7 @@ export default function ScorePage() {
                     <p className="mt-3 flex-1 text-sm leading-[1.6] text-bone/60">
                       {s.blurb}
                     </p>
-                    <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.2em] text-bone/40">
+                    <p className="mt-6 font-mono text-[10px] uppercase tracking-crest text-bone/40">
                       {s.source}
                     </p>
                   </div>
@@ -479,11 +498,11 @@ export default function ScorePage() {
         </div>
       </section>
 
-      {/* 3. THREE VIEWS */}
-      <section className="bg-forest-deep py-28">
+      {/* 3. THREE VIEWS — alternate champagne / moss / champagne. */}
+      <section className="bg-obsidian py-28">
         <div className="mx-auto max-w-7xl px-6">
           <ScrollReveal>
-            <Eyebrow tone="honey">Views</Eyebrow>
+            <Eyebrow tone="champagne">Views</Eyebrow>
           </ScrollReveal>
           <ScrollReveal delay={0.05}>
             <h2 className="mt-4 max-w-3xl font-serif text-5xl leading-[1.05] tracking-[-0.02em] text-bone md:text-6xl">
@@ -498,44 +517,49 @@ export default function ScorePage() {
           </ScrollReveal>
 
           <div className="mt-16 grid gap-6 lg:grid-cols-3">
-            {VIEWS.map((v, i) => (
-              <ScrollReveal key={v.label} delay={0.05 + i * 0.07}>
-                <div className="flex h-full flex-col rounded-2xl border border-bone/10 bg-bone/[0.02] p-8">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-bone/50">
-                        {v.label}
-                      </p>
-                      <h3 className="mt-3 font-serif text-3xl tracking-[-0.01em] text-bone">
-                        {v.title}
-                      </h3>
+            {VIEWS.map((v, i) => {
+              const useChampagne = i % 2 === 0;
+              const ringTone: "champagne" | "moss" = useChampagne
+                ? "champagne"
+                : "moss";
+              const captionCls = useChampagne
+                ? "text-champagne-bright"
+                : "text-moss-bright";
+              return (
+                <ScrollReveal key={v.label} delay={0.05 + i * 0.07}>
+                  <div className="flex h-full flex-col rounded-2xl border border-bone/10 bg-bone/[0.02] p-8">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="font-mono text-[10px] uppercase tracking-crest text-bone/50">
+                          {v.label}
+                        </p>
+                        <h3 className="mt-3 font-serif text-3xl tracking-[-0.01em] text-bone">
+                          {v.title}
+                        </h3>
+                      </div>
+                      <ScoreRingMini value={v.score} tone={ringTone} />
                     </div>
-                    <ScoreRingMini value={v.score} tone={v.tone} />
+                    <p className="mt-6 flex-1 text-base leading-[1.6] text-bone/60">
+                      {v.body}
+                    </p>
+                    <p
+                      className={`mt-6 font-mono text-[11px] uppercase tracking-crest ${captionCls}`}
+                    >
+                      {v.caption}
+                    </p>
                   </div>
-                  <p className="mt-6 flex-1 text-base leading-[1.6] text-bone/60">
-                    {v.body}
-                  </p>
-                  <p
-                    className={`mt-6 font-mono text-[11px] uppercase tracking-[0.2em] ${
-                      v.tone === "honey"
-                        ? "text-honey-bright"
-                        : "text-moss-bright"
-                    }`}
-                  >
-                    {v.caption}
-                  </p>
-                </div>
-              </ScrollReveal>
-            ))}
+                </ScrollReveal>
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* 4. PEER COHORT */}
-      <section className="bg-forest-mid py-28">
+      <section className="bg-slate-deep py-28">
         <div className="mx-auto max-w-7xl px-6">
           <ScrollReveal>
-            <Eyebrow tone="moss">Cohort</Eyebrow>
+            <Eyebrow tone="champagne">Cohort</Eyebrow>
           </ScrollReveal>
 
           <div className="mt-4 grid gap-16 lg:grid-cols-2 lg:items-center">
@@ -567,10 +591,10 @@ export default function ScorePage() {
               </ScrollReveal>
               <ScrollReveal delay={0.2}>
                 <div className="mt-8 flex flex-wrap gap-2">
-                  <Pill tone="moss">Revenue band</Pill>
-                  <Pill tone="honey">Region</Pill>
-                  <Pill tone="moss">Service mix</Pill>
-                  <Pill tone="honey">Quarterly refresh</Pill>
+                  <Pill tone="champagne">Revenue band</Pill>
+                  <Pill tone="moss">Region</Pill>
+                  <Pill tone="champagne">Service mix</Pill>
+                  <Pill tone="moss">Quarterly refresh</Pill>
                 </div>
               </ScrollReveal>
             </div>
@@ -583,7 +607,7 @@ export default function ScorePage() {
       </section>
 
       {/* 5. CORTEX ACTION ENGINE */}
-      <section className="bg-forest-deep py-28">
+      <section className="bg-obsidian py-28">
         <div className="mx-auto max-w-7xl px-6">
           <ScrollReveal>
             <Eyebrow tone="lime">Cortex</Eyebrow>
@@ -607,14 +631,14 @@ export default function ScorePage() {
           </ScrollReveal>
 
           <ScrollReveal delay={0.15}>
-            <div className="mt-12 rounded-2xl border border-moss/30 bg-moss/[0.04] p-8">
-              <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-moss-bright">
+            <div className="mt-12 rounded-2xl border border-champagne/30 bg-champagne/[0.04] p-8 shadow-pop-champagne">
+              <p className="font-mono text-[11px] uppercase tracking-crest text-champagne-bright">
                 Cortex hypothesis · 04:12 AM
               </p>
               <p className="mt-4 font-serif text-2xl leading-[1.4] text-bone md:text-3xl">
                 &ldquo;On-Time Rate dropped 6 pts in the last 14 days. Crew
                 B&rsquo;s average GPS arrival is{" "}
-                <span className="text-honey-bright">18 minutes late</span> vs.
+                <span className="text-moss-bright">18 minutes late</span> vs.
                 a 4-minute baseline. Suggested fix: review Crew B&rsquo;s
                 morning route start window and re-check the depot fuel
                 stop.&rdquo;
@@ -655,14 +679,21 @@ export default function ScorePage() {
               },
             ].map((s, i) => {
               const Icon = s.icon;
+              const useChampagne = i % 2 === 0;
+              const stepCls = useChampagne
+                ? "text-champagne-bright"
+                : "text-moss-bright";
+              const iconCls = useChampagne
+                ? "h-5 w-5 text-moss-bright"
+                : "h-5 w-5 text-champagne-bright";
               return (
                 <ScrollReveal key={s.step} delay={0.05 + i * 0.07}>
                   <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-6">
                     <div className="flex items-center justify-between">
-                      <p className="font-mono text-sm text-honey-bright">
+                      <p className={`font-mono text-sm ${stepCls}`}>
                         {s.step}
                       </p>
-                      <Icon className="h-5 w-5 text-moss-bright" />
+                      <Icon className={iconCls} />
                     </div>
                     <h3 className="mt-5 font-serif text-2xl tracking-[-0.01em] text-bone">
                       {s.title}
@@ -679,10 +710,10 @@ export default function ScorePage() {
       </section>
 
       {/* 6. PORTABILITY */}
-      <section className="bg-forest-mid py-28">
+      <section className="bg-slate-deep py-28">
         <div className="mx-auto max-w-7xl px-6">
           <ScrollReveal>
-            <Eyebrow tone="honey">Portable</Eyebrow>
+            <Eyebrow tone="champagne">Portable</Eyebrow>
           </ScrollReveal>
 
           <div className="mt-4 grid gap-16 lg:grid-cols-2 lg:items-center">
@@ -719,11 +750,11 @@ export default function ScorePage() {
         </div>
       </section>
 
-      {/* 7. DATA SOURCES */}
-      <section className="bg-forest-deep py-28">
+      {/* 7. DATA SOURCES — alternate champagne / moss arrow accents. */}
+      <section className="bg-obsidian py-28">
         <div className="mx-auto max-w-7xl px-6">
           <ScrollReveal>
-            <Eyebrow tone="moss">Sources</Eyebrow>
+            <Eyebrow tone="champagne">Sources</Eyebrow>
           </ScrollReveal>
           <ScrollReveal delay={0.05}>
             <h2 className="mt-4 max-w-3xl font-serif text-5xl leading-[1.05] tracking-[-0.02em] text-bone md:text-6xl">
@@ -732,18 +763,24 @@ export default function ScorePage() {
           </ScrollReveal>
 
           <div className="mt-16 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {SOURCES.map((s, i) => (
-              <ScrollReveal key={s.source} delay={0.04 + i * 0.04}>
-                <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-6">
-                  <p className="font-serif text-xl tracking-[-0.01em] text-bone">
-                    {s.source}
-                  </p>
-                  <p className="mt-3 font-mono text-sm text-moss-bright">
-                    {s.arrow} {s.feedsInto}
-                  </p>
-                </div>
-              </ScrollReveal>
-            ))}
+            {SOURCES.map((s, i) => {
+              const useChampagne = i % 2 === 0;
+              const arrowCls = useChampagne
+                ? "text-champagne-bright"
+                : "text-moss-bright";
+              return (
+                <ScrollReveal key={s.source} delay={0.04 + i * 0.04}>
+                  <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-6">
+                    <p className="font-serif text-xl tracking-[-0.01em] text-bone">
+                      {s.source}
+                    </p>
+                    <p className={`mt-3 font-mono text-sm ${arrowCls}`}>
+                      {s.arrow} {s.feedsInto}
+                    </p>
+                  </div>
+                </ScrollReveal>
+              );
+            })}
           </div>
 
           <ScrollReveal delay={0.3}>
@@ -758,10 +795,10 @@ export default function ScorePage() {
       </section>
 
       {/* 8. FAQ */}
-      <section className="bg-forest-mid py-28">
+      <section className="bg-slate-deep py-28">
         <div className="mx-auto max-w-7xl px-6">
           <ScrollReveal>
-            <Eyebrow tone="honey">FAQ</Eyebrow>
+            <Eyebrow tone="champagne">FAQ</Eyebrow>
           </ScrollReveal>
           <ScrollReveal delay={0.05}>
             <h2 className="mt-4 max-w-3xl font-serif text-5xl leading-[1.05] tracking-[-0.02em] text-bone md:text-6xl">
@@ -779,7 +816,7 @@ export default function ScorePage() {
                   <span className="font-serif text-xl tracking-[-0.01em] text-bone md:text-2xl">
                     {item.q}
                   </span>
-                  <ChevronRight className="mt-1 h-5 w-5 shrink-0 text-moss-bright transition-transform group-open:rotate-90" />
+                  <ChevronRight className="mt-1 h-5 w-5 shrink-0 text-champagne-bright transition-transform group-open:rotate-90" />
                 </summary>
                 <p className="mt-4 max-w-3xl text-base leading-[1.7] text-bone/60">
                   {item.a}

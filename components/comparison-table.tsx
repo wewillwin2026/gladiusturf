@@ -17,7 +17,9 @@ function YesNoCell({
         <Check
           className={cn(
             "h-4 w-4 flex-none",
-            featured ? "text-moss-bright" : "text-honey-bright"
+            // GladiusTurf row uses the signature moss check (logo echo / trust marker).
+            // Other vendors use the heritage champagne tone.
+            featured ? "text-moss-bright" : "text-champagne-bright"
           )}
         />
         <span className={featured ? "text-bone" : "text-bone/75"}>{label}</span>
@@ -26,15 +28,15 @@ function YesNoCell({
   }
   if (value === "partial") {
     return (
-      <span className="inline-flex items-center gap-2 text-sm text-bone/55">
-        <span className="h-1 w-3 flex-none rounded-full bg-bone/30" />
+      <span className="inline-flex items-center gap-2 text-sm text-champagne-bright/60">
+        <span className="h-1 w-3 flex-none rounded-full bg-champagne/30" />
         {label}
       </span>
     );
   }
   return (
     <span className="inline-flex items-center gap-2 text-sm text-bone/40">
-      <Minus className="h-4 w-4 flex-none" />
+      <Minus className="h-4 w-4 flex-none text-bone/20" />
       {label}
     </span>
   );
@@ -89,15 +91,15 @@ type ComparisonTableProps = {
 
 export function ComparisonTable({ bare = false }: ComparisonTableProps) {
   const table = (
-    <div className="overflow-x-auto rounded-2xl border border-bone/10 bg-forest-mid/40">
+    <div className="overflow-x-auto rounded-2xl border border-bone/10 bg-slate-deep/40">
       <table className="w-full min-w-[720px] border-collapse">
         <thead>
-          <tr className="border-b border-bone/10 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-bone/50">
-            <th className="px-5 py-4">Vendor</th>
-            <th className="px-5 py-4">Price</th>
-            <th className="px-5 py-4">AI-native</th>
-            <th className="px-5 py-4">Compliance</th>
-            <th className="px-5 py-4">Marketplace</th>
+          <tr className="border-b border-bone/10 text-left text-[11px] font-semibold uppercase tracking-crest text-bone/50">
+            <th className="px-5 py-4 text-moss-bright">Vendor</th>
+            <th className="px-5 py-4 text-bone">Price</th>
+            <th className="px-5 py-4 text-bone">AI-native</th>
+            <th className="px-5 py-4 text-bone">Compliance</th>
+            <th className="px-5 py-4 text-bone">Marketplace</th>
           </tr>
         </thead>
         <tbody>
@@ -155,9 +157,9 @@ export function ComparisonTable({ bare = false }: ComparisonTableProps) {
   if (bare) return table;
 
   return (
-    <section className="border-t border-bone/10 bg-forest-deep py-28">
+    <section className="border-t border-bone/10 bg-obsidian py-28">
       <div className="mx-auto max-w-7xl px-6">
-        <p className="mb-3 text-center text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright">
+        <p className="mb-3 text-center text-xs font-semibold uppercase tracking-crest text-champagne-bright">
           Compare
         </p>
         <h2 className="mx-auto max-w-3xl text-center font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">

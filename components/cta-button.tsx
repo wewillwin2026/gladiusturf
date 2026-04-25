@@ -2,7 +2,12 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/cn";
 
-type Variant = "primary" | "ghost" | "ghost-honey";
+type Variant =
+  | "primary"
+  | "ghost"
+  | "ghost-honey"
+  | "ghost-warm"
+  | "ghost-champagne";
 type Size = "md" | "lg";
 
 type CtaButtonProps = {
@@ -17,7 +22,13 @@ type CtaButtonProps = {
 };
 
 /**
- * Primary lime-bright CTA + ghost (outlined moss) variant.
+ * Primary lime-bright CTA + ghost variants.
+ * - primary: lime-bright filled (signature CTA)
+ * - ghost: outlined moss (logo echo)
+ * - ghost-honey: outlined honey (legacy, kept for backwards compat)
+ * - ghost-warm: alias of ghost-honey
+ * - ghost-champagne: outlined champagne — the new heritage ghost default
+ *
  * RSC-friendly. Hover styles via Tailwind class state.
  */
 export function CtaButton({
@@ -37,9 +48,11 @@ export function CtaButton({
   const variantCls =
     variant === "primary"
       ? "bg-lime-bright text-forest-deep shadow-cta hover:shadow-cta-hover hover:bg-lime"
-      : variant === "ghost-honey"
-        ? "border border-honey-bright/40 text-honey-bright hover:border-honey-bright hover:bg-honey/10"
-        : "border border-moss/40 text-moss-bright hover:border-moss-bright hover:bg-moss/10";
+      : variant === "ghost-champagne"
+        ? "border border-champagne-bright/40 text-champagne-bright hover:border-champagne-bright hover:bg-champagne/10"
+        : variant === "ghost-honey" || variant === "ghost-warm"
+          ? "border border-honey-bright/40 text-honey-bright hover:border-honey-bright hover:bg-honey/10"
+          : "border border-moss/40 text-moss-bright hover:border-moss-bright hover:bg-moss/10";
 
   const cls = cn(
     "group inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-200",

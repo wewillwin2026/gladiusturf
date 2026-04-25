@@ -102,19 +102,19 @@ export default function ManifestoPage() {
   return (
     <>
       <Nav />
-      <main className="bg-forest-deep">
-        {/* HERO */}
-        <section className="relative overflow-hidden">
+      <main className="bg-obsidian">
+        {/* HERO — heritage monolith, pure pitch */}
+        <section className="relative overflow-hidden bg-pitch">
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-0 -z-0 h-[700px] bg-[radial-gradient(ellipse_at_top,rgba(127,226,122,0.12),transparent_60%)]"
+            className="pointer-events-none absolute inset-x-0 top-0 -z-0 h-[700px] bg-[radial-gradient(ellipse_at_top,rgba(201,168,122,0.12),transparent_60%)]"
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-0 -z-0 h-[600px] opacity-[0.08] [background-image:linear-gradient(to_right,rgba(245,241,232,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(245,241,232,0.06)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:radial-gradient(ellipse_at_top,black_30%,transparent_75%)]"
+            className="pointer-events-none absolute inset-x-0 top-0 -z-0 h-[600px] opacity-[0.08] [background-image:linear-gradient(to_right,rgba(234,227,210,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(234,227,210,0.06)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:radial-gradient(ellipse_at_top,black_30%,transparent_75%)]"
           />
           <div className="relative mx-auto max-w-5xl px-6 py-28 md:py-32">
-            <Pill className="mb-8">Manifesto</Pill>
+            <Pill tone="champagne" className="mb-8">Manifesto</Pill>
             <h1 className="font-serif text-5xl tracking-[-0.02em] leading-[1.05] text-bone md:text-7xl">
               Landscaping is a $115B industry run on spreadsheets, paper
               invoices, and forgotten quotes.
@@ -170,10 +170,10 @@ export default function ManifestoPage() {
         </section>
 
         {/* THE TEN COMMANDMENTS */}
-        <section className="border-t border-bone/5 bg-forest-mid">
+        <section className="border-t border-bone/5 bg-slate-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <div className="mx-auto max-w-3xl text-center">
-              <Eyebrow tone="honey" className="mb-6">The Ten Commandments</Eyebrow>
+              <Eyebrow tone="champagne" className="mb-6">The Ten Commandments</Eyebrow>
               <h2 className="font-serif text-4xl tracking-[-0.01em] leading-[1.1] text-bone md:text-5xl">
                 Ten rules we build by. We will not break any of them for any
                 customer, investor, or quarter.
@@ -183,13 +183,15 @@ export default function ManifestoPage() {
             <ol className="mt-24 flex flex-col gap-8">
               {COMMANDMENTS.map((c, i) => {
                 const isFeatured = i === FEATURED_COMMANDMENT_INDEX;
+                // Marquee commandment keeps the moss halo (logo echo).
                 const cardCls = isFeatured
-                  ? "rounded-2xl border border-moss/30 bg-gradient-to-b from-moss/10 to-transparent p-8 md:p-12"
+                  ? "rounded-2xl border border-moss/30 bg-gradient-to-b from-moss/10 to-transparent p-8 md:p-12 shadow-pop"
                   : "rounded-2xl border border-bone/10 bg-bone/[0.02] p-8 md:p-12";
+                // Odd commandments → moss (logo echo). Even → champagne (heritage).
                 const numeralCls =
                   (i + 1) % 2 === 1
                     ? "text-moss-bright/40"
-                    : "text-honey-bright/40";
+                    : "text-champagne-bright/40";
                 return (
                   <li key={c.headline} className={cardCls}>
                     <div className="grid gap-6 md:grid-cols-[auto_1fr] md:gap-12">
@@ -212,17 +214,17 @@ export default function ManifestoPage() {
           </div>
         </section>
 
-        {/* PULL-QUOTE BAND */}
-        <section className="border-t border-bone/5 bg-forest-mid">
+        {/* PULL-QUOTE BAND — slate-deep with champagne quote glyph */}
+        <section className="border-t border-bone/5 bg-slate-deep">
           <div className="mx-auto max-w-5xl px-6 py-28">
             <Quote
-              className="mb-8 h-12 w-12 text-honey-bright/60"
+              className="mb-8 h-12 w-12 text-champagne-bright/60"
               aria-hidden
             />
-            <blockquote className="font-serif text-3xl tracking-[-0.01em] leading-[1.15] text-bone md:text-5xl">
+            <blockquote className="font-serif text-3xl tracking-[-0.01em] leading-[1.15] text-parchment md:text-5xl">
               &ldquo;{COMMANDMENTS[FEATURED_COMMANDMENT_INDEX].headline}&rdquo;
             </blockquote>
-            <p className="mt-10 text-xs font-semibold uppercase tracking-[0.2em] text-bone/40">
+            <p className="mt-10 text-xs font-semibold uppercase tracking-crest text-bone/40">
               — Commandment{" "}
               {String(FEATURED_COMMANDMENT_INDEX + 1).padStart(2, "0")}
             </p>
@@ -233,7 +235,7 @@ export default function ManifestoPage() {
         <section className="border-t border-bone/5">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <div className="mx-auto max-w-3xl text-center">
-              <Eyebrow className="mb-6">What we believe</Eyebrow>
+              <Eyebrow tone="champagne" className="mb-6">What we believe</Eyebrow>
               <h2 className="font-serif text-4xl tracking-[-0.01em] leading-[1.1] text-bone md:text-5xl">
                 Six positions we&apos;ll defend in public, in writing, and in
                 the product.
@@ -247,8 +249,8 @@ export default function ManifestoPage() {
                   className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-8"
                 >
                   <div
-                    className={`font-mono text-sm font-semibold uppercase tracking-[0.2em] ${
-                      i % 2 === 0 ? "text-honey-bright" : "text-moss-bright"
+                    className={`font-mono text-sm font-semibold uppercase tracking-crest ${
+                      i % 2 === 0 ? "text-champagne-bright" : "text-moss-bright"
                     }`}
                   >
                     {String(i + 1).padStart(2, "0")} / Belief
@@ -265,10 +267,10 @@ export default function ManifestoPage() {
           </div>
         </section>
 
-        {/* WHAT WE WILL NEVER DO */}
-        <section className="border-t border-bone/5 bg-forest-mid">
+        {/* WHAT WE WILL NEVER DO — rotate champagne / moss / champagne / moss / champagne */}
+        <section className="border-t border-bone/5 bg-slate-deep">
           <div className="mx-auto max-w-5xl px-6 py-28">
-            <Eyebrow tone="honey" className="mb-6">Hard nos</Eyebrow>
+            <Eyebrow tone="champagne" className="mb-6">Hard nos</Eyebrow>
             <h2 className="font-serif text-4xl tracking-[-0.01em] leading-[1.1] text-bone md:text-5xl">
               Five things we will never do.
             </h2>
@@ -278,9 +280,10 @@ export default function ManifestoPage() {
 
             <ul className="mt-16 flex flex-col">
               {NEVERS.map((n, i) => {
-                const isEven = i % 2 === 0;
-                const xCls = isEven
-                  ? "border-honey-bright/40 bg-honey-bright/10 text-honey-bright"
+                // rotate: 0,2,4 → champagne · 1,3 → moss
+                const isChampagne = i % 2 === 0;
+                const xCls = isChampagne
+                  ? "border-champagne-bright/40 bg-champagne-bright/10 text-champagne-bright"
                   : "border-moss-bright/40 bg-moss-bright/10 text-moss-bright";
                 return (
                   <li
@@ -303,15 +306,15 @@ export default function ManifestoPage() {
           </div>
         </section>
 
-        {/* WHO WE ARE */}
-        <section className="border-t border-bone/5">
+        {/* WHO WE ARE — founder narrative on slate-deep, parchment text for warmth */}
+        <section className="border-t border-bone/5 bg-slate-deep">
           <div className="mx-auto max-w-3xl px-6 py-28">
-            <Eyebrow className="mb-6">Who we are</Eyebrow>
-            <h2 className="font-serif text-4xl tracking-[-0.01em] leading-[1.05] text-bone md:text-5xl">
+            <Eyebrow tone="champagne" className="mb-6">Who we are</Eyebrow>
+            <h2 className="font-serif text-4xl tracking-[-0.01em] leading-[1.05] text-parchment md:text-5xl">
               Built by people who&apos;ve ridden in trucks at 5 AM.
             </h2>
 
-            <div className="mt-12 flex flex-col gap-7 text-xl leading-relaxed text-bone/70">
+            <div className="mt-12 flex flex-col gap-7 text-xl leading-relaxed text-parchment/75">
               <p>
                 We are a small team that grew up around the trade. We&apos;ve
                 pulled weeds at our father&apos;s shop, ridden the route on
@@ -334,7 +337,7 @@ export default function ManifestoPage() {
                 fairways together — and we are building it the way we&apos;d
                 want it built if our name were on the truck.
               </p>
-              <p className="pt-4 font-serif text-lg italic text-bone/40">
+              <p className="pt-4 font-serif text-lg italic text-parchment/45">
                 — The founders, GladiusTurf
               </p>
             </div>
@@ -342,10 +345,10 @@ export default function ManifestoPage() {
         </section>
 
         {/* FINAL CTA */}
-        <section className="relative border-t border-bone/5 bg-forest-mid">
+        <section className="relative border-t border-bone/5 bg-slate-deep">
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-0 -z-0 h-[400px] bg-[radial-gradient(ellipse_at_top,rgba(217,250,108,0.10),transparent_70%)]"
+            className="pointer-events-none absolute inset-x-0 top-0 -z-0 h-[400px] bg-[radial-gradient(ellipse_at_top,rgba(212,178,122,0.10),transparent_70%)]"
           />
           <div className="relative mx-auto max-w-5xl px-6 py-28 text-center">
             <Eyebrow tone="lime" className="mb-6">
@@ -362,7 +365,7 @@ export default function ManifestoPage() {
               <CtaButton href="/demo" size="lg">
                 Book the demo
               </CtaButton>
-              <CtaButton href="/product" variant="ghost-honey">
+              <CtaButton href="/product" variant="ghost-champagne">
                 See the product
               </CtaButton>
             </div>

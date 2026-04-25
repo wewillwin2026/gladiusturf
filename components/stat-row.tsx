@@ -11,6 +11,8 @@ type Stat = {
   label: string;
   /** The MOSS-accented "winner" stat — only one per row. */
   accent?: boolean;
+  /** Tertiary tone — bone — used to balance the row. */
+  tertiary?: boolean;
 };
 
 const DEFAULT_STATS: Stat[] = [
@@ -34,6 +36,7 @@ const DEFAULT_STATS: Stat[] = [
     value: 400,
     suffix: "%",
     label: "spring-rush call volume your stack wasn't built for",
+    tertiary: true,
   },
 ];
 
@@ -41,7 +44,7 @@ export function StatRow({ stats = DEFAULT_STATS }: { stats?: Stat[] }) {
   return (
     <section
       id="proof"
-      className="relative border-y border-bone/10 bg-forest-mid py-20 md:py-28"
+      className="relative border-y border-bone/10 bg-slate-deep py-20 md:py-28"
     >
       <div className="mx-auto max-w-7xl px-6">
         <ScrollReveal>
@@ -58,7 +61,7 @@ export function StatRow({ stats = DEFAULT_STATS }: { stats?: Stat[] }) {
         </ScrollReveal>
 
         <ScrollReveal delay={0.1}>
-          <p className="mx-auto mt-6 max-w-2xl text-center text-lg text-bone/70">
+          <p className="mx-auto mt-6 max-w-2xl text-center text-lg text-parchment/70">
             Quotes that die in voicemail. Upsells nobody flagged. Referrals that
             got chased by a competitor first. Numbers from the 12 crews who
             audited their pipelines with us last quarter.
@@ -67,34 +70,41 @@ export function StatRow({ stats = DEFAULT_STATS }: { stats?: Stat[] }) {
 
         <ScrollReveal delay={0.15}>
           <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {stats.map((stat) => (
-              <div
-                key={stat.label}
-                className={cn(
-                  "rounded-2xl border p-8 text-center",
-                  stat.accent
-                    ? "border-moss/30 bg-gradient-to-b from-moss/10 to-transparent"
-                    : "border-bone/10 bg-bone/[0.02]"
-                )}
-              >
+            {stats.map((stat) => {
+              const valueCls = stat.accent
+                ? "text-moss-bright"
+                : stat.tertiary
+                  ? "text-bone"
+                  : "text-champagne-bright";
+              return (
                 <div
+                  key={stat.label}
                   className={cn(
-                    "font-serif text-5xl font-semibold tracking-tight md:text-6xl",
-                    stat.accent ? "text-moss-bright" : "text-honey-bright"
+                    "rounded-2xl border p-8 text-center",
+                    stat.accent
+                      ? "border-moss/30 bg-gradient-to-b from-moss/10 to-transparent"
+                      : "border-bone/10 bg-bone/[0.02]"
                   )}
                 >
-                  <AnimatedCounter
-                    value={stat.value}
-                    prefix={stat.prefix}
-                    suffix={stat.suffix}
-                    decimals={stat.decimals}
-                  />
+                  <div
+                    className={cn(
+                      "font-serif text-5xl font-semibold tracking-tight md:text-6xl",
+                      valueCls
+                    )}
+                  >
+                    <AnimatedCounter
+                      value={stat.value}
+                      prefix={stat.prefix}
+                      suffix={stat.suffix}
+                      decimals={stat.decimals}
+                    />
+                  </div>
+                  <p className="mt-4 text-sm leading-[1.5] text-bone/60">
+                    {stat.label}
+                  </p>
                 </div>
-                <p className="mt-4 text-sm leading-[1.5] text-bone/60">
-                  {stat.label}
-                </p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </ScrollReveal>
       </div>

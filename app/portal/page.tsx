@@ -14,6 +14,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { CtaBand } from "@/components/cta-band";
+import { CtaButton } from "@/components/cta-button";
 import { Eyebrow } from "@/components/eyebrow";
 import { Footer } from "@/components/footer";
 import { Nav } from "@/components/nav";
@@ -36,6 +37,8 @@ export const metadata: Metadata = {
 
 const DEMO_HREF = "/portal/demo/sample-token-2026";
 
+type Accent = "moss" | "honey" | "champagne";
+
 type Capability = {
   eyebrow: string;
   icon: React.ReactNode;
@@ -45,7 +48,7 @@ type Capability = {
   proof: string;
   flip?: boolean;
   bg?: "deep" | "mid";
-  accent?: "moss" | "honey";
+  accent?: Accent;
   visual: "scheduling" | "payment" | "approval" | "history" | "referral";
 };
 
@@ -63,7 +66,7 @@ const CAPABILITIES: Capability[] = [
     ],
     proof: "73% fewer 'when are you coming?' calls in the first 60 days.",
     bg: "mid",
-    accent: "moss",
+    accent: "champagne",
     visual: "scheduling",
   },
   {
@@ -80,7 +83,7 @@ const CAPABILITIES: Capability[] = [
     proof: "$12,800/mo recovered in late invoices on the average crew.",
     flip: true,
     bg: "deep",
-    accent: "honey",
+    accent: "moss",
     visual: "payment",
   },
   {
@@ -96,7 +99,7 @@ const CAPABILITIES: Capability[] = [
     ],
     proof: "Mid-job scope changes approved in under 9 minutes on average.",
     bg: "mid",
-    accent: "moss",
+    accent: "champagne",
     visual: "approval",
   },
   {
@@ -113,7 +116,7 @@ const CAPABILITIES: Capability[] = [
     proof: "100% of customer history, 24/7 self-serve, zero phone calls.",
     flip: true,
     bg: "deep",
-    accent: "honey",
+    accent: "moss",
     visual: "history",
   },
   {
@@ -129,7 +132,7 @@ const CAPABILITIES: Capability[] = [
     ],
     proof: "$180,000/yr in referral revenue most crews don't know they're losing.",
     bg: "mid",
-    accent: "moss",
+    accent: "champagne",
     visual: "referral",
   },
 ];
@@ -184,14 +187,14 @@ export default function PortalMarketingPage() {
       <Nav />
       <main>
         {/* a. Hero */}
-        <section className="relative overflow-hidden pb-24 pt-16 md:pb-32 md:pt-24">
+        <section className="relative overflow-hidden bg-pitch pb-24 pt-16 md:pb-32 md:pt-24">
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[900px] bg-[radial-gradient(ellipse_at_top,rgba(232,184,107,0.16),transparent_60%)]"
+            className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[900px] bg-[radial-gradient(ellipse_at_top,rgba(201,168,122,0.18),transparent_60%)]"
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-[200px] -z-10 h-[600px] bg-[radial-gradient(ellipse_at_center,rgba(127,226,122,0.08),transparent_65%)]"
+            className="pointer-events-none absolute inset-x-0 top-[200px] -z-10 h-[600px] bg-[radial-gradient(ellipse_at_center,rgba(127,226,122,0.06),transparent_65%)]"
           />
           <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
             <TopographicBg />
@@ -201,10 +204,10 @@ export default function PortalMarketingPage() {
             <div className="mx-auto max-w-4xl text-center">
               <ScrollReveal>
                 <div className="mb-7 flex items-center justify-center">
-                  <span className="inline-flex items-center gap-2 rounded-full border border-honey/30 bg-honey/5 px-4 py-1.5 text-xs font-medium text-honey-bright">
+                  <Pill tone="champagne">
                     <Sparkles className="h-3 w-3" />
                     Client Portal · Engine 09
-                  </span>
+                  </Pill>
                 </div>
               </ScrollReveal>
 
@@ -213,7 +216,7 @@ export default function PortalMarketingPage() {
                   Your phone stops ringing.
                   <br />
                   Your office stops{" "}
-                  <span className="text-honey-bright">drowning</span>.
+                  <span className="text-moss-bright">drowning</span>.
                 </h1>
               </ScrollReveal>
 
@@ -239,19 +242,16 @@ export default function PortalMarketingPage() {
 
               <ScrollReveal delay={0.3}>
                 <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-                  <Link
-                    href="/demo"
-                    className="group inline-flex items-center gap-2 rounded-full bg-lime-bright px-7 py-3.5 text-base font-semibold text-forest-deep shadow-cta transition-all hover:bg-lime hover:shadow-cta-hover"
-                  >
+                  <CtaButton href="/demo" variant="primary" size="md">
                     Book a demo
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </Link>
-                  <Link
+                  </CtaButton>
+                  <CtaButton
                     href={DEMO_HREF}
-                    className="group inline-flex items-center gap-2 rounded-full border border-honey-bright/40 px-7 py-3.5 text-base font-medium text-honey-bright transition-all hover:border-honey-bright hover:bg-honey/10"
+                    variant="ghost-champagne"
+                    withArrow
                   >
-                    Try the live preview →
-                  </Link>
+                    Try the live preview
+                  </CtaButton>
                 </div>
               </ScrollReveal>
 
@@ -275,19 +275,19 @@ export default function PortalMarketingPage() {
         </section>
 
         {/* b. Live preview band */}
-        <section className="relative overflow-hidden border-y border-bone/10 bg-forest-mid py-24">
+        <section className="relative overflow-hidden border-y border-bone/10 bg-slate-deep py-24">
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-1/2 -z-10 h-[400px] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(232,184,107,0.10),transparent_70%)]"
+            className="pointer-events-none absolute inset-x-0 top-1/2 -z-10 h-[400px] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(201,168,122,0.12),transparent_70%)]"
           />
           <div className="relative mx-auto max-w-5xl px-6 text-center">
             <ScrollReveal>
-              <Eyebrow tone="honey">Live preview</Eyebrow>
+              <Eyebrow tone="champagne">Live preview</Eyebrow>
             </ScrollReveal>
             <ScrollReveal delay={0.05}>
               <h2 className="mt-4 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                 Click the button. See what your{" "}
-                <span className="text-honey-bright">customer</span> sees.
+                <span className="text-champagne-bright">customer</span> sees.
               </h2>
             </ScrollReveal>
             <ScrollReveal delay={0.15}>
@@ -302,7 +302,7 @@ export default function PortalMarketingPage() {
               <div className="mt-10">
                 <Link
                   href={DEMO_HREF}
-                  className="group inline-flex items-center gap-3 rounded-full bg-honey-bright px-10 py-5 text-lg font-semibold text-forest-deep shadow-pop-honey transition-all hover:bg-honey hover:shadow-pop-honey md:text-xl"
+                  className="group inline-flex items-center gap-3 rounded-full bg-champagne-bright px-10 py-5 text-lg font-semibold text-pitch shadow-pop-champagne transition-all hover:bg-champagne hover:shadow-pop-champagne md:text-xl"
                 >
                   <PlayCircle className="h-6 w-6" />
                   Try the live customer preview
@@ -325,15 +325,15 @@ export default function PortalMarketingPage() {
         ))}
 
         {/* d. White-label */}
-        <section className="border-t border-bone/10 bg-forest-deep py-28">
+        <section className="border-t border-bone/10 bg-obsidian py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="mx-auto max-w-3xl text-center">
-                <Eyebrow tone="honey">White-label</Eyebrow>
+                <Eyebrow tone="champagne">White-label</Eyebrow>
                 <h2 className="mt-4 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   Your logo. Your colors.
                   <br />
-                  <span className="text-honey-bright">Your domain.</span>
+                  <span className="text-champagne-bright">Your domain.</span>
                 </h2>
                 <p className="mx-auto mt-5 max-w-2xl text-lg text-bone/65">
                   Customers never see GladiusTurf. They see your brand —
@@ -373,7 +373,7 @@ export default function PortalMarketingPage() {
         </section>
 
         {/* e. Engines that power it */}
-        <section className="border-t border-bone/10 bg-forest-mid py-28">
+        <section className="border-t border-bone/10 bg-slate-deep py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="mx-auto max-w-3xl text-center">
@@ -381,7 +381,7 @@ export default function PortalMarketingPage() {
                 <h2 className="mt-4 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   Twelve engines feed the portal
                   <br />
-                  <span className="text-moss-bright">in real time.</span>
+                  <span className="text-champagne-bright">in real time.</span>
                 </h2>
                 <p className="mx-auto mt-5 max-w-2xl text-lg text-bone/65">
                   The portal isn&apos;t a separate product — it&apos;s the
@@ -399,8 +399,8 @@ export default function PortalMarketingPage() {
                     href={`/product#${e.slug}`}
                     className={
                       i % 2 === 0
-                        ? "inline-flex items-center gap-2 rounded-full border border-moss/30 bg-moss/5 px-4 py-2 text-sm font-medium text-moss-bright transition-all hover:border-moss-bright hover:bg-moss/10"
-                        : "inline-flex items-center gap-2 rounded-full border border-honey/30 bg-honey/5 px-4 py-2 text-sm font-medium text-honey-bright transition-all hover:border-honey-bright hover:bg-honey/10"
+                        ? "inline-flex items-center gap-2 rounded-full border border-champagne/30 bg-champagne/5 px-4 py-2 text-sm font-medium text-champagne-bright transition-all hover:border-champagne-bright hover:bg-champagne/10"
+                        : "inline-flex items-center gap-2 rounded-full border border-moss/30 bg-moss/5 px-4 py-2 text-sm font-medium text-moss-bright transition-all hover:border-moss-bright hover:bg-moss/10"
                     }
                   >
                     {e.name}
@@ -414,7 +414,7 @@ export default function PortalMarketingPage() {
                 See all 33 engines on the{" "}
                 <Link
                   href="/product"
-                  className="text-moss-bright underline-offset-4 hover:underline"
+                  className="text-champagne-bright underline-offset-4 hover:underline"
                 >
                   product page
                 </Link>
@@ -425,11 +425,11 @@ export default function PortalMarketingPage() {
         </section>
 
         {/* f. FAQ */}
-        <section className="border-t border-bone/10 bg-forest-deep py-28">
+        <section className="border-t border-bone/10 bg-obsidian py-28">
           <div className="mx-auto max-w-3xl px-6">
             <ScrollReveal>
               <div className="text-center">
-                <Eyebrow tone="honey">Frequently asked</Eyebrow>
+                <Eyebrow tone="champagne">Frequently asked</Eyebrow>
                 <h2 className="mt-4 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   Everything your office is wondering.
                 </h2>
@@ -450,7 +450,7 @@ export default function PortalMarketingPage() {
                       </span>
                       <span
                         aria-hidden
-                        className="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full border border-bone/15 text-bone/60 transition-transform group-open:rotate-45 group-open:border-honey-bright/40 group-open:text-honey-bright"
+                        className="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full border border-bone/15 text-bone/60 transition-transform group-open:rotate-45 group-open:border-champagne-bright/40 group-open:text-champagne-bright"
                       >
                         +
                       </span>
@@ -480,11 +480,22 @@ function CapabilitySection({
   cap: Capability;
   index: number;
 }) {
-  const accent = cap.accent ?? (index % 2 === 0 ? "moss" : "honey");
+  const accent: Accent =
+    cap.accent ?? (index % 2 === 0 ? "champagne" : "moss");
   const accentText =
-    accent === "honey" ? "text-honey-bright" : "text-moss-bright";
-  const accentBullet = accent === "honey" ? "bg-honey-bright" : "bg-moss-bright";
-  const bgCls = cap.bg === "deep" ? "bg-forest-deep" : "bg-forest-mid";
+    accent === "honey"
+      ? "text-honey-bright"
+      : accent === "moss"
+        ? "text-moss-bright"
+        : "text-champagne-bright";
+  const accentBullet =
+    accent === "honey"
+      ? "bg-honey-bright"
+      : accent === "moss"
+        ? "bg-moss-bright"
+        : "bg-champagne-bright";
+  const altBullet = accent === "moss" ? "bg-champagne-bright" : "bg-moss-bright";
+  const bgCls = cap.bg === "deep" ? "bg-obsidian" : "bg-slate-deep";
 
   return (
     <section
@@ -507,11 +518,7 @@ function CapabilitySection({
                   <li key={b} className="flex items-start gap-3">
                     <span
                       className={`mt-2 h-1.5 w-1.5 flex-none rounded-full ${
-                        i % 2 === 0
-                          ? accentBullet
-                          : accent === "honey"
-                            ? "bg-moss-bright"
-                            : "bg-honey-bright"
+                        i % 2 === 0 ? accentBullet : altBullet
                       }`}
                     />
                     {b}
@@ -544,15 +551,19 @@ function CapabilityVisual({
   accent,
 }: {
   kind: Capability["visual"];
-  accent: "moss" | "honey";
+  accent: Accent;
 }) {
+  const grad =
+    accent === "honey"
+      ? "from-honey/10 via-bone/[0.02] to-transparent"
+      : accent === "moss"
+        ? "from-moss/10 via-bone/[0.02] to-transparent"
+        : "from-champagne/10 via-bone/[0.02] to-transparent";
   const wrapper =
     "aspect-[4/3] overflow-hidden rounded-2xl border border-bone/10 bg-gradient-to-br p-1 " +
-    (accent === "honey"
-      ? "from-honey/10 via-bone/[0.02] to-transparent"
-      : "from-moss/10 via-bone/[0.02] to-transparent");
+    grad;
   const inner =
-    "flex h-full w-full flex-col gap-4 rounded-xl bg-forest-deep p-5 text-left";
+    "flex h-full w-full flex-col gap-4 rounded-xl bg-obsidian p-5 text-left";
 
   if (kind === "scheduling") {
     const slots = [
@@ -619,7 +630,7 @@ function CapabilityVisual({
                 $487.50
               </span>
             </div>
-            <div className="mt-2 flex items-center gap-2 rounded-md border border-bone/10 bg-forest-mid/60 px-2.5 py-2 text-[11px] text-bone/85">
+            <div className="mt-2 flex items-center gap-2 rounded-md border border-bone/10 bg-slate-deep/60 px-2.5 py-2 text-[11px] text-bone/85">
               <CreditCard className="h-3.5 w-3.5 text-honey-bright" />
               4242 4242 4242 4242
               <span className="ml-auto font-mono text-[10px] text-bone/55">
@@ -798,8 +809,8 @@ function WhiteLabelCard({
   body: string;
 }) {
   return (
-    <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-6">
-      <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-honey/10 text-honey-bright">
+    <div className="rounded-2xl border border-champagne/20 bg-bone/[0.02] p-6">
+      <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-champagne/10 text-champagne-bright">
         {icon}
       </span>
       <h3 className="mt-4 font-serif text-lg font-semibold text-bone">
@@ -830,7 +841,7 @@ function BeforeMock() {
             Jobber · customer-hub.jobber.com
           </span>
         </div>
-        <div className="rounded-lg border border-bone/10 bg-forest-deep/40 p-4">
+        <div className="rounded-lg border border-bone/10 bg-obsidian/40 p-4">
           <div className="text-[11px] text-bone/45">
             &quot;Welcome to your Jobber Hub!&quot;
           </div>
@@ -849,31 +860,31 @@ function BeforeMock() {
 
 function AfterMock() {
   return (
-    <div className="overflow-hidden rounded-2xl border border-honey/30 bg-bone/[0.04] shadow-pop-honey">
+    <div className="overflow-hidden rounded-2xl border border-champagne/30 bg-bone/[0.04] shadow-pop-champagne">
       <div className="flex items-center justify-between border-b border-bone/10 px-5 py-3">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-honey-bright">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-champagne-bright">
           After · your branded portal
         </span>
-        <span className="rounded-full bg-honey/15 px-2 py-0.5 text-[9px] font-medium text-honey-bright">
+        <span className="rounded-full bg-champagne/15 px-2 py-0.5 text-[9px] font-medium text-champagne-bright">
           Your brand
         </span>
       </div>
       <div className="space-y-3 p-5">
         <div className="flex items-center gap-2">
-          <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-honey/15 font-serif text-[11px] font-semibold text-honey-bright">
+          <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-champagne/15 font-serif text-[11px] font-semibold text-champagne-bright">
             GL
           </span>
           <span className="font-serif text-[13px] text-bone">
             GreenLeaf Crew · portal.greenleaf-crew.com
           </span>
         </div>
-        <div className="rounded-lg border border-honey/20 bg-forest-deep/60 p-4">
+        <div className="rounded-lg border border-champagne/20 bg-pitch/60 p-4">
           <div className="text-[11px] font-medium text-bone">
             &quot;Hi Sarah — your next visit is Thursday.&quot;
           </div>
           <div className="mt-2 h-2 w-3/4 rounded-full bg-bone/15" />
           <div className="mt-1.5 h-2 w-2/3 rounded-full bg-bone/12" />
-          <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-honey/15 px-2.5 py-1 text-[10px] font-semibold text-honey-bright">
+          <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-champagne/15 px-2.5 py-1 text-[10px] font-semibold text-champagne-bright">
             Reschedule · Pay · Approve
           </div>
         </div>

@@ -31,7 +31,7 @@ type Signal = {
   weight: string;
   detail: string;
   icon: typeof TrendingUp;
-  accent: "moss" | "honey";
+  accent: "moss" | "honey" | "champagne";
 };
 
 const SIGNALS: Signal[] = [
@@ -41,7 +41,7 @@ const SIGNALS: Signal[] = [
     detail:
       "Days-late on the last three invoices. The first sign a relationship is fraying — usually 8–12 weeks before the cancel email. Books knows the moment Stripe flips a charge to past-due.",
     icon: Coins,
-    accent: "moss",
+    accent: "champagne",
   },
   {
     name: "ToneRadar response decay",
@@ -49,7 +49,7 @@ const SIGNALS: Signal[] = [
     detail:
       "40-word reply collapses to 3-word reply collapses to silence. ToneRadar reads the meta and fires the early-warning the moment a regular conversation thread goes terse.",
     icon: TrendingUp,
-    accent: "honey",
+    accent: "champagne",
   },
   {
     name: "Seasonal lapse",
@@ -57,7 +57,7 @@ const SIGNALS: Signal[] = [
     detail:
       "Mowing customer who&apos;s booked every spring for four years and went silent this March. Lapse detection fires against the customer&apos;s own historical pattern, not a generic calendar.",
     icon: BarChart3,
-    accent: "moss",
+    accent: "champagne",
   },
   {
     name: "Service revenue trend",
@@ -65,7 +65,7 @@ const SIGNALS: Signal[] = [
     detail:
       "Customer who used to spend $4,200/month is now spending $1,800. Books knows; Retention Radar surfaces it before the next renewal.",
     icon: Wallet,
-    accent: "honey",
+    accent: "champagne",
   },
   {
     name: "Complaint frequency",
@@ -81,7 +81,7 @@ const SIGNALS: Signal[] = [
     detail:
       "Customer used to reply in 23 minutes; now replies in 3 days. The interaction-cadence drift is often the earliest signal — earlier than the payment delay.",
     icon: Users,
-    accent: "honey",
+    accent: "champagne",
   },
 ];
 
@@ -89,7 +89,7 @@ type SaveStep = {
   day: string;
   label: string;
   body: string;
-  accent: "moss" | "honey";
+  accent: "moss" | "honey" | "champagne";
 };
 
 const SAVE_PLAY: SaveStep[] = [
@@ -97,13 +97,13 @@ const SAVE_PLAY: SaveStep[] = [
     day: "Day -60",
     label: "Detection",
     body: "Retention Radar fires on three or more signals crossing threshold. Confidence score generated. Customer flagged in the dispatcher dashboard with a save-play queue.",
-    accent: "moss",
+    accent: "champagne",
   },
   {
     day: "Day -45",
     label: "First save touch",
     body: "Cadence sends a personalized check-in — referencing the customer&apos;s actual service history (Site Memory feed) and a soft inquiry about how the spring season is going.",
-    accent: "honey",
+    accent: "champagne",
   },
   {
     day: "Day -30",
@@ -115,7 +115,7 @@ const SAVE_PLAY: SaveStep[] = [
     day: "Day -14",
     label: "Crew chief outreach",
     body: "If automation hasn&apos;t saved the relationship by Day -14, the crew chief who knows the property gets a calendar-blocked call to make. Human-to-human, with the full Site Memory context one tap away.",
-    accent: "honey",
+    accent: "champagne",
   },
 ];
 
@@ -123,7 +123,7 @@ type Benchmark = {
   pct: string;
   label: string;
   body: string;
-  accent: "moss" | "honey";
+  accent: "moss" | "honey" | "champagne";
 };
 
 const BENCHMARKS: Benchmark[] = [
@@ -131,13 +131,13 @@ const BENCHMARKS: Benchmark[] = [
     pct: "89%",
     label: "Median landscape NRR",
     body: "The shop down the street. Losing 11% of revenue every year before they even count new sales. That&apos;s the silent killer of small-shop economics.",
-    accent: "moss",
+    accent: "champagne",
   },
   {
     pct: "105%",
     label: "Healthy shop NRR",
     body: "What good ops looks like — every cohort grows in revenue year-over-year through upsell and reactivation, even if a few customers churn. Retention Radar moves you here in two quarters.",
-    accent: "honey",
+    accent: "champagne",
   },
   {
     pct: "118%",
@@ -157,14 +157,14 @@ export default function RetentionPage() {
       <Nav />
       <main>
         {/* Hero */}
-        <section className="relative overflow-hidden border-b border-bone/10 bg-forest-deep py-28 md:py-36">
+        <section className="relative overflow-hidden border-b border-bone/10 bg-obsidian py-28 md:py-36">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-x-0 top-1/2 -z-10 h-[700px] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(127,226,122,0.10),transparent_60%)]"
           />
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
-              <Eyebrow>Retention Radar · Engine 32</Eyebrow>
+              <Eyebrow tone="champagne">Retention Radar · Engine 32</Eyebrow>
             </ScrollReveal>
             <ScrollReveal delay={0.05}>
               <h1 className="mt-4 max-w-5xl font-serif text-5xl font-semibold leading-[1.05] tracking-[-0.02em] text-bone md:text-7xl">
@@ -202,15 +202,15 @@ export default function RetentionPage() {
                 <CtaButton href="/demo" variant="primary" size="lg">
                   See Retention Radar on a 30-min demo
                 </CtaButton>
-                <CtaButton href="#signals" variant="ghost-honey" withArrow>
+                <CtaButton href="#signals" variant="ghost-champagne" withArrow>
                   Read the signals
                 </CtaButton>
               </div>
             </ScrollReveal>
             <ScrollReveal delay={0.2}>
               <div className="mt-10 flex flex-wrap items-center gap-3">
-                <Pill tone="moss">Engine 32 · Retention Radar</Pill>
-                <Pill tone="honey">Engine 33 · LTV Ledger</Pill>
+                <Pill tone="champagne">Engine 32 · Retention Radar</Pill>
+                <Pill tone="champagne">Engine 33 · LTV Ledger</Pill>
                 <Pill tone="moss">+18% NRR shipped</Pill>
               </div>
             </ScrollReveal>
@@ -220,15 +220,15 @@ export default function RetentionPage() {
         {/* Churn signals */}
         <section
           id="signals"
-          className="border-b border-bone/10 bg-forest-mid py-28"
+          className="border-b border-bone/10 bg-slate-deep py-28"
         >
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="max-w-3xl">
-                <Eyebrow tone="honey">Churn signals</Eyebrow>
+                <Eyebrow tone="champagne">Churn signals</Eyebrow>
                 <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   Six signals.{" "}
-                  <span className="text-honey-bright">
+                  <span className="text-champagne-bright">
                     One confidence score.
                   </span>
                 </h2>
@@ -245,9 +245,17 @@ export default function RetentionPage() {
             <div className="mt-16 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {SIGNALS.map((s, i) => {
                 const accentText =
-                  s.accent === "honey" ? "text-honey-bright" : "text-moss-bright";
+                  s.accent === "honey"
+                    ? "text-honey-bright"
+                    : s.accent === "moss"
+                      ? "text-moss-bright"
+                      : "text-champagne-bright";
                 const accentBorder =
-                  s.accent === "honey" ? "border-honey/30" : "border-moss/30";
+                  s.accent === "honey"
+                    ? "border-honey/30"
+                    : s.accent === "moss"
+                      ? "border-moss/30"
+                      : "border-champagne/30";
                 const Icon = s.icon;
                 return (
                   <ScrollReveal key={s.name} delay={(i % 3) * 0.05}>
@@ -281,14 +289,14 @@ export default function RetentionPage() {
         </section>
 
         {/* Save play timeline */}
-        <section className="border-b border-bone/10 bg-forest-deep py-28">
+        <section className="border-b border-bone/10 bg-obsidian py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="max-w-3xl">
-                <Eyebrow>The save play</Eyebrow>
+                <Eyebrow tone="champagne">The save play</Eyebrow>
                 <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   Sixty days early.{" "}
-                  <span className="text-moss-bright">
+                  <span className="text-champagne-bright">
                     Four-touch rescue.
                   </span>
                 </h2>
@@ -310,15 +318,21 @@ export default function RetentionPage() {
                     const accentText =
                       step.accent === "honey"
                         ? "text-honey-bright"
-                        : "text-moss-bright";
+                        : step.accent === "moss"
+                          ? "text-moss-bright"
+                          : "text-champagne-bright";
                     const accentBorder =
                       step.accent === "honey"
                         ? "border-honey/30"
-                        : "border-moss/30";
+                        : step.accent === "moss"
+                          ? "border-moss/30"
+                          : "border-champagne/30";
                     const accentDot =
                       step.accent === "honey"
                         ? "bg-honey-bright"
-                        : "bg-moss-bright";
+                        : step.accent === "moss"
+                          ? "bg-moss-bright"
+                          : "bg-champagne-bright";
                     return (
                       <div key={step.day} className="relative">
                         <div className="flex items-center gap-3">
@@ -356,14 +370,14 @@ export default function RetentionPage() {
         </section>
 
         {/* NRR dashboard mock */}
-        <section className="border-b border-bone/10 bg-forest-mid py-28">
+        <section className="border-b border-bone/10 bg-slate-deep py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="max-w-3xl">
-                <Eyebrow tone="honey">NRR dashboard</Eyebrow>
+                <Eyebrow tone="champagne">NRR dashboard</Eyebrow>
                 <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   Net Revenue Retention.{" "}
-                  <span className="text-honey-bright">
+                  <span className="text-champagne-bright">
                     The only metric that matters.
                   </span>
                 </h2>
@@ -377,14 +391,14 @@ export default function RetentionPage() {
             </ScrollReveal>
 
             <ScrollReveal delay={0.1}>
-              <div className="mt-14 rounded-2xl border border-bone/10 bg-forest-deep/60 p-6 shadow-pop md:p-8">
+              <div className="mt-14 rounded-2xl border border-bone/10 bg-obsidian/60 p-6 shadow-pop md:p-8">
                 <div className="flex flex-wrap items-end justify-between gap-4 border-b border-bone/10 pb-5">
                   <div>
                     <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-bone/45">
                       Net revenue retention · trailing 12 months
                     </div>
                     <div className="mt-2 flex items-baseline gap-3">
-                      <span className="font-serif text-5xl font-semibold tracking-tight text-bone md:text-6xl">
+                      <span className="font-serif text-5xl font-semibold tracking-tight text-champagne-bright md:text-6xl">
                         112.4%
                       </span>
                       <span className="rounded-full border border-moss/30 bg-moss/10 px-2.5 py-0.5 font-mono text-[11px] text-moss-bright">
@@ -489,7 +503,7 @@ export default function RetentionPage() {
                     <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-bone/45">
                       Mowing
                     </div>
-                    <div className="mt-1.5 font-serif text-2xl text-moss-bright">
+                    <div className="mt-1.5 font-serif text-2xl text-champagne-bright">
                       118%
                     </div>
                     <div className="mt-1 text-bone/55">recurring backbone</div>
@@ -498,7 +512,7 @@ export default function RetentionPage() {
                     <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-bone/45">
                       Fert programs
                     </div>
-                    <div className="mt-1.5 font-serif text-2xl text-moss-bright">
+                    <div className="mt-1.5 font-serif text-2xl text-champagne-bright">
                       114%
                     </div>
                     <div className="mt-1 text-bone/55">multi-step contracts</div>
@@ -507,7 +521,7 @@ export default function RetentionPage() {
                     <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-bone/45">
                       Hardscape
                     </div>
-                    <div className="mt-1.5 font-serif text-2xl text-honey-bright">
+                    <div className="mt-1.5 font-serif text-2xl text-moss-bright">
                       96%
                     </div>
                     <div className="mt-1 text-bone/55">project-based, lumpy</div>
@@ -519,15 +533,15 @@ export default function RetentionPage() {
         </section>
 
         {/* LTV Ledger */}
-        <section className="border-b border-bone/10 bg-forest-deep py-28">
+        <section className="border-b border-bone/10 bg-obsidian py-28">
           <div className="mx-auto max-w-7xl px-6">
             <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:items-center">
               <ScrollReveal>
                 <div>
-                  <Eyebrow>LTV Ledger · Engine 33</Eyebrow>
+                  <Eyebrow tone="champagne">LTV Ledger · Engine 33</Eyebrow>
                   <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                     True LTV.{" "}
-                    <span className="text-moss-bright">
+                    <span className="text-champagne-bright">
                       Real cost. Real revenue.
                     </span>
                   </h2>
@@ -548,7 +562,7 @@ export default function RetentionPage() {
                       "Plug into Books for the closing the loop on every dollar",
                     ].map((b) => (
                       <li key={b} className="flex items-start gap-3">
-                        <Receipt className="mt-0.5 h-4 w-4 flex-none text-moss-bright" />
+                        <Receipt className="mt-0.5 h-4 w-4 flex-none text-champagne-bright" />
                         {b}
                       </li>
                     ))}
@@ -557,43 +571,47 @@ export default function RetentionPage() {
               </ScrollReveal>
 
               <ScrollReveal delay={0.1}>
-                <div className="rounded-2xl border border-bone/10 bg-forest-mid/60 p-6 shadow-pop md:p-8">
+                <div className="rounded-2xl border border-bone/10 bg-slate-deep/60 p-6 shadow-pop md:p-8">
                   <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-bone/45">
                     Cohort LTV · 24-month payback
                   </div>
                   <div className="mt-5 space-y-3.5">
                     {[
-                      ["Weekly mowing", "$4,820", "9 mo", "moss"],
-                      ["Fert program (5-step)", "$3,640", "11 mo", "moss"],
-                      ["Annual maintenance contract", "$8,210", "14 mo", "moss"],
-                      ["Hardscape one-off", "$1,420", "Project", "honey"],
-                      ["Snow contract", "$2,180", "1 season", "honey"],
-                    ].map((row) => (
-                      <div
-                        key={row[0]}
-                        className="grid grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-bone/[0.06] pb-3.5 text-[13px]"
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <span
-                            className={`h-1.5 w-1.5 rounded-full ${row[3] === "honey" ? "bg-honey-bright" : "bg-moss-bright"}`}
-                          />
-                          <span className="text-bone/85">{row[0]}</span>
-                        </div>
-                        <span className="font-mono text-bone/85">{row[1]}</span>
-                        <span
-                          className={
-                            row[3] === "honey"
-                              ? "rounded-full border border-honey/30 bg-honey/5 px-2 py-0.5 font-mono text-[10px] text-honey-bright"
-                              : "rounded-full border border-moss/30 bg-moss/10 px-2 py-0.5 font-mono text-[10px] text-moss-bright"
-                          }
+                      ["Weekly mowing", "$4,820", "9 mo", "champagne"],
+                      ["Fert program (5-step)", "$3,640", "11 mo", "champagne"],
+                      ["Annual maintenance contract", "$8,210", "14 mo", "champagne"],
+                      ["Hardscape one-off", "$1,420", "Project", "moss"],
+                      ["Snow contract", "$2,180", "1 season", "moss"],
+                    ].map((row) => {
+                      const dot =
+                        row[3] === "moss"
+                          ? "bg-moss-bright"
+                          : "bg-champagne-bright";
+                      const pill =
+                        row[3] === "moss"
+                          ? "rounded-full border border-moss/30 bg-moss/10 px-2 py-0.5 font-mono text-[10px] text-moss-bright"
+                          : "rounded-full border border-champagne/30 bg-champagne/10 px-2 py-0.5 font-mono text-[10px] text-champagne-bright";
+                      const amountCls =
+                        row[3] === "moss"
+                          ? "font-mono text-bone/85"
+                          : "font-mono text-champagne-bright";
+                      return (
+                        <div
+                          key={row[0]}
+                          className="grid grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-bone/[0.06] pb-3.5 text-[13px]"
                         >
-                          {row[2]}
-                        </span>
-                      </div>
-                    ))}
+                          <div className="flex items-center gap-2.5">
+                            <span className={`h-1.5 w-1.5 rounded-full ${dot}`} />
+                            <span className="text-bone/85">{row[0]}</span>
+                          </div>
+                          <span className={amountCls}>{row[1]}</span>
+                          <span className={pill}>{row[2]}</span>
+                        </div>
+                      );
+                    })}
                   </div>
                   <div className="mt-5 rounded-lg border border-bone/10 bg-bone/[0.03] p-3 font-mono text-[11px] text-bone/60">
-                    <span className="text-moss-bright">Insight:</span> the
+                    <span className="text-champagne-bright">Insight:</span> the
                     annual maintenance contract has 1.7x the LTV of weekly
                     mowing — but only if the cohort retains past month 14.
                     Retention Radar makes that bet bankable.
@@ -605,14 +623,14 @@ export default function RetentionPage() {
         </section>
 
         {/* Benchmarks */}
-        <section className="border-b border-bone/10 bg-forest-mid py-28">
+        <section className="border-b border-bone/10 bg-slate-deep py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="max-w-3xl">
-                <Eyebrow tone="honey">Benchmarks</Eyebrow>
+                <Eyebrow tone="champagne">Benchmarks</Eyebrow>
                 <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   Three numbers.{" "}
-                  <span className="text-honey-bright">
+                  <span className="text-champagne-bright">
                     Where do you stand?
                   </span>
                 </h2>
@@ -631,11 +649,15 @@ export default function RetentionPage() {
                 const accentText =
                   b.accent === "honey"
                     ? "text-honey-bright"
-                    : "text-moss-bright";
+                    : b.accent === "moss"
+                      ? "text-moss-bright"
+                      : "text-champagne-bright";
                 const accentBorder =
                   b.accent === "honey"
                     ? "border-honey/30"
-                    : "border-moss/30";
+                    : b.accent === "moss"
+                      ? "border-moss/30"
+                      : "border-champagne/30";
                 return (
                   <ScrollReveal key={b.label} delay={i * 0.08}>
                     <article
@@ -672,14 +694,14 @@ export default function RetentionPage() {
         </section>
 
         {/* Modules */}
-        <section className="border-b border-bone/10 bg-forest-deep py-28">
+        <section className="border-b border-bone/10 bg-obsidian py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="max-w-3xl">
-                <Eyebrow>Retention modules</Eyebrow>
+                <Eyebrow tone="champagne">Retention modules</Eyebrow>
                 <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   Three modules.{" "}
-                  <span className="text-moss-bright">
+                  <span className="text-champagne-bright">
                     One number that matters.
                   </span>
                 </h2>

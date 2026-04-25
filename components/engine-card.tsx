@@ -54,17 +54,24 @@ export function EngineCard({ engine }: { engine: Engine }) {
   const numeric = parseInt(engine.number, 10);
   const isEven = Number.isFinite(numeric) && numeric % 2 === 0;
 
-  // Alternate hover ring color by parity. Odd = moss, even = honey.
+  // Hover ring alternates by parity. Odd = moss (logo echo), even = champagne (heritage).
   const hoverCls = isEven
-    ? "hover:border-honey-bright/40 hover:shadow-[0_0_0_1px_rgba(244,204,133,0.25),0_24px_48px_-20px_rgba(244,204,133,0.25)]"
-    : "hover:border-lime-bright/40 hover:shadow-[0_0_0_1px_rgba(212,255,74,0.25),0_24px_48px_-20px_rgba(212,255,74,0.25)]";
+    ? "hover:border-champagne-bright/40 hover:ring-1 hover:ring-champagne-bright/30 hover:shadow-[0_0_0_1px_rgba(212,178,122,0.25),0_24px_48px_-20px_rgba(212,178,122,0.3)]"
+    : "hover:border-moss-bright/40 hover:ring-1 hover:ring-moss-bright/30 hover:shadow-[0_0_0_1px_rgba(157,255,138,0.25),0_24px_48px_-20px_rgba(157,255,138,0.3)]";
 
-  // Outcome stat color: even-numbered → honey-bright, odd-numbered → moss-bright.
-  const outcomeCls = isEven ? "text-honey-bright" : "text-moss-bright";
+  // Engine number badge: odd echoes the crest (moss), even is heritage (champagne).
+  const numberCls = isEven
+    ? "text-champagne-bright/40"
+    : "text-moss-bright/40";
 
-  // Engine badge tone follows parity for visual rhythm.
+  // Outcome stat pill alternates per parity for visual rhythm.
+  const outcomeCls = isEven
+    ? "border-champagne/30 bg-champagne/5 text-champagne-bright"
+    : "border-moss/30 bg-moss/5 text-moss-bright";
+
+  // Engine badge tone follows parity.
   const badgeCls = isEven
-    ? "border-honey/30 bg-honey/5 text-honey-bright"
+    ? "border-champagne/30 bg-champagne/5 text-champagne-bright"
     : "border-moss/30 bg-moss/5 text-moss-bright";
 
   return (
@@ -76,12 +83,17 @@ export function EngineCard({ engine }: { engine: Engine }) {
       )}
     >
       <div className="flex items-start justify-between">
-        <span className="font-mono text-xs font-medium tracking-[0.2em] text-bone/40">
+        <span
+          className={cn(
+            "font-mono text-xs font-medium tracking-[0.2em]",
+            numberCls
+          )}
+        >
           {engine.number}
         </span>
         <span
           className={cn(
-            "rounded-full border px-2.5 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.18em]",
+            "rounded-full border px-2.5 py-0.5 font-mono text-[10px] font-medium uppercase tracking-crest",
             badgeCls
           )}
         >
@@ -93,11 +105,16 @@ export function EngineCard({ engine }: { engine: Engine }) {
         {engine.name}
       </h3>
 
-      <span className={cn("mt-3 font-mono text-sm font-medium", outcomeCls)}>
+      <span
+        className={cn(
+          "mt-3 inline-flex w-fit rounded-full border px-2.5 py-0.5 font-mono text-sm font-medium",
+          outcomeCls
+        )}
+      >
         {engine.outcome}
       </span>
 
-      <p className="mt-5 text-[15px] leading-[1.6] text-bone/65">
+      <p className="mt-5 text-[15px] leading-[1.6] text-bone/60">
         {engine.description}
       </p>
 
@@ -108,7 +125,7 @@ export function EngineCard({ engine }: { engine: Engine }) {
               <span
                 className={cn(
                   "mt-2 h-1.5 w-1.5 flex-none rounded-full",
-                  i % 2 === 0 ? "bg-moss-bright" : "bg-honey-bright"
+                  i % 2 === 0 ? "bg-champagne-bright" : "bg-moss-bright"
                 )}
               />
               <span>{b}</span>

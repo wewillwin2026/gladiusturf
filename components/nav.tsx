@@ -80,13 +80,13 @@ export function Nav() {
         className={cn(
           "sticky top-0 z-40 transition-colors duration-200",
           solid
-            ? "border-b border-bone/10 bg-forest-deep/90 backdrop-blur"
+            ? "border-b border-bone/10 bg-obsidian/95 backdrop-blur"
             : "border-b border-transparent bg-transparent"
         )}
       >
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <Link href="/" aria-label="GladiusTurf home">
-            <LogoMark size={32} theme="dark" withWordmark />
+            <LogoMark size={40} theme="dark" withWordmark />
           </Link>
           <nav className="hidden items-center gap-8 text-sm text-bone/70 md:flex">
             {PRIMARY_LINKS.map((link, i) => (
@@ -136,9 +136,9 @@ export function Nav() {
             type="button"
             aria-label="Close menu"
             onClick={() => setOpen(false)}
-            className="absolute inset-0 bg-forest-deep/80 backdrop-blur"
+            className="absolute inset-0 bg-obsidian/80 backdrop-blur"
           />
-          <div className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col overflow-y-auto bg-forest-deep shadow-2xl">
+          <div className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col overflow-y-auto bg-obsidian shadow-2xl">
             <div className="flex h-16 items-center justify-between border-b border-bone/10 px-6">
               <LogoMark size={28} theme="dark" withWordmark />
               <button

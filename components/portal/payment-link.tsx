@@ -36,7 +36,7 @@ export function PaymentLink({ invoice, customerEmail }: PaymentLinkProps) {
 
   return (
     <>
-      <div className="flex flex-col gap-3 rounded-xl border border-forest/10 bg-bone/60 p-4 sm:flex-row sm:items-center">
+      <div className="flex flex-col gap-3 rounded-xl border border-pitch/10 bg-bone/60 p-4 sm:flex-row sm:items-center">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
             <span className="font-serif text-base font-semibold tracking-[-0.01em] text-forest">
@@ -57,7 +57,7 @@ export function PaymentLink({ invoice, customerEmail }: PaymentLinkProps) {
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="inline-flex items-center gap-1.5 rounded-full bg-forest px-4 py-2 text-sm font-semibold text-paper transition-colors hover:bg-forest-deep"
+            className="inline-flex items-center gap-1.5 rounded-full bg-pitch px-4 py-2 text-sm font-semibold text-parchment transition-colors hover:bg-slate-deep"
           >
             <CreditCard className="h-4 w-4" />
             Pay now
@@ -99,7 +99,7 @@ function PaymentModal({ invoice, customerEmail, onClose }: PaymentModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-forest/40 px-3 py-6 sm:items-center"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-pitch/40 px-3 py-6 sm:items-center"
       role="dialog"
       aria-modal="true"
       aria-label="Pay invoice"
@@ -110,7 +110,7 @@ function PaymentModal({ invoice, customerEmail, onClose }: PaymentModalProps) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header strip */}
-        <div className="flex items-center justify-between border-b border-forest/10 bg-white px-5 py-3.5">
+        <div className="flex items-center justify-between border-b border-pitch/10 bg-white px-5 py-3.5">
           <div className="flex items-center gap-2 text-[13px] font-medium text-forest">
             <Lock className="h-3.5 w-3.5 text-forest/70" />
             Secure checkout
@@ -156,12 +156,12 @@ function PaymentModal({ invoice, customerEmail, onClose }: PaymentModalProps) {
                 <input
                   type="email"
                   defaultValue={customerEmail}
-                  className="block w-full rounded-lg border border-forest/15 bg-white px-3 py-2 text-sm text-forest outline-none focus:border-forest focus:ring-1 focus:ring-forest"
+                  className="block w-full rounded-lg border border-pitch/15 bg-white px-3 py-2 text-sm text-forest outline-none focus:border-forest focus:ring-1 focus:ring-forest"
                   disabled={stage === "processing"}
                 />
               </Field>
               <Field label="Card number">
-                <div className="flex items-center gap-2 rounded-lg border border-forest/15 bg-white px-3 py-2">
+                <div className="flex items-center gap-2 rounded-lg border border-pitch/15 bg-white px-3 py-2">
                   <CreditCard className="h-4 w-4 text-forest/50" />
                   <input
                     type="text"
@@ -179,7 +179,7 @@ function PaymentModal({ invoice, customerEmail, onClose }: PaymentModalProps) {
                   <input
                     type="text"
                     defaultValue="04 / 28"
-                    className="block w-full rounded-lg border border-forest/15 bg-white px-3 py-2 text-sm text-forest outline-none focus:border-forest focus:ring-1 focus:ring-forest"
+                    className="block w-full rounded-lg border border-pitch/15 bg-white px-3 py-2 text-sm text-forest outline-none focus:border-forest focus:ring-1 focus:ring-forest"
                     disabled={stage === "processing"}
                   />
                 </Field>
@@ -187,7 +187,7 @@ function PaymentModal({ invoice, customerEmail, onClose }: PaymentModalProps) {
                   <input
                     type="text"
                     defaultValue="123"
-                    className="block w-full rounded-lg border border-forest/15 bg-white px-3 py-2 text-sm text-forest outline-none focus:border-forest focus:ring-1 focus:ring-forest"
+                    className="block w-full rounded-lg border border-pitch/15 bg-white px-3 py-2 text-sm text-forest outline-none focus:border-forest focus:ring-1 focus:ring-forest"
                     disabled={stage === "processing"}
                   />
                 </Field>
@@ -196,7 +196,7 @@ function PaymentModal({ invoice, customerEmail, onClose }: PaymentModalProps) {
                 <input
                   type="text"
                   defaultValue="Sarah Mitchell"
-                  className="block w-full rounded-lg border border-forest/15 bg-white px-3 py-2 text-sm text-forest outline-none focus:border-forest focus:ring-1 focus:ring-forest"
+                  className="block w-full rounded-lg border border-pitch/15 bg-white px-3 py-2 text-sm text-forest outline-none focus:border-forest focus:ring-1 focus:ring-forest"
                   disabled={stage === "processing"}
                 />
               </Field>
@@ -206,7 +206,7 @@ function PaymentModal({ invoice, customerEmail, onClose }: PaymentModalProps) {
               type="submit"
               disabled={stage === "processing"}
               className={cn(
-                "mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-forest px-4 py-3 text-sm font-semibold text-paper transition-colors hover:bg-forest-deep disabled:opacity-80"
+                "mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-pitch px-4 py-3 text-sm font-semibold text-parchment transition-colors hover:bg-slate-deep disabled:opacity-80"
               )}
             >
               {stage === "processing" ? (
@@ -240,7 +240,7 @@ function SuccessView({
 }) {
   return (
     <div className="px-5 py-7 text-center">
-      <div className="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-full bg-moss/15 text-forest">
+      <div className="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-full bg-champagne/20 text-champagne">
         <CheckCircle2 className="h-6 w-6" />
       </div>
       <h3 className="mt-4 font-serif text-xl font-semibold text-forest">
@@ -256,7 +256,7 @@ function SuccessView({
       <button
         type="button"
         onClick={onClose}
-        className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-forest px-4 py-2.5 text-sm font-semibold text-paper transition-colors hover:bg-forest-deep"
+        className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-pitch px-4 py-2.5 text-sm font-semibold text-parchment transition-colors hover:bg-slate-deep"
       >
         Done
       </button>
@@ -285,7 +285,7 @@ function Spinner() {
   return (
     <span
       aria-hidden
-      className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-paper/30 border-t-paper"
+      className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-parchment/30 border-t-parchment"
     />
   );
 }

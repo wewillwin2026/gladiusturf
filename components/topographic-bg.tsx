@@ -1,5 +1,7 @@
 // Subtle moss SVG contour pattern used behind hero/CTA bands.
-// Server component, no client JS, no photo. Tuned for dark backgrounds.
+// Server component, no client JS, no photo. Tuned for the heritage true-black
+// backgrounds — opacity is intentionally low; the contours echo the crest
+// without competing with the headline.
 export function TopographicBg() {
   return (
     <svg
@@ -10,7 +12,7 @@ export function TopographicBg() {
       stroke="#7FE27A"
       strokeWidth="0.8"
       aria-hidden="true"
-      style={{ opacity: 0.12 }}
+      style={{ opacity: 0.06 }}
     >
       {Array.from({ length: 10 }).map((_, i) => {
         const offset = 40 + i * 34;

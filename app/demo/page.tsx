@@ -7,6 +7,7 @@ import {
   Users,
 } from "lucide-react";
 import { DemoForm } from "@/components/demo-form";
+import { Eyebrow } from "@/components/eyebrow";
 import { Footer } from "@/components/footer";
 import { Nav } from "@/components/nav";
 import { QuoteBlock } from "@/components/quote-block";
@@ -66,20 +67,18 @@ const BRING_ITEMS = [
   },
 ];
 
-const eyebrowBase = "text-xs font-semibold uppercase tracking-[0.2em]";
-const eyebrowMoss = `${eyebrowBase} text-moss-bright`;
-const eyebrowHoney = `${eyebrowBase} text-honey-bright`;
+const eyebrowMoss = "text-xs font-semibold uppercase tracking-crest text-moss-bright";
 
 export default function DemoPage() {
   return (
     <>
       <Nav />
-      <main className="bg-forest-deep">
+      <main className="bg-obsidian">
         {/* HERO */}
         <section className="border-b border-bone/10">
           <div className="mx-auto grid max-w-7xl grid-cols-1 gap-16 px-6 py-28 lg:grid-cols-[1.1fr_1fr] lg:items-start">
             <div>
-              <p className={eyebrowMoss}>Live demo</p>
+              <Eyebrow tone="champagne">Live demo</Eyebrow>
               <h1 className="mt-6 font-serif text-4xl tracking-[-0.02em] leading-[1.05] text-bone md:text-6xl">
                 See it on your data. 30 minutes. Founders run the call.
               </h1>
@@ -100,7 +99,7 @@ export default function DemoPage() {
 
               <ul className="mt-10 flex flex-col gap-3 text-[15px] leading-[1.6] text-bone/70">
                 <li className="flex items-start gap-3">
-                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-honey-bright" />
+                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-champagne-bright" />
                   14-day pilot, no card on file
                 </li>
                 <li className="flex items-start gap-3">
@@ -108,7 +107,7 @@ export default function DemoPage() {
                   48-hour migration from Jobber / LMN / Service Autopilot
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-honey-bright" />
+                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-champagne-bright" />
                   We pay your overlap month
                 </li>
                 <li className="flex items-start gap-3">
@@ -119,9 +118,10 @@ export default function DemoPage() {
             </div>
 
             <div className="lg:pl-8">
-              <div className="rounded-2xl border border-moss/30 bg-gradient-to-b from-moss/5 to-transparent p-8 shadow-pop">
+              {/* Heritage gold halo on the conversion card. */}
+              <div className="rounded-2xl border border-champagne/40 bg-gradient-to-b from-champagne/5 to-transparent p-8 shadow-pop-champagne">
                 <div className="mb-6 flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-moss/40 bg-moss/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-moss-bright">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-champagne/40 bg-champagne/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-crest text-champagne-bright">
                     <Sparkles className="h-3 w-3" aria-hidden />
                     Founders run the call
                   </span>
@@ -132,10 +132,10 @@ export default function DemoPage() {
           </div>
         </section>
 
-        {/* WHAT WE'LL COVER */}
+        {/* WHAT WE'LL COVER — alternate champagne / moss / champagne / moss / champagne */}
         <section className="border-b border-bone/10">
           <div className="mx-auto max-w-7xl px-6 py-28">
-            <p className={eyebrowHoney}>What we&apos;ll cover</p>
+            <Eyebrow tone="champagne">What we&apos;ll cover</Eyebrow>
             <h2 className="mt-6 max-w-3xl font-serif text-4xl tracking-[-0.02em] leading-[1.05] text-bone md:text-5xl">
               Thirty minutes. Five proofs.
             </h2>
@@ -147,8 +147,8 @@ export default function DemoPage() {
                   className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-8"
                 >
                   <p
-                    className={`font-mono text-xs uppercase tracking-[0.2em] ${
-                      i % 2 === 0 ? "text-honey-bright" : "text-moss-bright"
+                    className={`font-mono text-xs uppercase tracking-crest ${
+                      i % 2 === 0 ? "text-champagne-bright" : "text-moss-bright"
                     }`}
                   >
                     {String(i + 1).padStart(2, "0")}
@@ -166,7 +166,7 @@ export default function DemoPage() {
         </section>
 
         {/* WHO RUNS THE DEMO */}
-        <section className="border-b border-bone/10 bg-forest-mid">
+        <section className="border-b border-bone/10 bg-slate-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <p className={eyebrowMoss}>Founders only</p>
             <h2 className="mt-6 max-w-4xl font-serif text-4xl tracking-[-0.02em] leading-[1.05] text-bone md:text-5xl">
@@ -196,10 +196,10 @@ export default function DemoPage() {
               {[0, 1, 2].map((n) => (
                 <div
                   key={n}
-                  className="aspect-[4/5] rounded-2xl border border-honey-bright/20 bg-bone/[0.02] p-8"
+                  className="aspect-[4/5] rounded-2xl border border-champagne-bright/20 bg-bone/[0.02] p-8"
                 >
                   <div className="flex h-full flex-col justify-end">
-                    <p className="font-mono text-xs uppercase tracking-[0.2em] text-bone/40">
+                    <p className="font-mono text-xs uppercase tracking-crest text-bone/40">
                       Founder {String(n + 1).padStart(2, "0")}
                     </p>
                     <p className="mt-2 font-serif text-[18px] text-bone/50">
@@ -215,10 +215,10 @@ export default function DemoPage() {
         {/* TESTIMONIAL */}
         <QuoteBlock />
 
-        {/* WHAT YOU NEED TO BRING */}
+        {/* WHAT YOU NEED TO BRING — champagne accents */}
         <section className="border-b border-bone/10">
           <div className="mx-auto max-w-7xl px-6 py-28">
-            <p className={eyebrowHoney}>What you need to bring</p>
+            <Eyebrow tone="champagne">What you need to bring</Eyebrow>
             <h2 className="mt-6 max-w-3xl font-serif text-4xl tracking-[-0.02em] leading-[1.05] text-bone md:text-5xl">
               Three things to bring on the call.
             </h2>
@@ -226,16 +226,15 @@ export default function DemoPage() {
             <ul className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-3">
               {BRING_ITEMS.map((item, i) => {
                 const Icon = item.icon;
-                const accent =
-                  i % 2 === 0 ? "text-honey-bright" : "text-moss-bright";
+                const accent = "text-champagne-bright";
                 return (
                   <li
                     key={item.title}
-                    className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-8"
+                    className="rounded-2xl border border-champagne/20 bg-bone/[0.02] p-8"
                   >
                     <div className="flex items-center justify-between">
                       <p
-                        className={`font-mono text-xs uppercase tracking-[0.2em] ${accent}`}
+                        className={`font-mono text-xs uppercase tracking-crest ${accent}`}
                       >
                         {String(i + 1).padStart(2, "0")}
                       </p>
@@ -258,11 +257,11 @@ export default function DemoPage() {
         </section>
 
         {/* SOFT CTA */}
-        <section className="bg-forest-deep">
+        <section className="bg-obsidian">
           <div className="mx-auto max-w-7xl px-6 py-20 text-center">
             <a
               href="#tour"
-              className="inline-flex items-center gap-2 text-sm font-medium text-bone/60 transition-colors hover:text-moss-bright"
+              className="inline-flex items-center gap-2 text-sm font-medium text-bone/60 transition-colors hover:text-champagne-bright"
             >
               Not ready to demo? Watch the 4-minute product tour
               <ArrowRight className="h-4 w-4" aria-hidden />

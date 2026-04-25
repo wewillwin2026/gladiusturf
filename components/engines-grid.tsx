@@ -4,11 +4,21 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { ENGINE_TIERS } from "@/content/engine-tiers";
 import { ENGINES } from "@/content/engines";
 
+// Heritage rotation across the 5 tiers: champagne / moss / champagne / moss / champagne.
+// 3-2 split favors the heritage default while still echoing the crest twice.
+const TIER_ACCENT_ROTATION = [
+  "champagne",
+  "moss",
+  "champagne",
+  "moss",
+  "champagne",
+] as const;
+
 export function EnginesGrid() {
   return (
     <section
       id="engines"
-      className="border-t border-bone/10 bg-forest-deep py-28"
+      className="border-t border-bone/10 bg-obsidian py-28"
     >
       <div className="mx-auto max-w-7xl px-6">
         <ScrollReveal>
@@ -17,11 +27,11 @@ export function EnginesGrid() {
             <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
               One spine. Five tiers.
               <br />
-              <span className="text-moss-bright">
+              <span className="text-champagne-bright">
                 Thirty-three revenue engines.
               </span>
             </h2>
-            <p className="mt-5 text-lg text-bone/65">
+            <p className="mt-5 text-lg text-parchment/70">
               We don&apos;t ship features. We ship engines — and we organize
               them the way a crew actually runs the day. Win the work. Keep the
               customer. Get smarter every night. Execute in the field. Compound
@@ -32,10 +42,12 @@ export function EnginesGrid() {
 
         {ENGINE_TIERS.map((tier, tierIdx) => {
           const tierEngines = ENGINES.filter((e) => e.tier === tier.slug);
+          const rotation =
+            TIER_ACCENT_ROTATION[tierIdx % TIER_ACCENT_ROTATION.length];
           const tierToneCls =
-            tier.accent === "honey"
-              ? "text-honey-bright"
-              : "text-moss-bright";
+            rotation === "moss"
+              ? "text-moss-bright"
+              : "text-champagne-bright";
           return (
             <div
               key={tier.slug}
@@ -47,13 +59,13 @@ export function EnginesGrid() {
             >
               <ScrollReveal>
                 <div className="mx-auto max-w-3xl text-center">
-                  <Eyebrow className="mb-3" tone={tier.accent}>
+                  <Eyebrow className="mb-3" tone={rotation}>
                     Tier {tierIdx + 1} · {tier.name}
                   </Eyebrow>
                   <h3 className="font-serif text-3xl font-semibold tracking-[-0.02em] text-bone md:text-4xl">
                     <span className={tierToneCls}>{tier.tagline}</span>
                   </h3>
-                  <p className="mt-4 text-base text-bone/65">{tier.blurb}</p>
+                  <p className="mt-4 text-base text-bone/60">{tier.blurb}</p>
                 </div>
               </ScrollReveal>
 

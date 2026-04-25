@@ -63,7 +63,7 @@ function Column({
           <li key={l.href}>
             <a
               href={l.href}
-              className="text-bone/70 transition-colors hover:text-honey-bright"
+              className="text-bone/70 transition-colors hover:text-champagne-bright"
             >
               {l.label}
             </a>
@@ -76,11 +76,11 @@ function Column({
 
 export function Footer() {
   return (
-    <footer className="border-t border-bone/10 bg-forest-deep text-bone">
+    <footer className="border-t border-bone/10 bg-pitch text-bone">
       <div className="mx-auto max-w-7xl px-6 py-20">
         <div className="grid grid-cols-2 gap-x-8 gap-y-12 md:grid-cols-7">
           <div className="col-span-2 md:col-span-2">
-            <LogoMark size={40} theme="dark" tone="bone" withWordmark />
+            <LogoMark size={56} theme="dark" tone="bone" withWordmark />
             <p className="mt-6 max-w-xs text-[13px] leading-[1.6] text-bone/60">
               Landscaping Revenue Intelligence. Thirty-three engines for crew
               owners done leaking revenue to the gaps in their software.
@@ -89,7 +89,7 @@ export function Footer() {
               <a
                 href="https://x.com/gladiusturf"
                 aria-label="GladiusTurf on X"
-                className="transition-colors hover:text-honey-bright"
+                className="transition-colors hover:text-champagne-bright"
               >
                 X
               </a>
@@ -99,7 +99,7 @@ export function Footer() {
               <a
                 href="https://www.linkedin.com/company/gladiusturf"
                 aria-label="GladiusTurf on LinkedIn"
-                className="transition-colors hover:text-honey-bright"
+                className="transition-colors hover:text-champagne-bright"
               >
                 LinkedIn
               </a>
@@ -109,7 +109,7 @@ export function Footer() {
               <a
                 href="https://www.youtube.com/@gladiusturf"
                 aria-label="GladiusTurf on YouTube"
-                className="transition-colors hover:text-honey-bright"
+                className="transition-colors hover:text-champagne-bright"
               >
                 YouTube
               </a>
@@ -132,7 +132,7 @@ export function Footer() {
                 <li key={l.href}>
                   <a
                     href={l.href}
-                    className="transition-colors hover:text-honey-bright"
+                    className="transition-colors hover:text-champagne-bright"
                   >
                     {l.label}
                   </a>
@@ -140,7 +140,7 @@ export function Footer() {
               ))}
             </ul>
           </div>
-          <p className="font-serif text-[14px] italic text-moss-bright">
+          <p className="font-serif text-[14px] italic text-champagne-bright">
             Not a CRM
           </p>
         </div>

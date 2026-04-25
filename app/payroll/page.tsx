@@ -32,7 +32,7 @@ type FlowStep = {
   title: string;
   body: string;
   icon: typeof Users;
-  accent: "moss" | "honey";
+  accent: "moss" | "honey" | "champagne";
 };
 
 const FLOW: FlowStep[] = [
@@ -41,28 +41,28 @@ const FLOW: FlowStep[] = [
     title: "GPS clock-in",
     body: "Crew member arrives at the job site. Field Crew App geofences the property, prompts a one-tap clock-in, and stamps the time, the location, and the device ID. Clock-out at the polygon exit. Lunch breaks logged the same way.",
     icon: Users,
-    accent: "moss",
+    accent: "champagne",
   },
   {
     index: "Step 02",
     title: "Hours auto-aggregated",
     body: "Daily, weekly, and pay-period totals roll up automatically. Overtime calculated against the right rule for the jurisdiction (CA daily-OT after 8, NY weekly after 40, prevailing-wage for municipal jobs). The foreman approves with a swipe — no spreadsheet rebuild.",
     icon: BarChart3,
-    accent: "honey",
+    accent: "champagne",
   },
   {
     index: "Step 03",
     title: "Tax tables apply",
     body: "Federal + state + local withholding, SUI/SUTA, FICA, Medicare. Updated quarterly by our tax team. Multi-state crews get the right blend automatically based on which property they were physically standing on, hour by hour.",
     icon: Calculator,
-    accent: "moss",
+    accent: "champagne",
   },
   {
     index: "Step 04",
     title: "W-2 / 1099 export",
     body: "Year-end packets prepped automatically. W-2s mailed to full-time crews by January 31, e-filed to the SSA. 1099-NECs sent to subcontractors by January 15. Audit-ready packets archived in the Books vault for the IRS' four-year window.",
     icon: FileText,
-    accent: "honey",
+    accent: "champagne",
   },
 ];
 
@@ -119,19 +119,19 @@ export default function PayrollPage() {
       <Nav />
       <main>
         {/* Hero */}
-        <section className="relative overflow-hidden border-b border-bone/10 bg-forest-deep py-28 md:py-36">
+        <section className="relative overflow-hidden border-b border-bone/10 bg-obsidian py-28 md:py-36">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-x-0 top-1/2 -z-10 h-[700px] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(245,191,89,0.10),transparent_60%)]"
           />
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
-              <Eyebrow tone="honey">Payroll · GPS-verified</Eyebrow>
+              <Eyebrow tone="champagne">Payroll · GPS-verified</Eyebrow>
             </ScrollReveal>
             <ScrollReveal delay={0.05}>
               <h1 className="mt-4 max-w-5xl font-serif text-5xl font-semibold leading-[1.05] tracking-[-0.02em] text-bone md:text-7xl">
                 Paper time sheets killed{" "}
-                <span className="text-honey-bright">
+                <span className="text-moss-bright">
                   your last good crew chief.
                 </span>
               </h1>
@@ -166,7 +166,7 @@ export default function PayrollPage() {
                 </CtaButton>
                 <CtaButton
                   href="#flow"
-                  variant="ghost-honey"
+                  variant="ghost-champagne"
                   withArrow
                 >
                   Read the workflow
@@ -175,9 +175,9 @@ export default function PayrollPage() {
             </ScrollReveal>
             <ScrollReveal delay={0.2}>
               <div className="mt-10 flex flex-wrap items-center gap-3">
-                <Pill tone="honey">Engine 30 · Payroll</Pill>
+                <Pill tone="champagne">Engine 30 · Payroll</Pill>
                 <Pill tone="moss">Powered by Field Crew App GPS</Pill>
-                <Pill tone="honey">Stripe Connect direct deposit</Pill>
+                <Pill tone="champagne">Stripe Connect direct deposit</Pill>
               </div>
             </ScrollReveal>
           </div>
@@ -186,15 +186,15 @@ export default function PayrollPage() {
         {/* How it works · 4-step flow */}
         <section
           id="flow"
-          className="border-b border-bone/10 bg-forest-mid py-28"
+          className="border-b border-bone/10 bg-slate-deep py-28"
         >
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="max-w-3xl">
-                <Eyebrow>How it works</Eyebrow>
+                <Eyebrow tone="champagne">How it works</Eyebrow>
                 <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   GPS clock-in.{" "}
-                  <span className="text-moss-bright">
+                  <span className="text-champagne-bright">
                     Direct deposit.
                   </span>{" "}
                   <span className="text-bone/55">No middle layer.</span>
@@ -213,11 +213,15 @@ export default function PayrollPage() {
                 const accentText =
                   step.accent === "honey"
                     ? "text-honey-bright"
-                    : "text-moss-bright";
+                    : step.accent === "moss"
+                      ? "text-moss-bright"
+                      : "text-champagne-bright";
                 const accentBorder =
                   step.accent === "honey"
                     ? "border-honey/30"
-                    : "border-moss/30";
+                    : step.accent === "moss"
+                      ? "border-moss/30"
+                      : "border-champagne/30";
                 const Icon = step.icon;
                 return (
                   <ScrollReveal key={step.index} delay={(i % 2) * 0.06}>
@@ -249,14 +253,14 @@ export default function PayrollPage() {
         </section>
 
         {/* Multi-state */}
-        <section className="border-b border-bone/10 bg-forest-deep py-28">
+        <section className="border-b border-bone/10 bg-obsidian py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="max-w-3xl">
-                <Eyebrow tone="honey">Multi-state</Eyebrow>
+                <Eyebrow tone="champagne">Multi-state</Eyebrow>
                 <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   All 50 states.{" "}
-                  <span className="text-honey-bright">
+                  <span className="text-champagne-bright">
                     Every overtime rule.
                   </span>
                 </h2>
@@ -276,7 +280,7 @@ export default function PayrollPage() {
                 <ScrollReveal key={row.state} delay={(i % 3) * 0.05}>
                   <article className="flex h-full flex-col rounded-2xl border border-bone/10 bg-bone/[0.02] p-6">
                     <div className="flex items-center gap-3">
-                      <span className="rounded-full border border-honey/30 bg-honey/5 px-3 py-1 font-mono text-[11px] font-semibold tracking-[0.16em] text-honey-bright">
+                      <span className="rounded-full border border-champagne/30 bg-champagne/5 px-3 py-1 font-mono text-[11px] font-semibold tracking-[0.16em] text-champagne-bright">
                         {row.state}
                       </span>
                       <h3 className="font-serif text-lg font-semibold tracking-tight text-bone">
@@ -293,24 +297,24 @@ export default function PayrollPage() {
 
             <ScrollReveal delay={0.2}>
               <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
-                <Pill tone="moss">Federal + 50 states</Pill>
-                <Pill tone="honey">Local jurisdictions per ZIP</Pill>
-                <Pill tone="moss">Quarterly tax-table refresh</Pill>
+                <Pill tone="champagne">Federal + 50 states</Pill>
+                <Pill tone="moss">Local jurisdictions per ZIP</Pill>
+                <Pill tone="champagne">Quarterly tax-table refresh</Pill>
               </div>
             </ScrollReveal>
           </div>
         </section>
 
         {/* Subcontractor handling */}
-        <section className="border-b border-bone/10 bg-forest-mid py-28">
+        <section className="border-b border-bone/10 bg-slate-deep py-28">
           <div className="mx-auto max-w-7xl px-6">
             <div className="grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center">
               <ScrollReveal>
                 <div>
-                  <Eyebrow>Subcontractors · 1099-NEC</Eyebrow>
+                  <Eyebrow tone="champagne">Subcontractors · 1099-NEC</Eyebrow>
                   <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                     TIN at the first job.{" "}
-                    <span className="text-moss-bright">
+                    <span className="text-champagne-bright">
                       No January scramble.
                     </span>
                   </h2>
@@ -332,7 +336,7 @@ export default function PayrollPage() {
                       "Past-year archives kept for the IRS' four-year window",
                     ].map((b) => (
                       <li key={b} className="flex items-start gap-3">
-                        <Receipt className="mt-0.5 h-4 w-4 flex-none text-moss-bright" />
+                        <Receipt className="mt-0.5 h-4 w-4 flex-none text-champagne-bright" />
                         {b}
                       </li>
                     ))}
@@ -341,7 +345,7 @@ export default function PayrollPage() {
               </ScrollReveal>
 
               <ScrollReveal delay={0.1}>
-                <div className="rounded-2xl border border-bone/10 bg-forest-deep/60 p-6 shadow-pop md:p-8">
+                <div className="rounded-2xl border border-bone/10 bg-obsidian/60 p-6 shadow-pop md:p-8">
                   <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-bone/45">
                     Subcontractor cohort · 2026
                   </div>
@@ -384,7 +388,7 @@ export default function PayrollPage() {
                     </tbody>
                   </table>
                   <div className="mt-5 rounded-lg border border-bone/10 bg-bone/[0.03] p-3 font-mono text-[11px] text-bone/60">
-                    <span className="text-honey-bright">Auto-prep deadline:</span>{" "}
+                    <span className="text-champagne-bright">Auto-prep deadline:</span>{" "}
                     January 15 · 4 packets ready · 1 awaiting W-9
                   </div>
                 </div>
@@ -394,14 +398,14 @@ export default function PayrollPage() {
         </section>
 
         {/* Direct deposit */}
-        <section className="border-b border-bone/10 bg-forest-deep py-28">
+        <section className="border-b border-bone/10 bg-obsidian py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="max-w-3xl">
-                <Eyebrow tone="honey">Direct deposit</Eyebrow>
+                <Eyebrow tone="champagne">Direct deposit</Eyebrow>
                 <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   Stripe Connect-powered.{" "}
-                  <span className="text-honey-bright">
+                  <span className="text-champagne-bright">
                     1–2 business days.
                   </span>
                 </h2>
@@ -422,13 +426,13 @@ export default function PayrollPage() {
                   h: "Bank-grade onboarding",
                   b: "Stripe handles KYC, account verification, tax-form W-9 / W-4 collection. The crew member does it from their phone — no paper, no manager-as-notary.",
                   icon: Shield,
-                  accent: "moss" as const,
+                  accent: "champagne" as const,
                 },
                 {
                   h: "1–2 day standard payout",
                   b: "ACH-based same-day for emergencies, standard 1–2 day for the regular run. Failed transfers retry automatically; the crew chief gets pinged before the crew member notices.",
                   icon: Coins,
-                  accent: "honey" as const,
+                  accent: "champagne" as const,
                 },
                 {
                   h: "Paystubs in the app",
@@ -438,13 +442,13 @@ export default function PayrollPage() {
                 },
               ].map((row, i) => {
                 const accentText =
-                  row.accent === "honey"
-                    ? "text-honey-bright"
-                    : "text-moss-bright";
+                  row.accent === "moss"
+                    ? "text-moss-bright"
+                    : "text-champagne-bright";
                 const accentBorder =
-                  row.accent === "honey"
-                    ? "border-honey/30"
-                    : "border-moss/30";
+                  row.accent === "moss"
+                    ? "border-moss/30"
+                    : "border-champagne/30";
                 const Icon = row.icon;
                 return (
                   <ScrollReveal key={row.h} delay={(i % 3) * 0.05}>
@@ -471,14 +475,14 @@ export default function PayrollPage() {
         </section>
 
         {/* Compliance */}
-        <section className="border-b border-bone/10 bg-forest-mid py-28">
+        <section className="border-b border-bone/10 bg-slate-deep py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="max-w-3xl">
-                <Eyebrow>Compliance</Eyebrow>
+                <Eyebrow tone="champagne">Compliance</Eyebrow>
                 <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   DOL-ready audit packets.{" "}
-                  <span className="text-moss-bright">
+                  <span className="text-champagne-bright">
                     Prevailing-wage support.
                   </span>
                 </h2>
@@ -513,7 +517,7 @@ export default function PayrollPage() {
               ].map((row, i) => (
                 <ScrollReveal key={row.h} delay={(i % 2) * 0.05}>
                   <article className="flex h-full flex-col rounded-2xl border border-bone/10 bg-bone/[0.02] p-7">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-moss/20 bg-moss/5 text-moss-bright">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-champagne/20 bg-champagne/5 text-champagne-bright">
                       <Shield className="h-5 w-5" />
                     </div>
                     <h3 className="mt-5 font-serif text-xl font-semibold tracking-tight text-bone">
@@ -530,14 +534,14 @@ export default function PayrollPage() {
         </section>
 
         {/* Modules */}
-        <section className="border-b border-bone/10 bg-forest-deep py-28">
+        <section className="border-b border-bone/10 bg-obsidian py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="max-w-3xl">
-                <Eyebrow tone="honey">Payroll modules</Eyebrow>
+                <Eyebrow tone="champagne">Payroll modules</Eyebrow>
                 <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   Four modules.{" "}
-                  <span className="text-honey-bright">One paycheck.</span>
+                  <span className="text-champagne-bright">One paycheck.</span>
                 </h2>
               </div>
             </ScrollReveal>

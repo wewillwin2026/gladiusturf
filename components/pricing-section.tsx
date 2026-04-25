@@ -9,14 +9,14 @@ export function PricingSection() {
   return (
     <section
       id="pricing"
-      className="border-t border-bone/10 bg-forest-mid py-28"
+      className="border-t border-bone/10 bg-slate-deep py-28"
     >
       <div className="mx-auto max-w-7xl px-6">
-        {/* Scarcity band */}
+        {/* Scarcity band — heritage champagne with pulse for warmth without competing with the marquee CTA. */}
         <ScrollReveal>
-          <div className="mx-auto mb-12 flex max-w-3xl flex-col items-center justify-center gap-3 rounded-2xl border border-moss/25 bg-moss/[0.04] px-6 py-4 text-center sm:flex-row sm:gap-6 sm:text-left">
+          <div className="mx-auto mb-12 flex max-w-3xl flex-col items-center justify-center gap-3 rounded-2xl border border-champagne/25 bg-champagne/[0.03] px-6 py-4 text-center sm:flex-row sm:gap-6 sm:text-left">
             <div className="flex items-center gap-3">
-              <span className="flex h-2 w-2 flex-none rounded-full bg-moss-bright shadow-[0_0_10px_rgba(157,255,138,0.7)]" />
+              <span className="flex h-2 w-2 flex-none animate-pulse-dot rounded-full bg-champagne-bright shadow-[0_0_10px_rgba(212,178,122,0.7)]" />
               <div>
                 <div className="text-sm font-semibold text-bone">
                   Q2 2026 onboarding · 4 of 12 founding crew slots remaining
@@ -60,7 +60,7 @@ export function PricingSection() {
             <div>
               <p className="text-sm font-medium text-bone">
                 {BDC_ADDON.name} —{" "}
-                <span className="font-mono text-moss-bright">
+                <span className="font-mono text-champagne-bright">
                   ${BDC_ADDON.price}
                 </span>
                 <span className="text-bone/50">{BDC_ADDON.period}</span>
@@ -71,7 +71,7 @@ export function PricingSection() {
             </div>
             <Link
               href="/demo?addon=bdc"
-              className="group inline-flex items-center gap-1.5 rounded-full border border-moss/40 px-4 py-2 text-sm font-medium text-moss-bright transition-all hover:border-moss-bright hover:bg-moss/10"
+              className="group inline-flex items-center gap-1.5 rounded-full border border-champagne-bright/40 px-4 py-2 text-sm font-medium text-champagne-bright transition-all hover:border-champagne-bright hover:bg-champagne/10"
             >
               Add BDC
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />

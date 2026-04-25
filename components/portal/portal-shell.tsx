@@ -60,7 +60,7 @@ export function PortalShell({
   return (
     <div className="min-h-screen bg-paper text-forest">
       {/* Top bar */}
-      <header className="sticky top-0 z-30 border-b border-forest/10 bg-paper/95 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-pitch/10 bg-paper/95 backdrop-blur">
         <div className="mx-auto flex h-14 w-full max-w-content items-center gap-3 px-4 md:px-6">
           <button
             type="button"
@@ -78,7 +78,7 @@ export function PortalShell({
           <div className="flex items-center gap-2.5">
             <span
               aria-hidden
-              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-forest font-serif text-xs font-semibold text-paper"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-pitch font-serif text-xs font-semibold text-parchment"
             >
               {crewInitials}
             </span>
@@ -108,7 +108,7 @@ export function PortalShell({
             </span>
             <Link
               href="/"
-              className="hidden items-center gap-1.5 rounded-full border border-forest/15 bg-bone px-3 py-1.5 text-xs font-medium text-forest transition-colors hover:bg-paper md:inline-flex"
+              className="hidden items-center gap-1.5 rounded-full border border-pitch/15 bg-bone px-3 py-1.5 text-xs font-medium text-forest transition-colors hover:bg-paper md:inline-flex"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               gladiusturf.com
@@ -130,7 +130,7 @@ export function PortalShell({
               />
             ))}
           </nav>
-          <div className="mt-8 rounded-2xl border border-forest/10 bg-white p-4 shadow-card">
+          <div className="mt-8 rounded-2xl border border-pitch/10 bg-white p-4 shadow-card">
             <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-stone">
               Need help?
             </div>
@@ -139,7 +139,7 @@ export function PortalShell({
             </p>
             <a
               href="tel:+19195550188"
-              className="mt-3 inline-flex w-full items-center justify-center rounded-lg bg-forest px-3 py-2 text-xs font-semibold text-paper transition-colors hover:bg-forest-deep"
+              className="mt-3 inline-flex w-full items-center justify-center rounded-lg bg-pitch px-3 py-2 text-xs font-semibold text-parchment transition-colors hover:bg-slate-deep"
             >
               (919) 555-0188
             </a>
@@ -152,7 +152,7 @@ export function PortalShell({
             className="fixed inset-0 z-40 md:hidden"
             onClick={() => setMobileOpen(false)}
           >
-            <div className="absolute inset-0 bg-forest/30" />
+            <div className="absolute inset-0 bg-pitch/30" />
             <div
               className="absolute left-0 top-0 h-full w-64 bg-paper p-4 shadow-card"
               onClick={(e) => e.stopPropagation()}
@@ -169,7 +169,7 @@ export function PortalShell({
               </nav>
               <Link
                 href="/"
-                className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-forest/15 bg-bone px-3 py-1.5 text-xs font-medium text-forest"
+                className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-pitch/15 bg-bone px-3 py-1.5 text-xs font-medium text-forest"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 Back to gladiusturf.com
@@ -199,14 +199,14 @@ function SidebarItem({
       className={cn(
         "flex items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition-colors",
         active
-          ? "bg-forest text-paper"
+          ? "bg-pitch text-parchment"
           : "text-forest/80 hover:bg-bone hover:text-forest"
       )}
     >
       <span
         className={cn(
           "flex-none",
-          active ? "text-paper" : "text-forest/60"
+          active ? "text-parchment" : "text-forest/60"
         )}
       >
         {icon}

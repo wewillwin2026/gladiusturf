@@ -66,7 +66,7 @@ export default function PortalDemoPage() {
       </div>
 
       {/* Welcome strip */}
-      <section className="overflow-hidden rounded-2xl border border-forest/10 bg-white shadow-card">
+      <section className="overflow-hidden rounded-2xl border border-pitch/10 bg-white shadow-card">
         <div className="grid gap-0 md:grid-cols-[1.5fr_1fr]">
           <div className="p-6 md:p-7">
             <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-stone">
@@ -82,10 +82,10 @@ export default function PortalDemoPage() {
               </span>{" "}
               — bi-weekly mowing with Marcus, 9–11am.
             </p>
-            <div className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-moss/15 px-3 py-1 text-xs font-semibold text-forest">
+            <div className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-champagne/15 px-3 py-1 text-xs font-semibold text-forest">
               <span
                 aria-hidden
-                className="inline-flex h-1.5 w-1.5 rounded-full bg-forest"
+                className="inline-flex h-1.5 w-1.5 rounded-full bg-champagne"
               />
               {PORTAL_DEMO.status.label}
               <span className="font-normal text-forest/70">
@@ -112,7 +112,7 @@ export default function PortalDemoPage() {
             </div>
           </div>
 
-          <div className="border-t border-forest/10 bg-bone p-6 md:border-l md:border-t-0">
+          <div className="border-t border-pitch/10 bg-bone p-6 md:border-l md:border-t-0">
             <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-stone">
               Property on file
             </div>
@@ -143,7 +143,7 @@ export default function PortalDemoPage() {
       {/* Two-column: visits + invoices */}
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         {/* Upcoming visits */}
-        <section className="rounded-2xl border border-forest/10 bg-white p-6 shadow-card">
+        <section className="rounded-2xl border border-pitch/10 bg-white p-6 shadow-card">
           <SectionHeader
             title="Upcoming visits"
             kicker="Next 30 days"
@@ -156,7 +156,7 @@ export default function PortalDemoPage() {
               </button>
             }
           />
-          <ul className="mt-4 divide-y divide-forest/10">
+          <ul className="mt-4 divide-y divide-pitch/10">
             {PORTAL_DEMO.upcomingVisits.map((v) => (
               <li
                 key={v.id}
@@ -202,7 +202,7 @@ export default function PortalDemoPage() {
         {/* Open invoices */}
         <section
           id="invoices"
-          className="rounded-2xl border border-forest/10 bg-white p-6 shadow-card"
+          className="rounded-2xl border border-pitch/10 bg-white p-6 shadow-card"
         >
           <SectionHeader
             title="Open invoices"
@@ -233,7 +233,7 @@ export default function PortalDemoPage() {
       </div>
 
       {/* Recent jobs */}
-      <section className="rounded-2xl border border-forest/10 bg-white p-6 shadow-card">
+      <section className="rounded-2xl border border-pitch/10 bg-white p-6 shadow-card">
         <SectionHeader
           title="Recent jobs"
           kicker="Last 30 days"
@@ -264,16 +264,16 @@ export default function PortalDemoPage() {
       </section>
 
       {/* Refer + earn */}
-      <section className="overflow-hidden rounded-2xl border border-forest/10 bg-gradient-to-br from-forest to-forest-deep p-6 text-paper shadow-card md:p-7">
+      <section className="overflow-hidden rounded-2xl border border-pitch/10 bg-gradient-to-br from-pitch to-slate-deep p-6 text-parchment shadow-card md:p-7">
         <div className="grid items-center gap-6 md:grid-cols-[1.4fr_1fr]">
           <div>
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-paper/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-paper/85">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-champagne/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-crest text-champagne-bright">
               <Gift className="h-3 w-3" /> Refer + earn
             </div>
             <h2 className="mt-3 font-serif text-2xl font-semibold tracking-[-0.01em] md:text-3xl">
               Refer a neighbor → both get $50 credit.
             </h2>
-            <p className="mt-2 max-w-md text-[14px] text-paper/75">
+            <p className="mt-2 max-w-md text-[14px] text-parchment/75">
               Send your unique link. When they book their first visit, $50
               lands on both your accounts. Tracked automatically — no codes,
               no forms.
@@ -282,46 +282,46 @@ export default function PortalDemoPage() {
               <button
                 type="button"
                 onClick={handleShare}
-                className="inline-flex items-center gap-1.5 rounded-full bg-lime-bright px-5 py-2.5 text-sm font-semibold text-forest-deep transition-colors hover:bg-lime"
+                className="inline-flex items-center gap-1.5 rounded-full bg-lime-bright px-5 py-2.5 text-sm font-semibold text-pitch transition-colors hover:bg-lime"
               >
                 <Copy className="h-3.5 w-3.5" />
                 {shareCopied ? "Copied!" : "Get share link"}
               </button>
               <button
                 type="button"
-                className="inline-flex items-center gap-1.5 rounded-full border border-paper/20 px-4 py-2 text-sm font-medium text-paper/85 transition-colors hover:bg-paper/5"
+                className="inline-flex items-center gap-1.5 rounded-full border border-champagne-bright/40 px-4 py-2 text-sm font-medium text-champagne-bright transition-colors hover:bg-champagne/10"
               >
                 <MailPlus className="h-3.5 w-3.5" />
                 Email a neighbor
               </button>
             </div>
             {shareCopied && (
-              <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-moss/20 px-3 py-1 text-[12px] font-medium text-moss-bright">
+              <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-champagne/20 px-3 py-1 text-[12px] font-medium text-champagne-bright">
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 Link copied to clipboard
               </div>
             )}
           </div>
-          <div className="rounded-xl border border-paper/10 bg-paper/5 p-4">
+          <div className="rounded-xl border border-champagne/20 bg-champagne/5 p-4">
             <div className="flex items-baseline justify-between">
-              <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-paper/60">
+              <span className="text-[10px] font-semibold uppercase tracking-crest text-parchment/60">
                 Your credits
               </span>
-              <span className="font-serif text-2xl font-semibold text-paper">
+              <span className="font-serif text-2xl font-semibold text-champagne-bright">
                 ${PORTAL_DEMO.referral.earned}
               </span>
             </div>
-            <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-paper/10">
+            <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-parchment/10">
               <div
-                className="h-full rounded-full bg-moss-bright"
+                className="h-full rounded-full bg-champagne-bright"
                 style={{ width: "60%" }}
               />
             </div>
-            <div className="mt-2 flex items-center justify-between text-[11px] text-paper/60">
+            <div className="mt-2 flex items-center justify-between text-[11px] text-parchment/60">
               <span>${PORTAL_DEMO.referral.earned} earned</span>
               <span>${PORTAL_DEMO.referral.pending} pending</span>
             </div>
-            <div className="mt-4 truncate rounded-lg bg-forest-deep/60 px-3 py-2 font-mono text-[11px] text-paper/75">
+            <div className="mt-4 truncate rounded-lg bg-pitch/60 px-3 py-2 font-mono text-[11px] text-parchment/75">
               {PORTAL_DEMO.referral.shareUrl}
             </div>
           </div>
@@ -331,7 +331,7 @@ export default function PortalDemoPage() {
       {/* Service history feed */}
       <section
         id="feed"
-        className="rounded-2xl border border-forest/10 bg-white shadow-card"
+        className="rounded-2xl border border-pitch/10 bg-white shadow-card"
       >
         <button
           type="button"
@@ -356,8 +356,8 @@ export default function PortalDemoPage() {
           </span>
         </button>
         {feedOpen && (
-          <div className="border-t border-forest/10 px-6 py-5">
-            <ol className="relative ml-2 space-y-5 border-l border-forest/10 pl-5">
+          <div className="border-t border-pitch/10 px-6 py-5">
+            <ol className="relative ml-2 space-y-5 border-l border-pitch/10 pl-5">
               {PORTAL_DEMO.feed.map((entry) => (
                 <FeedRow key={entry.id} entry={entry} />
               ))}
@@ -472,9 +472,9 @@ function feedAccent(kind: FeedEntry["kind"]) {
   switch (kind) {
     case "payment":
       return {
-        bg: "bg-moss/15",
-        dot: "bg-forest",
-        label: "text-forest",
+        bg: "bg-champagne/20",
+        dot: "bg-champagne",
+        label: "text-champagne",
       };
     case "approval":
       return {
@@ -484,9 +484,9 @@ function feedAccent(kind: FeedEntry["kind"]) {
       };
     case "referral":
       return {
-        bg: "bg-lime/30",
-        dot: "bg-forest",
-        label: "text-forest",
+        bg: "bg-champagne/15",
+        dot: "bg-champagne",
+        label: "text-champagne",
       };
     case "message":
       return {
@@ -497,8 +497,8 @@ function feedAccent(kind: FeedEntry["kind"]) {
     case "visit":
     default:
       return {
-        bg: "bg-forest/10",
-        dot: "bg-forest",
+        bg: "bg-pitch/10",
+        dot: "bg-pitch",
         label: "text-forest/80",
       };
   }

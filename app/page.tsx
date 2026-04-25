@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -24,6 +25,12 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 export const metadata: Metadata = {
   description:
     "GladiusTurf is the thirty-three-engine landscaping operating system across five tiers — revenue, lifecycle, intelligence, operations, marketplace — that catches every forgotten quote, missed upsell, late invoice, and dropped referral your current stack is letting walk.",
+  openGraph: {
+    images: [{ url: "/crest.png", width: 600, height: 800 }],
+  },
+  twitter: {
+    images: ["/crest.png"],
+  },
 };
 
 const COMING_FROM = [
@@ -277,7 +284,7 @@ export default function HomePage() {
         <Hero />
 
         {/* b. Proof strip — founding crews + tech bar */}
-        <section className="border-y border-bone/10 bg-forest-mid py-14">
+        <section className="border-y border-bone/10 bg-slate-deep py-14">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-bone/45">
@@ -323,7 +330,7 @@ export default function HomePage() {
 
             <ScrollReveal delay={0.05}>
               <h2 className="mx-auto max-w-3xl text-center font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
-                <span className="text-moss-bright">$232,200</span> walks out of
+                <span className="text-champagne-bright">$232,200</span> walks out of
                 every crew&apos;s books each year.
               </h2>
             </ScrollReveal>
@@ -351,15 +358,15 @@ export default function HomePage() {
                     key={stat.label}
                     className={
                       stat.accent
-                        ? "rounded-2xl border border-moss/30 bg-gradient-to-b from-moss/10 to-transparent p-8 text-center"
+                        ? "rounded-2xl border border-champagne/30 bg-gradient-to-b from-champagne/10 to-transparent p-8 text-center"
                         : "rounded-2xl border border-bone/10 bg-bone/[0.02] p-8 text-center"
                     }
                   >
                     <div
                       className={
                         stat.accent
-                          ? "font-serif text-6xl font-semibold tracking-tight text-moss-bright md:text-7xl"
-                          : "font-serif text-6xl font-semibold tracking-tight text-honey-bright md:text-7xl"
+                          ? "font-serif text-6xl font-semibold tracking-tight text-champagne-bright md:text-7xl"
+                          : "font-serif text-6xl font-semibold tracking-tight text-champagne-bright/85 md:text-7xl"
                       }
                     >
                       <AnimatedCounter
@@ -385,13 +392,29 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* d. Engines grid */}
-        <EnginesGrid />
+        {/* d. Engines grid — with a blurred crest watermark behind the section H2 */}
+        <div className="relative">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 top-24 -z-0 -translate-x-1/2"
+          >
+            <Image
+              src="/crest.png"
+              alt=""
+              width={520}
+              height={520}
+              className="h-auto w-[520px] opacity-30 blur-[6px] select-none"
+            />
+          </div>
+          <div className="relative">
+            <EnginesGrid />
+          </div>
+        </div>
 
         {/* e. Three alternating product blocks */}
         <section
           id="product"
-          className="border-t border-bone/10 bg-forest-mid py-28"
+          className="border-t border-bone/10 bg-slate-deep py-28"
         >
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
@@ -498,18 +521,18 @@ export default function HomePage() {
         </section>
 
         {/* f. ROI tease */}
-        <section className="border-t border-bone/10 bg-forest-deep py-24">
+        <section className="border-t border-bone/10 bg-pitch py-24">
           <div className="mx-auto max-w-5xl px-6 text-center">
             <ScrollReveal>
               <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                 Your last bad month cost more than
                 <br />
                 GladiusTurf costs for a{" "}
-                <span className="text-moss-bright">year</span>.
+                <span className="text-champagne-bright">year</span>.
               </h2>
             </ScrollReveal>
             <ScrollReveal delay={0.1}>
-              <p className="mx-auto mt-6 max-w-2xl text-lg text-bone/70">
+              <p className="mx-auto mt-6 max-w-2xl text-lg text-parchment/70">
                 Run your real numbers. Most founding crews see payback inside
                 45 days — usually from the first leak we close.
               </p>
@@ -517,7 +540,7 @@ export default function HomePage() {
             <ScrollReveal delay={0.15}>
               <Link
                 href="/pricing"
-                className="group mt-10 inline-flex items-center gap-2 rounded-full border border-honey-bright/40 bg-honey/5 px-7 py-3.5 text-base font-medium text-honey-bright transition-all hover:border-honey-bright hover:bg-honey/10"
+                className="group mt-10 inline-flex items-center gap-2 rounded-full border border-champagne-bright/40 bg-champagne/5 px-7 py-3.5 text-base font-medium text-champagne-bright transition-all hover:border-champagne-bright hover:bg-champagne/10"
               >
                 Run your numbers
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -527,7 +550,7 @@ export default function HomePage() {
         </section>
 
         {/* g. Comparison preview */}
-        <section className="border-t border-bone/10 bg-forest-mid py-28">
+        <section className="border-t border-bone/10 bg-slate-deep py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="mx-auto max-w-3xl text-center">
@@ -537,7 +560,7 @@ export default function HomePage() {
                 <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   What you&apos;re paying now vs.
                   <br />
-                  <span className="text-moss-bright">what GladiusTurf costs.</span>
+                  <span className="text-champagne-bright">what GladiusTurf costs.</span>
                 </h2>
                 <p className="mt-4 text-lg text-bone/65">
                   Slower software. Higher bills. No real AI. Here&apos;s the
@@ -546,11 +569,11 @@ export default function HomePage() {
               </div>
             </ScrollReveal>
             <ScrollReveal delay={0.1}>
-              <div className="relative mt-14 rounded-2xl border border-bone/10 bg-forest-deep p-6 md:p-8">
+              <div className="relative mt-14 rounded-2xl border border-bone/10 bg-obsidian p-6 md:p-8">
                 <ComparisonTable bare />
                 <div
                   aria-hidden
-                  className="pointer-events-none absolute inset-y-6 right-6 w-12 rounded-r-2xl bg-gradient-to-l from-forest-deep to-transparent md:hidden"
+                  className="pointer-events-none absolute inset-y-6 right-6 w-12 rounded-r-2xl bg-gradient-to-l from-obsidian to-transparent md:hidden"
                 />
               </div>
             </ScrollReveal>
@@ -575,9 +598,9 @@ export default function HomePage() {
                     <Link
                       key={c.slug}
                       href={`/vs/${c.slug}`}
-                      className="group inline-flex items-center gap-2 rounded-full border border-bone/10 bg-bone/[0.03] px-4 py-2 text-sm text-bone/75 transition-all hover:border-moss-bright/40 hover:bg-moss/10 hover:text-moss-bright"
+                      className="group inline-flex items-center gap-2 rounded-full border border-bone/10 bg-bone/[0.03] px-4 py-2 text-sm text-bone/75 transition-all hover:border-champagne-bright/40 hover:bg-champagne/10 hover:text-champagne-bright"
                     >
-                      <span className="text-bone/45 group-hover:text-moss-bright/70">
+                      <span className="text-bone/45 group-hover:text-champagne-bright/70">
                         vs.
                       </span>
                       {c.name}

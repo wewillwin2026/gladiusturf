@@ -59,7 +59,7 @@ export function RescheduleForm({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-forest/40 px-3 py-6 sm:items-center"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-pitch/40 px-3 py-6 sm:items-center"
       role="dialog"
       aria-modal="true"
       aria-label="Reschedule visit"
@@ -69,7 +69,7 @@ export function RescheduleForm({
         className="relative w-full max-w-md overflow-hidden rounded-2xl bg-paper shadow-pop"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-forest/10 bg-white px-5 py-3.5">
+        <div className="flex items-center justify-between border-b border-pitch/10 bg-white px-5 py-3.5">
           <div className="flex items-center gap-2 text-[13px] font-medium text-forest">
             <CalendarDays className="h-4 w-4 text-forest/70" />
             Reschedule visit
@@ -86,7 +86,7 @@ export function RescheduleForm({
 
         {confirmed ? (
           <div className="px-5 py-7 text-center">
-            <div className="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-full bg-moss/15 text-forest">
+            <div className="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-full bg-champagne/20 text-champagne">
               <CalendarCheck className="h-6 w-6" />
             </div>
             <h3 className="mt-4 font-serif text-xl font-semibold text-forest">
@@ -100,7 +100,7 @@ export function RescheduleForm({
             <button
               type="button"
               onClick={onClose}
-              className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-forest px-4 py-2.5 text-sm font-semibold text-paper transition-colors hover:bg-forest-deep"
+              className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-pitch px-4 py-2.5 text-sm font-semibold text-parchment transition-colors hover:bg-slate-deep"
             >
               Done
             </button>
@@ -163,7 +163,7 @@ export function RescheduleForm({
                         !blocked &&
                           !isPicked &&
                           "bg-white text-forest hover:bg-bone",
-                        isPicked && "bg-forest text-paper shadow-card"
+                        isPicked && "bg-pitch text-parchment shadow-card"
                       )}
                     >
                       {d.day}
@@ -190,7 +190,7 @@ export function RescheduleForm({
               className={cn(
                 "mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold transition-colors",
                 picked
-                  ? "bg-forest text-paper hover:bg-forest-deep"
+                  ? "bg-pitch text-parchment hover:bg-slate-deep"
                   : "cursor-not-allowed bg-bone text-stone"
               )}
             >

@@ -85,13 +85,13 @@ export default function FindACrewPage() {
   return (
     <>
       <Nav />
-      <main className="bg-forest-deep">
-        {/* Hero */}
+      <main className="bg-obsidian">
+        {/* Hero — champagne eyebrow pill */}
         <section className="border-b border-bone/10">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
-              <Pill>
-                <span className="h-1.5 w-1.5 rounded-full bg-moss-bright animate-pulse-dot" />
+              <Pill tone="champagne">
+                <span className="h-1.5 w-1.5 rounded-full bg-champagne-bright animate-pulse-dot" />
                 Find a Crew · Pre-launch
               </Pill>
             </ScrollReveal>
@@ -116,7 +116,7 @@ export default function FindACrewPage() {
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
               <div className="mx-auto max-w-3xl text-center">
-                <Eyebrow tone="honey">The math on the leads you kill</Eyebrow>
+                <Eyebrow tone="champagne">The math on the leads you kill</Eyebrow>
                 <h2 className="mt-6 font-serif text-3xl md:text-5xl text-bone tracking-[-0.02em] leading-[1.1]">
                   Ten to thirty percent of your inbound dies on the voicemail.
                 </h2>
@@ -158,11 +158,11 @@ export default function FindACrewPage() {
           </div>
         </section>
 
-        {/* How it works */}
+        {/* How it works — alternate champagne/moss/champagne/moss numerals */}
         <section className="border-b border-bone/10">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
-              <Eyebrow>How it works</Eyebrow>
+              <Eyebrow tone="champagne">How it works</Eyebrow>
               <h2 className="mt-6 max-w-3xl font-serif text-3xl md:text-5xl text-bone tracking-[-0.02em] leading-[1.1]">
                 Four steps from kill list to commission check.
               </h2>
@@ -174,7 +174,7 @@ export default function FindACrewPage() {
                     <p
                       className={`font-mono text-6xl md:text-7xl leading-none ${
                         i % 2 === 0
-                          ? "text-honey-bright/40"
+                          ? "text-champagne-bright/40"
                           : "text-moss-bright/40"
                       }`}
                     >
@@ -193,11 +193,11 @@ export default function FindACrewPage() {
           </div>
         </section>
 
-        {/* Coverage map */}
-        <section className="border-b border-bone/10 bg-forest-mid">
+        {/* Coverage map — pin color → champagne (was honey) */}
+        <section className="border-b border-bone/10 bg-slate-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
-              <Eyebrow tone="honey">Founding cities</Eyebrow>
+              <Eyebrow tone="champagne">Founding cities</Eyebrow>
               <h2 className="mt-6 max-w-3xl font-serif text-3xl md:text-5xl text-bone tracking-[-0.02em] leading-[1.1]">
                 We&apos;re starting with 10 metros.
               </h2>
@@ -210,18 +210,18 @@ export default function FindACrewPage() {
             <div className="mt-16 grid grid-cols-2 gap-4 md:grid-cols-5">
               {FOUNDING_CITIES.map((city, i) => (
                 <ScrollReveal key={city} delay={i * 0.03}>
-                  <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-5 transition-colors hover:border-honey/30">
-                    <MapPin className="h-4 w-4 text-honey-bright" />
+                  <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-5 transition-colors hover:border-champagne/30">
+                    <MapPin className="h-4 w-4 text-champagne-bright" />
                     <p className="mt-3 font-serif text-lg text-bone">{city}</p>
                   </div>
                 </ScrollReveal>
               ))}
             </div>
             <ScrollReveal delay={0.1}>
-              <div className="mt-12 flex h-64 items-center justify-center rounded-2xl border border-honey-bright/20 bg-bone/[0.02]">
+              <div className="mt-12 flex h-64 items-center justify-center rounded-2xl border border-champagne-bright/20 bg-bone/[0.02]">
                 <div className="text-center">
-                  <MapPin className="mx-auto h-8 w-8 text-honey-bright/60" />
-                  <p className="mt-3 font-mono text-sm tracking-[0.15em] text-bone/40">
+                  <MapPin className="mx-auto h-8 w-8 text-champagne-bright/60" />
+                  <p className="mt-3 font-mono text-sm tracking-crest text-bone/40">
                     COVERAGE MAP · LIVE AT LAUNCH
                   </p>
                 </div>
@@ -240,11 +240,11 @@ export default function FindACrewPage() {
           </div>
         </section>
 
-        {/* Trust + payments */}
+        {/* Trust + payments — champagne accents */}
         <section className="border-b border-bone/10">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
-              <Eyebrow>Tracking, payouts, taxes</Eyebrow>
+              <Eyebrow tone="champagne">Tracking, payouts, taxes</Eyebrow>
               <h2 className="mt-6 max-w-3xl font-serif text-3xl md:text-5xl text-bone tracking-[-0.02em] leading-[1.1]">
                 The receiving crew can&apos;t skip the commission. We hold the rails.
               </h2>
@@ -257,11 +257,11 @@ export default function FindACrewPage() {
             <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-2">
               {TRUST_POINTS.map((t, i) => (
                 <ScrollReveal key={t.n} delay={i * 0.04}>
-                  <div className="rounded-2xl border border-honey-bright/20 bg-bone/[0.02] p-8 h-full">
+                  <div className="rounded-2xl border border-champagne-bright/20 bg-bone/[0.02] p-8 h-full">
                     <div className="flex items-baseline gap-4">
                       <p
-                        className={`font-mono text-sm tracking-[0.15em] ${
-                          i % 2 === 0 ? "text-honey-bright" : "text-moss-bright"
+                        className={`font-mono text-sm tracking-crest ${
+                          i % 2 === 0 ? "text-champagne-bright" : "text-moss-bright"
                         }`}
                       >
                         {t.n}
@@ -285,15 +285,16 @@ export default function FindACrewPage() {
         <section className="border-b border-bone/10">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
-              <Eyebrow tone="honey">Two sides of the network</Eyebrow>
+              <Eyebrow tone="champagne">Two sides of the network</Eyebrow>
               <h2 className="mt-6 max-w-3xl font-serif text-3xl md:text-5xl text-bone tracking-[-0.02em] leading-[1.1]">
                 Pick the side you&apos;re on. Or both — most crews are.
               </h2>
             </ScrollReveal>
             <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-2">
+              {/* SENDER → moss halo (emotional contributor / community) */}
               <ScrollReveal>
                 <div className="rounded-2xl border border-moss/40 bg-gradient-to-b from-moss/10 to-transparent shadow-pop p-8 md:p-10 h-full">
-                  <Pill>
+                  <Pill tone="moss">
                     <Sparkles className="h-3 w-3" />
                     Senders
                   </Pill>
@@ -310,9 +311,10 @@ export default function FindACrewPage() {
                   </div>
                 </div>
               </ScrollReveal>
+              {/* RECEIVER → champagne halo (heritage / business growth) */}
               <ScrollReveal delay={0.05}>
-                <div className="rounded-2xl border border-honey/40 bg-gradient-to-b from-honey/10 to-transparent shadow-pop-honey p-8 md:p-10 h-full">
-                  <Pill tone="honey">
+                <div className="rounded-2xl border border-champagne/40 bg-gradient-to-b from-champagne/10 to-transparent shadow-pop-champagne p-8 md:p-10 h-full">
+                  <Pill tone="champagne">
                     <Sparkles className="h-3 w-3" />
                     Receivers
                   </Pill>
@@ -334,7 +336,7 @@ export default function FindACrewPage() {
         </section>
 
         {/* Final tease */}
-        <section className="bg-forest-mid">
+        <section className="bg-slate-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
               <Eyebrow tone="lime">
@@ -358,7 +360,7 @@ export default function FindACrewPage() {
                 </a>
                 <a
                   href="/surplus-yard"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-bone underline underline-offset-4 hover:text-moss-bright"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-bone underline underline-offset-4 hover:text-champagne-bright"
                 >
                   Move what&apos;s sitting on your yard
                   <ArrowRight className="h-4 w-4" />

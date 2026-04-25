@@ -34,7 +34,7 @@ export function JobCard({
   return (
     <article
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-forest/10 bg-white p-5 shadow-card transition-shadow hover:shadow-pop",
+        "group relative overflow-hidden rounded-2xl border border-pitch/10 bg-white p-5 shadow-card transition-shadow hover:shadow-pop-champagne",
         className
       )}
     >
@@ -47,8 +47,8 @@ export function JobCard({
             {service}
           </h3>
         </div>
-        <span className="inline-flex items-center gap-1 rounded-full bg-moss/10 px-2.5 py-1 text-[11px] font-semibold text-forest">
-          <CheckCircle2 className="h-3 w-3 text-forest" />
+        <span className="inline-flex items-center gap-1 rounded-full bg-champagne/15 px-2.5 py-1 text-[11px] font-semibold text-champagne">
+          <CheckCircle2 className="h-3 w-3 text-champagne" />
           Completed
         </span>
       </div>
@@ -78,7 +78,7 @@ export function JobCard({
 
       <p className="mt-4 text-[13px] leading-[1.6] text-forest/80">{notes}</p>
 
-      <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-forest/10 pt-3 text-[12px] text-stone">
+      <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-pitch/10 pt-3 text-[12px] text-stone">
         <span className="inline-flex items-center gap-1.5">
           <Users className="h-3.5 w-3.5" />
           {crew}

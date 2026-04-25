@@ -120,13 +120,13 @@ export default function SurplusYardPage() {
   return (
     <>
       <Nav />
-      <main className="bg-forest-deep">
+      <main className="bg-obsidian">
         {/* Hero */}
         <section className="border-b border-bone/10">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
-              <Pill>
-                <span className="h-1.5 w-1.5 rounded-full bg-moss-bright animate-pulse-dot" />
+              <Pill tone="champagne">
+                <span className="h-1.5 w-1.5 rounded-full bg-champagne-bright animate-pulse-dot" />
                 Surplus Yard · Pre-launch
               </Pill>
             </ScrollReveal>
@@ -151,7 +151,7 @@ export default function SurplusYardPage() {
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
               <div className="mx-auto max-w-3xl text-center">
-                <Eyebrow tone="honey">The math on your yard</Eyebrow>
+                <Eyebrow tone="champagne">The math on your yard</Eyebrow>
                 <h2 className="mt-6 font-serif text-3xl md:text-5xl text-bone tracking-[-0.02em] leading-[1.1]">
                   Every yard is a quiet warehouse of dead capital.
                 </h2>
@@ -192,11 +192,11 @@ export default function SurplusYardPage() {
           </div>
         </section>
 
-        {/* How it works */}
+        {/* How it works — alternate champagne/moss numerals */}
         <section className="border-b border-bone/10">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
-              <Eyebrow>How it works</Eyebrow>
+              <Eyebrow tone="champagne">How it works</Eyebrow>
               <h2 className="mt-6 max-w-3xl font-serif text-3xl md:text-5xl text-bone tracking-[-0.02em] leading-[1.1]">
                 Four steps. No phone tag. No gas-station meetups.
               </h2>
@@ -208,7 +208,7 @@ export default function SurplusYardPage() {
                     <p
                       className={`font-mono text-6xl md:text-7xl leading-none ${
                         i % 2 === 0
-                          ? "text-honey-bright/40"
+                          ? "text-champagne-bright/40"
                           : "text-moss-bright/40"
                       }`}
                     >
@@ -227,11 +227,11 @@ export default function SurplusYardPage() {
           </div>
         </section>
 
-        {/* What you can list */}
+        {/* What you can list — alternate champagne/moss accents */}
         <section className="border-b border-bone/10">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
-              <Eyebrow tone="honey">What you can list</Eyebrow>
+              <Eyebrow tone="champagne">What you can list</Eyebrow>
               <h2 className="mt-6 max-w-3xl font-serif text-3xl md:text-5xl text-bone tracking-[-0.02em] leading-[1.1]">
                 If it&apos;s on your yard and it&apos;s not on a truck this week, it can be listed.
               </h2>
@@ -241,10 +241,10 @@ export default function SurplusYardPage() {
                 const Icon = c.icon;
                 const isEven = i % 2 === 0;
                 const iconCls = isEven
-                  ? "border-honey/30 bg-honey/10 text-honey-bright"
+                  ? "border-champagne/30 bg-champagne/10 text-champagne-bright"
                   : "border-moss/30 bg-moss/10 text-moss-bright";
                 const hoverCls = isEven
-                  ? "hover:border-honey/30"
+                  ? "hover:border-champagne/30"
                   : "hover:border-moss/30";
                 return (
                   <ScrollReveal key={c.label} delay={i * 0.04}>
@@ -270,11 +270,11 @@ export default function SurplusYardPage() {
           </div>
         </section>
 
-        {/* Trust + payments */}
-        <section className="border-b border-bone/10 bg-forest-mid">
+        {/* Trust + payments — money moves, gold echoes prosperity */}
+        <section className="border-b border-bone/10 bg-slate-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
-              <Eyebrow>Holds, deposits, disputes</Eyebrow>
+              <Eyebrow tone="champagne">Holds, deposits, disputes</Eyebrow>
               <h2 className="mt-6 max-w-3xl font-serif text-3xl md:text-5xl text-bone tracking-[-0.02em] leading-[1.1]">
                 Built on Stripe Connect so the money side is boring.
               </h2>
@@ -287,11 +287,11 @@ export default function SurplusYardPage() {
             <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-2">
               {TRUST_POINTS.map((t, i) => (
                 <ScrollReveal key={t.n} delay={i * 0.04}>
-                  <div className="rounded-2xl border border-honey-bright/20 bg-bone/[0.02] p-8 h-full">
+                  <div className="rounded-2xl border border-champagne-bright/20 bg-bone/[0.02] p-8 h-full">
                     <div className="flex items-baseline gap-4">
                       <p
-                        className={`font-mono text-sm tracking-[0.15em] ${
-                          i % 2 === 0 ? "text-honey-bright" : "text-moss-bright"
+                        className={`font-mono text-sm tracking-crest ${
+                          i % 2 === 0 ? "text-champagne-bright" : "text-moss-bright"
                         }`}
                       >
                         {t.n}
@@ -311,12 +311,12 @@ export default function SurplusYardPage() {
           </div>
         </section>
 
-        {/* Waitlist CTA */}
+        {/* Waitlist CTA — featured heritage card */}
         <section className="border-b border-bone/10">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
-              <div className="mx-auto max-w-3xl rounded-2xl border border-moss/40 bg-gradient-to-b from-moss/10 to-transparent shadow-pop p-8 md:p-12">
-                <Pill tone="honey">
+              <div className="mx-auto max-w-3xl rounded-2xl border border-champagne/40 bg-gradient-to-b from-champagne/10 to-transparent shadow-pop-champagne p-8 md:p-12">
+                <Pill tone="champagne">
                   <Sparkles className="h-3 w-3" />
                   Founder pricing
                 </Pill>
@@ -338,7 +338,7 @@ export default function SurplusYardPage() {
         </section>
 
         {/* Final tease */}
-        <section className="bg-forest-mid">
+        <section className="bg-slate-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
               <Eyebrow tone="lime">
@@ -361,7 +361,7 @@ export default function SurplusYardPage() {
                 </a>
                 <a
                   href="/find-a-crew"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-bone underline underline-offset-4 hover:text-moss-bright"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-bone underline underline-offset-4 hover:text-champagne-bright"
                 >
                   Hand off the jobs you can&apos;t take
                   <ArrowRight className="h-4 w-4" />

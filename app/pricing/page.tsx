@@ -227,16 +227,16 @@ export default function PricingPage() {
   return (
     <>
       <Nav />
-      <main className="bg-forest-deep text-bone">
+      <main className="bg-obsidian text-bone">
         {/* Hero + scarcity band + tier grid */}
         <section className="py-28">
           <div className="mx-auto max-w-7xl px-6">
-            {/* Scarcity band */}
-            <div className="mx-auto mb-12 flex max-w-3xl flex-col items-center justify-center gap-3 rounded-2xl border border-honey/25 bg-honey/[0.03] px-6 py-4 text-center sm:flex-row sm:gap-6 sm:text-left">
+            {/* Scarcity band — heritage champagne */}
+            <div className="mx-auto mb-12 flex max-w-3xl flex-col items-center justify-center gap-3 rounded-2xl border border-champagne/25 bg-champagne/[0.03] px-6 py-4 text-center sm:flex-row sm:gap-6 sm:text-left">
               <div className="flex items-center gap-3">
                 <span className="relative flex h-2 w-2 flex-none">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-honey-bright opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-honey-bright" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-champagne-bright opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-champagne-bright" />
                 </span>
                 <div>
                   <div className="text-sm font-semibold text-bone">
@@ -258,7 +258,7 @@ export default function PricingPage() {
 
             {/* Hero copy */}
             <div className="mx-auto max-w-3xl text-center">
-              <Pill tone="moss" className="mb-3">
+              <Pill tone="champagne" className="mb-3">
                 <Sparkles className="h-3 w-3" />
                 Pricing
               </Pill>
@@ -271,7 +271,9 @@ export default function PricingPage() {
               </p>
             </div>
 
-            {/* Three-tier pricing grid */}
+            {/* Three-tier pricing grid — Professional keeps moss + shadow-pop
+                (signature trust marker). Independent + Enterprise switch to
+                champagne accents. */}
             <div className="mx-auto mt-16 grid max-w-5xl gap-6 md:grid-cols-3">
               {TIERS.map((tier) => {
                 const featured = Boolean(tier.featured);
@@ -319,28 +321,36 @@ export default function PricingPage() {
                       <ArrowRightIcon className="h-3.5 w-3.5" />
                     </a>
                     <ul className="mt-8 space-y-3 text-sm text-bone/70">
-                      {features.map((f, i) => (
-                        <li key={f} className="flex items-start gap-2.5">
-                          <CheckIcon
-                            className={
-                              i % 2 === 0
-                                ? "mt-0.5 h-4 w-4 flex-none text-moss-bright"
-                                : "mt-0.5 h-4 w-4 flex-none text-honey-bright"
-                            }
-                          />
-                          <span>{f}</span>
-                        </li>
-                      ))}
+                      {features.map((f, i) => {
+                        // Featured (Professional) keeps moss-first signature.
+                        // Other tiers lead with champagne, alternate moss.
+                        const evenChampagne = !featured;
+                        const useChampagne =
+                          evenChampagne ? i % 2 === 0 : i % 2 !== 0;
+                        return (
+                          <li key={f} className="flex items-start gap-2.5">
+                            <CheckIcon
+                              className={
+                                useChampagne
+                                  ? "mt-0.5 h-4 w-4 flex-none text-champagne-bright"
+                                  : "mt-0.5 h-4 w-4 flex-none text-moss-bright"
+                              }
+                            />
+                            <span>{f}</span>
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
                 );
               })}
             </div>
 
-            {/* Tier rationale row */}
+            {/* Tier rationale row — Independent + Enterprise champagne,
+                Professional keeps moss signature. */}
             <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-10 md:grid-cols-3">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-honey-bright">
+                <p className="text-xs font-semibold uppercase tracking-crest text-champagne-bright">
                   Independent — $397
                 </p>
                 <p className="mt-3 text-sm leading-[1.65] text-bone/60">
@@ -348,12 +358,12 @@ export default function PricingPage() {
                   All 33 engines on day one — including the Field Crew App PWA,
                   Client Portal, and the LRI Score. The same product the
                   $15M-revenue shops use, sized for a one-crew leak rate.
-                  See <a href="/platform" className="text-moss-bright hover:text-bone">/platform</a>{" "}
+                  See <a href="/platform" className="text-champagne-bright hover:text-bone">/platform</a>{" "}
                   for the full engine roster.
                 </p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright">
+                <p className="text-xs font-semibold uppercase tracking-crest text-moss-bright">
                   Professional — $997
                 </p>
                 <p className="mt-3 text-sm leading-[1.65] text-bone/60">
@@ -366,7 +376,7 @@ export default function PricingPage() {
                 </p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-honey-bright">
+                <p className="text-xs font-semibold uppercase tracking-crest text-champagne-bright">
                   Enterprise — $2,997
                 </p>
                 <p className="mt-3 text-sm leading-[1.65] text-bone/60">
@@ -375,7 +385,7 @@ export default function PricingPage() {
                   dedicated infrastructure on a private region. Named account
                   team plus a 24/7 hotline. SLA with credits when we miss it.
                   Review the security posture at{" "}
-                  <a href="/security" className="text-honey-bright hover:text-bone">
+                  <a href="/security" className="text-champagne-bright hover:text-bone">
                     /security
                   </a>
                   .
@@ -386,11 +396,11 @@ export default function PricingPage() {
         </section>
 
         {/* BDC Addon */}
-        <section className="border-t border-bone/5 bg-forest-mid py-28">
+        <section className="border-t border-bone/5 bg-slate-deep py-28">
           <div className="mx-auto max-w-7xl px-6">
             <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
               <div className="md:col-span-5">
-                <Pill tone="honey" className="mb-4">
+                <Pill tone="champagne" className="mb-4">
                   Optional addon
                 </Pill>
                 <h2 className="font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
@@ -404,7 +414,7 @@ export default function PricingPage() {
                     {BDC_ADDON.period}
                   </span>
                 </div>
-                <p className="mt-2 text-xs uppercase tracking-[0.2em] text-bone/40">
+                <p className="mt-2 text-xs uppercase tracking-crest text-bone/40">
                   Per company, not per crew
                 </p>
                 <a
@@ -416,7 +426,7 @@ export default function PricingPage() {
                 </a>
               </div>
               <div className="md:col-span-7">
-                <div className="rounded-2xl border border-honey/30 bg-bone/[0.02] p-8">
+                <div className="rounded-2xl border border-champagne/30 bg-bone/[0.02] p-8 shadow-pop-champagne">
                   <p className="text-base leading-[1.65] text-bone/70">
                     A Business Development Center is the inside-sales muscle
                     big operators have always had and small ones never could
@@ -424,7 +434,7 @@ export default function PricingPage() {
                     tier and gives you outbound coverage your competitors
                     aren&apos;t running.
                   </p>
-                  <p className="mt-4 text-sm leading-[1.65] text-honey-bright">
+                  <p className="mt-4 text-sm leading-[1.65] text-champagne-bright">
                     <span className="font-semibold">Cadence is included on
                     every plan</span>{" "}
                     — automated SMS, email, and NOAA-timed seasonal nudges.
@@ -438,7 +448,7 @@ export default function PricingPage() {
                   </p>
                   <ul className="mt-8 flex flex-col gap-5 text-sm leading-[1.65] text-bone/60">
                     <li className="flex gap-3">
-                      <CheckIcon className="mt-1 h-4 w-4 flex-none text-honey-bright" />
+                      <CheckIcon className="mt-1 h-4 w-4 flex-none text-champagne-bright" />
                       <span>
                         <span className="font-semibold text-bone">
                           Outbound winter service campaigns.
@@ -463,7 +473,7 @@ export default function PricingPage() {
                       </span>
                     </li>
                     <li className="flex gap-3">
-                      <CheckIcon className="mt-1 h-4 w-4 flex-none text-honey-bright" />
+                      <CheckIcon className="mt-1 h-4 w-4 flex-none text-champagne-bright" />
                       <span>
                         <span className="font-semibold text-bone">
                           Manned weekend phone coverage.
@@ -495,11 +505,12 @@ export default function PricingPage() {
           </div>
         </section>
 
-        {/* ROI walkthrough */}
+        {/* ROI walkthrough — featured cards rotate champagne accent
+            (heritage halo) instead of honey. */}
         <section className="py-28">
           <div className="mx-auto max-w-7xl px-6">
             <div className="mx-auto max-w-3xl text-center">
-              <Pill tone="moss" className="mb-3">
+              <Pill tone="champagne" className="mb-3">
                 The math
               </Pill>
               <h2 className="font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
@@ -510,20 +521,22 @@ export default function PricingPage() {
 
             <div className="mx-auto mt-16 grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {ROI_CARDS.map((card) => {
-                const isHoney = card.tone === "honey";
-                const cardCls = isHoney
-                  ? "rounded-2xl border border-honey/40 bg-gradient-to-b from-honey/10 to-transparent p-8 shadow-pop-honey"
+                // Treat the legacy "honey" tone as the featured / champagne
+                // halo card. "moss" stays the secondary, neutral card.
+                const isFeatured = card.tone === "honey";
+                const cardCls = isFeatured
+                  ? "rounded-2xl border border-champagne/40 bg-gradient-to-b from-champagne/10 to-transparent p-8 shadow-pop-champagne"
                   : "rounded-2xl border border-bone/10 bg-bone/[0.02] p-8";
-                const eyebrowCls = isHoney
-                  ? "text-xs font-semibold uppercase tracking-[0.2em] text-honey-bright"
-                  : "text-xs font-semibold uppercase tracking-[0.2em] text-bone/40";
-                const amountCls = isHoney
-                  ? "mt-4 font-mono text-5xl text-honey-bright"
+                const eyebrowCls = isFeatured
+                  ? "text-xs font-semibold uppercase tracking-crest text-champagne-bright"
+                  : "text-xs font-semibold uppercase tracking-crest text-bone/40";
+                const amountCls = isFeatured
+                  ? "mt-4 font-mono text-5xl text-champagne-bright"
                   : "mt-4 font-mono text-5xl text-moss-bright";
-                const cadenceCls = isHoney
+                const cadenceCls = isFeatured
                   ? "text-sm text-bone/60"
                   : "text-sm text-bone/40";
-                const bodyCls = isHoney
+                const bodyCls = isFeatured
                   ? "mt-6 text-sm leading-[1.65] text-bone/70"
                   : "mt-6 text-sm leading-[1.65] text-bone/60";
                 return (
@@ -546,9 +559,9 @@ export default function PricingPage() {
                 </span>{" "}
                 a year on a typical 2-crew Professional shop. Two crews at
                 $997 each is{" "}
-                <span className="font-mono text-honey-bright">$1,994</span>{" "}
+                <span className="font-mono text-champagne-bright">$1,994</span>{" "}
                 per month —{" "}
-                <span className="font-mono text-honey-bright">$23,928</span>{" "}
+                <span className="font-mono text-champagne-bright">$23,928</span>{" "}
                 per year. That math comes out to a{" "}
                 <span className="font-mono text-moss-bright">~70x</span>{" "}
                 annual payback before you touch QuickHook&apos;s
@@ -568,11 +581,13 @@ export default function PricingPage() {
           </div>
         </section>
 
-        {/* Platform tier breakdown */}
-        <section className="border-t border-bone/5 bg-forest-mid py-28">
+        {/* Platform tier breakdown — primarily champagne, alternating moss
+            so the row reads as a heritage gold sequence rather than a
+            honey/moss split. */}
+        <section className="border-t border-bone/5 bg-slate-deep py-28">
           <div className="mx-auto max-w-7xl px-6">
             <div className="mx-auto max-w-3xl text-center">
-              <Eyebrow tone="honey" className="mb-3">
+              <Eyebrow tone="champagne" className="mb-3">
                 Platform tier breakdown
               </Eyebrow>
               <h2 className="font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
@@ -585,16 +600,17 @@ export default function PricingPage() {
             </div>
 
             <div className="mx-auto mt-14 grid max-w-6xl grid-cols-1 gap-5 md:grid-cols-3 lg:grid-cols-5">
-              {ENGINE_TIERS.map((tier) => {
-                const isHoney = tier.accent === "honey";
-                const cardCls = isHoney
-                  ? "group flex h-full flex-col rounded-2xl border border-honey/30 bg-gradient-to-b from-honey/5 to-transparent p-6 transition-colors hover:border-honey-bright/60"
+              {ENGINE_TIERS.map((tier, idx) => {
+                // Champagne lead, moss every other slot for rhythm.
+                const isChampagne = idx % 2 === 0;
+                const cardCls = isChampagne
+                  ? "group flex h-full flex-col rounded-2xl border border-champagne/30 bg-gradient-to-b from-champagne/5 to-transparent p-6 transition-colors hover:border-champagne-bright/60"
                   : "group flex h-full flex-col rounded-2xl border border-moss/30 bg-gradient-to-b from-moss/5 to-transparent p-6 transition-colors hover:border-moss-bright/60";
-                const eyebrowCls = isHoney
-                  ? "text-[10px] font-semibold uppercase tracking-[0.18em] text-honey-bright"
-                  : "text-[10px] font-semibold uppercase tracking-[0.18em] text-moss-bright";
-                const countCls = isHoney
-                  ? "font-mono text-3xl text-honey-bright"
+                const eyebrowCls = isChampagne
+                  ? "text-[10px] font-semibold uppercase tracking-crest text-champagne-bright"
+                  : "text-[10px] font-semibold uppercase tracking-crest text-moss-bright";
+                const countCls = isChampagne
+                  ? "font-mono text-3xl text-champagne-bright"
                   : "font-mono text-3xl text-moss-bright";
                 return (
                   <a
@@ -622,15 +638,15 @@ export default function PricingPage() {
 
             <div className="mx-auto mt-12 max-w-3xl text-center text-sm text-bone/50">
               Field tooling lives at{" "}
-              <a href="/field" className="text-moss-bright hover:text-bone">
+              <a href="/field" className="text-champagne-bright hover:text-bone">
                 /field
               </a>
               . The benchmarking score lives at{" "}
-              <a href="/score" className="text-honey-bright hover:text-bone">
+              <a href="/score" className="text-moss-bright hover:text-bone">
                 /score
               </a>
               . Integrations live at{" "}
-              <a href="/integrations" className="text-moss-bright hover:text-bone">
+              <a href="/integrations" className="text-champagne-bright hover:text-bone">
                 /integrations
               </a>
               .
@@ -639,10 +655,10 @@ export default function PricingPage() {
         </section>
 
         {/* FAQ */}
-        <section className="border-t border-bone/5 bg-forest-deep py-28">
+        <section className="border-t border-bone/5 bg-obsidian py-28">
           <div className="mx-auto max-w-7xl px-6">
             <div className="mx-auto max-w-3xl text-center">
-              <Pill tone="moss" className="mb-3">
+              <Pill tone="champagne" className="mb-3">
                 Pricing FAQ
               </Pill>
               <h2 className="font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
@@ -654,11 +670,11 @@ export default function PricingPage() {
               {FAQ.map((f) => (
                 <details
                   key={f.q}
-                  className="group rounded-2xl border border-bone/10 bg-bone/[0.02] p-6 open:border-honey/30 open:bg-honey/[0.03]"
+                  className="group rounded-2xl border border-bone/10 bg-bone/[0.02] p-6 open:border-champagne/30 open:bg-champagne/[0.03]"
                 >
                   <summary className="flex cursor-pointer list-none items-start justify-between gap-4 text-bone font-medium">
                     <span>{f.q}</span>
-                    <span className="mt-1 flex-none text-honey-bright transition-transform group-open:rotate-45">
+                    <span className="mt-1 flex-none text-champagne-bright transition-transform group-open:rotate-45">
                       <svg
                         viewBox="0 0 16 16"
                         className="h-4 w-4"
@@ -684,9 +700,9 @@ export default function PricingPage() {
         </section>
 
         {/* Final CTA — talk to founders */}
-        <section className="relative overflow-hidden border-t border-bone/5 bg-forest-mid py-32">
+        <section className="relative overflow-hidden border-t border-bone/5 bg-slate-deep py-32">
           <div className="mx-auto max-w-4xl px-6 text-center">
-            <Pill tone="moss" className="mb-4">
+            <Pill tone="champagne" className="mb-4">
               Talk to founders
             </Pill>
             <h2 className="font-serif text-5xl tracking-[-0.02em] text-bone md:text-7xl">

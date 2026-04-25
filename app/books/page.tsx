@@ -32,7 +32,7 @@ type ChartSection = {
   name: string;
   description: string;
   examples: string[];
-  accent: "moss" | "honey";
+  accent: "moss" | "honey" | "champagne";
 };
 
 const CHART_OF_ACCOUNTS: ChartSection[] = [
@@ -42,7 +42,7 @@ const CHART_OF_ACCOUNTS: ChartSection[] = [
     description:
       "Every dollar your crew earns, broken out by service line so the owner sees which work is actually paying the bills.",
     examples: ["Mowing", "Fertilization", "Hardscape", "Snow & Ice", "Irrigation"],
-    accent: "moss",
+    accent: "champagne",
   },
   {
     number: "5100",
@@ -50,7 +50,7 @@ const CHART_OF_ACCOUNTS: ChartSection[] = [
     description:
       "Sod, seed, mulch, fert, paver, stone, plant. Every receipt photographed in the field is matched to the job that consumed it.",
     examples: ["Sod & Seed", "Mulch", "Fertilizer", "Plants", "Pavers & Stone"],
-    accent: "honey",
+    accent: "champagne",
   },
   {
     number: "5200",
@@ -58,7 +58,7 @@ const CHART_OF_ACCOUNTS: ChartSection[] = [
     description:
       "Crew wages flow in directly from Payroll — no double entry. Tagged by service line and by job for true margin reporting.",
     examples: ["Wages", "Payroll Taxes", "Workers' Comp", "Bonus & OT"],
-    accent: "moss",
+    accent: "champagne",
   },
   {
     number: "5300",
@@ -66,7 +66,7 @@ const CHART_OF_ACCOUNTS: ChartSection[] = [
     description:
       "Tree-removal crews, dumpster vendors, irrigation specialists. TINs collected at the first job; 1099-NEC issued by January 15.",
     examples: ["Tree Removal", "Specialty Plant", "Hauling", "Repair Crews"],
-    accent: "honey",
+    accent: "moss",
   },
   {
     number: "6100",
@@ -74,7 +74,7 @@ const CHART_OF_ACCOUNTS: ChartSection[] = [
     description:
       "Mowers, aerators, trailers, blowers. Capital purchases depreciate on a schedule; consumables expense in the month consumed.",
     examples: ["Mowers", "Hand Tools", "Trailers", "Repair & Maintenance"],
-    accent: "moss",
+    accent: "champagne",
   },
   {
     number: "6200",
@@ -82,7 +82,7 @@ const CHART_OF_ACCOUNTS: ChartSection[] = [
     description:
       "Per-vehicle mileage logs auto-generated from GPS. Fuel receipts photographed and matched to the truck that bought them.",
     examples: ["Fuel", "Insurance", "Mileage", "Tolls & Parking"],
-    accent: "honey",
+    accent: "champagne",
   },
   {
     number: "6300",
@@ -90,7 +90,7 @@ const CHART_OF_ACCOUNTS: ChartSection[] = [
     description:
       "Software, phone, marketing, professional fees. The boring overhead that quietly eats six points of margin.",
     examples: ["Software", "Marketing", "Insurance", "Professional Fees"],
-    accent: "moss",
+    accent: "champagne",
   },
   {
     number: "9000",
@@ -98,7 +98,7 @@ const CHART_OF_ACCOUNTS: ChartSection[] = [
     description:
       "The rest — interest income, gain on sale, owner draws, charitable contributions. Everything has a home; nothing lands in a 'misc' bucket.",
     examples: ["Interest", "Gain/Loss", "Owner Draws", "Charity"],
-    accent: "honey",
+    accent: "champagne",
   },
 ];
 
@@ -107,7 +107,7 @@ type Report = {
   blurb: string;
   bullets: string[];
   icon: typeof FileText;
-  accent: "moss" | "honey";
+  accent: "moss" | "honey" | "champagne";
 };
 
 const REPORTS: Report[] = [
@@ -121,7 +121,7 @@ const REPORTS: Report[] = [
       "Export to PDF or hand to your CPA in QBO format",
     ],
     icon: BarChart3,
-    accent: "moss",
+    accent: "champagne",
   },
   {
     name: "Balance Sheet",
@@ -133,7 +133,7 @@ const REPORTS: Report[] = [
       "Equipment depreciation schedule auto-maintained",
     ],
     icon: Wallet,
-    accent: "honey",
+    accent: "champagne",
   },
   {
     name: "Cash Flow Statement",
@@ -157,7 +157,7 @@ const REPORTS: Report[] = [
       "Past-year archives kept for the IRS' 4-year window",
     ],
     icon: Receipt,
-    accent: "honey",
+    accent: "champagne",
   },
   {
     name: "Schedule C / Schedule E",
@@ -169,7 +169,7 @@ const REPORTS: Report[] = [
       "Quarterly estimate reminders mailed to the owner",
     ],
     icon: Calculator,
-    accent: "moss",
+    accent: "champagne",
   },
   {
     name: "Sales Tax Filing",
@@ -181,7 +181,7 @@ const REPORTS: Report[] = [
       "Voucher-style export for jurisdictions still on paper",
     ],
     icon: Coins,
-    accent: "honey",
+    accent: "champagne",
   },
 ];
 
@@ -193,19 +193,19 @@ export default function BooksPage() {
       <Nav />
       <main>
         {/* Hero */}
-        <section className="relative overflow-hidden border-b border-bone/10 bg-forest-deep py-28 md:py-36">
+        <section className="relative overflow-hidden border-b border-bone/10 bg-obsidian py-28 md:py-36">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-x-0 top-1/2 -z-10 h-[700px] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(127,226,122,0.10),transparent_60%)]"
           />
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
-              <Eyebrow>Books · First-party</Eyebrow>
+              <Eyebrow tone="champagne">Books · First-party</Eyebrow>
             </ScrollReveal>
             <ScrollReveal delay={0.05}>
               <h1 className="mt-4 max-w-5xl font-serif text-5xl font-semibold leading-[1.05] tracking-[-0.02em] text-bone md:text-7xl">
                 QuickBooks integration is reactive.{" "}
-                <span className="text-moss-bright">
+                <span className="text-champagne-bright">
                   We built ours offensive.
                 </span>
               </h1>
@@ -240,15 +240,15 @@ export default function BooksPage() {
                 <CtaButton href="/demo" variant="primary" size="lg">
                   See Books on a 30-min demo
                 </CtaButton>
-                <CtaButton href="#data-spine" variant="ghost-honey" withArrow>
+                <CtaButton href="#data-spine" variant="ghost-champagne" withArrow>
                   Read the architecture
                 </CtaButton>
               </div>
             </ScrollReveal>
             <ScrollReveal delay={0.2}>
               <div className="mt-10 flex flex-wrap items-center gap-3">
-                <Pill tone="moss">Engine 28 · Books</Pill>
-                <Pill tone="honey">Engine 29 · Expense Brain</Pill>
+                <Pill tone="champagne">Engine 28 · Books</Pill>
+                <Pill tone="champagne">Engine 29 · Expense Brain</Pill>
                 <Pill tone="moss">Engine 31 · Tax Engine</Pill>
               </div>
             </ScrollReveal>
@@ -258,15 +258,15 @@ export default function BooksPage() {
         {/* Data spine */}
         <section
           id="data-spine"
-          className="border-b border-bone/10 bg-forest-mid py-28"
+          className="border-b border-bone/10 bg-slate-deep py-28"
         >
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="max-w-3xl">
-                <Eyebrow tone="honey">The data spine</Eyebrow>
+                <Eyebrow tone="champagne">The data spine</Eyebrow>
                 <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   Every paid invoice. Every Surplus sale.{" "}
-                  <span className="text-honey-bright">Every fuel receipt.</span>{" "}
+                  <span className="text-champagne-bright">Every fuel receipt.</span>{" "}
                   <span className="text-bone/55">One ledger.</span>
                 </h2>
                 <p className="mt-5 text-lg text-bone/60">
@@ -433,7 +433,7 @@ export default function BooksPage() {
                     </p>
                   </div>
                   <div>
-                    <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-honey-bright">
+                    <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-champagne-bright">
                       Ledger
                     </span>
                     <p className="mt-2">
@@ -444,7 +444,7 @@ export default function BooksPage() {
                     </p>
                   </div>
                   <div>
-                    <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-moss-bright">
+                    <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-champagne-bright">
                       Outputs
                     </span>
                     <p className="mt-2">
@@ -460,14 +460,14 @@ export default function BooksPage() {
         </section>
 
         {/* Chart of accounts */}
-        <section className="border-b border-bone/10 bg-forest-deep py-28">
+        <section className="border-b border-bone/10 bg-obsidian py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="max-w-3xl">
-                <Eyebrow>Chart of accounts</Eyebrow>
+                <Eyebrow tone="champagne">Chart of accounts</Eyebrow>
                 <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   Pre-built for the way{" "}
-                  <span className="text-moss-bright">landscape shops</span>{" "}
+                  <span className="text-champagne-bright">landscape shops</span>{" "}
                   actually book a dollar.
                 </h2>
                 <p className="mt-5 text-lg text-bone/60">
@@ -483,16 +483,30 @@ export default function BooksPage() {
             <div className="mt-16 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
               {CHART_OF_ACCOUNTS.map((s, i) => {
                 const accentText =
-                  s.accent === "honey" ? "text-honey-bright" : "text-moss-bright";
+                  s.accent === "honey"
+                    ? "text-honey-bright"
+                    : s.accent === "moss"
+                      ? "text-moss-bright"
+                      : "text-champagne-bright";
                 const accentBorder =
-                  s.accent === "honey" ? "border-honey/30" : "border-moss/30";
+                  s.accent === "honey"
+                    ? "border-honey/30"
+                    : s.accent === "moss"
+                      ? "border-moss/30"
+                      : "border-champagne/30";
+                const accentDot =
+                  s.accent === "honey"
+                    ? "bg-honey-bright"
+                    : s.accent === "moss"
+                      ? "bg-moss-bright"
+                      : "bg-champagne-bright";
                 return (
                   <ScrollReveal key={s.number} delay={(i % 4) * 0.05}>
                     <article
                       className={`flex h-full flex-col rounded-2xl border ${accentBorder} bg-bone/[0.02] p-6`}
                     >
                       <span
-                        className={`font-mono text-[10px] font-semibold uppercase tracking-[0.22em] ${accentText}`}
+                        className={`font-mono text-[10px] font-semibold uppercase tracking-crest ${accentText}`}
                       >
                         {s.number}
                       </span>
@@ -505,9 +519,7 @@ export default function BooksPage() {
                       <ul className="mt-5 space-y-1.5 border-t border-bone/10 pt-4 text-[12px] text-bone/70">
                         {s.examples.map((e) => (
                           <li key={e} className="flex items-center gap-2">
-                            <span
-                              className={`h-1 w-1 rounded-full ${s.accent === "honey" ? "bg-honey-bright" : "bg-moss-bright"}`}
-                            />
+                            <span className={`h-1 w-1 rounded-full ${accentDot}`} />
                             {e}
                           </li>
                         ))}
@@ -521,14 +533,14 @@ export default function BooksPage() {
         </section>
 
         {/* AI expense categorization */}
-        <section className="border-b border-bone/10 bg-forest-mid py-28">
+        <section className="border-b border-bone/10 bg-slate-deep py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="max-w-3xl">
-                <Eyebrow tone="honey">Expense Brain · Engine 29</Eyebrow>
+                <Eyebrow tone="champagne">Expense Brain · Engine 29</Eyebrow>
                 <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   Snap a receipt.{" "}
-                  <span className="text-honey-bright">
+                  <span className="text-champagne-bright">
                     Categorized in three seconds.
                   </span>
                 </h2>
@@ -546,7 +558,7 @@ export default function BooksPage() {
             <ScrollReveal delay={0.1}>
               <div className="mt-14 grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-center">
                 {/* Mock UI */}
-                <div className="rounded-2xl border border-bone/10 bg-forest-deep/60 p-6 shadow-pop md:p-8">
+                <div className="rounded-2xl border border-bone/10 bg-obsidian/60 p-6 shadow-pop md:p-8">
                   <div className="flex items-center gap-3 border-b border-bone/10 pb-4">
                     <div className="h-2.5 w-2.5 rounded-full bg-rose-400/80" />
                     <div className="h-2.5 w-2.5 rounded-full bg-amber-300/80" />
@@ -676,14 +688,14 @@ export default function BooksPage() {
         </section>
 
         {/* Reports & exports */}
-        <section className="border-b border-bone/10 bg-forest-deep py-28">
+        <section className="border-b border-bone/10 bg-obsidian py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="max-w-3xl">
-                <Eyebrow>Reports &amp; exports</Eyebrow>
+                <Eyebrow tone="champagne">Reports &amp; exports</Eyebrow>
                 <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   Every report your CPA wants.{" "}
-                  <span className="text-moss-bright">Live, not stale.</span>
+                  <span className="text-champagne-bright">Live, not stale.</span>
                 </h2>
                 <p className="mt-5 text-lg text-bone/60">
                   Reports are queries against the GL — not exports prepared
@@ -697,9 +709,23 @@ export default function BooksPage() {
             <div className="mt-16 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {REPORTS.map((r, i) => {
                 const accentText =
-                  r.accent === "honey" ? "text-honey-bright" : "text-moss-bright";
+                  r.accent === "honey"
+                    ? "text-honey-bright"
+                    : r.accent === "moss"
+                      ? "text-moss-bright"
+                      : "text-champagne-bright";
                 const accentBorder =
-                  r.accent === "honey" ? "border-honey/30" : "border-moss/30";
+                  r.accent === "honey"
+                    ? "border-honey/30"
+                    : r.accent === "moss"
+                      ? "border-moss/30"
+                      : "border-champagne/30";
+                const accentDot =
+                  r.accent === "honey"
+                    ? "bg-honey-bright"
+                    : r.accent === "moss"
+                      ? "bg-moss-bright"
+                      : "bg-champagne-bright";
                 const Icon = r.icon;
                 return (
                   <ScrollReveal key={r.name} delay={(i % 3) * 0.05}>
@@ -721,7 +747,7 @@ export default function BooksPage() {
                         {r.bullets.map((b) => (
                           <li key={b} className="flex items-start gap-2">
                             <span
-                              className={`mt-1.5 h-1 w-1 flex-none rounded-full ${r.accent === "honey" ? "bg-honey-bright" : "bg-moss-bright"}`}
+                              className={`mt-1.5 h-1 w-1 flex-none rounded-full ${accentDot}`}
                             />
                             {b}
                           </li>
@@ -736,15 +762,15 @@ export default function BooksPage() {
         </section>
 
         {/* Audit trail */}
-        <section className="border-b border-bone/10 bg-forest-mid py-28">
+        <section className="border-b border-bone/10 bg-slate-deep py-28">
           <div className="mx-auto max-w-7xl px-6">
             <div className="grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center">
               <ScrollReveal>
                 <div>
-                  <Eyebrow tone="honey">Audit trail</Eyebrow>
+                  <Eyebrow tone="champagne">Audit trail</Eyebrow>
                   <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                     Every entry sourced.{" "}
-                    <span className="text-honey-bright">
+                    <span className="text-champagne-bright">
                       Every entry auditable.
                     </span>
                   </h2>
@@ -765,7 +791,7 @@ export default function BooksPage() {
                       "Seven-year cold-storage retention by default",
                     ].map((b) => (
                       <li key={b} className="flex items-start gap-3">
-                        <Shield className="mt-0.5 h-4 w-4 flex-none text-honey-bright" />
+                        <Shield className="mt-0.5 h-4 w-4 flex-none text-champagne-bright" />
                         {b}
                       </li>
                     ))}
@@ -774,7 +800,7 @@ export default function BooksPage() {
               </ScrollReveal>
 
               <ScrollReveal delay={0.1}>
-                <div className="rounded-2xl border border-bone/10 bg-forest-deep/60 p-6 shadow-pop md:p-8">
+                <div className="rounded-2xl border border-bone/10 bg-obsidian/60 p-6 shadow-pop md:p-8">
                   <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-bone/45">
                     Audit log · MOW-1882
                   </div>
@@ -783,12 +809,12 @@ export default function BooksPage() {
                       {
                         t: "07:14 AM",
                         c: "Fuel receipt photographed · crew_id=04 · Truck-04",
-                        tone: "moss" as const,
+                        tone: "champagne" as const,
                       },
                       {
                         t: "07:14:02",
                         c: "Expense Brain parsed · Shell #4421 · $46.91 · 98.4%",
-                        tone: "honey" as const,
+                        tone: "champagne" as const,
                       },
                       {
                         t: "07:14:03",
@@ -798,26 +824,32 @@ export default function BooksPage() {
                       {
                         t: "11:42 AM",
                         c: "Job-cost rollup updated · Henderson margin=37.4%",
-                        tone: "honey" as const,
+                        tone: "champagne" as const,
                       },
                       {
                         t: "Apr 30",
                         c: "Period close · Q2-2026 GL frozen · approver=R.Gamon",
-                        tone: "moss" as const,
+                        tone: "champagne" as const,
                       },
-                    ].map((row) => (
-                      <li key={row.t} className="relative">
-                        <span
-                          className={`absolute -left-[26px] top-1.5 h-2 w-2 rounded-full ${row.tone === "honey" ? "bg-honey-bright" : "bg-moss-bright"}`}
-                        />
-                        <div className="text-bone/45">{row.t}</div>
-                        <div
-                          className={`mt-0.5 ${row.tone === "honey" ? "text-honey-bright/90" : "text-moss-bright/90"}`}
-                        >
-                          {row.c}
-                        </div>
-                      </li>
-                    ))}
+                    ].map((row) => {
+                      const dot =
+                        row.tone === "moss"
+                          ? "bg-moss-bright"
+                          : "bg-champagne-bright";
+                      const text =
+                        row.tone === "moss"
+                          ? "text-moss-bright/90"
+                          : "text-champagne-bright/90";
+                      return (
+                        <li key={row.t} className="relative">
+                          <span
+                            className={`absolute -left-[26px] top-1.5 h-2 w-2 rounded-full ${dot}`}
+                          />
+                          <div className="text-bone/45">{row.t}</div>
+                          <div className={`mt-0.5 ${text}`}>{row.c}</div>
+                        </li>
+                      );
+                    })}
                   </ol>
                 </div>
               </ScrollReveal>
@@ -826,14 +858,14 @@ export default function BooksPage() {
         </section>
 
         {/* Modules grid (from books-modules.ts, books surface) */}
-        <section className="border-b border-bone/10 bg-forest-deep py-28">
+        <section className="border-b border-bone/10 bg-obsidian py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="max-w-3xl">
-                <Eyebrow>Books modules</Eyebrow>
+                <Eyebrow tone="champagne">Books modules</Eyebrow>
                 <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   Five modules.{" "}
-                  <span className="text-moss-bright">One ledger.</span>
+                  <span className="text-champagne-bright">One ledger.</span>
                 </h2>
                 <p className="mt-5 text-lg text-bone/60">
                   Books ships as one engine, but the surface is broken into

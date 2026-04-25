@@ -24,6 +24,12 @@ const config: Config = {
       copper: "#C68A56",
       bone: "#F5F1E8",
       obsidian: "#0C0C0C",
+      pitch: "#050505",
+      "slate-deep": "#131512",
+      parchment: "#EAE3D2",
+      champagne: "#C9A87A",
+      "champagne-bright": "#D4B27A",
+      sage: "#7A9B72",
       paper: "#FAFAF7",
       stone: "#6B6B6B",
       white: "#FFFFFF",
@@ -57,6 +63,12 @@ const config: Config = {
         cta: "0 0 0 1px rgba(198,243,82,0.4), 0 20px 40px -12px rgba(198,243,82,0.6)",
         "cta-hover":
           "0 0 0 1px rgba(198,243,82,0.7), 0 24px 48px -12px rgba(198,243,82,0.8)",
+        "pop-champagne":
+          "0 0 0 1px rgba(201,168,122,0.25), 0 30px 80px -20px rgba(201,168,122,0.35)",
+        "cta-champagne":
+          "0 0 0 1px rgba(212,178,122,0.4), 0 20px 40px -12px rgba(212,178,122,0.5)",
+        "crest-glow":
+          "0 0 80px -20px rgba(157,255,138,0.15), 0 0 200px -40px rgba(201,168,122,0.2)",
         none: "none",
       },
       borderColor: {
@@ -77,6 +89,7 @@ const config: Config = {
       },
       letterSpacing: {
         tagline: "0.15em",
+        crest: "0.22em",
       },
       transitionTimingFunction: {
         "out-expo": "cubic-bezier(0.16, 1, 0.3, 1)",

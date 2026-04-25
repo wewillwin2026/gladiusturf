@@ -13,6 +13,12 @@
     --color-lime-bright: #D4FF4A;
     --color-bone: #F5F1E8;
     --color-obsidian: #0C0C0C;
+    --color-pitch: #050505;
+    --color-slate-deep: #131512;
+    --color-parchment: #EAE3D2;
+    --color-champagne: #C9A87A;
+    --color-champagne-bright: #D4B27A;
+    --color-sage: #7A9B72;
     --color-paper: #FAFAF7;
     --color-stone: #6B6B6B;
   }
@@ -21,11 +27,11 @@
     color-scheme: dark;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    background-color: var(--color-forest-deep);
+    background-color: var(--color-obsidian);
   }
 
   body {
-    background-color: var(--color-forest-deep);
+    background-color: var(--color-obsidian);
     color: var(--color-bone);
     font-family: var(--font-inter), system-ui, sans-serif;
     font-size: 16px;
@@ -34,12 +40,12 @@
   }
 
   ::selection {
-    background-color: var(--color-lime-bright);
-    color: var(--color-forest);
+    background-color: var(--color-champagne);
+    color: var(--color-pitch);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-lime-bright);
+    outline: 2px solid var(--color-champagne-bright);
     outline-offset: 2px;
     border-radius: 2px;
   }

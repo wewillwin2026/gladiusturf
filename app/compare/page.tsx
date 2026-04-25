@@ -476,6 +476,8 @@ const COMPETITORS: Competitor[] = [
   },
 ];
 
+// MarkCell — `highlight` = the GladiusTurf column (KEEPS moss-bright glow as
+// the signature trust marker). Other vendor ✓ marks switch to champagne.
 function MarkCell({
   value,
   highlight = false,
@@ -495,7 +497,9 @@ function MarkCell({
       >
         <Check
           className={
-            highlight ? "h-4 w-4 text-moss-bright" : "h-5 w-5 text-honey-bright"
+            highlight
+              ? "h-4 w-4 text-moss-bright"
+              : "h-5 w-5 text-champagne-bright"
           }
           strokeWidth={highlight ? 3 : 2.5}
         />
@@ -506,7 +510,7 @@ function MarkCell({
     return (
       <span
         aria-label="Partial"
-        className="inline-flex h-6 w-6 items-center justify-center text-[14px] font-semibold text-honey-bright/60"
+        className="inline-flex h-6 w-6 items-center justify-center text-[14px] font-semibold text-champagne-bright/60"
       >
         ~
       </span>
@@ -554,11 +558,11 @@ export default function ComparePage() {
   return (
     <>
       <Nav />
-      <main className="bg-forest-deep">
-        {/* Hero */}
-        <section className="border-b border-bone/10 bg-forest-deep">
+      <main className="bg-obsidian">
+        {/* Hero — pitch black stage */}
+        <section className="border-b border-bone/10 bg-pitch">
           <div className="mx-auto max-w-7xl px-6 py-28">
-            <Eyebrow tone="honey" className="mb-6">
+            <Eyebrow tone="champagne" className="mb-6">
               Compare · 33 engines
             </Eyebrow>
             <h1 className="max-w-5xl font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-6xl">
@@ -586,10 +590,10 @@ export default function ComparePage() {
         </section>
 
         {/* Feature comparison table */}
-        <section className="border-b border-bone/10 bg-forest-deep">
+        <section className="border-b border-bone/10 bg-obsidian">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <div className="mx-auto max-w-3xl text-center">
-              <Eyebrow tone="moss" className="mb-3">
+              <Eyebrow tone="champagne" className="mb-3">
                 Feature by feature
               </Eyebrow>
               <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
@@ -598,14 +602,14 @@ export default function ComparePage() {
               </h2>
               <p className="mt-4 text-lg text-bone/60">
                 Moss check in the GladiusTurf column means shipped and
-                supported. Honey check in a vendor column means they have it
-                too. Tilde means partial — the platform technically does it,
-                but not at the depth a serious landscape operator needs. Dim
-                minus means not available.
+                supported. Champagne check in a vendor column means they have
+                it too. Tilde means partial — the platform technically does
+                it, but not at the depth a serious landscape operator needs.
+                Dim minus means not available.
               </p>
             </div>
 
-            <div className="relative mt-14 rounded-2xl border border-bone/10 bg-forest-deep p-6 md:p-8">
+            <div className="relative mt-14 rounded-2xl border border-bone/10 bg-obsidian p-6 md:p-8">
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[860px] border-collapse">
                   <thead>
@@ -661,13 +665,18 @@ export default function ComparePage() {
                   </thead>
                   <tbody>
                     {FEATURE_SECTIONS.map((section, sectionIdx) => {
-                      const isHoneySection = sectionIdx % 2 === 1;
-                      const headerCls = isHoneySection
-                        ? "text-[10px] font-semibold uppercase tracking-[0.2em] text-honey-bright"
-                        : "text-[10px] font-semibold uppercase tracking-[0.2em] text-moss-bright";
+                      // Even sections lead champagne, odd sections moss —
+                      // tier section headers get champagne tinted backgrounds.
+                      const useChampagne = sectionIdx % 2 === 0;
+                      const headerCls = useChampagne
+                        ? "text-[10px] font-semibold uppercase tracking-crest text-champagne-bright"
+                        : "text-[10px] font-semibold uppercase tracking-crest text-moss-bright";
+                      const headerBg = useChampagne
+                        ? "bg-champagne/[0.05]"
+                        : "bg-bone/[0.05]";
                       return (
                         <Fragment key={section.tier}>
-                          <tr className="border-b border-bone/10 bg-bone/[0.05]">
+                          <tr className={`border-b border-bone/10 ${headerBg}`}>
                             <td colSpan={6} className="py-3 pr-6">
                               <div className="flex items-baseline gap-3">
                                 <span className={headerCls}>
@@ -734,7 +743,7 @@ export default function ComparePage() {
               {/* Mobile scroll affordance */}
               <div
                 aria-hidden
-                className="pointer-events-none absolute inset-y-6 right-6 w-12 rounded-r-2xl bg-gradient-to-l from-forest-deep to-transparent md:hidden"
+                className="pointer-events-none absolute inset-y-6 right-6 w-12 rounded-r-2xl bg-gradient-to-l from-obsidian to-transparent md:hidden"
               />
             </div>
             <p className="mt-3 text-center text-xs text-bone/40 md:hidden">
@@ -743,11 +752,12 @@ export default function ComparePage() {
           </div>
         </section>
 
-        {/* Beyond the matrix */}
-        <section className="border-b border-bone/10 bg-forest-mid">
+        {/* Beyond the matrix — left card moss (signature), right card
+            champagne (heritage halo). */}
+        <section className="border-b border-bone/10 bg-slate-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <div className="mx-auto max-w-3xl text-center">
-              <Eyebrow tone="honey" className="mb-3">
+              <Eyebrow tone="champagne" className="mb-3">
                 Beyond the matrix
               </Eyebrow>
               <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
@@ -774,8 +784,8 @@ export default function ComparePage() {
                   do not have these rows on their roadmap.
                 </p>
               </div>
-              <div className="rounded-2xl border border-honey/30 bg-gradient-to-b from-honey/10 to-transparent p-8">
-                <Eyebrow tone="honey" className="mb-4">
+              <div className="rounded-2xl border border-champagne/30 bg-gradient-to-b from-champagne/10 to-transparent p-8 shadow-pop-champagne">
+                <Eyebrow tone="champagne" className="mb-4">
                   Compounding intelligence
                 </Eyebrow>
                 <h3 className="font-serif text-2xl font-semibold text-bone">
@@ -796,11 +806,13 @@ export default function ComparePage() {
           </div>
         </section>
 
-        {/* Honest competitor reviews — alternating sections */}
-        <section className="border-b border-bone/10 bg-forest-deep">
+        {/* Honest competitor reviews — alternating sections.
+            Per-competitor accents alternate champagne / moss through the
+            6 competitors (champagne lead). */}
+        <section className="border-b border-bone/10 bg-obsidian">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <div className="mx-auto max-w-3xl text-center">
-              <Eyebrow tone="moss" className="mb-3">
+              <Eyebrow tone="champagne" className="mb-3">
                 Honest competitor reviews
               </Eyebrow>
               <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
@@ -817,29 +829,33 @@ export default function ComparePage() {
 
         {COMPETITORS.map((c, idx) => {
           const isAlt = idx % 2 === 1;
-          const isHoney = c.tone === "honey";
-          const migrationEyebrow = isHoney
-            ? "text-honey-bright"
+          // Champagne / moss / champagne / moss / champagne / moss
+          // through the six competitors (index drives, not legacy tone).
+          const useChampagne = idx % 2 === 0;
+          const migrationEyebrow = useChampagne
+            ? "text-champagne-bright"
             : "text-moss-bright";
-          const advantageBorder = isHoney
-            ? "border-honey/30 bg-gradient-to-b from-honey/5 to-transparent"
+          const advantageBorder = useChampagne
+            ? "border-champagne/30 bg-gradient-to-b from-champagne/5 to-transparent"
             : "border-moss/30 bg-gradient-to-b from-moss/5 to-transparent";
-          const advantageEyebrow = isHoney
-            ? "text-honey-bright"
+          const advantageEyebrow = useChampagne
+            ? "text-champagne-bright"
             : "text-moss-bright";
-          const checkColor = isHoney ? "text-honey-bright" : "text-moss-bright";
+          const checkColor = useChampagne
+            ? "text-champagne-bright"
+            : "text-moss-bright";
           return (
             <section
               key={c.name}
               className={`border-b border-bone/10 ${
-                isAlt ? "bg-forest-mid" : "bg-forest-deep"
+                isAlt ? "bg-slate-deep" : "bg-obsidian"
               }`}
             >
               <div className="mx-auto max-w-7xl px-6 py-28">
                 <div className="grid gap-10 md:grid-cols-2 md:gap-16">
                   {/* Left: competitor strengths */}
                   <div className={isAlt ? "md:order-2" : ""}>
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-bone/40">
+                    <p className="text-xs font-semibold uppercase tracking-crest text-bone/40">
                       {c.positioning}
                     </p>
                     <h3 className="mt-4 font-serif text-3xl font-semibold tracking-[-0.01em] text-bone md:text-4xl">
@@ -851,7 +867,7 @@ export default function ComparePage() {
 
                     <div className="mt-8 rounded-2xl border border-bone/10 bg-bone/[0.02] p-6">
                       <p
-                        className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${migrationEyebrow}`}
+                        className={`text-[11px] font-semibold uppercase tracking-crest ${migrationEyebrow}`}
                       >
                         Migration path
                       </p>
@@ -867,7 +883,7 @@ export default function ComparePage() {
                       className={`rounded-2xl border ${advantageBorder} p-6 md:p-8`}
                     >
                       <p
-                        className={`text-xs font-semibold uppercase tracking-[0.2em] ${advantageEyebrow}`}
+                        className={`text-xs font-semibold uppercase tracking-crest ${advantageEyebrow}`}
                       >
                         Where GladiusTurf is the better fit
                       </p>
@@ -897,11 +913,11 @@ export default function ComparePage() {
           );
         })}
 
-        {/* 30-day switch timeline */}
-        <section className="border-b border-bone/10 bg-forest-deep">
+        {/* 30-day switch timeline — alternate champagne / moss */}
+        <section className="border-b border-bone/10 bg-obsidian">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <div className="mx-auto max-w-3xl text-center">
-              <Eyebrow tone="moss" className="mb-3">
+              <Eyebrow tone="champagne" className="mb-3">
                 30-day switch
               </Eyebrow>
               <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
@@ -920,12 +936,12 @@ export default function ComparePage() {
 
             <div className="mt-14 flex flex-col gap-6 md:flex-row md:gap-4">
               {STEPS.map((s, i) => {
-                const isHoney = i % 2 === 1;
-                const dotCls = isHoney
-                  ? "bg-honey-bright/15 text-honey-bright ring-honey-bright/30"
+                const useChampagne = i % 2 === 0;
+                const dotCls = useChampagne
+                  ? "bg-champagne-bright/15 text-champagne-bright ring-champagne-bright/30"
                   : "bg-moss-bright/15 text-moss-bright ring-moss-bright/30";
-                const labelCls = isHoney
-                  ? "text-honey-bright"
+                const labelCls = useChampagne
+                  ? "text-champagne-bright"
                   : "text-moss-bright";
                 return (
                   <div
@@ -939,7 +955,7 @@ export default function ComparePage() {
                         {i + 1}
                       </span>
                       <p
-                        className={`font-mono text-[11px] font-semibold uppercase tracking-[0.18em] ${labelCls}`}
+                        className={`font-mono text-[11px] font-semibold uppercase tracking-crest ${labelCls}`}
                       >
                         {s.week}
                       </p>
@@ -958,10 +974,10 @@ export default function ComparePage() {
         </section>
 
         {/* Final CTA */}
-        <section className="bg-forest-mid">
+        <section className="bg-slate-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <div className="mx-auto max-w-3xl text-center">
-              <Eyebrow tone="moss" className="mb-3">
+              <Eyebrow tone="champagne" className="mb-3">
                 See it on your data
               </Eyebrow>
               <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
@@ -984,7 +1000,7 @@ export default function ComparePage() {
                 </a>
                 <a
                   href="/pricing"
-                  className="inline-flex items-center gap-2 rounded-lg border border-honey/40 px-6 py-3 text-sm font-semibold text-honey-bright transition-colors hover:bg-honey/10"
+                  className="inline-flex items-center gap-2 rounded-lg border border-champagne-bright/40 px-6 py-3 text-sm font-semibold text-champagne-bright transition-colors hover:bg-champagne/10"
                 >
                   Or see pricing →
                 </a>

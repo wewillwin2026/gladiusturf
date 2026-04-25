@@ -135,7 +135,7 @@ export default function SecurityPage() {
   return (
     <>
       <Nav />
-      <main className="bg-forest-deep">
+      <main className="bg-obsidian">
         {/* HERO */}
         <section className="relative overflow-hidden">
           <div
@@ -182,7 +182,7 @@ export default function SecurityPage() {
                 { value: "Every", label: "Action audit-logged" },
               ].map((s) => (
                 <div key={s.label}>
-                  <p className="font-mono text-3xl text-moss-bright md:text-4xl">
+                  <p className="font-mono text-3xl text-champagne-bright md:text-4xl">
                     {s.value}
                   </p>
                   <p className="mt-2 text-xs uppercase tracking-[0.18em] text-bone/50">
@@ -195,7 +195,7 @@ export default function SecurityPage() {
         </section>
 
         {/* PRINCIPLES */}
-        <section className="border-t border-bone/5 bg-forest-mid">
+        <section className="border-t border-bone/5 bg-slate-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <div className="max-w-3xl">
               <Eyebrow className="mb-6">Principles</Eyebrow>
@@ -207,9 +207,9 @@ export default function SecurityPage() {
             <ol className="mt-20 flex flex-col gap-6">
               {PRINCIPLES.map((p, i) => {
                 const numeralCls =
-                  (i + 1) % 2 === 1
+                  i === 0
                     ? "text-moss-bright/40"
-                    : "text-honey-bright/40";
+                    : "text-champagne-bright/40";
                 return (
                   <ScrollReveal key={p.headline} delay={i * 0.04}>
                     <li className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-8 md:p-10">
@@ -240,7 +240,7 @@ export default function SecurityPage() {
         <section className="border-t border-bone/5">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <div className="max-w-3xl">
-              <Eyebrow tone="honey" className="mb-6">
+              <Eyebrow tone="champagne" className="mb-6">
                 Auth
               </Eyebrow>
               <h2 className="font-serif text-4xl tracking-[-0.01em] leading-[1.1] text-bone md:text-5xl">
@@ -257,7 +257,7 @@ export default function SecurityPage() {
               {AUTH_CARDS.map((c, i) => {
                 const Icon = c.icon;
                 const tone =
-                  i % 2 === 0 ? "text-moss-bright" : "text-honey-bright";
+                  i === 0 ? "text-moss-bright" : "text-champagne-bright";
                 return (
                   <div
                     key={c.headline}
@@ -278,7 +278,7 @@ export default function SecurityPage() {
         </section>
 
         {/* DATA ISOLATION */}
-        <section className="border-t border-bone/5 bg-forest-mid">
+        <section className="border-t border-bone/5 bg-slate-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <div className="max-w-3xl">
               <Eyebrow className="mb-6">Isolation</Eyebrow>
@@ -295,7 +295,7 @@ export default function SecurityPage() {
                   It is set once at row-creation time inside a transactional
                   hook and never moves.
                 </p>
-                <ul className="flex flex-col gap-4 border-l border-moss/30 pl-6">
+                <ul className="flex flex-col gap-4 border-l border-champagne/30 pl-6">
                   <li>
                     <span className="font-mono text-xs uppercase tracking-[0.2em] text-moss-bright">
                       Layer 1 — database
@@ -308,7 +308,7 @@ export default function SecurityPage() {
                     </p>
                   </li>
                   <li>
-                    <span className="font-mono text-xs uppercase tracking-[0.2em] text-honey-bright">
+                    <span className="font-mono text-xs uppercase tracking-[0.2em] text-champagne-bright">
                       Layer 2 — API
                     </span>
                     <p className="mt-1">
@@ -319,7 +319,7 @@ export default function SecurityPage() {
                     </p>
                   </li>
                   <li>
-                    <span className="font-mono text-xs uppercase tracking-[0.2em] text-moss-bright">
+                    <span className="font-mono text-xs uppercase tracking-[0.2em] text-champagne-bright">
                       Layer 3 — tests
                     </span>
                     <p className="mt-1">
@@ -332,7 +332,7 @@ export default function SecurityPage() {
                 </ul>
               </div>
 
-              <div className="rounded-2xl border border-bone/10 bg-forest-deep/60 p-8 md:p-10">
+              <div className="rounded-2xl border border-bone/10 bg-obsidian/60 p-8 md:p-10">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-bone/50">
                   Request lifecycle
                 </p>
@@ -350,8 +350,8 @@ export default function SecurityPage() {
                   <div className="mx-auto h-6 w-px bg-bone/15" aria-hidden />
 
                   {/* tRPC */}
-                  <div className="rounded-xl border border-honey/30 bg-honey/[0.06] px-5 py-4">
-                    <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-honey-bright">
+                  <div className="rounded-xl border border-champagne/30 bg-champagne/[0.06] px-5 py-4">
+                    <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-champagne-bright">
                       Layer 2 — tRPC middleware
                     </p>
                     <p className="mt-1 text-sm text-bone/80">
@@ -373,7 +373,7 @@ export default function SecurityPage() {
 
                   {/* Tenants */}
                   <div className="mt-8 grid grid-cols-2 gap-4">
-                    <div className="rounded-xl border border-moss-bright/30 bg-forest-deep/40 p-5 text-center">
+                    <div className="rounded-xl border border-moss-bright/30 bg-obsidian/40 p-5 text-center">
                       <Database
                         className="mx-auto h-6 w-6 text-moss-bright"
                         aria-hidden
@@ -383,12 +383,12 @@ export default function SecurityPage() {
                       </p>
                       <p className="mt-1 text-sm text-bone/70">ACME crew</p>
                     </div>
-                    <div className="rounded-xl border border-honey-bright/30 bg-forest-deep/40 p-5 text-center">
+                    <div className="rounded-xl border border-champagne-bright/30 bg-obsidian/40 p-5 text-center">
                       <Database
-                        className="mx-auto h-6 w-6 text-honey-bright"
+                        className="mx-auto h-6 w-6 text-champagne-bright"
                         aria-hidden
                       />
-                      <p className="mt-3 font-mono text-xs uppercase tracking-[0.18em] text-honey-bright">
+                      <p className="mt-3 font-mono text-xs uppercase tracking-[0.18em] text-champagne-bright">
                         Tenant B
                       </p>
                       <p className="mt-1 text-sm text-bone/70">Banner Lawn</p>
@@ -407,7 +407,7 @@ export default function SecurityPage() {
         <section className="border-t border-bone/5">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <div className="max-w-3xl">
-              <Eyebrow tone="honey" className="mb-6">
+              <Eyebrow tone="champagne" className="mb-6">
                 Compliance
               </Eyebrow>
               <h2 className="font-serif text-4xl tracking-[-0.01em] leading-[1.1] text-bone md:text-5xl">
@@ -429,14 +429,14 @@ export default function SecurityPage() {
                     ? Clock
                     : AlertTriangle;
                 const iconCls = isDone
-                  ? "text-moss-bright"
+                  ? "text-champagne-bright"
                   : isInProgress
-                    ? "text-honey-bright"
+                    ? "text-moss-bright"
                     : "text-bone/50";
                 const labelCls = isDone
-                  ? "text-moss-bright"
+                  ? "text-champagne-bright"
                   : isInProgress
-                    ? "text-honey-bright"
+                    ? "text-moss-bright"
                     : "text-bone/50";
                 return (
                   <div
@@ -460,9 +460,9 @@ export default function SecurityPage() {
                           <span
                             className={`mt-2 inline-block h-1.5 w-1.5 flex-none rounded-full ${
                               isDone
-                                ? "bg-moss-bright"
+                                ? "bg-champagne-bright"
                                 : isInProgress
-                                  ? "bg-honey-bright"
+                                  ? "bg-moss-bright"
                                   : "bg-bone/30"
                             }`}
                             aria-hidden
@@ -487,7 +487,7 @@ export default function SecurityPage() {
         </section>
 
         {/* DISCLOSURE */}
-        <section className="border-t border-bone/5 bg-forest-mid">
+        <section className="border-t border-bone/5 bg-slate-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <div className="grid gap-16 md:grid-cols-2 md:gap-20">
               <div>
@@ -518,14 +518,14 @@ export default function SecurityPage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-honey/30 bg-honey/[0.05] p-8 md:p-10">
-                <Lock className="h-7 w-7 text-honey-bright" aria-hidden />
+              <div className="rounded-2xl border border-champagne/30 bg-champagne/[0.05] p-8 md:p-10 shadow-pop-champagne">
+                <Lock className="h-7 w-7 text-champagne-bright" aria-hidden />
                 <p className="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-bone/50">
                   Security inbox
                 </p>
                 <a
                   href="mailto:security@gladiusturf.com"
-                  className="mt-3 block break-all font-mono text-2xl text-honey-bright transition-colors hover:text-bone md:text-3xl"
+                  className="mt-3 block break-all font-mono text-2xl text-champagne-bright transition-colors hover:text-bone md:text-3xl"
                 >
                   security@gladiusturf.com
                 </a>
@@ -549,15 +549,15 @@ export default function SecurityPage() {
                   </p>
                   <ul className="mt-3 flex flex-col gap-2 text-sm text-bone/70">
                     <li>
-                      <span className="font-mono text-honey-bright">24h</span>{" "}
+                      <span className="font-mono text-champagne-bright">24h</span>{" "}
                       — initial human response
                     </li>
                     <li>
-                      <span className="font-mono text-honey-bright">72h</span>{" "}
+                      <span className="font-mono text-champagne-bright">72h</span>{" "}
                       — triage decision
                     </li>
                     <li>
-                      <span className="font-mono text-honey-bright">7d</span>{" "}
+                      <span className="font-mono text-champagne-bright">7d</span>{" "}
                       — remediation timeline
                     </li>
                   </ul>
@@ -571,7 +571,7 @@ export default function SecurityPage() {
         <section className="border-t border-bone/5">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <div className="max-w-3xl">
-              <Eyebrow tone="honey" className="mb-6">
+              <Eyebrow tone="champagne" className="mb-6">
                 Legal
               </Eyebrow>
               <h2 className="font-serif text-4xl tracking-[-0.01em] leading-[1.1] text-bone md:text-5xl">
@@ -594,7 +594,7 @@ export default function SecurityPage() {
                   <div className="flex items-start gap-4">
                     <FileText
                       className={`h-6 w-6 flex-none ${
-                        i % 2 === 0 ? "text-moss-bright" : "text-honey-bright"
+                        i === 0 ? "text-moss-bright" : "text-champagne-bright"
                       }`}
                       aria-hidden
                     />
@@ -607,7 +607,7 @@ export default function SecurityPage() {
                   </div>
                   <a
                     href={doc.href}
-                    className="inline-flex items-center gap-2 rounded-full border border-moss/40 px-5 py-2.5 text-sm font-semibold text-moss-bright transition-all hover:border-moss-bright hover:bg-moss/10"
+                    className="inline-flex items-center gap-2 rounded-full border border-champagne-bright/40 px-5 py-2.5 text-sm font-semibold text-champagne-bright transition-all hover:border-champagne-bright hover:bg-champagne/10"
                   >
                     Request →
                   </a>
@@ -618,7 +618,7 @@ export default function SecurityPage() {
               All available pre-purchase. Email{" "}
               <a
                 href="mailto:legal@gladiusturf.com"
-                className="text-honey-bright transition-colors hover:text-bone"
+                className="text-champagne-bright transition-colors hover:text-bone"
               >
                 legal@gladiusturf.com
               </a>{" "}

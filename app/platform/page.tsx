@@ -288,15 +288,16 @@ export default function PlatformPage() {
     <>
       <Nav />
       <main>
-        {/* Hero */}
-        <section className="relative overflow-hidden border-b border-bone/10 bg-forest-deep py-28 md:py-36">
+        {/* Hero — true black stage; the marquee H1 emphasis word KEEPS moss
+            (one of the strategic moss-bright spots per spec). */}
+        <section className="relative overflow-hidden border-b border-bone/10 bg-pitch py-28 md:py-36">
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-1/2 -z-10 h-[700px] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(157,255,138,0.10),transparent_60%)]"
+            className="pointer-events-none absolute inset-x-0 top-1/2 -z-10 h-[700px] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(201,168,122,0.12),transparent_60%)]"
           />
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
-              <Eyebrow>Platform</Eyebrow>
+              <Eyebrow tone="champagne">Platform</Eyebrow>
             </ScrollReveal>
             <ScrollReveal delay={0.05}>
               <h1 className="mt-4 max-w-5xl font-serif text-5xl font-semibold leading-[1.05] tracking-[-0.02em] text-bone md:text-7xl">
@@ -333,7 +334,7 @@ export default function PlatformPage() {
                 </CtaButton>
                 <CtaButton
                   href="#architecture"
-                  variant="ghost-honey"
+                  variant="ghost-champagne"
                   withArrow
                 >
                   Read the architecture
@@ -343,18 +344,19 @@ export default function PlatformPage() {
           </div>
         </section>
 
-        {/* Architecture */}
+        {/* Architecture — 3-layer card grid: rotate champagne / moss /
+            champagne per spec. */}
         <section
           id="architecture"
-          className="border-b border-bone/10 bg-forest-mid py-28"
+          className="border-b border-bone/10 bg-slate-deep py-28"
         >
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="max-w-3xl">
-                <Eyebrow>Architecture</Eyebrow>
+                <Eyebrow tone="champagne">Architecture</Eyebrow>
                 <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   One platform.{" "}
-                  <span className="text-moss-bright">Three layers.</span>{" "}
+                  <span className="text-champagne-bright">Three layers.</span>{" "}
                   <span className="text-bone/55">Zero glue code.</span>
                 </h2>
                 <p className="mt-5 text-lg text-bone/60">
@@ -369,25 +371,24 @@ export default function PlatformPage() {
 
             <div className="mt-16 grid gap-6 lg:grid-cols-3">
               {LAYERS.map((layer, i) => {
-                const accentText =
-                  layer.accent === "honey"
-                    ? "text-honey-bright"
-                    : "text-moss-bright";
-                const accentBorder =
-                  layer.accent === "honey"
-                    ? "border-honey/30"
-                    : "border-moss/30";
-                const accentDot =
-                  layer.accent === "honey"
-                    ? "bg-honey-bright"
-                    : "bg-moss-bright";
+                // Rotate champagne / moss / champagne across the three layers.
+                const useChampagne = i % 2 === 0;
+                const accentText = useChampagne
+                  ? "text-champagne-bright"
+                  : "text-moss-bright";
+                const accentBorder = useChampagne
+                  ? "border-champagne/30"
+                  : "border-moss/30";
+                const accentDot = useChampagne
+                  ? "bg-champagne-bright"
+                  : "bg-moss-bright";
                 return (
                   <ScrollReveal key={layer.name} delay={i * 0.08}>
                     <article
                       className={`relative h-full rounded-2xl border ${accentBorder} bg-gradient-to-b from-bone/[0.04] to-transparent p-8`}
                     >
                       <span
-                        className={`font-mono text-[10px] font-semibold uppercase tracking-[0.22em] ${accentText}`}
+                        className={`font-mono text-[10px] font-semibold uppercase tracking-crest ${accentText}`}
                       >
                         {layer.index}
                       </span>
@@ -420,15 +421,18 @@ export default function PlatformPage() {
           </div>
         </section>
 
-        {/* Primitives */}
-        <section className="border-b border-bone/10 bg-forest-deep py-28">
+        {/* Primitives — all champagne accents per spec (infrastructure, not
+            marquee). */}
+        <section className="border-b border-bone/10 bg-obsidian py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="max-w-3xl">
-                <Eyebrow tone="honey">Primitives</Eyebrow>
+                <Eyebrow tone="champagne">Primitives</Eyebrow>
                 <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   Built on{" "}
-                  <span className="text-honey-bright">serious infrastructure.</span>
+                  <span className="text-champagne-bright">
+                    serious infrastructure.
+                  </span>
                 </h2>
                 <p className="mt-5 text-lg text-bone/60">
                   Eight production primitives — the same ones that run every
@@ -442,11 +446,11 @@ export default function PlatformPage() {
             <div className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {PRIMITIVES.map((p, i) => (
                 <ScrollReveal key={p.name} delay={(i % 4) * 0.05}>
-                  <article className="flex h-full flex-col rounded-2xl border border-bone/10 bg-bone/[0.02] p-7 transition-colors hover:border-bone/20">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-moss/20 bg-moss/5 text-moss-bright">
+                  <article className="flex h-full flex-col rounded-2xl border border-bone/10 bg-bone/[0.02] p-7 transition-colors hover:border-champagne/20">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-champagne/20 bg-champagne/5 text-champagne-bright">
                       {p.icon}
                     </div>
-                    <span className="mt-5 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-bone/40">
+                    <span className="mt-5 font-mono text-[10px] font-semibold uppercase tracking-crest text-bone/40">
                       {p.category}
                     </span>
                     <h3 className="mt-1 font-serif text-xl font-semibold tracking-tight text-bone">
@@ -462,12 +466,14 @@ export default function PlatformPage() {
           </div>
         </section>
 
-        {/* AI Architecture */}
-        <section className="border-b border-bone/10 bg-forest-mid py-28">
+        {/* AI Architecture — 4 cards alternate champagne / moss / champagne /
+            moss. ONE winner card keeps shadow-pop (moss halo, signature),
+            another gets shadow-pop-champagne. */}
+        <section className="border-b border-bone/10 bg-slate-deep py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="max-w-3xl">
-                <Eyebrow>AI</Eyebrow>
+                <Eyebrow tone="champagne">AI</Eyebrow>
                 <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   <span className="text-moss-bright">Self-improving,</span>{" "}
                   every night.
@@ -483,24 +489,26 @@ export default function PlatformPage() {
 
             <div className="mt-16 grid gap-6 md:grid-cols-2">
               {AI_CARDS.map((c, i) => {
-                const accentText =
-                  c.accent === "honey"
-                    ? "text-honey-bright"
-                    : "text-moss-bright";
-                const accentBorder =
-                  c.accent === "honey"
-                    ? "border-honey/40"
-                    : "border-moss/40";
-                const featured = i === 0 || i === 3;
+                // Alternate champagne/moss across the four cards.
+                const useChampagne = i % 2 === 0;
+                const accentText = useChampagne
+                  ? "text-champagne-bright"
+                  : "text-moss-bright";
+                const accentBorder = useChampagne
+                  ? "border-champagne/40"
+                  : "border-moss/40";
+                // Card 0 = champagne halo (heritage). Card 3 = the ONE moss
+                // halo signature (the most-magical winner card).
+                const champagneHalo = i === 0;
+                const mossHalo = i === 3;
+                const cls = champagneHalo
+                  ? `relative h-full rounded-2xl border ${accentBorder} bg-gradient-to-b from-champagne/10 to-transparent p-8 shadow-pop-champagne`
+                  : mossHalo
+                    ? `relative h-full rounded-2xl border ${accentBorder} bg-gradient-to-b from-moss/10 to-transparent p-8 shadow-pop`
+                    : `relative h-full rounded-2xl border border-bone/10 bg-bone/[0.02] p-8`;
                 return (
                   <ScrollReveal key={c.name} delay={(i % 2) * 0.08}>
-                    <article
-                      className={
-                        featured
-                          ? `relative h-full rounded-2xl border ${accentBorder} bg-gradient-to-b from-moss/10 to-transparent p-8 shadow-pop`
-                          : `relative h-full rounded-2xl border border-bone/10 bg-bone/[0.02] p-8`
-                      }
-                    >
+                    <article className={cls}>
                       <div
                         className={`flex h-10 w-10 items-center justify-center rounded-xl border ${accentBorder} bg-bone/[0.03] ${accentText}`}
                       >
@@ -524,14 +532,14 @@ export default function PlatformPage() {
         </section>
 
         {/* Integrations */}
-        <section className="border-b border-bone/10 bg-forest-deep py-28">
+        <section className="border-b border-bone/10 bg-obsidian py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="max-w-3xl">
-                <Eyebrow tone="honey">Integrations</Eyebrow>
+                <Eyebrow tone="champagne">Integrations</Eyebrow>
                 <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   Plays with the stack you{" "}
-                  <span className="text-honey-bright">
+                  <span className="text-champagne-bright">
                     already pay for.
                   </span>
                 </h2>
@@ -563,16 +571,16 @@ export default function PlatformPage() {
                           item.tag === "Native"
                             ? "border-moss/40 bg-moss/10 text-moss-bright"
                             : item.tag === "API"
-                              ? "border-honey/30 bg-honey/5 text-honey-bright"
+                              ? "border-champagne/30 bg-champagne/5 text-champagne-bright"
                               : "border-bone/15 bg-bone/[0.03] text-bone/55";
                         return (
                           <span
                             key={item.name}
-                            className="inline-flex items-center gap-2 rounded-full border border-bone/10 bg-forest-deep/40 px-3 py-1.5 text-[13px] text-bone/85"
+                            className="inline-flex items-center gap-2 rounded-full border border-bone/10 bg-obsidian/60 px-3 py-1.5 text-[13px] text-bone/85"
                           >
                             <span className="font-medium">{item.name}</span>
                             <span
-                              className={`rounded-full border px-2 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-[0.16em] ${tagCls}`}
+                              className={`rounded-full border px-2 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-crest ${tagCls}`}
                             >
                               {item.tag}
                             </span>
@@ -599,15 +607,15 @@ export default function PlatformPage() {
           </div>
         </section>
 
-        {/* Security & Compliance */}
-        <section className="border-b border-bone/10 bg-forest-mid py-28">
+        {/* Security & Compliance — heritage champagne accent */}
+        <section className="border-b border-bone/10 bg-slate-deep py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="max-w-3xl">
-                <Eyebrow>Security</Eyebrow>
+                <Eyebrow tone="champagne">Security</Eyebrow>
                 <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   Multi-tenant by design.{" "}
-                  <span className="text-moss-bright">
+                  <span className="text-champagne-bright">
                     Audit-ready by default.
                   </span>
                 </h2>
@@ -625,7 +633,7 @@ export default function PlatformPage() {
               {SECURITY.map((s, i) => (
                 <ScrollReveal key={s.name} delay={(i % 4) * 0.05}>
                   <article className="flex h-full flex-col rounded-2xl border border-bone/10 bg-bone/[0.02] p-7">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-moss/20 bg-moss/5 text-moss-bright">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-champagne/20 bg-champagne/5 text-champagne-bright">
                       {s.icon}
                     </div>
                     <h3 className="mt-5 font-serif text-lg font-semibold tracking-tight text-bone">
@@ -653,12 +661,12 @@ export default function PlatformPage() {
           </div>
         </section>
 
-        {/* Performance & Scale */}
-        <section className="border-b border-bone/10 bg-forest-deep py-28">
+        {/* Performance & Scale — alternate champagne / moss / champagne. */}
+        <section className="border-b border-bone/10 bg-obsidian py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="max-w-3xl">
-                <Eyebrow tone="honey">Performance</Eyebrow>
+                <Eyebrow tone="champagne">Performance</Eyebrow>
                 <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   Built for the floor,{" "}
                   <span className="text-bone/55">
@@ -677,14 +685,14 @@ export default function PlatformPage() {
 
             <div className="mt-16 grid gap-6 md:grid-cols-3">
               {PERF_STATS.map((stat, i) => {
-                const accentText =
-                  stat.accent === "honey"
-                    ? "text-honey-bright"
-                    : "text-moss-bright";
-                const accentBorder =
-                  stat.accent === "honey"
-                    ? "border-honey/30"
-                    : "border-moss/30";
+                // Alternate: 0 champagne, 1 moss, 2 champagne.
+                const useChampagne = i % 2 === 0;
+                const accentText = useChampagne
+                  ? "text-champagne-bright"
+                  : "text-moss-bright";
+                const accentBorder = useChampagne
+                  ? "border-champagne/30"
+                  : "border-moss/30";
                 return (
                   <ScrollReveal key={stat.label} delay={i * 0.08}>
                     <article
@@ -695,7 +703,7 @@ export default function PlatformPage() {
                       >
                         {stat.value}
                       </div>
-                      <div className="mt-4 text-sm font-semibold uppercase tracking-[0.18em] text-bone/85">
+                      <div className="mt-4 text-sm font-semibold uppercase tracking-crest text-bone/85">
                         {stat.label}
                       </div>
                       <p className="mt-3 text-[13px] leading-[1.6] text-bone/55">
@@ -709,9 +717,9 @@ export default function PlatformPage() {
 
             <ScrollReveal delay={0.2}>
               <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
-                <Pill tone="moss">99.95% uptime SLO</Pill>
-                <Pill tone="honey">Vercel Edge · Railway workers</Pill>
-                <Pill tone="moss">Postgres 16 · multi-AZ</Pill>
+                <Pill tone="champagne">99.95% uptime SLO</Pill>
+                <Pill tone="moss">Vercel Edge · Railway workers</Pill>
+                <Pill tone="champagne">Postgres 16 · multi-AZ</Pill>
                 <Pill tone="honey">Grafana · Sentry · OpenTelemetry</Pill>
               </div>
             </ScrollReveal>

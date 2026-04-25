@@ -612,16 +612,33 @@ function IconChevronRight({ className }: IconProps) {
 
 // ─── Local helpers ─────────────────────────────────────────────────
 
-function tierAccent(accent: EngineTier["accent"]) {
-  return accent === "honey" ? "text-honey-bright" : "text-moss-bright";
+// Heritage palette tier rotation: champagne → moss → champagne → moss → champagne
+// across the five tiers in display order (Revenue, Lifecycle, Intelligence,
+// Operations, Marketplace).
+const TIER_ROTATION: Record<EngineTier["slug"], "champagne" | "moss"> = {
+  revenue: "champagne",
+  lifecycle: "moss",
+  intelligence: "champagne",
+  operations: "moss",
+  marketplace: "champagne",
+};
+
+function tierTone(slug: EngineTier["slug"]): "champagne" | "moss" {
+  return TIER_ROTATION[slug];
+}
+
+function tierAccentText(slug: EngineTier["slug"]) {
+  return tierTone(slug) === "champagne"
+    ? "text-champagne-bright"
+    : "text-moss-bright";
 }
 
 function tierBg(slug: EngineTier["slug"]) {
-  // Per spec: Revenue + Intelligence + Marketplace = forest-deep,
-  // Lifecycle + Operations = forest-mid.
+  // Heritage: alternate true black with warm charcoal. Lifecycle + Operations
+  // get the warm charcoal "stage" so the layout still rhythm-shifts visually.
   return slug === "lifecycle" || slug === "operations"
-    ? "bg-forest-mid"
-    : "bg-forest-deep";
+    ? "bg-slate-deep"
+    : "bg-obsidian";
 }
 
 // ─── Page ──────────────────────────────────────────────────────────
@@ -630,13 +647,13 @@ export default function ProductPage() {
   return (
     <>
       <Nav />
-      <main className="bg-forest-deep">
-        {/* 1. Hero */}
-        <section className="relative overflow-hidden border-b border-bone/5 bg-forest-deep">
+      <main className="bg-obsidian">
+        {/* 1. Hero — true black stage for the crest */}
+        <section className="relative overflow-hidden border-b border-bone/5 bg-pitch">
           <TopographicBg />
           <div className="relative mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
-              <Pill tone="honey">The product</Pill>
+              <Pill tone="champagne">The product</Pill>
               <h1 className="mt-6 max-w-5xl font-serif text-5xl tracking-[-0.02em] text-bone md:text-7xl">
                 Thirty-three engines.{" "}
                 <span className="text-moss-bright">Five tiers.</span>{" "}
@@ -651,7 +668,7 @@ export default function ProductPage() {
                 <CtaButton href="/demo" variant="primary" size="lg">
                   Book a demo
                 </CtaButton>
-                <CtaButton href="/pricing" variant="ghost-honey" size="lg">
+                <CtaButton href="/pricing" variant="ghost-champagne" size="lg">
                   See pricing →
                 </CtaButton>
               </div>
@@ -660,10 +677,10 @@ export default function ProductPage() {
         </section>
 
         {/* 2. Tier overview band */}
-        <section className="border-b border-bone/5 bg-forest-mid">
+        <section className="border-b border-bone/5 bg-slate-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
-              <Eyebrow tone="moss">Five tiers</Eyebrow>
+              <Eyebrow tone="champagne">Five tiers</Eyebrow>
               <h2 className="mt-4 max-w-3xl font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
                 Engines aren&rsquo;t features.{" "}
                 <span className="text-bone/40">They&rsquo;re a vertical.</span>
@@ -679,9 +696,10 @@ export default function ProductPage() {
 
             <div className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-5">
               {ENGINE_TIERS.map((tier, idx) => {
-                const isHoney = tier.accent === "honey";
-                const accentBorder = isHoney
-                  ? "hover:border-honey/40"
+                const tone = tierTone(tier.slug);
+                const isChampagne = tone === "champagne";
+                const accentBorder = isChampagne
+                  ? "hover:border-champagne/40"
                   : "hover:border-moss/40";
                 return (
                   <ScrollReveal key={tier.slug} delay={idx * 0.05}>
@@ -690,7 +708,7 @@ export default function ProductPage() {
                       className={`block h-full rounded-2xl border border-bone/10 bg-bone/[0.02] p-5 transition-colors ${accentBorder}`}
                     >
                       <p
-                        className={`font-mono text-[10px] uppercase tracking-[0.2em] ${tierAccent(tier.accent)}`}
+                        className={`font-mono text-[10px] uppercase tracking-crest ${tierAccentText(tier.slug)}`}
                       >
                         {String(idx + 1).padStart(2, "0")} ·{" "}
                         {TIER_ENGINE_COUNTS[tier.slug] ?? 0} engines
@@ -713,7 +731,11 @@ export default function ProductPage() {
         {ENGINE_TIERS.map((tier) => {
           const tierEngines = ENGINES_FULL.filter((e) => e.tier === tier.slug);
           const bg = tierBg(tier.slug);
-          const accentTextCls = tierAccent(tier.accent);
+          const tone = tierTone(tier.slug);
+          const accentTextCls = tierAccentText(tier.slug);
+          // Each tier eyebrow rotates per the spec; within the tier the engines
+          // alternate champagne/moss starting from the tier's lead tone.
+          const tierEyebrowTone: "champagne" | "moss" = tone;
           return (
             <section
               key={tier.slug}
@@ -725,14 +747,14 @@ export default function ProductPage() {
                 <ScrollReveal>
                   <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
                     <div>
-                      <Eyebrow tone={tier.accent === "honey" ? "honey" : "moss"}>
+                      <Eyebrow tone={tierEyebrowTone}>
                         {tier.name} tier
                       </Eyebrow>
                       <h2 className="mt-4 font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
                         {tier.tagline}
                       </h2>
                       <p
-                        className={`mt-4 font-mono text-[11px] uppercase tracking-[0.2em] ${accentTextCls}`}
+                        className={`mt-4 font-mono text-[11px] uppercase tracking-crest ${accentTextCls}`}
                       >
                         {tierEngines.length}{" "}
                         {tierEngines.length === 1 ? "engine" : "engines"}
@@ -746,12 +768,17 @@ export default function ProductPage() {
 
                 <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-2">
                   {tierEngines.map((engine, i) => {
-                    const useMoss = i % 2 === 0;
-                    const engineAccentCls = useMoss
-                      ? "text-moss-bright"
-                      : "text-honey-bright";
+                    // Within the tier, even-index = tier's lead tone,
+                    // odd-index = the other tone.
+                    const useTierTone = i % 2 === 0;
+                    const useChampagne =
+                      (tone === "champagne" && useTierTone) ||
+                      (tone === "moss" && !useTierTone);
+                    const engineAccentCls = useChampagne
+                      ? "text-champagne-bright"
+                      : "text-moss-bright";
+                    const dotChampagne = "bg-champagne-bright";
                     const dotMoss = "bg-moss-bright";
-                    const dotHoney = "bg-honey-bright";
                     return (
                       <ScrollReveal key={engine.slug} delay={i * 0.04}>
                         <article
@@ -767,9 +794,9 @@ export default function ProductPage() {
                             </span>
                             <span
                               className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 font-mono text-[11px] ${
-                                useMoss
-                                  ? "border-moss/30 bg-moss/5 text-moss-bright"
-                                  : "border-honey/30 bg-honey/5 text-honey-bright"
+                                useChampagne
+                                  ? "border-champagne/30 bg-champagne/5 text-champagne-bright"
+                                  : "border-moss/30 bg-moss/5 text-moss-bright"
                               }`}
                             >
                               {engine.outcome}
@@ -783,7 +810,8 @@ export default function ProductPage() {
                           </p>
                           <ul className="mt-6 space-y-3">
                             {engine.features.map((f, fi) => {
-                              const featureMoss = fi % 2 === 0;
+                              // Even = champagne, odd = moss (heritage default)
+                              const dotChamp = fi % 2 === 0;
                               return (
                                 <li
                                   key={f}
@@ -792,7 +820,7 @@ export default function ProductPage() {
                                   <span
                                     aria-hidden="true"
                                     className={`mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full ${
-                                      featureMoss ? dotMoss : dotHoney
+                                      dotChamp ? dotChampagne : dotMoss
                                     }`}
                                   />
                                   <span>{f}</span>
@@ -810,10 +838,10 @@ export default function ProductPage() {
           );
         })}
 
-        {/* 4. Architecture spine band */}
+        {/* 4. Architecture spine band — engines grid main h2 accent KEEPS moss */}
         <section
           id="architecture"
-          className="border-b border-bone/5 bg-forest-deep"
+          className="border-b border-bone/5 bg-obsidian"
         >
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
@@ -838,7 +866,7 @@ export default function ProductPage() {
                 {SPINE_STEPS.map((s, idx) => (
                   <div key={s.step} className="flex items-center gap-2">
                     <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] px-4 py-2 text-center">
-                      <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-bone/40">
+                      <p className="font-mono text-[10px] uppercase tracking-crest text-bone/40">
                         Step {String(idx + 1).padStart(2, "0")}
                       </p>
                       <p className="mt-1 font-serif text-base text-bone">
@@ -846,7 +874,7 @@ export default function ProductPage() {
                       </p>
                     </div>
                     {idx < SPINE_STEPS.length - 1 && (
-                      <IconChevronRight className="h-4 w-4 text-honey-bright" />
+                      <IconChevronRight className="h-4 w-4 text-champagne-bright" />
                     )}
                   </div>
                 ))}
@@ -858,7 +886,7 @@ export default function ProductPage() {
               {SPINE_STEPS.map((s, idx) => (
                 <ScrollReveal key={s.step} delay={idx * 0.04}>
                   <div className="h-full rounded-2xl border border-bone/10 bg-bone/[0.02] p-5">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-moss-bright">
+                    <p className="font-mono text-[10px] uppercase tracking-crest text-champagne-bright">
                       Step {String(idx + 1).padStart(2, "0")}
                     </p>
                     <h3 className="mt-2 font-serif text-xl text-bone">
@@ -866,7 +894,8 @@ export default function ProductPage() {
                     </h3>
                     <ul className="mt-4 space-y-1.5">
                       {s.engines.map((eng, ei) => {
-                        const dotMoss = ei % 2 === 0;
+                        // Even = champagne, odd = moss (heritage default)
+                        const dotChamp = ei % 2 === 0;
                         return (
                           <li
                             key={eng}
@@ -875,7 +904,9 @@ export default function ProductPage() {
                             <span
                               aria-hidden="true"
                               className={`mt-1.5 inline-block h-1 w-1 shrink-0 rounded-full ${
-                                dotMoss ? "bg-moss-bright" : "bg-honey-bright"
+                                dotChamp
+                                  ? "bg-champagne-bright"
+                                  : "bg-moss-bright"
                               }`}
                             />
                             <span>{eng}</span>
@@ -898,14 +929,15 @@ export default function ProductPage() {
         </section>
 
         {/* 5. Platform primitives */}
-        <section className="border-b border-bone/5 bg-forest-mid">
+        <section className="border-b border-bone/5 bg-slate-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
               <div className="mx-auto max-w-3xl text-center">
-                <Eyebrow tone="honey">Platform primitives</Eyebrow>
+                <Eyebrow tone="champagne">Platform primitives</Eyebrow>
                 <h2 className="mt-4 font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
                   The boring tech that makes{" "}
-                  <span className="text-honey-bright">the magic</span> possible.
+                  <span className="text-champagne-bright">the magic</span>{" "}
+                  possible.
                 </h2>
                 <p className="mt-6 text-lg leading-[1.6] text-bone/60">
                   We don&rsquo;t reinvent infra. We pick the best vendor in
@@ -918,12 +950,12 @@ export default function ProductPage() {
             <ul className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               {PRIMITIVES.map((p, i) => (
                 <ScrollReveal key={p.name} delay={i * 0.04}>
-                  <li className="h-full rounded-2xl border border-bone/10 bg-bone/[0.02] p-6 transition-colors hover:border-honey/30">
+                  <li className="h-full rounded-2xl border border-bone/10 bg-bone/[0.02] p-6 transition-colors hover:border-champagne/30">
                     <p
-                      className={`font-mono text-xs uppercase tracking-[0.2em] ${
+                      className={`font-mono text-xs uppercase tracking-crest ${
                         i % 2 === 0
-                          ? "text-moss-bright"
-                          : "text-honey-bright"
+                          ? "text-champagne-bright"
+                          : "text-moss-bright"
                       }`}
                     >
                       {p.name}

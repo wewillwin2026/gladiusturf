@@ -14,12 +14,21 @@ export function PricingTier({ tier }: { tier: Tier }) {
       )}
     >
       {tier.featured && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-lime-bright px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-forest-deep">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-lime-bright px-3 py-1 text-[10px] font-bold uppercase tracking-crest text-forest">
           Most popular
         </div>
       )}
 
-      <h3 className="font-serif text-2xl font-semibold text-bone">
+      <p
+        className={cn(
+          "text-[11px] font-semibold uppercase tracking-crest",
+          tier.featured ? "text-moss-bright" : "text-champagne-bright"
+        )}
+      >
+        {tier.id}
+      </p>
+
+      <h3 className="mt-2 font-serif text-2xl font-semibold text-bone">
         {tier.name}
       </h3>
       <p className="mt-2 text-sm leading-[1.5] text-bone/60">{tier.tagline}</p>
@@ -30,7 +39,12 @@ export function PricingTier({ tier }: { tier: Tier }) {
         </span>
         <span className="text-sm text-bone/50">{tier.period}</span>
       </div>
-      <p className="mt-1 text-xs text-bone/50">
+      <p
+        className={cn(
+          "mt-1 text-xs",
+          tier.featured ? "text-moss-bright/60" : "text-bone/50"
+        )}
+      >
         Unlimited seats. Cancel anytime after month 3.
       </p>
 
@@ -40,7 +54,7 @@ export function PricingTier({ tier }: { tier: Tier }) {
           "mt-8 inline-flex items-center justify-center gap-1.5 rounded-full py-3 text-sm font-semibold transition-all",
           tier.featured
             ? "bg-lime-bright text-forest-deep shadow-cta hover:bg-lime hover:shadow-cta-hover"
-            : "border border-bone/15 text-bone hover:border-moss/40 hover:bg-bone/5"
+            : "border border-champagne-bright/40 text-champagne-bright hover:border-champagne-bright hover:bg-champagne/10"
         )}
       >
         {tier.cta}
@@ -48,15 +62,27 @@ export function PricingTier({ tier }: { tier: Tier }) {
       </Link>
 
       <ul className="mt-8 flex flex-col gap-3">
-        {tier.features.map((f) => (
-          <li
-            key={f}
-            className="flex items-start gap-2.5 text-sm leading-[1.5] text-bone/80"
-          >
-            <Check className="mt-0.5 h-4 w-4 flex-none text-moss-bright" />
-            <span>{f}</span>
-          </li>
-        ))}
+        {tier.features.map((f, i) => {
+          // Alternate check icon color by index: even = champagne, odd = moss.
+          // For the featured (Professional) tier, we keep the dominant moss
+          // accent stronger so the marquee tier reads moss-first.
+          const checkCls = tier.featured
+            ? i % 2 === 0
+              ? "text-moss-bright"
+              : "text-champagne-bright"
+            : i % 2 === 0
+              ? "text-champagne-bright"
+              : "text-moss-bright";
+          return (
+            <li
+              key={f}
+              className="flex items-start gap-2.5 text-sm leading-[1.5] text-bone/80"
+            >
+              <Check className={cn("mt-0.5 h-4 w-4 flex-none", checkCls)} />
+              <span>{f}</span>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

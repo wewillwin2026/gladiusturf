@@ -38,7 +38,7 @@ type Category = {
   title: string;
   intro: string;
   icon: typeof DollarSign;
-  tone: "moss" | "honey";
+  tone: "moss" | "honey" | "champagne";
   bg: "deep" | "mid";
   items: Integration[];
 };
@@ -51,7 +51,7 @@ const CATEGORIES: Category[] = [
     intro:
       "Books are the one place you can't afford a migration scare. We sync your invoices, payments, customers, and items two ways — so the GL your accountant has been reconciling for a decade keeps reconciling.",
     icon: DollarSign,
-    tone: "moss",
+    tone: "champagne",
     bg: "deep",
     items: [
       {
@@ -93,7 +93,7 @@ const CATEGORIES: Category[] = [
     intro:
       "Aspire, LMN, Jobber, Service Autopilot, Real Green, Arborgold, HindSite. Whatever you ran for the last decade, your customers, properties, contracts, and route history come over — usually in 48 hours, never with a 'data corruption fee.'",
     icon: Database,
-    tone: "honey",
+    tone: "moss",
     bg: "mid",
     items: [
       {
@@ -153,7 +153,7 @@ const CATEGORIES: Category[] = [
     intro:
       "GPS, dispatch, telematics. We pipe crew location into the Field Crew App so dispatch decisions are based on where the truck actually is, not where someone said it would be at 7am.",
     icon: Truck,
-    tone: "moss",
+    tone: "champagne",
     bg: "deep",
     items: [
       {
@@ -195,7 +195,7 @@ const CATEGORIES: Category[] = [
     intro:
       "Every inbound call recorded, transcribed, scored. Every outbound SMS routed through dynamic numbers so you can attribute lead source down to the postcard. The communications stack is where Quote Intercept, Cadence, and Ghost Recovery live.",
     icon: Phone,
-    tone: "honey",
+    tone: "champagne",
     bg: "mid",
     items: [
       {
@@ -231,7 +231,7 @@ const CATEGORIES: Category[] = [
     intro:
       "Stripe Connect runs your customer charges, your subscription billing, and your Surplus Yard marketplace payouts on a single rail. One reconciliation, one tax engine, one dashboard.",
     icon: DollarSign,
-    tone: "moss",
+    tone: "champagne",
     bg: "deep",
     items: [
       {
@@ -261,7 +261,7 @@ const CATEGORIES: Category[] = [
     intro:
       "Claude does the deep reasoning — call scoring, upsell detection, complaint triage. Embeddings power WinMemory's semantic store so a foreman's note from 2023 surfaces when a similar property gets quoted in 2026. NOAA and Google Maps round out the spatial intelligence.",
     icon: Brain,
-    tone: "honey",
+    tone: "moss",
     bg: "mid",
     items: [
       {
@@ -297,7 +297,7 @@ const CATEGORIES: Category[] = [
     intro:
       "Lead source attribution and cost tracking, with a privacy-first analytics stack. We don't drop a third-party cookie on your customers — and we don't need to.",
     icon: Mail,
-    tone: "moss",
+    tone: "champagne",
     bg: "deep",
     items: [
       {
@@ -324,8 +324,8 @@ const CATEGORIES: Category[] = [
 
 const STATUS_STYLES: Record<IntegrationStatus, string> = {
   Native:
-    "border-moss/40 bg-moss/10 text-moss-bright",
-  API: "border-honey/40 bg-honey/10 text-honey-bright",
+    "border-champagne/40 bg-champagne/10 text-champagne-bright",
+  API: "border-moss/40 bg-moss/10 text-moss-bright",
   CSV: "border-bone/15 bg-bone/[0.04] text-bone/60",
   Coming: "border-bone/10 bg-bone/[0.02] text-stone",
 };
@@ -348,15 +348,20 @@ function IntegrationTile({
 }: {
   item: Integration;
   Icon: typeof DollarSign;
-  tone: "moss" | "honey";
+  tone: "moss" | "honey" | "champagne";
 }) {
-  const accent = tone === "honey" ? "text-honey-bright" : "text-moss-bright";
+  const accent =
+    tone === "honey"
+      ? "text-honey-bright"
+      : tone === "moss"
+        ? "text-moss-bright"
+        : "text-champagne-bright";
   return (
     <div className="flex h-full flex-col gap-4 rounded-2xl border border-bone/10 bg-bone/[0.02] p-6">
       <div className="flex items-start justify-between gap-3">
         <span
           aria-hidden
-          className={`flex h-10 w-10 flex-none items-center justify-center rounded-xl border border-bone/10 bg-forest-deep ${accent}`}
+          className={`flex h-10 w-10 flex-none items-center justify-center rounded-xl border border-bone/10 bg-obsidian ${accent}`}
         >
           <Icon className="h-5 w-5" />
         </span>
@@ -374,13 +379,13 @@ export default function IntegrationsPage() {
   return (
     <>
       <Nav />
-      <main className="bg-forest-deep text-bone">
+      <main className="bg-obsidian text-bone">
         {/* Hero */}
         <section className="py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="mx-auto max-w-4xl text-center">
-                <Pill tone="moss" className="mb-5">
+                <Pill tone="champagne" className="mb-5">
                   <Plug className="h-3 w-3" />
                   Integrations
                 </Pill>
@@ -407,15 +412,15 @@ export default function IntegrationsPage() {
             <ScrollReveal delay={0.1}>
               <div className="mx-auto mt-14 flex max-w-3xl flex-col items-center justify-center gap-3 rounded-2xl border border-bone/10 bg-bone/[0.02] px-6 py-5 font-mono text-sm text-bone/70 sm:flex-row sm:gap-8">
                 <span>
-                  <span className="text-moss-bright">32</span> integrations
+                  <span className="text-champagne-bright">32</span> integrations
                 </span>
                 <span aria-hidden className="hidden h-4 w-px bg-bone/10 sm:block" />
                 <span>
-                  <span className="text-moss-bright">4</span> native
+                  <span className="text-champagne-bright">4</span> native
                 </span>
                 <span aria-hidden className="hidden h-4 w-px bg-bone/10 sm:block" />
                 <span>
-                  <span className="text-honey-bright">28</span> via API / CSV
+                  <span className="text-moss-bright">28</span> via API / CSV
                 </span>
               </div>
             </ScrollReveal>
@@ -427,8 +432,8 @@ export default function IntegrationsPage() {
           const Icon = cat.icon;
           const bgCls =
             cat.bg === "mid"
-              ? "border-t border-bone/5 bg-forest-mid"
-              : "border-t border-bone/5 bg-forest-deep";
+              ? "border-t border-bone/5 bg-slate-deep"
+              : "border-t border-bone/5 bg-obsidian";
           return (
             <section key={cat.id} className={`${bgCls} py-28`}>
               <div className="mx-auto max-w-7xl px-6">
@@ -464,11 +469,11 @@ export default function IntegrationsPage() {
         })}
 
         {/* API band */}
-        <section className="border-t border-bone/5 bg-forest-mid py-28">
+        <section className="border-t border-bone/5 bg-slate-deep py-28">
           <div className="mx-auto max-w-7xl px-6">
             <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
               <ScrollReveal className="md:col-span-5">
-                <Eyebrow tone="honey" className="mb-3">
+                <Eyebrow tone="champagne" className="mb-3">
                   API
                 </Eyebrow>
                 <h2 className="font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
@@ -487,9 +492,9 @@ export default function IntegrationsPage() {
                 </p>
                 <p className="mt-4 text-base leading-[1.65] text-bone/60">
                   Authenticated with API keys plus per-key scopes. Rate-limited
-                  at <span className="font-mono text-honey-bright">100/min</span>{" "}
+                  at <span className="font-mono text-champagne-bright">100/min</span>{" "}
                   on Pro and{" "}
-                  <span className="font-mono text-honey-bright">1000/min</span>{" "}
+                  <span className="font-mono text-champagne-bright">1000/min</span>{" "}
                   on Enterprise. Sandbox keys are free and unlimited.
                 </p>
                 <div className="mt-8 flex flex-wrap items-center gap-4">
@@ -505,7 +510,7 @@ export default function IntegrationsPage() {
               </ScrollReveal>
 
               <ScrollReveal className="md:col-span-7" delay={0.1}>
-                <div className="overflow-hidden rounded-2xl border border-bone/10 bg-forest-deep shadow-pop">
+                <div className="overflow-hidden rounded-2xl border border-bone/10 bg-obsidian shadow-pop">
                   <div className="flex items-center justify-between border-b border-bone/10 px-5 py-3">
                     <div className="flex items-center gap-1.5">
                       <span className="h-2.5 w-2.5 rounded-full bg-honey-bright/80" />
@@ -520,17 +525,17 @@ export default function IntegrationsPage() {
                     <code>
                       <span className="text-stone">{`// install: npm i @gladiusturf/sdk`}</span>
                       {"\n"}
-                      <span className="text-honey-bright">import</span>
+                      <span className="text-champagne-bright">import</span>
                       <span> {"{"} </span>
                       <span className="text-moss-bright">GladiusTurf</span>
                       <span> {"}"} </span>
-                      <span className="text-honey-bright">from</span>
+                      <span className="text-champagne-bright">from</span>
                       <span className="text-bone"> {`"@gladiusturf/sdk"`}</span>
                       <span>;</span>
                       {"\n\n"}
-                      <span className="text-honey-bright">const</span>
+                      <span className="text-champagne-bright">const</span>
                       <span> gt = </span>
-                      <span className="text-honey-bright">new</span>
+                      <span className="text-champagne-bright">new</span>
                       <span> </span>
                       <span className="text-moss-bright">GladiusTurf</span>
                       <span>{`({`}</span>
@@ -548,9 +553,9 @@ export default function IntegrationsPage() {
                       {"\n"}
                       <span>{`});`}</span>
                       {"\n\n"}
-                      <span className="text-honey-bright">const</span>
+                      <span className="text-champagne-bright">const</span>
                       <span> customer = </span>
-                      <span className="text-honey-bright">await</span>
+                      <span className="text-champagne-bright">await</span>
                       <span> gt.customers.</span>
                       <span className="text-lime-bright">create</span>
                       <span>{`({`}</span>
@@ -594,7 +599,7 @@ export default function IntegrationsPage() {
         </section>
 
         {/* Migration help band */}
-        <section className="border-t border-bone/5 bg-forest-deep py-28">
+        <section className="border-t border-bone/5 bg-obsidian py-28">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="mx-auto max-w-3xl text-center">
@@ -629,9 +634,9 @@ export default function IntegrationsPage() {
                     screen-shared, founder-led.
                   </p>
                 </div>
-                <div className="rounded-2xl border border-honey/40 bg-gradient-to-b from-honey/10 to-transparent p-6 shadow-pop-honey">
+                <div className="rounded-2xl border border-champagne/40 bg-gradient-to-b from-champagne/10 to-transparent p-6 shadow-pop-champagne">
                   <div className="flex items-center gap-3">
-                    <span className="font-mono text-xs uppercase tracking-[0.2em] text-honey-bright">
+                    <span className="font-mono text-xs uppercase tracking-[0.2em] text-champagne-bright">
                       Day 3
                     </span>
                   </div>
@@ -664,7 +669,7 @@ export default function IntegrationsPage() {
 
             <ScrollReveal delay={0.2}>
               <p className="mx-auto mt-12 max-w-2xl text-center text-sm leading-[1.65] text-bone/60">
-                <Sparkles className="mr-1.5 inline h-3.5 w-3.5 text-honey-bright" />
+                <Sparkles className="mr-1.5 inline h-3.5 w-3.5 text-champagne-bright" />
                 Free for every plan. White-glove for Enterprise — named
                 project manager, custom integrations, multi-location
                 rollout.
@@ -674,10 +679,10 @@ export default function IntegrationsPage() {
         </section>
 
         {/* Final CTA */}
-        <section className="relative overflow-hidden border-t border-bone/5 bg-forest-mid py-32">
+        <section className="relative overflow-hidden border-t border-bone/5 bg-slate-deep py-32">
           <div className="mx-auto max-w-4xl px-6 text-center">
             <ScrollReveal>
-              <Pill tone="honey" className="mb-5">
+              <Pill tone="champagne" className="mb-5">
                 Bring it
               </Pill>
               <h2 className="font-serif text-5xl tracking-[-0.02em] text-bone md:text-7xl">

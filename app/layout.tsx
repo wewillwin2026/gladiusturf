@@ -38,12 +38,17 @@ export const metadata: Metadata = {
     title: "GladiusTurf — Landscaping Revenue Intelligence",
     description:
       "Seven revenue engines for landscape crew owners. Flat per-crew pricing. Not a CRM.",
-    images: ["/og/home.png"],
+    images: [{ url: "/crest.png", width: 600, height: 800 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "GladiusTurf — Landscaping Revenue Intelligence",
     description: "Seven revenue engines. Flat per-crew pricing. Not a CRM.",
+    images: ["/crest.png"],
+  },
+  icons: {
+    icon: "/crest.png",
+    apple: "/crest.png",
   },
   robots: { index: true, follow: true },
 };

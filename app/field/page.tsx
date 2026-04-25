@@ -31,14 +31,14 @@ function PhoneFrame({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative mx-auto w-full max-w-[320px]">
       {/* outer phone shell */}
-      <div className="rounded-[44px] border border-bone/15 bg-forest-deep p-3 shadow-pop">
-        <div className="rounded-[34px] border border-bone/10 bg-forest-mid p-1">
+      <div className="rounded-[44px] border border-bone/15 bg-obsidian p-3 shadow-pop">
+        <div className="rounded-[34px] border border-bone/10 bg-slate-deep p-1">
           {/* notch */}
           <div className="relative flex h-6 items-center justify-center">
             <div className="h-1 w-16 rounded-full bg-bone/20" />
           </div>
           {/* screen */}
-          <div className="overflow-hidden rounded-[28px] bg-forest-deep">
+          <div className="overflow-hidden rounded-[28px] bg-obsidian">
             {children}
           </div>
         </div>
@@ -90,8 +90,8 @@ function HeroPhoneMock() {
           </div>
         </div>
 
-        <div className="mt-3 rounded-xl border border-honey/20 bg-honey/5 p-3">
-          <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-honey-bright">
+        <div className="mt-3 rounded-xl border border-champagne/20 bg-champagne/5 p-3">
+          <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-champagne-bright">
             Today
           </p>
           <p className="mt-0.5 text-xs text-bone">12 of 47 jobs · on pace</p>
@@ -308,7 +308,7 @@ function PhotoGridMock({
   ];
   const ringTone =
     tone === "before"
-      ? "border-honey/30 text-honey-bright"
+      ? "border-champagne/30 text-champagne-bright"
       : "border-moss/40 text-moss-bright";
   return (
     <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-4">
@@ -332,7 +332,7 @@ function PhotoGridMock({
               <span className="font-mono text-[8px] uppercase tracking-[0.18em] text-bone/30">
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <span className="text-[10px] text-honey-bright">{c}</span>
+              <span className="text-[10px] text-champagne-bright">{c}</span>
             </div>
           </div>
         ))}
@@ -376,7 +376,7 @@ function SiteMemoryMock() {
           </p>
           <p className="text-xs text-bone/55">1428 Magnolia Ridge Rd</p>
         </div>
-        <span className="rounded-full border border-honey/30 bg-honey/5 px-2.5 py-0.5 font-mono text-[10px] text-honey-bright">
+        <span className="rounded-full border border-champagne/30 bg-champagne/5 px-2.5 py-0.5 font-mono text-[10px] text-champagne-bright">
           14 notes
         </span>
       </div>
@@ -445,7 +445,7 @@ function SignoffMock() {
       </ul>
 
       {/* signature canvas */}
-      <div className="mt-4 rounded-xl border border-bone/15 bg-forest-mid p-4">
+      <div className="mt-4 rounded-xl border border-bone/15 bg-slate-deep p-4">
         <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-bone/40">
           Customer Signature
         </p>
@@ -475,12 +475,12 @@ function SignoffMock() {
         </p>
       </div>
 
-      <div className="mt-4 flex items-center justify-between rounded-xl border border-honey/30 bg-honey/[0.06] px-4 py-3">
+      <div className="mt-4 flex items-center justify-between rounded-xl border border-champagne/30 bg-champagne/[0.06] px-4 py-3">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-honey-bright">
+          <p className="font-mono text-[10px] uppercase tracking-crest text-champagne-bright">
             Total
           </p>
-          <p className="mt-0.5 font-serif text-lg text-bone">$487.50</p>
+          <p className="mt-0.5 font-serif text-lg text-champagne-bright">$487.50</p>
         </div>
         <button
           type="button"
@@ -559,7 +559,7 @@ export default function FieldPage() {
   return (
     <>
       <Nav />
-      <main className="bg-forest-deep">
+      <main className="bg-obsidian">
         {/* ── Hero ──────────────────────────────────────────────── */}
         <section className="relative overflow-hidden border-b border-bone/10">
           <div
@@ -605,7 +605,7 @@ export default function FieldPage() {
                   </CtaButton>
                   <a
                     href="#engineering"
-                    className="group inline-flex items-center gap-2 text-sm font-medium text-honey-bright transition-colors hover:text-honey"
+                    className="group inline-flex items-center gap-2 text-sm font-medium text-champagne-bright transition-colors hover:text-champagne"
                   >
                     See engineering write-up
                     <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
@@ -621,7 +621,7 @@ export default function FieldPage() {
         </section>
 
         {/* ── Capability 1 · Offline-first sync ─────────────────── */}
-        <section className="bg-forest-deep">
+        <section className="bg-obsidian">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
               <Eyebrow>Offline</Eyebrow>
@@ -670,10 +670,10 @@ export default function FieldPage() {
         </section>
 
         {/* ── Capability 2 · GPS arrival ────────────────────────── */}
-        <section className="border-y border-bone/10 bg-forest-mid">
+        <section className="border-y border-bone/10 bg-slate-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
-              <Eyebrow tone="honey">Arrival</Eyebrow>
+              <Eyebrow tone="champagne">Arrival</Eyebrow>
             </ScrollReveal>
             <ScrollReveal delay={0.05}>
               <h2 className="mt-3 max-w-3xl font-serif text-3xl text-bone tracking-[-0.02em] leading-[1.1] md:text-5xl">
@@ -709,7 +709,7 @@ export default function FieldPage() {
                         key={b}
                         className="flex items-start gap-3 text-sm text-bone/75"
                       >
-                        <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-honey-bright" />
+                        <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-champagne-bright" />
                         <span>{b}</span>
                       </li>
                     ))}
@@ -721,7 +721,7 @@ export default function FieldPage() {
         </section>
 
         {/* ── Capability 3 · Photo grid ─────────────────────────── */}
-        <section className="bg-forest-deep">
+        <section className="bg-obsidian">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
               <Eyebrow>Photos</Eyebrow>
@@ -774,10 +774,10 @@ export default function FieldPage() {
         </section>
 
         {/* ── Capability 4 · Site memory ────────────────────────── */}
-        <section className="border-y border-bone/10 bg-forest-mid">
+        <section className="border-y border-bone/10 bg-slate-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
-              <Eyebrow tone="honey">Memory</Eyebrow>
+              <Eyebrow tone="champagne">Memory</Eyebrow>
             </ScrollReveal>
             <ScrollReveal delay={0.05}>
               <h2 className="mt-3 max-w-4xl font-serif text-3xl text-bone tracking-[-0.02em] leading-[1.1] md:text-5xl">
@@ -813,7 +813,7 @@ export default function FieldPage() {
                         key={b}
                         className="flex items-start gap-3 text-sm text-bone/75"
                       >
-                        <Brain className="mt-0.5 h-4 w-4 shrink-0 text-honey-bright" />
+                        <Brain className="mt-0.5 h-4 w-4 shrink-0 text-champagne-bright" />
                         <span>{b}</span>
                       </li>
                     ))}
@@ -825,7 +825,7 @@ export default function FieldPage() {
         </section>
 
         {/* ── Capability 5 · Signoff ────────────────────────────── */}
-        <section className="bg-forest-deep">
+        <section className="bg-obsidian">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
               <Eyebrow>Signoff</Eyebrow>
@@ -879,7 +879,7 @@ export default function FieldPage() {
         {/* ── Engineering vitals ────────────────────────────────── */}
         <section
           id="engineering"
-          className="border-t border-bone/10 bg-forest-deep"
+          className="border-t border-bone/10 bg-obsidian"
         >
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
@@ -913,10 +913,10 @@ export default function FieldPage() {
         </section>
 
         {/* ── Devices band ──────────────────────────────────────── */}
-        <section className="border-t border-bone/10 bg-forest-mid">
+        <section className="border-t border-bone/10 bg-slate-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
-              <Eyebrow tone="honey">Devices</Eyebrow>
+              <Eyebrow tone="champagne">Devices</Eyebrow>
             </ScrollReveal>
             <ScrollReveal delay={0.05}>
               <h2 className="mt-3 max-w-3xl font-serif text-3xl text-bone tracking-[-0.02em] leading-[1.1] md:text-5xl">
@@ -928,7 +928,7 @@ export default function FieldPage() {
               {DEVICES.map((d, i) => (
                 <ScrollReveal key={d.title} delay={i * 0.05}>
                   <div className="h-full rounded-2xl border border-bone/10 bg-bone/[0.02] p-6">
-                    <Smartphone className="h-5 w-5 text-honey-bright" />
+                    <Smartphone className="h-5 w-5 text-champagne-bright" />
                     <h3 className="mt-4 font-serif text-xl text-bone tracking-[-0.01em]">
                       {d.title}
                     </h3>

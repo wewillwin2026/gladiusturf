@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Check, X } from "lucide-react";
 import { CtaBand } from "@/components/cta-band";
@@ -319,24 +320,39 @@ export default async function VersusPage({ params }: Props) {
   return (
     <>
       <Nav />
-      <main className="bg-forest-deep">
-        {/* 1. Hero */}
-        <section className="relative overflow-hidden border-b border-bone/10 bg-forest-deep">
+      <main className="bg-obsidian">
+        {/* 1. Hero — champagne eyebrow + crest watermark behind H1 */}
+        <section className="relative overflow-hidden border-b border-bone/10 bg-obsidian">
           <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
             <TopographicBg />
           </div>
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[700px] bg-[radial-gradient(ellipse_at_top,rgba(127,226,122,0.14),transparent_60%)]"
+            className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[700px] bg-[radial-gradient(ellipse_at_top,rgba(201,168,122,0.14),transparent_60%)]"
           />
           <div className="relative mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
-              <Eyebrow tone="honey">Versus · {competitor.name}</Eyebrow>
+              <Eyebrow tone="champagne">Versus · {competitor.name}</Eyebrow>
             </ScrollReveal>
             <ScrollReveal delay={0.05}>
-              <h1 className="mt-6 max-w-5xl font-serif text-5xl font-semibold leading-[1.05] tracking-[-0.02em] text-bone md:text-7xl">
-                {competitor.killHeadline}
-              </h1>
+              <div className="relative mt-6 max-w-5xl">
+                {/* crest watermark — behind the H1 */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute -left-8 -top-8 -z-10 opacity-5 md:-left-12 md:-top-16"
+                >
+                  <Image
+                    src="/crest.png"
+                    alt=""
+                    width={320}
+                    height={320}
+                    priority={false}
+                  />
+                </div>
+                <h1 className="font-serif text-5xl font-semibold leading-[1.05] tracking-[-0.02em] text-bone md:text-7xl">
+                  {competitor.killHeadline}
+                </h1>
+              </div>
             </ScrollReveal>
             <ScrollReveal delay={0.1}>
               <div className="mt-10 max-w-3xl space-y-5 text-lg leading-[1.6] text-bone/65 md:text-xl">
@@ -362,7 +378,7 @@ export default async function VersusPage({ params }: Props) {
                 <CtaButton href="/demo" variant="primary" size="lg">
                   Book a 30-minute demo
                 </CtaButton>
-                <CtaButton href="/pricing" variant="ghost-honey" size="lg">
+                <CtaButton href="/pricing" variant="ghost-champagne" size="lg">
                   See pricing →
                 </CtaButton>
               </div>
@@ -370,12 +386,12 @@ export default async function VersusPage({ params }: Props) {
           </div>
         </section>
 
-        {/* 2. Why crews switch */}
-        <section className="border-b border-bone/10 bg-forest-mid">
+        {/* 2. Why crews switch — champagne / moss / champagne */}
+        <section className="border-b border-bone/10 bg-slate-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
               <div className="mx-auto max-w-3xl text-center">
-                <Eyebrow tone="moss" className="mb-3">
+                <Eyebrow tone="champagne" className="mb-3">
                   Why crews switch
                 </Eyebrow>
                 <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
@@ -386,11 +402,12 @@ export default async function VersusPage({ params }: Props) {
 
             <div className="mx-auto mt-14 grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-3">
               {competitor.whySwitch.map((reason, i) => {
-                const isHoney = i % 2 === 1;
-                const numCls = isHoney ? "text-honey-bright" : "text-moss-bright";
-                const borderCls = isHoney
-                  ? "border-honey/30 hover:border-honey-bright/60"
-                  : "border-moss/30 hover:border-moss-bright/60";
+                // pattern: 0 → champagne, 1 → moss, 2 → champagne
+                const isMoss = i % 2 === 1;
+                const numCls = isMoss ? "text-moss-bright" : "text-champagne-bright";
+                const borderCls = isMoss
+                  ? "border-moss/30 hover:border-moss-bright/60"
+                  : "border-champagne/30 hover:border-champagne-bright/60";
                 return (
                   <ScrollReveal key={reason} delay={i * 0.05}>
                     <div
@@ -413,7 +430,7 @@ export default async function VersusPage({ params }: Props) {
         </section>
 
         {/* 3. Side-by-side feature matrix */}
-        <section className="border-b border-bone/10 bg-forest-deep">
+        <section className="border-b border-bone/10 bg-obsidian">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
               <div className="mx-auto max-w-3xl text-center">
@@ -425,15 +442,16 @@ export default async function VersusPage({ params }: Props) {
                 </h2>
                 <p className="mt-4 text-base leading-[1.65] text-bone/60">
                   Eleven marquee engines, side by side. Moss check means
-                  shipped. Tilde means partial — they technically do it, but
-                  not at the depth a serious crew needs. Dim X means not
+                  GladiusTurf ships it. Champagne check means the competitor
+                  ships it too. Tilde means partial — they technically do it,
+                  but not at the depth a serious crew needs. Dim X means not
                   available.
                 </p>
               </div>
             </ScrollReveal>
 
             <ScrollReveal delay={0.1}>
-              <div className="mt-14 rounded-2xl border border-bone/10 bg-forest-deep p-6 md:p-8">
+              <div className="mt-14 rounded-2xl border border-bone/10 bg-obsidian p-6 md:p-8">
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[640px] border-collapse">
                     <thead>
@@ -491,24 +509,27 @@ export default async function VersusPage({ params }: Props) {
                             </td>
                             <td className="py-5 text-center align-top">
                               {support === "yes" ? (
-                                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-honey-bright/10">
+                                // Competitor ✓ → champagne-bright (signature heritage)
+                                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-champagne-bright/10">
                                   <Check
-                                    className="h-4 w-4 text-honey-bright/80"
+                                    className="h-4 w-4 text-champagne-bright"
                                     strokeWidth={3}
                                     aria-hidden
                                   />
                                 </span>
                               ) : support === "partial" ? (
+                                // Partial ~ → champagne-bright/60
                                 <span
                                   aria-label="partial"
-                                  className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-bone/[0.04] font-mono text-xs text-bone/45"
+                                  className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-champagne-bright/[0.06] font-mono text-xs text-champagne-bright/60"
                                 >
                                   ~
                                 </span>
                               ) : (
-                                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-bone/[0.04]">
+                                // Missing − → bone/20
+                                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-bone/[0.03]">
                                   <X
-                                    className="h-4 w-4 text-bone/30"
+                                    className="h-4 w-4 text-bone/20"
                                     strokeWidth={2.5}
                                     aria-hidden
                                   />
@@ -526,12 +547,12 @@ export default async function VersusPage({ params }: Props) {
           </div>
         </section>
 
-        {/* 4. Migration plan */}
-        <section className="border-b border-bone/10 bg-forest-mid">
+        {/* 4. Migration plan — alternate champagne / moss numbered badges */}
+        <section className="border-b border-bone/10 bg-slate-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <ScrollReveal>
               <div className="mx-auto max-w-3xl text-center">
-                <Eyebrow tone="honey" className="mb-3">
+                <Eyebrow tone="champagne" className="mb-3">
                   Migration plan
                 </Eyebrow>
                 <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
@@ -549,13 +570,14 @@ export default async function VersusPage({ params }: Props) {
             <ScrollReveal delay={0.1}>
               <div className="mt-14 flex flex-col gap-6 md:flex-row md:gap-4">
                 {migrationSteps.map((s, i) => {
-                  const isHoney = i % 2 === 1;
-                  const dotCls = isHoney
-                    ? "bg-honey-bright/15 text-honey-bright ring-honey-bright/30"
-                    : "bg-moss-bright/15 text-moss-bright ring-moss-bright/30";
-                  const labelCls = isHoney
-                    ? "text-honey-bright"
-                    : "text-moss-bright";
+                  // Alternate: 0 → champagne, 1 → moss, 2 → champagne, …
+                  const isMoss = i % 2 === 1;
+                  const dotCls = isMoss
+                    ? "bg-moss-bright/15 text-moss-bright ring-moss-bright/30"
+                    : "bg-champagne-bright/15 text-champagne-bright ring-champagne-bright/30";
+                  const labelCls = isMoss
+                    ? "text-moss-bright"
+                    : "text-champagne-bright";
                   return (
                     <div
                       key={s.day}
@@ -568,7 +590,7 @@ export default async function VersusPage({ params }: Props) {
                           {i + 1}
                         </span>
                         <p
-                          className={`font-mono text-[11px] font-semibold uppercase tracking-[0.18em] ${labelCls}`}
+                          className={`font-mono text-[11px] font-semibold uppercase tracking-crest ${labelCls}`}
                         >
                           {s.day}
                         </p>
@@ -587,11 +609,11 @@ export default async function VersusPage({ params }: Props) {
           </div>
         </section>
 
-        {/* 5. Founders block */}
-        <section className="border-b border-bone/10 bg-forest-deep">
+        {/* 5. Founders block — pitch monolith, big champagne accents */}
+        <section className="border-b border-bone/10 bg-pitch">
           <div className="mx-auto max-w-5xl px-6 py-28 text-center">
             <ScrollReveal>
-              <Pill tone="moss" className="mb-5">
+              <Pill tone="champagne" className="mb-5">
                 Talk to the founders
               </Pill>
             </ScrollReveal>
@@ -599,7 +621,7 @@ export default async function VersusPage({ params }: Props) {
               <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-6xl">
                 Talk to the founders.
                 <br />
-                <span className="text-moss-bright">No SDR. No deck.</span>{" "}
+                <span className="text-champagne-bright">No SDR. No deck.</span>{" "}
                 <span className="text-bone/55">Just your data.</span>
               </h2>
             </ScrollReveal>
@@ -617,7 +639,7 @@ export default async function VersusPage({ params }: Props) {
                 <CtaButton href="/demo" variant="primary" size="lg">
                   Book a 30-minute demo
                 </CtaButton>
-                <CtaButton href="/compare" variant="ghost-honey" size="lg">
+                <CtaButton href="/compare" variant="ghost-champagne" size="lg">
                   See full comparison →
                 </CtaButton>
               </div>
