@@ -22,6 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/payroll",
     "/retention",
     "/roi",
+    "/loss",
     "/council",
   ];
 

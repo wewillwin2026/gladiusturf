@@ -112,6 +112,18 @@ export function Footer() {
               >
                 YouTube
               </a>
+              <span aria-hidden className="text-bone/20">
+                ·
+              </span>
+              <a
+                href="https://www.instagram.com/gladiuscrm/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Gladius on Instagram"
+                className="transition-colors hover:text-champagne-bright"
+              >
+                Instagram
+              </a>
             </div>
           </div>
           <Column title="Product" links={PRODUCT_LINKS} />
