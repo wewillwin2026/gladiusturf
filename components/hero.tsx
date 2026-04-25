@@ -67,10 +67,9 @@ export function Hero() {
             {...fadeUp(0.15)}
             className="mx-auto mt-8 max-w-2xl text-lg text-bone/70 md:text-xl"
           >
-            Nine engines — including a branded client portal where customers
-            reschedule, book, and pay themselves, plus an intelligent follow-up
-            brain that catches late invoices and dormant accounts before they
-            walk.
+            Twenty-seven engines across five tiers — revenue, lifecycle,
+            intelligence, operations, marketplace. The first landscaping
+            operating system that gets smarter every night.
           </motion.p>
 
           <motion.div

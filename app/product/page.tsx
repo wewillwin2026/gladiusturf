@@ -1,193 +1,505 @@
 import type { Metadata } from "next";
 import { CtaBand } from "@/components/cta-band";
+import { CtaButton } from "@/components/cta-button";
+import { Eyebrow } from "@/components/eyebrow";
 import { Footer } from "@/components/footer";
 import { Nav } from "@/components/nav";
+import { Pill } from "@/components/pill";
+import { ScrollReveal } from "@/components/scroll-reveal";
 import { TopographicBg } from "@/components/topographic-bg";
-import { ENGINES } from "@/content/engines";
+import { ENGINE_TIERS, type EngineTier } from "@/content/engine-tiers";
 
 export const metadata: Metadata = {
-  title: "Product · The nine-engine operating system for landscaping revenue",
+  title:
+    "Product · 27 engines, 5 tiers, one operating system for landscaping",
   description:
-    "GladiusTurf replaces Jobber, LMN, Service Autopilot and a stack of point tools with nine outcome-driven engines that share one data spine — quote to schedule to crew to invoice to review to upsell to retain.",
+    "GladiusTurf is the first landscaping platform built like a CRM and a BDC stack — 27 AI-orchestrated engines across Revenue, Lifecycle, Intelligence, Operations and Marketplace. Retire your other six tools by month two.",
 };
 
-// ─── Inline SVG icons (lucide style, RSC-safe, no extra deps) ──────
+// ─── Engine data (27 engines tagged by tier) ───────────────────────
+//
+// This data is intentionally co-located with the deep-dive copy this
+// page renders. Sister agent maintains the canonical short-form list
+// in /content/engines.ts and the tier definitions in
+// /content/engine-tiers.ts; we import the tier shells from there.
+
+type ProductEngine = {
+  number: string;
+  slug: string;
+  name: string;
+  outcome: string;
+  tier: EngineTier["slug"];
+  description: string;
+  features: string[];
+};
+
+const ENGINES_FULL: ProductEngine[] = [
+  // ───── Revenue (8) ─────
+  {
+    number: "01",
+    slug: "quote-intercept",
+    name: "Quote Intercept",
+    outcome: "$14,200/mo saved deals",
+    tier: "revenue",
+    description:
+      "Eighty percent of estimates are won or lost in the first sixty minutes. Intercept watches every channel — web, Google LSA, Angi, voicemail, ServiceTitan, and the foreman's truck-cab photo — funnels each request into one queue with one owner and a hard SLA, and re-prices it against your last twelve months of margin data inside ninety seconds.",
+    features: [
+      "Twelve-month margin model auto-prices mow, hardscape, irrigation and tree work",
+      "Live e-sign proposals replace PDF chains and phone tag",
+      "SLA escalations route rep → foreman → owner with auditable timestamps",
+      "Lost-deal autopsy flags pricing or response gaps before they pattern",
+    ],
+  },
+  {
+    number: "02",
+    slug: "quickhook",
+    name: "QuickHook",
+    outcome: "47% inbound-to-booked rate",
+    tier: "revenue",
+    description:
+      "The first reply that doesn't sound like a robot. QuickHook fires within twelve seconds of any inbound — text, web form, missed call — with a property-aware opener that names the street, references the request, and offers two real time slots from your live calendar. Most shops convert almost half of cold inbounds before a human ever picks up.",
+    features: [
+      "Twelve-second first response across SMS, web, missed-call, LSA",
+      "Property-aware openers reference street, lawn size and last service",
+      "Two-tap booking from your live crew calendar",
+      "Hands the warm handoff to a human at the right friction point",
+    ],
+  },
+  {
+    number: "03",
+    slug: "upsell-whisperer",
+    name: "Upsell Whisperer",
+    outcome: "$38,000/mo unbooked revenue",
+    tier: "revenue",
+    description:
+      "Every existing property is a continuous inspection target. Whisperer fuses satellite imagery, soil-temperature data, irrigation leak logs, mow history and crew photo notes into a per-property weekly upsell list — pre-priced, photo-backed, and crew-readable. The foreman walks the homeowner outside, points, and the proposal is texted before the truck pulls away.",
+    features: [
+      "Satellite + soil + irrigation + crew-photo fusion per property",
+      "Pre-priced add-ons for aeration, overseed, mulch, drainage, tree, irrigation",
+      "Photo-backed text proposals signed in the driveway",
+      "Crew-readable scripts so foremen pitch without a sales manager",
+    ],
+  },
+  {
+    number: "04",
+    slug: "referral-radar",
+    name: "Referral Radar",
+    outcome: "$180,000/yr recovered",
+    tier: "revenue",
+    description:
+      "Every premium hardscape, install, or full-renovation is a billboard your software is failing to monetize. Radar maps every active property to its neighbors, HOAs and historical referral lineage, then fires same-day postcards, HOA texts and doorhanger queues the afternoon a marquee job wraps. It also publishes a Referral Health score per crew so you can see which foremen quietly burn the silent leak.",
+    features: [
+      "Geo-graph of every property, neighbor and HOA tied to referral revenue",
+      "Same-day postcard, text and doorhanger campaigns on job completion",
+      "Per-crew and per-rep Referral Health scoring with leak alerts",
+      "Yard-sign-to-revenue attribution so you know what marketing actually worked",
+    ],
+  },
+  {
+    number: "05",
+    slug: "voicequote",
+    name: "VoiceQuote",
+    outcome: "70% of voicemails quoted",
+    tier: "revenue",
+    description:
+      "The dead voicemail folder is a graveyard of $1,800 tickets. VoiceQuote transcribes every inbound voicemail, extracts the address, parses the service request, runs a margin-priced quote against satellite + last-mile data, and sends a text-back proposal with two time slots — usually before the homeowner has poured their morning coffee.",
+    features: [
+      "Transcribes voicemail in under thirty seconds, extracts address + intent",
+      "Pulls satellite imagery and lot data for an instant scope estimate",
+      "Sends a real proposal via SMS — not a callback request",
+      "Routes ambiguous requests to a human only when the model isn't sure",
+    ],
+  },
+  {
+    number: "06",
+    slug: "property-hunter",
+    name: "Property Hunter",
+    outcome: "12 conquest leads/wk",
+    tier: "revenue",
+    description:
+      "Outbound that doesn't feel like outbound. Hunter scrapes new-mover records, MLS sales, permit pulls and aerial-anomaly data (uncut lawns next to cut ones) inside your service radius, then drops a property-specific text or postcard the same day. Every lead carries lot size, last-known service, and a pre-priced opening offer — your reps stop cold-calling and start triaging warm property cards.",
+    features: [
+      "New-mover, MLS, permit and aerial-anomaly feeds inside your zip ring",
+      "Lot-size and last-mile data attached to every lead card",
+      "Pre-priced opening offers — postcards, SMS and door drops",
+      "Conquest scoring against your existing route density",
+    ],
+  },
+  {
+    number: "07",
+    slug: "ghost-recovery",
+    name: "Ghost Recovery",
+    outcome: "$9,400/mo resurrected",
+    tier: "revenue",
+    description:
+      "Every CRM has a graveyard — quotes that never closed, cancelled contracts, customers who quietly drifted to the cheaper guy. Ghost Recovery wakes them up. It clusters dead leads by reason-lost, drops the right re-engagement (price reset, new service, seasonal trigger, neighborhood reference) and books the call before the homeowner remembers why they ghosted you.",
+    features: [
+      "Reason-lost clustering across ninety, one-eighty and three-sixty day cohorts",
+      "Re-engagement playbooks tuned by season and original lost-reason",
+      "Neighborhood-reference messaging for cancelled-contract win-backs",
+      "Auto-quiet on do-not-contact and bankruptcy filings",
+    ],
+  },
+  {
+    number: "08",
+    slug: "servicemagnet",
+    name: "ServiceMagnet",
+    outcome: "+19% attach rate",
+    tier: "revenue",
+    description:
+      "The on-property attach engine. When a crew is on-site for one service, Magnet reads the property card, the season, the weather window and your inventory and surfaces the next two add-ons the homeowner is statistically most likely to say yes to. The crew gets a one-line pitch, the office gets the quote in their queue, the homeowner gets the proposal before the truck leaves the curb.",
+    features: [
+      "Real-time on-site attach scoring against season, weather and inventory",
+      "One-line crew pitches written for the foreman, not the sales floor",
+      "Auto-routes signed proposals into the schedule — no double-entry",
+      "Per-crew attach leaderboard so the right foremen earn the bonus pool",
+    ],
+  },
+
+  // ───── Lifecycle (6) ─────
+  {
+    number: "09",
+    slug: "client-portal",
+    name: "Client Portal",
+    outcome: "73% fewer status calls",
+    tier: "lifecycle",
+    description:
+      "A branded self-serve portal where homeowners reschedule visits, pay invoices, approve change orders, sign waivers and book new services without ever picking up the phone. Your crew's logo, your colors, your photos. Stripe handles the money. SMS and email close the loop. The phone stops ringing for status updates and your office staff stops drowning in reschedule emails on Monday morning.",
+    features: [
+      "Self-serve scheduling against your live crew availability",
+      "One-tap invoice payment via Stripe — ACH plus card",
+      "Change-order approvals, waivers and add-on requests in one flow",
+      "White-labeled with your logo, colors and crew photos",
+    ],
+  },
+  {
+    number: "10",
+    slug: "cadence",
+    name: "Cadence",
+    outcome: "+24% retention · $12.8K/mo recovered",
+    tier: "lifecycle",
+    description:
+      "The intelligent follow-up brain. Six-hour post-service feedback prompts. Late-payment cadences that warm up before they escalate (Day 3 friendly, Day 7 reminder, Day 14 firmer, then human handoff). Seasonal reminders timed to NOAA. Every message personalized from Site Memory — the dog's name, the gate code, the back zone they hate weeds in.",
+    features: [
+      "Six-hour post-service feedback fires while the lawn still looks fresh",
+      "Day 3 / 7 / 14 late-pay warm-up before any human gets involved",
+      "Seasonal reminders timed to NOAA forecasts, not calendar guesses",
+      "Dormant-customer reactivation — quiet for 90 days? We surface them.",
+    ],
+  },
+  {
+    number: "11",
+    slug: "site-memory",
+    name: "Site Memory",
+    outcome: "6mo → 6wk new-hire onboarding",
+    tier: "lifecycle",
+    description:
+      "Every shop loses tribal knowledge to turnover. The gate code on Henderson Way. The boxer that bites only when the gate is left open. The sprinkler zone miswired since the pool install. The slope that flips a 36-inch zero-turn. Memory captures all of it on every visit — text, photo, voice memo — and indexes it against the property so any new hire can search it from their phone in three seconds.",
+    features: [
+      "Per-property knowledge graph: codes, pets, irrigation maps, slopes, prefs",
+      "Crew handoff capture on every visit — text, photo, voice memo",
+      "Searchable from the foreman's phone in under three seconds",
+      "Site Health score surfaces issues, upsells and risks before renewal",
+    ],
+  },
+  {
+    number: "12",
+    slug: "weather-pivot",
+    name: "Weather Pivot",
+    outcome: "zero storm-day complaints",
+    tier: "lifecycle",
+    description:
+      "Weather breaks every landscaping schedule and every shop manages it the same broken way. Pivot watches a rolling seven-day forecast against every scheduled visit, reshuffles by service type and crew skill when a storm shifts, holds chemical-sensitive applications until wind drops, and texts every affected client a new arrival window before they wonder. Snow ops mode generates per-storm invoices against NOAA-verified depths.",
+    features: [
+      "Rolling seven-day model against every scheduled visit",
+      "Auto-reshuffle by service type, crew skill and chemical-safe windows",
+      "Client-facing arrival-window texts and post-service photo proofs",
+      "Snow ops mode with NOAA-verified depths and auto-generated invoices",
+    ],
+  },
+  {
+    number: "13",
+    slug: "showrate-max",
+    name: "ShowRate Max",
+    outcome: "92% on-site show rate",
+    tier: "lifecycle",
+    description:
+      "The booked-but-no-one-home tax kills four-truck shops. ShowRate Max ladders confirmation reminders against the homeowner's actual response history — some get a soft text the night before, some need a morning-of confirm, some need a live-call from the foreman ten minutes out. The model learns each customer's pattern and stops the no-shows at their root.",
+    features: [
+      "Per-customer reminder ladder tuned to historical show behavior",
+      "Foreman ten-minutes-out live-call queue for high-risk visits",
+      "Auto-rescheduling when the homeowner replies 'not today' before dispatch",
+      "Per-crew show-rate scoring so dispatchers stop guessing",
+    ],
+  },
+  {
+    number: "14",
+    slug: "lifehook",
+    name: "LifeHook",
+    outcome: "11% of new revenue",
+    tier: "lifecycle",
+    description:
+      "Customers move, get married, list their house, refinance, get divorced. Every life event is an inflection where loyalty resets. LifeHook ingests public-records signals — moves, sales, permits, marriages — for every customer in your book and fires the right outreach (move-in welcome, listing-prep package, post-renovation refresh) on the day the event lands.",
+    features: [
+      "Public-records ingest: move, sale, permit, marriage, refi",
+      "Event-specific playbooks — listing prep, move-in welcome, post-reno",
+      "Quiets automatically on bereavement and bankruptcy signals",
+      "Tracks LifeHook revenue separately so you can prove the lift",
+    ],
+  },
+
+  // ───── Intelligence (6) ─────
+  {
+    number: "15",
+    slug: "intent-scorer",
+    name: "Intent Scorer",
+    outcome: "3.2x close-rate on top quartile",
+    tier: "intelligence",
+    description:
+      "Not every quote request is a quote. Intent Scorer reads every inbound — words used, time of day, channel, address quality, repeat-visitor flag — and scores the request 0–100 against your historical close patterns. Your reps stop spending forty minutes on a tire-kicker and twelve minutes on the homeowner who's ready to sign by Thursday.",
+    features: [
+      "Per-request 0–100 score from historical close patterns",
+      "Channel, time-of-day, language, address-quality and repeat-visitor signals",
+      "Auto-routes top quartile to your senior closer, low quartile to the bot",
+      "Calibrates monthly against your shop's actual closes — not a generic model",
+    ],
+  },
+  {
+    number: "16",
+    slug: "urgencysync",
+    name: "UrgencySync",
+    outcome: "+38% same-week close",
+    tier: "intelligence",
+    description:
+      "Most quote responses are written in the same flat tone whether the homeowner needs the work this Friday or thinks they might do it 'sometime this fall.' UrgencySync reads urgency cues — language, season, complaint history, neighborhood weather pattern — and matches your reply tempo and discount posture to the actual heat of the request.",
+    features: [
+      "Per-quote urgency score from language, season and weather signals",
+      "Adjusts response tempo, follow-up cadence and discount posture",
+      "Flags fake-urgency tire-kickers so you stop discounting needlessly",
+      "Feeds back into Intent Scorer — the models compound nightly",
+    ],
+  },
+  {
+    number: "17",
+    slug: "toneradar",
+    name: "ToneRadar",
+    outcome: "67% fewer escalations",
+    tier: "intelligence",
+    description:
+      "Every customer message — text, email, portal note — gets read for sentiment, frustration, and churn risk before your office sees it. A frustrated message from a six-year customer routes straight to the owner. A neutral request routes to the rotation. The angry customer who's about to write a review gets a human reply in nine minutes instead of nine hours.",
+    features: [
+      "Per-message sentiment, frustration and churn-risk scoring",
+      "Auto-escalation when high-LTV customers turn cold",
+      "Office triage queue sorted by emotional heat, not arrival time",
+      "Privacy-preserving — runs on your tenant, never trains a public model",
+    ],
+  },
+  {
+    number: "18",
+    slug: "winmemory",
+    name: "WinMemory",
+    outcome: "+21% rep performance",
+    tier: "intelligence",
+    description:
+      "Every closed deal is a recipe. WinMemory captures the full thread of every winning quote — the language, the photos used, the price posture, the response cadence, the discount logic — and serves the closest historical match to your rep when the next similar lead lands. New reps close like ten-year veterans because they're standing on a decade of institutional memory.",
+    features: [
+      "Indexed library of every won deal, searchable by service, season, lot type",
+      "Suggests language, photos and price posture for the live lead",
+      "Highlights the rep who closed the closest historical match",
+      "Compounds as your shop grows — better in year three than year one",
+    ],
+  },
+  {
+    number: "19",
+    slug: "market-anchor",
+    name: "Market Anchor",
+    outcome: "+9pts gross margin",
+    tier: "intelligence",
+    description:
+      "Most shops price by gut. Anchor benchmarks every service-by-service quote against the broader Gladius shop network in your radius — without ever exposing competitor identities — so you know when you're leaving margin on the floor and when you're priced out of the market. Pricing decisions stop being a religion and start being a number.",
+    features: [
+      "Anonymized regional benchmarks per service, lot size and season",
+      "Per-quote 'leaving money / priced out' indicator",
+      "Margin-floor enforcement so reps can't price below shop policy",
+      "Quarterly market drift report your CFO can actually use",
+    ],
+  },
+  {
+    number: "20",
+    slug: "lri-score",
+    name: "LRI Score",
+    outcome: "predicts churn 60 days out",
+    tier: "intelligence",
+    description:
+      "The Lawn Relationship Index. A single 0–100 number per customer that fuses payment cadence, complaint history, response latency, attach rate, NPS and Site Health into one churn-risk signal. When LRI drops twenty points in thirty days, your office gets a save-call queue before the customer cancels — because by the time they call to cancel, it's already too late.",
+    features: [
+      "Per-customer 0–100 score updated nightly",
+      "Save-call queue triggered on twenty-point drops",
+      "Per-crew LRI roll-up — which foremen quietly burn relationships",
+      "Feeds Cadence and Referral Radar so retention compounds",
+    ],
+  },
+
+  // ───── Operations (5) ─────
+  {
+    number: "21",
+    slug: "safety-shield",
+    name: "Safety Shield",
+    outcome: "avoid $25K+ in state fines",
+    tier: "operations",
+    description:
+      "State pesticide licensing, drift logs, weather-hold windows, REI hold periods, sensitive-site setbacks, renewal CEUs. Shield watches every applicator, every chemical, every spray ticket against real-time wind and humidity. Try to log a 2,4-D application on a windy Thursday next to a school zone? Shield blocks the ticket. Inspector calls? You produce a complete spray-and-license audit pack in five minutes.",
+    features: [
+      "Live license tracking with auto-renewal queues per applicator and state",
+      "Per-product registration, REI and sensitive-site rules at ticket creation",
+      "Real-time weather and wind blocks for drift-risk applications",
+      "One-click inspector audit pack — every spray, every license, every CEU",
+    ],
+  },
+  {
+    number: "22",
+    slug: "quality-radar",
+    name: "Quality Radar",
+    outcome: "44% fewer redo visits",
+    tier: "operations",
+    description:
+      "Every visit ends with a crew photo. Quality Radar runs computer-vision diffs against the last visit and the property's baseline — uncut strip, scalped corner, bad mulch line, missing edge — and either auto-flags the redo before the truck leaves the property or quietly rolls it into the next visit if it's marginal. Customers see the result, not the rework.",
+    features: [
+      "Computer-vision diff against last visit and property baseline",
+      "On-site redo prompt while the crew is still in the driveway",
+      "Quality score per crew, per foreman, per service",
+      "Auto-rolls marginal misses into next visit instead of escalating",
+    ],
+  },
+  {
+    number: "23",
+    slug: "operator-score",
+    name: "Operator Score",
+    outcome: "objective foreman ranking",
+    tier: "operations",
+    description:
+      "Most shops promote the foreman who shouts the loudest in the morning huddle. Operator Score ranks every crew lead on the only metrics that matter — quality score, attach rate, on-time, redo rate, complaint rate, referral generation, retention. The bonus pool stops being political and the right people start getting the trucks they've earned.",
+    features: [
+      "Composite per-foreman ranking across seven outcome metrics",
+      "Bonus-pool calculator your accountant can run in one click",
+      "Identifies coaching gaps before they show up in churn",
+      "Anonymized peer benchmarks across the Gladius network",
+    ],
+  },
+  {
+    number: "24",
+    slug: "field-crew-app",
+    name: "Field Crew App",
+    outcome: "works without signal",
+    tier: "operations",
+    description:
+      "The PWA your crews actually open. Route, property cards, gate codes, irrigation maps, on-site upsells, change-order capture, photo logging, voice memos, payment collection, time-and-materials clock — all of it runs offline and syncs the moment the truck hits a tower. No more 'the app crashed' on the back-forty property the office can't reach by phone.",
+    features: [
+      "Full offline mode — route, property cards, photo logging, payment",
+      "Background sync the moment a tower comes back",
+      "Voice memos transcribed into Site Memory automatically",
+      "Time-and-materials clock that survives a dropped phone",
+    ],
+  },
+  {
+    number: "25",
+    slug: "job-costing",
+    name: "Job Costing",
+    outcome: "+11% net per job",
+    tier: "operations",
+    description:
+      "Most landscaping shops can't tell you which services make money and which ones quietly bleed. Job Costing fuses crew-hours, materials, fuel, equipment depreciation, overhead allocation and on-site GPS dwell into a per-job, per-service, per-crew P&L. The unprofitable services get re-priced or retired before the year-end statement makes you find out the hard way.",
+    features: [
+      "Per-job P&L: hours, materials, fuel, equipment, overhead",
+      "Per-service margin curve so you know which ones to retire",
+      "Per-crew profitability — labor, drive time, redo cost",
+      "Plays back into Quote Intercept's pricing engine in real time",
+    ],
+  },
+
+  // ───── Marketplace (2) ─────
+  {
+    number: "26",
+    slug: "surplus-yard",
+    name: "Surplus Yard",
+    outcome: "$20K–$60K/yr recaptured",
+    tier: "marketplace",
+    description:
+      "Every shop runs a graveyard out back: leftover sod, three skids of unwanted mulch, a stack of returned pavers, two used Stihls. The yard guy calls it Tuesday. Surplus Yard is the marketplace that closes the loop. List a pallet, a tree, a tool, a load. Other Gladius shops in your radius see it instantly, pay through the platform and pick up. Three percent rail fee. Same-day movement.",
+    features: [
+      "Multi-shop marketplace for sod, mulch, stone, plants, trees, equipment",
+      "Stripe Connect rails with automatic 1099 tracking",
+      "Geo-radius listings so material moves locally — same-day pickup",
+      "Inventory write-offs reclassified to revenue line",
+    ],
+  },
+  {
+    number: "27",
+    slug: "knowledge-codex",
+    name: "Knowledge Codex",
+    outcome: "tribal knowledge → company memory",
+    tier: "marketplace",
+    description:
+      "Every shop in the Gladius network contributes anonymized playbooks — the upsell scripts that close, the late-pay sequences that recover, the foreman scripts that don't sound like a robot, the tree-removal pricing that survived a hailstorm. Codex distills the network's hard-won wisdom into a per-shop coaching feed. You stop being one shop guessing alone and start being one shop standing on a thousand.",
+    features: [
+      "Anonymized playbook library across the Gladius network",
+      "Per-shop coaching feed tuned to your services and region",
+      "Contributors earn rev-share when their playbook closes for someone else",
+      "Compounds nightly — every shop's wins make every other shop sharper",
+    ],
+  },
+];
+
+const TIER_ENGINE_COUNTS: Record<string, number> = ENGINES_FULL.reduce(
+  (acc, e) => {
+    acc[e.tier] = (acc[e.tier] ?? 0) + 1;
+    return acc;
+  },
+  {} as Record<string, number>
+);
+
+// ─── Architecture spine — engine-by-step mapping ───────────────────
+
+const SPINE_STEPS: { step: string; engines: string[] }[] = [
+  { step: "Quote", engines: ["Quote Intercept", "QuickHook", "VoiceQuote", "Intent Scorer"] },
+  { step: "Schedule", engines: ["Weather Pivot", "ShowRate Max", "Field Crew App"] },
+  { step: "Crew", engines: ["Site Memory", "Safety Shield", "Quality Radar", "Operator Score"] },
+  { step: "Invoice", engines: ["Job Costing", "Cadence", "Client Portal"] },
+  { step: "Review", engines: ["Cadence", "ToneRadar", "LRI Score"] },
+  { step: "Upsell", engines: ["Upsell Whisperer", "ServiceMagnet", "Market Anchor"] },
+  { step: "Loop", engines: ["Referral Radar", "Ghost Recovery", "LifeHook", "WinMemory", "Surplus Yard", "Knowledge Codex"] },
+];
+
+const PRIMITIVES: { name: string; line: string }[] = [
+  {
+    name: "Multi-tenant auth",
+    line: "Clerk · per-shop isolation, SSO-ready, role-aware from rep to owner.",
+  },
+  {
+    name: "Type-safe API",
+    line: "tRPC + Zod · one schema, end-to-end types, no contract drift between server and crew app.",
+  },
+  {
+    name: "Stripe Connect",
+    line: "Card-on-file, ACH, Surplus Yard rails, per-shop payouts. PCI scope stays out of your shop.",
+  },
+  {
+    name: "Twilio SMS + voice",
+    line: "A2P 10DLC handled, voicemail transcription, ringless drops, per-tenant numbers.",
+  },
+  {
+    name: "Resend",
+    line: "Transactional email — quotes, receipts, change orders — with deliverability we monitor for you.",
+  },
+  {
+    name: "AI orchestration",
+    line: "Anthropic Claude · property-aware prompts, retrieval over Site Memory, model fallback per call.",
+  },
+];
+
+// ─── Inline icons (RSC-safe) ───────────────────────────────────────
 
 type IconProps = { className?: string };
-
-function IconSparkles({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
-      <path d="M20 3v4" />
-      <path d="M22 5h-4" />
-      <path d="M4 17v2" />
-      <path d="M5 18H3" />
-    </svg>
-  );
-}
-
-function IconZap({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" />
-    </svg>
-  );
-}
-
-function IconTarget({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <circle cx="12" cy="12" r="6" />
-      <circle cx="12" cy="12" r="2" />
-    </svg>
-  );
-}
-
-function IconShield({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
-    </svg>
-  );
-}
-
-function IconBrain({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 0 0 12 18Z" />
-      <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 0 1 12 18Z" />
-    </svg>
-  );
-}
-
-function IconCloudRain({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M16 14v6" />
-      <path d="M8 14v6" />
-      <path d="M12 16v6" />
-      <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
-    </svg>
-  );
-}
-
-function IconBoxes({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.71l3 1.8a2 2 0 0 0 2.06 0L12 19v-5.5l-5-3-4.03 2.42Z" />
-      <path d="m7 16.5-4.74-2.85" />
-      <path d="m7 16.5 5-3" />
-      <path d="M7 16.5v5.17" />
-      <path d="M12 13.5V19l3.97 2.38a2 2 0 0 0 2.06 0l3-1.8a2 2 0 0 0 .97-1.71v-3.24a2 2 0 0 0-.97-1.71L17 10.5l-5 3Z" />
-      <path d="m17 16.5-5-3" />
-      <path d="m17 16.5 4.74-2.85" />
-      <path d="M17 16.5v5.17" />
-      <path d="M7.97 4.42A2 2 0 0 0 7 6.13v4.37l5 3 5-3V6.13a2 2 0 0 0-.97-1.71l-3-1.8a2 2 0 0 0-2.06 0z" />
-      <path d="M12 8 7.26 5.15" />
-      <path d="m12 8 4.74-2.85" />
-      <path d="M12 13.5V8" />
-    </svg>
-  );
-}
-
-function IconArrowRight({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M5 12h14" />
-      <path d="m12 5 7 7-7 7" />
-    </svg>
-  );
-}
 
 function IconChevronRight({ className }: IconProps) {
   return (
@@ -208,656 +520,18 @@ function IconChevronRight({ className }: IconProps) {
   );
 }
 
-function IconLayout({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <rect width="18" height="18" x="3" y="3" rx="2" />
-      <path d="M3 9h18" />
-      <path d="M9 21V9" />
-    </svg>
-  );
+// ─── Local helpers ─────────────────────────────────────────────────
+
+function tierAccent(accent: EngineTier["accent"]) {
+  return accent === "honey" ? "text-honey-bright" : "text-moss-bright";
 }
 
-function IconClock({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-    </svg>
-  );
-}
-
-// ─── Engine icon map ───────────────────────────────────────────────
-
-const ENGINE_ICONS: Record<string, (p: IconProps) => React.ReactElement> = {
-  "quote-intercept": IconZap,
-  "upsell-whisperer": IconSparkles,
-  "referral-radar": IconTarget,
-  "applicator-shield": IconShield,
-  "site-memory": IconBrain,
-  "weather-pivot": IconCloudRain,
-  "surplus-yard": IconBoxes,
-  "client-portal": IconLayout,
-  cadence: IconClock,
-};
-
-// ─── Engine deep copy (kept verbatim from prior page) ──────────────
-
-type EngineCopy = {
-  slug: string;
-  tagline: string;
-  paragraphs: string[];
-  features: string[];
-};
-
-const ENGINE_COPY: EngineCopy[] = [
-  {
-    slug: "quote-intercept",
-    tagline: "The first hour decides the deal.",
-    paragraphs: [
-      "Eighty percent of mowing, hardscape, and irrigation estimates are won or lost in the first sixty minutes after the request hits your inbox. Quote Intercept watches every channel — web form, Google LSA, Angi, voicemail transcript, ServiceTitan booking, even the foreman&rsquo;s scribbled note photographed from the truck — and pulls every inbound into one queue with a single owner and a hard SLA.",
-      "The engine then reprices the request against your last twelve months of margin data. Within ninety seconds it produces a quote the rep can send as-is or sharpen in two clicks. The client gets a live, mobile-signable proposal — not a PDF buried in a Gmail thread.",
-      "If the rep doesn&rsquo;t move on it, escalation does. Foreman at four hours. Owner at twelve. Lost-deal autopsy at seventy-two. The average shop running Intercept recovers eighteen to twenty-two estimates a month that would have rotted in voicemail — at $1,840 average ticket, that&rsquo;s the bill paid before week two.",
-    ],
-    features: [
-      "Twelve-month margin model auto-prices mow, hardscape, irrigation, and tree work",
-      "Live e-sign proposals replace PDF attachments and chasing phone tag",
-      "SLA escalations route to rep, foreman, owner — with timestamps you can audit",
-      "Lost-deal autopsy flags pricing or response gaps before they become patterns",
-    ],
-  },
-  {
-    slug: "upsell-whisperer",
-    tagline: "The route is the salesfloor.",
-    paragraphs: [
-      "Every existing property under contract is a continuous inspection target. Upsell Whisperer pulls satellite imagery, soil-temperature data, the property&rsquo;s mow history, the irrigation controller&rsquo;s leak log, the last fertilization round, and a year of crew photo notes — then surfaces what each property needs this week.",
-      "When the crew rolls up Monday morning, they don&rsquo;t open a clipboard. They open the property card and see a prioritized list of three to five whisper-upsells, each with a photo from last visit, a script written for that crew&rsquo;s reading level, and a price already approved by the office. The foreman walks the homeowner outside, points, takes one new photo, and the proposal is texted before the truck pulls away.",
-      "Average shop adds $38,000 a month in unbooked revenue inside ninety days — without hiring a salesperson, without running a single outbound campaign, without a homeowner ever feeling sold. Whisper, don&rsquo;t pitch.",
-    ],
-    features: [
-      "Satellite, soil, irrigation, and crew-photo data fused into a per-property work list",
-      "Pre-priced add-ons for aeration, overseed, mulch refresh, drainage, tree, and irrigation repair",
-      "Photo-backed text proposals signed in the driveway before the truck leaves",
-      "Crew-readable scripts so foremen can pitch without a cold-call manager",
-    ],
-  },
-  {
-    slug: "referral-radar",
-    tagline: "Every premium job is a billboard.",
-    paragraphs: [
-      "Referral Radar maps every active property to its neighbors, its HOA, and its referral lineage. It knows which crews and which reps generate referrals — and which ones quietly burn them.",
-      "When a premium hardscape, install, or full-renovation job wraps, Radar fires the same afternoon. A geotargeted postcard hits the next-door and across-the-street addresses by Wednesday. A text drop reaches the HOA distribution list. A doorhanger queue prints to the foreman&rsquo;s next morning.",
-      "Radar also publishes a weekly Referral Health score per crew and per rep. We&rsquo;ve seen single shops claw back $180,000 a year in referral revenue that was sitting on the table because nobody was measuring the silent leak.",
-    ],
-    features: [
-      "Geo-graph of every property, neighbor, and HOA tied to historical referral revenue",
-      "Same-day postcard, text, and doorhanger campaigns triggered by job completion",
-      "Per-crew and per-rep Referral Health scoring with leak alerts",
-      "Yard-sign-to-revenue attribution so you know what marketing is actually working",
-    ],
-  },
-  {
-    slug: "applicator-shield",
-    tagline: "One missed renewal is one closed business.",
-    paragraphs: [
-      "Pesticide and fertilizer compliance is the silent business-killer in lawn maintenance. State applicator licenses, EPA product registrations, drift-risk wind windows, REI hold periods, organic-certified zone overrides, sensitive-site setbacks — all live in spreadsheets, sticky notes, and the head of one office manager.",
-      "Applicator Shield watches every applicator&rsquo;s license, every chemical&rsquo;s registration, every spray ticket against real-time wind and humidity, and every renewal CEU your team is due. If a tech tries to log a 2,4-D application on a windy Thursday next to a school zone, Shield blocks the ticket. If an inspector calls, you produce a complete spray-and-license audit in under five minutes.",
-      "One avoided fine pays for five years of GladiusTurf. One protected license keeps the doors open. This is the engine you don&rsquo;t notice — until the day it earns its keep ten times over.",
-    ],
-    features: [
-      "Live license tracking with auto-renewal queues for every applicator and every state",
-      "Per-product registration, REI, and sensitive-site rules enforced at ticket creation",
-      "Real-time weather and wind blocks for drift-risk applications",
-      "One-click inspector audit pack — every spray, every license, every CEU",
-    ],
-  },
-  {
-    slug: "site-memory",
-    tagline: "Knowledge that survives turnover.",
-    paragraphs: [
-      "Every landscaping shop loses tribal knowledge to turnover. The gate code on the Henderson property. The dog that bites only when the gate is left open. The sprinkler zone that&rsquo;s been miswired since the pool install. The slope on the back lawn that flips a 36-inch zero-turn. Today this lives in the head of one ten-year foreman.",
-      "Site Memory captures all of it on the first visit and every visit after. Every photo, every note, every gate code, every irrigation map, every chemical applied, every plant installed, every crew handoff — indexed against the property and searchable by any new hire from their phone. Onboarding for a new foreman drops from six months to six weeks.",
-      "Memory also publishes a Site Health score per property — open issues, pending upsells, complaint history, payment cadence — so when a sales call comes in for renewal, the rep sees the truth, not a guess.",
-    ],
-    features: [
-      "Per-property knowledge graph: gate codes, pets, irrigation maps, slope notes, client preferences",
-      "Crew handoff capture on every visit — text, photo, voice memo",
-      "Searchable from the foreman&rsquo;s phone in under three seconds",
-      "Site Health score surfaces open issues, upsells, and risks before the renewal call",
-    ],
-  },
-  {
-    slug: "weather-pivot",
-    tagline: "The forecast is a route plan.",
-    paragraphs: [
-      "Weather is the variable that breaks every landscaping schedule, and every shop manages it the same broken way: the dispatcher watches the radar, the crews wait for a phone call, the clients call angry when their Tuesday mow becomes a Friday-afternoon scramble. Weather Pivot ends it.",
-      "Pivot watches a rolling seven-day forecast against every scheduled visit — mow, fert round, hardscape pour, irrigation start-up, leaf cleanup, snow plow, salt run. When a storm shifts, it reshuffles the route by service type and crew skill, holds chemical-sensitive applications until the wind drops, and texts every affected client the new arrival window before they wonder.",
-      "Pivot also closes the loop on snow: pre-storm crew calls, mid-event push reports, post-event property photos, and an invoice generated against the actual storm depth pulled from NOAA. Storm Saturdays stop being Storm Saturdays.",
-    ],
-    features: [
-      "Rolling seven-day forecast model against every scheduled visit",
-      "Auto-reshuffle by service type, crew skill, and chemical-safe windows",
-      "Client-facing arrival-window texts and post-service photo proofs",
-      "Snow ops mode with NOAA-verified depths and auto-generated per-storm invoices",
-    ],
-  },
-  {
-    slug: "surplus-yard",
-    tagline: "What rots in the yard becomes revenue.",
-    paragraphs: [
-      "Every landscaping shop runs a graveyard out back: pallets of leftover sod, three skids of mulch the homeowner didn&rsquo;t want, a stack of granite pavers from a returned hardscape, two used Stihl trimmers, a like-new aerator from a discontinued line. The accountant calls it shrinkage. The yard guy calls it Tuesday. Across the metro, ten other shops are paying retail for the exact same materials this week.",
-      "Surplus Yard is the marketplace that closes the loop. List a pallet, a tree, a tool, or a load — set the price, set the pickup window, attach a photo. Other GladiusTurf shops in your radius see it instantly, pay through the platform, and pick up. GladiusTurf takes a 3% rail fee.",
-      "Average shop recovers $20,000 to $60,000 a year in margin that was previously a write-off. It&rsquo;s also the engine that builds the network: every shop on Surplus Yard becomes a node in the Gladius operating crew.",
-    ],
-    features: [
-      "Multi-shop marketplace for sod, mulch, stone, plants, trees, and equipment",
-      "Stripe Connect rail with 3% platform fee, automatic 1099 tracking",
-      "Geo-radius listings so material moves locally and pickup is same-day",
-      "Inventory write-offs reclassified to revenue line — your CFO will smile",
-    ],
-  },
-  {
-    slug: "client-portal",
-    tagline: "Your customers stop calling to ask &ldquo;when are you coming?&rdquo;",
-    paragraphs: [
-      "A branded portal for the homeowner. They reschedule visits, book new services, pay invoices, approve change orders, view job history — all from one self-serve link. Your crew&rsquo;s logo, your colors. Stripe handles payments. SMS and email alerts close the loop.",
-      "The phone stops ringing for status updates, and your office staff stops drowning in reschedule emails on Monday morning. The customer feels like they hired a real company — not a guy with a truck and a clipboard.",
-    ],
-    features: [
-      "Self-serve scheduling — customer picks from your live availability",
-      "One-tap invoice payment via Stripe — ACH + card",
-      "Approve change orders, sign waivers, request add-ons",
-      "White-labeled with your logo, colors, and crew photos",
-    ],
-  },
-  {
-    slug: "cadence",
-    tagline: "The follow-up that doesn&rsquo;t sound like follow-up.",
-    paragraphs: [
-      "The intelligent follow-up brain. Post-service feedback prompts fire within six hours of the crew leaving — when the lawn still looks fresh and the customer remembers the work. Late-payment cadences warm up before they escalate (Day 3 friendly nudge, Day 7 reminder, Day 14 firmer ask, then human handoff to your office).",
-      "Seasonal service reminders timed to NOAA — fall cleanup before the leaf drop, snow contracts before the first frost, spring fert before crab grass germinates, mosquito before mid-May. Every message is personalized from Site Memory: the dog&rsquo;s name, the gate code, the back zone they hate weeds in.",
-    ],
-    features: [
-      "Six-hour post-service feedback cadence",
-      "Late-pay warm-up sequence (Day 3 / 7 / 14, then human)",
-      "Seasonal reminders timed to NOAA forecasts",
-      "Dormant-customer reactivation — quiet for 90 days? We know.",
-    ],
-  },
-];
-
-// ─── Local extension to the imported ENGINES array (blocks 8 + 9) ──
-
-const EXTRA_ENGINES = [
-  {
-    number: "08",
-    slug: "client-portal",
-    name: "Client Portal",
-    outcome: "73% fewer status calls",
-    description:
-      "A branded self-serve hub where homeowners reschedule visits, pay invoices, approve change orders, and book new services without ever picking up the phone. Your colors, your logo, your crew — Stripe handles the money.",
-  },
-  {
-    number: "09",
-    slug: "cadence",
-    name: "Cadence",
-    outcome: "+24% retention · $12,800/mo recovered",
-    description:
-      "The intelligent follow-up brain. Six-hour feedback prompts, warm late-pay sequences, and NOAA-timed seasonal reminders — every message personalized from Site Memory so the customer never feels like they&rsquo;re on a list.",
-  },
-];
-
-const ALL_ENGINES = [...ENGINES, ...EXTRA_ENGINES];
-
-const INTEGRATIONS: { name: string; line: string }[] = [
-  {
-    name: "QuickBooks",
-    line: "Two-way sync for customers, invoices, payments, and class tracking. Your bookkeeper doesn&rsquo;t change a workflow.",
-  },
-  {
-    name: "Stripe",
-    line: "Card-on-file, ACH, and Stripe Connect rails for Surplus Yard payouts. PCI scope stays out of your shop.",
-  },
-  {
-    name: "Twilio",
-    line: "Compliant client texting with A2P 10DLC handled, plus ringless voicemail for the dead-quote queue.",
-  },
-  {
-    name: "ServiceTitan",
-    line: "Native bridge for shops running Titan on tree, irrigation, or commercial divisions — bidirectional jobs and invoices.",
-  },
-  {
-    name: "Aspire",
-    line: "One-click migration of properties, contracts, and crew schedules. Most shops imported in under four hours.",
-  },
-];
-
-const ARCHITECTURE_STEPS = [
-  "Quote",
-  "Schedule",
-  "Crew",
-  "Invoice",
-  "Review",
-  "Upsell",
-];
-
-function dangerouslyHTML(input: string) {
-  return { __html: input };
-}
-
-// ─── Feature mock dispatcher (one tasteful mock per engine) ────────
-
-function FeatureMock({ slug }: { slug: string }) {
-  switch (slug) {
-    case "quote-intercept":
-      return <MockQuoteQueue />;
-    case "upsell-whisperer":
-      return <MockUpsellList />;
-    case "referral-radar":
-      return <MockReferralMap />;
-    case "applicator-shield":
-      return <MockComplianceLog />;
-    case "site-memory":
-      return <MockSiteCard />;
-    case "weather-pivot":
-      return <MockWeatherRoute />;
-    case "surplus-yard":
-      return <MockSurplusBoard />;
-    case "client-portal":
-      return <MockClientPortal />;
-    case "cadence":
-      return <MockCadenceTimeline />;
-    default:
-      return null;
-  }
-}
-
-const MOCK_FRAME =
-  "rounded-2xl border border-bone/10 bg-bone/[0.02] aspect-[4/3] p-6 overflow-hidden relative";
-
-function MockQuoteQueue() {
-  const rows = [
-    { src: "Web form", addr: "412 Maple Ridge", min: "00:42", price: "$1,840" },
-    { src: "Google LSA", addr: "8 Birchwood Ln", min: "01:18", price: "$2,940" },
-    { src: "Voicemail", addr: "27 Cedar Ct", min: "03:07", price: "$640" },
-    { src: "Angi", addr: "112 Oak Hollow", min: "04:55", price: "$3,210" },
-  ];
-  return (
-    <div className={MOCK_FRAME}>
-      <div className="mb-4 flex items-center justify-between">
-        <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-moss-bright">
-          Inbound queue
-        </span>
-        <span className="font-mono text-[11px] text-bone/40">SLA · 60min</span>
-      </div>
-      <div className="space-y-2">
-        {rows.map((r) => (
-          <div
-            key={r.addr}
-            className="flex items-center justify-between rounded-lg border border-bone/5 bg-forest-deep/40 px-3 py-2.5"
-          >
-            <div className="flex flex-col">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-bone/40">
-                {r.src}
-              </span>
-              <span className="text-[13px] text-bone/80">{r.addr}</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-[11px] text-moss-bright">{r.min}</span>
-              <span className="font-mono text-[12px] font-semibold text-bone">
-                {r.price}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function MockUpsellList() {
-  const items = [
-    { tag: "Aeration", label: "Cool-season turf, due", price: "$340" },
-    { tag: "Tree", label: "Bradford pear · split limb", price: "$880" },
-    { tag: "Irrigation", label: "Zone 4 · 30% over baseline", price: "$210" },
-    { tag: "Mulch", label: "Front bed thinned", price: "$420" },
-  ];
-  return (
-    <div className={MOCK_FRAME}>
-      <div className="mb-4 flex items-center justify-between">
-        <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-moss-bright">
-          412 Maple Ridge · today
-        </span>
-        <span className="font-mono text-[11px] text-bone/40">$1,850 ready</span>
-      </div>
-      <div className="space-y-2.5">
-        {items.map((it) => (
-          <div
-            key={it.label}
-            className="flex items-center gap-3 rounded-lg border border-bone/5 bg-forest-deep/40 px-3 py-2.5"
-          >
-            <span className="rounded-full border border-moss/30 bg-moss/5 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-moss-bright">
-              {it.tag}
-            </span>
-            <span className="flex-1 text-[13px] text-bone/80">{it.label}</span>
-            <span className="font-mono text-[12px] font-semibold text-bone">
-              {it.price}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function MockReferralMap() {
-  return (
-    <div className={MOCK_FRAME}>
-      <div className="mb-4 flex items-center justify-between">
-        <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-moss-bright">
-          Birch cul-de-sac
-        </span>
-        <span className="font-mono text-[11px] text-bone/40">11 jobs · $46.2K</span>
-      </div>
-      <svg viewBox="0 0 320 180" className="w-full">
-        {[
-          [60, 60],
-          [120, 40],
-          [180, 70],
-          [240, 50],
-          [90, 110],
-          [160, 130],
-          [220, 110],
-          [280, 90],
-        ].map(([x, y], i) => (
-          <g key={i}>
-            <circle cx={x} cy={y} r={i === 2 ? 9 : 5} fill="#9DFF8A" opacity={i === 2 ? 1 : 0.45} />
-            {i > 0 && (
-              <line
-                x1={x}
-                y1={y}
-                x2={180}
-                y2={70}
-                stroke="#9DFF8A"
-                strokeWidth="0.6"
-                opacity="0.25"
-              />
-            )}
-          </g>
-        ))}
-      </svg>
-      <div className="mt-2 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-bone/40">
-        <span>Source · Halls / Birch</span>
-        <span className="text-moss-bright">Postcards · Wed</span>
-      </div>
-    </div>
-  );
-}
-
-function MockComplianceLog() {
-  const rows = [
-    { tech: "M. Alvarez", lic: "FL · 1284", days: "62d", ok: true },
-    { tech: "J. Park", lic: "GA · 4419", days: "expired", ok: false },
-    { tech: "T. Reed", lic: "FL · 9912", days: "210d", ok: true },
-    { tech: "S. Khan", lic: "AL · 0577", days: "47d", ok: true },
-  ];
-  return (
-    <div className={MOCK_FRAME}>
-      <div className="mb-4 flex items-center justify-between">
-        <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-moss-bright">
-          Applicator log
-        </span>
-        <span className="font-mono text-[11px] text-bone/40">Wind 14mph · hold</span>
-      </div>
-      <div className="space-y-2">
-        {rows.map((r) => (
-          <div
-            key={r.tech}
-            className="flex items-center justify-between rounded-lg border border-bone/5 bg-forest-deep/40 px-3 py-2.5"
-          >
-            <div className="flex items-center gap-3">
-              <span
-                className={`h-1.5 w-1.5 rounded-full ${
-                  r.ok ? "bg-moss-bright" : "bg-lime-bright"
-                }`}
-              />
-              <span className="text-[13px] text-bone/80">{r.tech}</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-[10px] text-bone/40">{r.lic}</span>
-              <span
-                className={`font-mono text-[12px] ${
-                  r.ok ? "text-bone" : "text-lime-bright"
-                }`}
-              >
-                {r.days}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function MockSiteCard() {
-  return (
-    <div className={MOCK_FRAME}>
-      <div className="mb-3 flex items-center justify-between">
-        <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-moss-bright">
-          27 Henderson Way
-        </span>
-        <span className="font-mono text-[11px] text-bone/40">Site Health · 92</span>
-      </div>
-      <div className="space-y-1.5 text-[12px]">
-        {[
-          ["Gate code", "8842 · north panel"],
-          ["Dog", "Boxer · friendly · keep gate latched"],
-          ["Slope", "Back lawn 18° — push, no zero-turn"],
-          ["Irrigation", "Zone 3 miswired since 2019"],
-          ["Client pref", "Calls before 7a only"],
-        ].map(([k, v]) => (
-          <div
-            key={k}
-            className="flex items-baseline justify-between border-b border-bone/5 py-1.5"
-          >
-            <span className="font-mono text-[10px] uppercase tracking-wider text-bone/40">
-              {k}
-            </span>
-            <span className="text-right text-[12px] text-bone/80">{v}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function MockWeatherRoute() {
-  const days = [
-    { d: "Mon", v: 32, ok: true },
-    { d: "Tue", v: 18, ok: false },
-    { d: "Wed", v: 41, ok: true },
-    { d: "Thu", v: 28, ok: true },
-    { d: "Fri", v: 12, ok: false },
-    { d: "Sat", v: 38, ok: true },
-    { d: "Sun", v: 22, ok: true },
-  ];
-  return (
-    <div className={MOCK_FRAME}>
-      <div className="mb-4 flex items-center justify-between">
-        <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-moss-bright">
-          7-day route plan
-        </span>
-        <span className="font-mono text-[11px] text-bone/40">2 reshuffles</span>
-      </div>
-      <div className="flex h-32 items-end gap-3">
-        {days.map((day) => (
-          <div key={day.d} className="flex flex-1 flex-col items-center gap-2">
-            <div
-              className={`w-full rounded-t-md ${
-                day.ok ? "bg-moss-bright/80" : "bg-lime-bright/30"
-              }`}
-              style={{ height: `${(day.v / 50) * 100}%` }}
-            />
-            <span className="font-mono text-[10px] uppercase tracking-wider text-bone/40">
-              {day.d}
-            </span>
-          </div>
-        ))}
-      </div>
-      <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-bone/40">
-        Tue + Fri · chemical hold · auto-text sent
-      </p>
-    </div>
-  );
-}
-
-function MockSurplusBoard() {
-  const listings = [
-    { item: "Bermuda sod · 12 pal", mi: "4mi", price: "$680" },
-    { item: "Granite paver · 220sf", mi: "9mi", price: "$1,120" },
-    { item: "Stihl FS131 · used", mi: "11mi", price: "$240" },
-    { item: "Red maple · 2.5\" cal", mi: "6mi", price: "$185" },
-  ];
-  return (
-    <div className={MOCK_FRAME}>
-      <div className="mb-4 flex items-center justify-between">
-        <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-moss-bright">
-          Surplus near you
-        </span>
-        <span className="font-mono text-[11px] text-bone/40">3% rail · same-day</span>
-      </div>
-      <div className="space-y-2">
-        {listings.map((l) => (
-          <div
-            key={l.item}
-            className="flex items-center justify-between rounded-lg border border-bone/5 bg-forest-deep/40 px-3 py-2.5"
-          >
-            <span className="text-[13px] text-bone/80">{l.item}</span>
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-[10px] text-bone/40">{l.mi}</span>
-              <span className="font-mono text-[12px] font-semibold text-bone">
-                {l.price}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function MockClientPortal() {
-  const tiles = [
-    { label: "Reschedule", line: "Next visit · Thu 9–11a", value: "2 slots open" },
-    { label: "Pay invoice", line: "Mar mowing + aeration", value: "$1,840" },
-    { label: "Book new service", line: "Mulch refresh · front bed", value: "$420 est." },
-  ];
-  return (
-    <div className={MOCK_FRAME}>
-      <div className="mb-4 flex items-center justify-between">
-        <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-honey-bright">
-          412 Maple · client portal
-        </span>
-        <span className="font-mono text-[11px] text-bone/40">self-serve</span>
-      </div>
-      <div className="rounded-xl border border-honey-bright/30 bg-bone/[0.03] p-3">
-        <div className="mb-3 flex items-center justify-between">
-          <span className="font-mono text-[10px] uppercase tracking-wider text-bone/40">
-            Henderson Lawn &amp; Turf
-          </span>
-          <span className="font-mono text-[10px] text-honey-bright">v · live</span>
-        </div>
-        <div className="space-y-2">
-          {tiles.map((t) => (
-            <div
-              key={t.label}
-              className="flex items-center justify-between rounded-lg border border-bone/5 bg-forest-deep/50 px-3 py-2.5"
-            >
-              <div className="flex flex-col">
-                <span className="font-mono text-[10px] uppercase tracking-wider text-honey-bright">
-                  {t.label}
-                </span>
-                <span className="text-[12px] text-bone/70">{t.line}</span>
-              </div>
-              <span className="font-mono text-[12px] font-semibold text-honey-bright">
-                {t.value}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-      <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-bone/40">
-        White-labeled · Stripe rails · SMS receipts
-      </p>
-    </div>
-  );
-}
-
-function MockCadenceTimeline() {
-  const steps = [
-    { day: "Day 0", label: "Service complete", status: "sent" as const, ts: "11:42a" },
-    { day: "Day 0 + 6h", label: "Feedback prompt sent", status: "sent" as const, ts: "5:42p" },
-    { day: "Day 3", label: "Friendly invoice nudge", status: "queued" as const, ts: "9:00a" },
-    { day: "Day 7", label: "Reminder", status: "upcoming" as const, ts: "9:00a" },
-    { day: "Day 14", label: "Final auto-ask", status: "upcoming" as const, ts: "9:00a" },
-    { day: "Day 14+", label: "Office takeover", status: "upcoming" as const, ts: "human" },
-  ];
-  return (
-    <div className={MOCK_FRAME}>
-      <div className="mb-4 flex items-center justify-between">
-        <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-moss-bright">
-          Cadence · 27 Henderson
-        </span>
-        <span className="font-mono text-[11px] text-bone/40">6 steps · live</span>
-      </div>
-      <div className="space-y-1.5">
-        {steps.map((s) => {
-          const dot =
-            s.status === "sent"
-              ? "bg-moss-bright"
-              : s.status === "queued"
-                ? "bg-honey-bright"
-                : "bg-bone/30";
-          return (
-            <div
-              key={s.day}
-              className="flex items-center gap-3 rounded-lg border border-bone/5 bg-forest-deep/40 px-3 py-2"
-            >
-              <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />
-              <span className="w-[68px] shrink-0 font-mono text-[10px] uppercase tracking-wider text-bone/40">
-                {s.day}
-              </span>
-              <span className="flex-1 text-[12px] text-bone/80">{s.label}</span>
-              <span className="font-mono text-[10px] text-bone/40">{s.ts}</span>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+function tierBg(slug: EngineTier["slug"]) {
+  // Per spec: Revenue + Intelligence + Marketplace = forest-deep,
+  // Lifecycle + Operations = forest-mid.
+  return slug === "lifecycle" || slug === "operations"
+    ? "bg-forest-mid"
+    : "bg-forest-deep";
 }
 
 // ─── Page ──────────────────────────────────────────────────────────
@@ -871,254 +545,310 @@ export default function ProductPage() {
         <section className="relative overflow-hidden border-b border-bone/5 bg-forest-deep">
           <TopographicBg />
           <div className="relative mx-auto max-w-7xl px-6 py-28">
-            <span className="inline-flex items-center gap-2 rounded-full border border-honey/30 bg-honey/5 px-3 py-1 text-xs font-medium text-honey-bright">
-              <IconSparkles className="h-3 w-3" /> The product
-            </span>
-            <h1 className="mt-6 max-w-5xl font-serif text-5xl tracking-[-0.02em] text-bone md:text-6xl">
-              The <span className="text-moss-bright">nine-engine</span>{" "}
-              operating system for landscaping revenue.
-            </h1>
-            <p className="mt-8 max-w-3xl text-lg leading-[1.55] text-bone/60">
-              GladiusTurf replaces the scattered stack — Jobber for jobs, LMN for
-              estimates, Service Autopilot for routes, a CRM for clients, a
-              compliance binder for the state, a whiteboard for everything else
-              — with one revenue intelligence layer. Nine engines, one data
-              spine, one number going into your bank account every month.
-            </p>
-            <div className="mt-10 flex flex-wrap items-center gap-5">
-              <a
-                href="/demo"
-                className="inline-flex items-center gap-2 rounded-full bg-lime-bright px-7 py-3.5 text-base font-semibold text-forest hover:bg-moss transition-all shadow-cta"
-              >
-                Book a demo <IconArrowRight className="h-4 w-4" />
-              </a>
-              <a
-                href="/pricing"
-                className="inline-flex items-center gap-2 rounded-full border border-bone/15 px-6 py-3.5 text-base font-medium text-bone/80 hover:border-honey-bright hover:text-honey-bright transition-colors"
-              >
-                See pricing <IconArrowRight className="h-4 w-4" />
-              </a>
-            </div>
+            <ScrollReveal>
+              <Pill tone="honey">The product</Pill>
+              <h1 className="mt-6 max-w-5xl font-serif text-5xl tracking-[-0.02em] text-bone md:text-7xl">
+                Twenty-seven engines.{" "}
+                <span className="text-moss-bright">Five tiers.</span>{" "}
+                <span className="text-bone/40">One operating system.</span>
+              </h1>
+              <p className="mt-8 max-w-3xl text-lg leading-[1.55] text-bone/60 md:text-xl">
+                GladiusTurf is the first landscaping platform built like
+                Gladius CRM and Gladius BDC — AI-orchestrated, self-improving,
+                and deep enough to retire your other six tools by month two.
+              </p>
+              <div className="mt-10 flex flex-wrap items-center gap-5">
+                <CtaButton href="/demo" variant="primary" size="lg">
+                  Book a demo
+                </CtaButton>
+                <CtaButton href="/pricing" variant="ghost-honey" size="lg">
+                  See pricing →
+                </CtaButton>
+              </div>
+            </ScrollReveal>
           </div>
         </section>
 
-        {/* 2. The premise band */}
+        {/* 2. Tier overview band */}
         <section className="border-b border-bone/5 bg-forest-mid">
           <div className="mx-auto max-w-7xl px-6 py-28">
-            <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright">
-                  The premise
-                </p>
-                <h2 className="mt-6 font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
-                  A feature is a button.
-                  <br />
-                  <span className="text-bone/40">An engine is an outcome.</span>
-                </h2>
-              </div>
-              <div className="md:col-span-2">
-                <p className="text-lg leading-[1.6] text-bone/60">
-                  Legacy field-service software is a database with a paint job.
-                  You log work, you bill it, you run a report. Nothing in the
-                  product gets paid for performance. GladiusTurf inverts that.
-                  Every engine ships against a specific dollar number — saved
-                  deals, recovered referrals, prevented fines, recaptured
-                  margin — and we write that number on the contract. If an
-                  engine isn&rsquo;t moving its number inside ninety days, we
-                  retire it. That&rsquo;s the deal.
-                </p>
-                <p className="mt-6 text-base leading-[1.7] text-bone/40">
-                  The nine engines below share one data spine: every quote,
-                  every schedule, every crew note, every invoice, every review,
-                  every payment, every follow-up feeds the next loop. There is
-                  no double-entry. There is no &ldquo;export to CSV.&rdquo;
-                  There is one revenue brain.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 3. Engines section header */}
-        <section id="engines" aria-label="Nine engines, in detail" className="bg-forest-deep">
-          <div className="mx-auto max-w-7xl px-6 pt-28">
-            <div className="mx-auto max-w-3xl text-center">
-              <span className="inline-flex items-center gap-2 rounded-full border border-honey/30 bg-honey/5 px-3 py-1 text-xs font-medium text-honey-bright">
-                <IconZap className="h-3 w-3" /> Nine engines, one spine
-              </span>
-              <h2 className="mt-6 font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
-                Every revenue gap your stack is leaking through.
-                <br />
-                <span className="text-bone/40">One engine per gap.</span>
+            <ScrollReveal>
+              <Eyebrow tone="moss">Five tiers</Eyebrow>
+              <h2 className="mt-4 max-w-3xl font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
+                Engines aren&rsquo;t features.{" "}
+                <span className="text-bone/40">They&rsquo;re a vertical.</span>
               </h2>
-            </div>
-          </div>
+              <p className="mt-6 max-w-3xl text-lg leading-[1.6] text-bone/60">
+                Five tiers, twenty-seven engines, one shared data spine. Every
+                quote, every schedule, every crew note, every invoice, every
+                review, every payment feeds the next loop. There is no
+                double-entry. There is no &ldquo;export to CSV.&rdquo; There is
+                one revenue brain.
+              </p>
+            </ScrollReveal>
 
-          {/* 4. Per-engine alternating blocks */}
-          <div className="mx-auto max-w-7xl px-6 pb-28">
-            {ALL_ENGINES.map((engine, i) => {
-              const copy = ENGINE_COPY.find((c) => c.slug === engine.slug);
-              if (!copy) return null;
-              const Icon = ENGINE_ICONS[engine.slug] ?? IconSparkles;
-              const reverse = i % 2 === 1;
-              // Engines 01,03,05,07,09 (odd by number) use moss; 02,04,06,08 use honey.
-              const engineNum = parseInt(engine.number, 10);
-              const isMoss = engineNum % 2 === 1;
-              const pillCls = isMoss
-                ? "border-moss/30 bg-moss/5 text-moss-bright"
-                : "border-honey/30 bg-honey/5 text-honey-bright";
-              const accentText = isMoss ? "text-moss-bright" : "text-honey-bright";
-              const dotCls = isMoss ? "bg-moss-bright" : "bg-honey-bright";
-              return (
-                <article
-                  key={engine.slug}
-                  id={engine.slug}
-                  className="mt-24 grid scroll-mt-24 items-center gap-12 md:grid-cols-2 first:mt-20"
-                >
-                  {/* Copy side */}
-                  <div className={reverse ? "md:order-2" : "md:order-1"}>
-                    <span
-                      className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium ${pillCls}`}
+            <div className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-5">
+              {ENGINE_TIERS.map((tier, idx) => {
+                const isHoney = tier.accent === "honey";
+                const accentBorder = isHoney
+                  ? "hover:border-honey/40"
+                  : "hover:border-moss/40";
+                return (
+                  <ScrollReveal key={tier.slug} delay={idx * 0.05}>
+                    <a
+                      href={`#tier-${tier.slug}`}
+                      className={`block h-full rounded-2xl border border-bone/10 bg-bone/[0.02] p-5 transition-colors ${accentBorder}`}
                     >
-                      <Icon className="h-3 w-3" />
-                      <span className="font-mono">
-                        {engine.number} · {engine.name}
-                      </span>
-                    </span>
-                    <h3
-                      className="mt-5 font-serif text-3xl tracking-tight text-bone md:text-4xl"
-                      dangerouslySetInnerHTML={dangerouslyHTML(copy.tagline)}
-                    />
-                    <p className="mt-5 text-lg leading-[1.55] text-bone/60">
-                      <span dangerouslySetInnerHTML={dangerouslyHTML(engine.description)} />
-                    </p>
-                    {copy.paragraphs.map((p, idx) => (
                       <p
-                        key={idx}
-                        className="mt-4 text-base leading-[1.7] text-bone/50"
-                        dangerouslySetInnerHTML={dangerouslyHTML(p)}
-                      />
-                    ))}
-                    <ul className="mt-6 space-y-3">
-                      {copy.features.map((f) => (
-                        <li
-                          key={f}
-                          className="flex items-start gap-3 text-sm text-bone/70"
-                        >
-                          <span
-                            aria-hidden="true"
-                            className={`mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full ${dotCls}`}
-                          />
-                          <span dangerouslySetInnerHTML={dangerouslyHTML(f)} />
-                        </li>
-                      ))}
-                    </ul>
-                    <div className="mt-7 inline-flex items-center gap-2 rounded-full border border-bone/10 bg-bone/5 px-4 py-1.5">
-                      <span className="font-mono text-[11px] uppercase tracking-wider text-bone/40">
-                        Outcome
-                      </span>
-                      <span
-                        className={`font-mono text-[13px] font-semibold ${accentText}`}
+                        className={`font-mono text-[10px] uppercase tracking-[0.2em] ${tierAccent(tier.accent)}`}
                       >
-                        {engine.outcome}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Mock side */}
-                  <div className={reverse ? "md:order-1" : "md:order-2"}>
-                    <FeatureMock slug={engine.slug} />
-                  </div>
-                </article>
-              );
-            })}
+                        {String(idx + 1).padStart(2, "0")} ·{" "}
+                        {TIER_ENGINE_COUNTS[tier.slug] ?? 0} engines
+                      </p>
+                      <h3 className="mt-3 font-serif text-2xl tracking-tight text-bone">
+                        {tier.name}
+                      </h3>
+                      <p className="mt-2 text-sm leading-[1.5] text-bone/60">
+                        {tier.tagline}
+                      </p>
+                    </a>
+                  </ScrollReveal>
+                );
+              })}
+            </div>
           </div>
         </section>
 
-        {/* 5. Architecture flow */}
+        {/* 3. Per-tier deep-dive sections */}
+        {ENGINE_TIERS.map((tier) => {
+          const tierEngines = ENGINES_FULL.filter((e) => e.tier === tier.slug);
+          const bg = tierBg(tier.slug);
+          const accentTextCls = tierAccent(tier.accent);
+          return (
+            <section
+              key={tier.slug}
+              id={`tier-${tier.slug}`}
+              aria-label={`${tier.name} tier`}
+              className={`scroll-mt-24 border-b border-bone/5 ${bg}`}
+            >
+              <div className="mx-auto max-w-7xl px-6 py-28">
+                <ScrollReveal>
+                  <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
+                    <div>
+                      <Eyebrow tone={tier.accent === "honey" ? "honey" : "moss"}>
+                        {tier.name} tier
+                      </Eyebrow>
+                      <h2 className="mt-4 font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
+                        {tier.tagline}
+                      </h2>
+                      <p
+                        className={`mt-4 font-mono text-[11px] uppercase tracking-[0.2em] ${accentTextCls}`}
+                      >
+                        {tierEngines.length}{" "}
+                        {tierEngines.length === 1 ? "engine" : "engines"}
+                      </p>
+                    </div>
+                    <p className="text-lg leading-[1.6] text-bone/60 md:col-span-2">
+                      {tier.blurb}
+                    </p>
+                  </div>
+                </ScrollReveal>
+
+                <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-2">
+                  {tierEngines.map((engine, i) => {
+                    const useMoss = i % 2 === 0;
+                    const engineAccentCls = useMoss
+                      ? "text-moss-bright"
+                      : "text-honey-bright";
+                    const dotMoss = "bg-moss-bright";
+                    const dotHoney = "bg-honey-bright";
+                    return (
+                      <ScrollReveal key={engine.slug} delay={i * 0.04}>
+                        <article
+                          id={engine.slug}
+                          className="flex h-full scroll-mt-24 flex-col rounded-2xl border border-bone/10 bg-bone/[0.02] p-7 md:p-8"
+                        >
+                          <div className="flex items-center justify-between gap-4">
+                            <span
+                              className={`font-mono text-3xl tracking-tight md:text-4xl ${engineAccentCls}`}
+                              style={{ opacity: 0.4 }}
+                            >
+                              {engine.number}
+                            </span>
+                            <span
+                              className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 font-mono text-[11px] ${
+                                useMoss
+                                  ? "border-moss/30 bg-moss/5 text-moss-bright"
+                                  : "border-honey/30 bg-honey/5 text-honey-bright"
+                              }`}
+                            >
+                              {engine.outcome}
+                            </span>
+                          </div>
+                          <h3 className="mt-5 font-serif text-3xl tracking-tight text-bone md:text-4xl">
+                            {engine.name}
+                          </h3>
+                          <p className="mt-4 text-base leading-[1.65] text-bone/60">
+                            {engine.description}
+                          </p>
+                          <ul className="mt-6 space-y-3">
+                            {engine.features.map((f, fi) => {
+                              const featureMoss = fi % 2 === 0;
+                              return (
+                                <li
+                                  key={f}
+                                  className="flex items-start gap-3 text-sm text-bone/70"
+                                >
+                                  <span
+                                    aria-hidden="true"
+                                    className={`mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full ${
+                                      featureMoss ? dotMoss : dotHoney
+                                    }`}
+                                  />
+                                  <span>{f}</span>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </article>
+                      </ScrollReveal>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+          );
+        })}
+
+        {/* 4. Architecture spine band */}
         <section
           id="architecture"
-          className="border-y border-bone/5 bg-forest-mid"
+          className="border-b border-bone/5 bg-forest-deep"
         >
           <div className="mx-auto max-w-7xl px-6 py-28">
-            <div className="mx-auto max-w-3xl text-center">
-              <span className="inline-flex items-center gap-2 rounded-full border border-honey/30 bg-honey/5 px-3 py-1 text-xs font-medium text-honey-bright">
-                <IconBrain className="h-3 w-3" /> Architecture
-              </span>
-              <h2 className="mt-6 font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
-                One spine.{" "}
-                <span className="text-honey-bright">Nine engines.</span>
-              </h2>
-              <p className="mt-6 text-lg leading-[1.6] text-bone/60">
-                The same property record feeds every screen. The same client
-                identity follows every touch. There is one source of truth, and
-                every engine writes back to it.
-              </p>
-            </div>
+            <ScrollReveal>
+              <div className="mx-auto max-w-3xl text-center">
+                <Eyebrow tone="moss">Architecture</Eyebrow>
+                <h2 className="mt-4 font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
+                  Twenty-seven engines.{" "}
+                  <span className="text-moss-bright">One spine.</span>
+                </h2>
+                <p className="mt-6 text-lg leading-[1.6] text-bone/60">
+                  The same property record feeds every screen. The same
+                  customer identity follows every touch. Every engine reads
+                  from one truth and writes back to it. Below: which engines
+                  fire at each moment of the customer journey.
+                </p>
+              </div>
+            </ScrollReveal>
 
-            <div className="mt-16 flex flex-wrap items-center justify-center gap-3">
-              {ARCHITECTURE_STEPS.map((step, idx) => (
-                <div key={step} className="flex items-center gap-3">
-                  <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] px-5 py-3 text-center">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-bone/40">
+            {/* Step pills */}
+            <ScrollReveal delay={0.1}>
+              <div className="mt-14 flex flex-wrap items-center justify-center gap-2">
+                {SPINE_STEPS.map((s, idx) => (
+                  <div key={s.step} className="flex items-center gap-2">
+                    <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] px-4 py-2 text-center">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-bone/40">
+                        Step {String(idx + 1).padStart(2, "0")}
+                      </p>
+                      <p className="mt-1 font-serif text-base text-bone">
+                        {s.step}
+                      </p>
+                    </div>
+                    {idx < SPINE_STEPS.length - 1 && (
+                      <IconChevronRight className="h-4 w-4 text-honey-bright" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </ScrollReveal>
+
+            {/* Per-step engine map */}
+            <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
+              {SPINE_STEPS.map((s, idx) => (
+                <ScrollReveal key={s.step} delay={idx * 0.04}>
+                  <div className="h-full rounded-2xl border border-bone/10 bg-bone/[0.02] p-5">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-moss-bright">
                       Step {String(idx + 1).padStart(2, "0")}
                     </p>
-                    <p className="mt-1 font-serif text-lg text-bone">{step}</p>
+                    <h3 className="mt-2 font-serif text-xl text-bone">
+                      {s.step}
+                    </h3>
+                    <ul className="mt-4 space-y-1.5">
+                      {s.engines.map((eng, ei) => {
+                        const dotMoss = ei % 2 === 0;
+                        return (
+                          <li
+                            key={eng}
+                            className="flex items-start gap-2 text-[13px] leading-[1.4] text-bone/70"
+                          >
+                            <span
+                              aria-hidden="true"
+                              className={`mt-1.5 inline-block h-1 w-1 shrink-0 rounded-full ${
+                                dotMoss ? "bg-moss-bright" : "bg-honey-bright"
+                              }`}
+                            />
+                            <span>{eng}</span>
+                          </li>
+                        );
+                      })}
+                    </ul>
                   </div>
-                  {idx < ARCHITECTURE_STEPS.length - 1 && (
-                    <IconChevronRight className="h-5 w-5 text-honey-bright" />
-                  )}
-                </div>
+                </ScrollReveal>
               ))}
             </div>
 
             <p className="mx-auto mt-12 max-w-3xl text-center text-base leading-[1.7] text-bone/50">
-              A four-truck shop using GladiusTurf acts like a forty-truck operation.
-              The completed job feeds the next-touch queue and the neighbor campaign.
-              The property never goes quiet between renewals.
+              A four-truck shop on GladiusTurf operates like a forty-truck
+              shop. The completed job feeds the next-touch queue. The next
+              touch feeds the neighbor campaign. The property never goes quiet
+              between renewals.
             </p>
           </div>
         </section>
 
-        {/* 6. Integrations */}
-        <section
-          id="integrations"
-          className="border-b border-bone/5 bg-forest-deep"
-        >
+        {/* 5. Platform primitives */}
+        <section className="border-b border-bone/5 bg-forest-mid">
           <div className="mx-auto max-w-7xl px-6 py-28">
-            <div className="mx-auto max-w-3xl text-center">
-              <span className="inline-flex items-center gap-2 rounded-full border border-honey/30 bg-honey/5 px-3 py-1 text-xs font-medium text-honey-bright">
-                <IconBoxes className="h-3 w-3" /> Integrations
-              </span>
-              <h2 className="mt-6 font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
-                Plays with the stack you already pay for.
-              </h2>
-              <p className="mt-6 text-lg leading-[1.6] text-bone/60">
-                The fastest way to lose a switching customer is to demand a
-                rip-and-replace on day one. We don&rsquo;t. Plug in and we&rsquo;ll
-                retire what&rsquo;s redundant on your timeline.
-              </p>
-            </div>
+            <ScrollReveal>
+              <div className="mx-auto max-w-3xl text-center">
+                <Eyebrow tone="honey">Platform primitives</Eyebrow>
+                <h2 className="mt-4 font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
+                  The boring tech that makes{" "}
+                  <span className="text-honey-bright">the magic</span> possible.
+                </h2>
+                <p className="mt-6 text-lg leading-[1.6] text-bone/60">
+                  We don&rsquo;t reinvent infra. We pick the best vendor in
+                  each lane and we wire them so well your shop stops noticing
+                  they&rsquo;re there.
+                </p>
+              </div>
+            </ScrollReveal>
 
-            <ul className="mt-16 grid grid-cols-2 gap-4 lg:grid-cols-5">
-              {INTEGRATIONS.map((it) => (
-                <li
-                  key={it.name}
-                  className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-5 transition-colors hover:border-honey/30"
-                >
-                  <h3 className="font-mono text-sm font-semibold uppercase tracking-wider text-honey-bright">
-                    {it.name}
-                  </h3>
-                  <p
-                    className="mt-3 text-[13px] leading-[1.55] text-bone/60"
-                    dangerouslySetInnerHTML={dangerouslyHTML(it.line)}
-                  />
-                </li>
+            <ul className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {PRIMITIVES.map((p, i) => (
+                <ScrollReveal key={p.name} delay={i * 0.04}>
+                  <li className="h-full rounded-2xl border border-bone/10 bg-bone/[0.02] p-6 transition-colors hover:border-honey/30">
+                    <p
+                      className={`font-mono text-xs uppercase tracking-[0.2em] ${
+                        i % 2 === 0
+                          ? "text-moss-bright"
+                          : "text-honey-bright"
+                      }`}
+                    >
+                      {p.name}
+                    </p>
+                    <p className="mt-3 text-[14px] leading-[1.6] text-bone/65">
+                      {p.line}
+                    </p>
+                  </li>
+                </ScrollReveal>
               ))}
             </ul>
           </div>
         </section>
 
+        {/* 6. Final CTA */}
         <CtaBand />
       </main>
       <Footer />

@@ -45,6 +45,9 @@ export function Nav() {
           <a className="transition-colors hover:text-moss-bright" href="/find-a-crew">
             Find a crew
           </a>
+          <a className="transition-colors hover:text-lime-bright" href="/platform">
+            Platform
+          </a>
         </nav>
         <Link
           href="/demo"

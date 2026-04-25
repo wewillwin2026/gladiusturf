@@ -23,7 +23,7 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 
 export const metadata: Metadata = {
   description:
-    "GladiusTurf is the nine-engine revenue intelligence layer that catches every forgotten quote, missed upsell, late invoice, and dropped referral your current stack is letting walk.",
+    "GladiusTurf is the twenty-seven-engine landscaping operating system across five tiers — revenue, lifecycle, intelligence, operations, marketplace — that catches every forgotten quote, missed upsell, late invoice, and dropped referral your current stack is letting walk.",
 };
 
 const FOUNDING_CREWS = [
@@ -47,9 +47,9 @@ const PROBLEM_STATS = [
     label: "lost to missed calls per month at the average shop",
   },
   {
-    value: 42,
-    suffix: "%",
-    label: "of requested callbacks that never happen industry-wide",
+    value: 27,
+    suffix: " engines",
+    label: "across five tiers — one operating system that closes every leak",
   },
 ];
 

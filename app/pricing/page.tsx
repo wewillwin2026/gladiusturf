@@ -1,31 +1,108 @@
 import type { Metadata } from "next";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { CtaBand } from "@/components/cta-band";
+import { Eyebrow } from "@/components/eyebrow";
 import { Footer } from "@/components/footer";
 import { Nav } from "@/components/nav";
+import { Pill } from "@/components/pill";
+import { ENGINE_TIERS } from "@/content/engine-tiers";
 import { BDC_ADDON, TIERS } from "@/content/pricing";
 
 export const metadata: Metadata = {
-  title: "Pricing — Flat per crew. No per-seat tax. No usage gotchas.",
+  title:
+    "Pricing — All twenty-seven engines on every plan. Per crew, no per-seat tax.",
   description:
-    "GladiusTurf pricing: $397 Independent, $997 Professional, $2,997 Enterprise per crew per month. All nine engines included. Unlimited seats. Optional $499 BDC addon. Month-to-month, no contract.",
+    "GladiusTurf pricing: $397 Independent, $997 Professional, $2,997 Enterprise per crew per month. All twenty-seven engines on every plan, including Field Crew App PWA, Client Portal, Cadence, and the LRI Score. Optional $499 BDC addon for manned weekend phone coverage.",
 };
 
-// Per-tier extra feature rows for the new Client Portal + Cadence engines.
-// Held in page.tsx so we don't touch content/pricing.ts on this pass.
-const TIER_EXTRAS: Record<"independent" | "professional" | "enterprise", string[]> = {
+// Per-tier feature lists for the new 27-engine roster.
+// Held in page.tsx so we don't touch content/pricing.ts on this pass —
+// content TIERS still drives price + name, this controls the on-page bullets.
+const TIER_FEATURES: Record<
+  "independent" | "professional" | "enterprise",
+  string[]
+> = {
   independent: [
-    "Client Portal — branded for your crew, included",
-    "Cadence — automated follow-up + reminders, included",
+    "All 27 engines included",
+    "Up to 1 crew (unlimited seats per crew)",
+    "Field Crew App PWA",
+    "Client Portal (white-labeled)",
+    "QuickBooks + Stripe + Twilio integrations",
+    "Email support",
+    "Email + chat support, 1 business day response",
   ],
   professional: [
-    "Client Portal — branded for your crew, included",
-    "Cadence — automated follow-up + reminders, included",
+    "All 27 engines included",
+    "Up to 5 crews (unlimited seats per crew)",
+    "All Independent features +",
+    "Cortex autonomous hypothesis engine",
+    "Operator Score crew passports",
+    "Multi-location dashboard",
+    "Priority support, 4-hour response",
+    "Dedicated CSM at month 3",
   ],
   enterprise: [
-    "Client Portal — multi-location white-label",
-    "Cadence — custom seasonal cadences",
+    "All 27 engines + Enterprise extras",
+    "6+ crews, multi-location",
+    "Custom integration builds",
+    "Custom prompt registry (Cortex tenant)",
+    "Sage Intacct + custom accounting",
+    "Dedicated infrastructure / private region",
+    "Named account team + 24/7 hotline",
   ],
 };
+
+const ROI_CARDS: {
+  name: string;
+  amount: string;
+  cadence: string;
+  body: string;
+  tone: "moss" | "honey";
+  badge?: string;
+}[] = [
+  {
+    name: "Quote Intercept",
+    amount: "$14,200",
+    cadence: "recovered per month",
+    body: "Estimates that go cold the moment a customer doesn't hear back inside 24 hours. SMS routing pulls them back. Average shop sees this in week two.",
+    tone: "moss",
+  },
+  {
+    name: "Upsell Whisperer",
+    amount: "+$38,000",
+    cadence: "added monthly revenue",
+    body: "AI scoring on every visit. The customer who needs aeration, the one ready for a fall fertilization upsell, the one whose irrigation timer is on its last season — flagged for the foreman before they roll.",
+    tone: "honey",
+  },
+  {
+    name: "Referral Radar",
+    amount: "$180,000",
+    cadence: "net new annual revenue",
+    body: "Neighbor outreach the day your crew is on someone's lawn. Geo-fenced postcards, SMS intros, satellite-property matching. Highest-LTV channel in landscaping.",
+    tone: "moss",
+  },
+  {
+    name: "Cadence",
+    amount: "$12,800",
+    cadence: "recovered per month",
+    body: "Personalized SMS + email reminders that read from Site Memory — the gate code, the dog's name, the back zone. Drives +24% retention. Included on every tier.",
+    tone: "honey",
+  },
+  {
+    name: "QuickHook",
+    amount: "$8,400",
+    cadence: "first-touch wins per month",
+    body: "60-second auto-reply on every inbound — so the lead that hits your form at 9:47pm is already in conversation by 9:48. Wins the race against the four other shops they messaged.",
+    tone: "moss",
+  },
+  {
+    name: "Ghost Recovery",
+    amount: "$11,200",
+    cadence: "dead-lead resurrection per month",
+    body: "Voss-style escalation that reawakens the leads everyone else gave up on. Pattern-interrupt phrasing tuned on landscaping deals that closed after going dark for 30+ days.",
+    tone: "honey",
+  },
+];
 
 const FAQ: { q: string; a: string }[] = [
   {
@@ -58,7 +135,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "Is there a free trial?",
-    a: "14-day pilot at Professional pricing, no card required to start. We give you a sandbox loaded with sample customers and recurring routes so you can stress-test Quote Intercept and Upsell Whisperer against your own dollar figures. If you don't see a clear payback path by day 14, we close the account and refund any setup time we billed. We're confident enough in the engines to put our own time at risk.",
+    a: "14-day pilot at Professional pricing, no card required to start. We give you a sandbox loaded with sample customers and recurring routes so you can stress-test Quote Intercept, Upsell Whisperer, and the LRI Score against your own dollar figures. If you don't see a clear payback path by day 14, we close the account and refund any setup time we billed. We're confident enough in the engines to put our own time at risk.",
   },
   {
     q: "Do you offer white-label?",
@@ -70,7 +147,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "What does support actually look like?",
-    a: "Independent: email and in-app chat, 4-hour response on weekdays. Professional: priority email and chat, 1-hour response weekdays, plus a dedicated Customer Success Manager assigned at month 3 once your engines are tuned. Enterprise: named account team with a revenue strategist, direct phone line to your CSM, founder access for escalations, and a published SLA with service credits if we miss it.",
+    a: "Independent: email and in-app chat, 1 business day weekday response. Professional: priority email and chat, 4-hour weekday response, plus a dedicated Customer Success Manager assigned at month 3 once your engines are tuned. Enterprise: named account team with a revenue strategist, 24/7 hotline, founder access for escalations, and a published SLA with service credits if we miss it.",
   },
   {
     q: "What happens if my crew count drops in the off-season?",
@@ -83,6 +160,18 @@ const FAQ: { q: string; a: string }[] = [
   {
     q: "What's the difference between Cadence and a CRM cadence engine?",
     a: "Most CRMs ship a basic 'send email at Day 7' rule. Cadence reads from Site Memory — the dog's name, the gate code, the back zone — and personalizes every touch. It's also tuned for landscaping rhythms (NOAA-timed seasonal reminders, applicator-aware messaging) instead of generic SaaS cadences.",
+  },
+  {
+    q: "Are all 27 engines really on every plan?",
+    a: "Yes. We don't believe in feature-tier extortion. Every plan ships every engine. Tiers differ on crew count, seats, support, and customization — not on what the AI can do for you.",
+  },
+  {
+    q: "What is the LRI Score?",
+    a: "Landscaping Revenue Intelligence. A nightly 0–100 score per shop, per crew, per property — combining win rate, on-time rate, customer satisfaction, safety, and repeat rate. See /score for the full methodology.",
+  },
+  {
+    q: "Do I get the Field Crew App on every plan?",
+    a: "Yes. The PWA is included on every tier. Offline-first, works on any phone (iOS / Android / rugged tablet). See /field for capabilities.",
   },
 ];
 
@@ -124,21 +213,14 @@ function ArrowRightIcon({ className }: { className?: string }) {
   );
 }
 
-function SparklesIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 16 16"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path
-        d="M8 1.5l1.4 3.6L13 6.5l-3.6 1.4L8 11.5 6.6 7.9 3 6.5l3.6-1.4L8 1.5zM12.5 11l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7.7-1.8z"
-        fill="currentColor"
-      />
-    </svg>
-  );
-}
+// Engine counts per tier — drives the "Platform tier breakdown" cards.
+const ENGINE_TIER_COUNTS: Record<string, number> = {
+  revenue: 8,
+  lifecycle: 6,
+  intelligence: 6,
+  operations: 5,
+  marketplace: 2,
+};
 
 export default function PricingPage() {
   return (
@@ -175,17 +257,16 @@ export default function PricingPage() {
 
             {/* Hero copy */}
             <div className="mx-auto max-w-3xl text-center">
-              <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-moss/30 bg-moss/5 px-3 py-1 text-xs font-medium text-moss-bright">
-                <SparklesIcon className="h-3 w-3" />
+              <Pill tone="moss" className="mb-3">
+                <Sparkles className="h-3 w-3" />
                 Pricing
-              </p>
+              </Pill>
               <h1 className="font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
                 Flat per crew. No per-seat tax. No usage gotchas.
               </h1>
               <p className="mt-6 text-lg text-bone/60">
-                Every plan ships with all nine engines — including the new
-                Client Portal and Cadence. No add-on tax. No usage caps. The
-                number you see is the number you pay.
+                All twenty-seven engines on every plan. Per-crew flat pricing,
+                no per-seat tax, no usage gotchas.
               </p>
             </div>
 
@@ -193,6 +274,7 @@ export default function PricingPage() {
             <div className="mx-auto mt-16 grid max-w-5xl gap-6 md:grid-cols-3">
               {TIERS.map((tier) => {
                 const featured = Boolean(tier.featured);
+                const features = TIER_FEATURES[tier.id];
                 return (
                   <div
                     key={tier.id}
@@ -221,7 +303,11 @@ export default function PricingPage() {
                       per crew, billed monthly
                     </p>
                     <a
-                      href={tier.id === "enterprise" ? "/demo?tier=enterprise" : "/demo"}
+                      href={
+                        tier.id === "enterprise"
+                          ? "/demo?tier=enterprise"
+                          : "/demo"
+                      }
                       className={
                         featured
                           ? "mt-8 inline-flex items-center justify-center gap-1.5 rounded-lg bg-lime-bright px-4 py-3 text-sm font-semibold text-forest shadow-cta transition-colors hover:bg-moss"
@@ -232,7 +318,7 @@ export default function PricingPage() {
                       <ArrowRightIcon className="h-3.5 w-3.5" />
                     </a>
                     <ul className="mt-8 space-y-3 text-sm text-bone/70">
-                      {[...tier.features, ...TIER_EXTRAS[tier.id]].map((f, i) => (
+                      {features.map((f, i) => (
                         <li key={f} className="flex items-start gap-2.5">
                           <CheckIcon
                             className={
@@ -258,12 +344,11 @@ export default function PricingPage() {
                 </p>
                 <p className="mt-3 text-sm leading-[1.65] text-bone/60">
                   Built for the solo operator running one truck and one crew.
-                  All nine engines on day one — Quote Intercept, Site Memory,
-                  Weather Pivot, Referral Radar, Upsell Whisperer, Surplus
-                  Yard, Applicator Shield, Client Portal, and Cadence. Email
-                  and in-app chat support with a 4-hour weekday response. The
-                  same product the $15M-revenue shops use, sized for a
-                  one-crew leak rate.
+                  All 27 engines on day one — including the Field Crew App PWA,
+                  Client Portal, and the LRI Score. The same product the
+                  $15M-revenue shops use, sized for a one-crew leak rate.
+                  See <a href="/platform" className="text-moss-bright hover:text-bone">/platform</a>{" "}
+                  for the full engine roster.
                 </p>
               </div>
               <div>
@@ -272,11 +357,11 @@ export default function PricingPage() {
                 </p>
                 <p className="mt-3 text-sm leading-[1.65] text-bone/60">
                   The tier where the math gets brutal. 2 to 5 crews, priority
-                  support with 1-hour weekday response, and a dedicated
-                  Customer Success Manager assigned at month 3 once your
-                  engines are tuned to your route density and pricing
-                  patterns. This is where most operators land and stay. One
-                  recovered Quote Intercept payback covers a full year.
+                  support with 4-hour weekday response, the Cortex autonomous
+                  hypothesis engine, Operator Score crew passports, and a
+                  multi-location dashboard. A dedicated CSM joins at month 3
+                  once your engines are tuned. This is where most operators
+                  land and stay.
                 </p>
               </div>
               <div>
@@ -284,13 +369,15 @@ export default function PricingPage() {
                   Enterprise — $2,997
                 </p>
                 <p className="mt-3 text-sm leading-[1.65] text-bone/60">
-                  6 or more crews, multi-location, white-glove onboarding
-                  with a named project manager, custom integrations to your
-                  existing accounting, telematics, or HR systems, and a
-                  named account team that includes a revenue strategist
-                  reviewing your numbers monthly. Direct line to the founder
-                  for escalations. Service-level agreement with credits when
-                  we miss it.
+                  6+ crews, multi-location, custom integration builds, custom
+                  prompt registry on a tenant Cortex, Sage Intacct support, and
+                  dedicated infrastructure on a private region. Named account
+                  team plus a 24/7 hotline. SLA with credits when we miss it.
+                  Review the security posture at{" "}
+                  <a href="/security" className="text-honey-bright hover:text-bone">
+                    /security
+                  </a>
+                  .
                 </p>
               </div>
             </div>
@@ -302,9 +389,9 @@ export default function PricingPage() {
           <div className="mx-auto max-w-7xl px-6">
             <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
               <div className="md:col-span-5">
-                <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-honey/30 bg-honey/5 px-3 py-1 text-xs font-medium text-honey-bright">
+                <Pill tone="honey" className="mb-4">
                   Optional addon
-                </p>
+                </Pill>
                 <h2 className="font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
                   GladiusBDC for Turf
                 </h2>
@@ -337,14 +424,16 @@ export default function PricingPage() {
                     aren&apos;t running.
                   </p>
                   <p className="mt-4 text-sm leading-[1.65] text-honey-bright">
-                    Cadence (included on every tier) handles the automated
-                    follow-up cadences — SMS, email, NOAA-timed seasonal
-                    nudges. The BDC addon stacks on top with{" "}
-                    <span className="font-semibold">manned weekend phone
-                    coverage</span>{" "}
+                    <span className="font-semibold">Cadence is included on
+                    every plan</span>{" "}
+                    — automated SMS, email, and NOAA-timed seasonal nudges.
+                    The BDC addon stacks on top with{" "}
+                    <span className="font-semibold">
+                      manned weekend phone coverage
+                    </span>{" "}
                     and live human dialing. The two are complementary, not
-                    redundant: software handles the 80% that automates,
-                    humans handle the 20% that closes.
+                    redundant: software handles the 80% that automates, humans
+                    handle the 20% that closes.
                   </p>
                   <ul className="mt-8 flex flex-col gap-5 text-sm leading-[1.65] text-bone/60">
                     <li className="flex gap-3">
@@ -360,7 +449,7 @@ export default function PricingPage() {
                       </span>
                     </li>
                     <li className="flex gap-3">
-                      <CheckIcon className="mt-1 h-4 w-4 flex-none text-honey-bright" />
+                      <CheckIcon className="mt-1 h-4 w-4 flex-none text-moss-bright" />
                       <span>
                         <span className="font-semibold text-bone">
                           Dormant-customer reactivation.
@@ -386,7 +475,7 @@ export default function PricingPage() {
                       </span>
                     </li>
                     <li className="flex gap-3">
-                      <CheckIcon className="mt-1 h-4 w-4 flex-none text-honey-bright" />
+                      <CheckIcon className="mt-1 h-4 w-4 flex-none text-moss-bright" />
                       <span>
                         <span className="font-semibold text-bone">
                           Spring-rush overflow.
@@ -409,128 +498,152 @@ export default function PricingPage() {
         <section className="py-28">
           <div className="mx-auto max-w-7xl px-6">
             <div className="mx-auto max-w-3xl text-center">
-              <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-moss/30 bg-moss/5 px-3 py-1 text-xs font-medium text-moss-bright">
+              <Pill tone="moss" className="mb-3">
                 The math
-              </p>
+              </Pill>
               <h2 className="font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
-                One recovered Quote Intercept payback covers a Professional
-                tier for fourteen months.
+                Six engines. One Professional tier. Pays for itself roughly 70x
+                over.
               </h2>
             </div>
 
-            <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-              <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-8">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-bone/40">
-                  Quote Intercept
-                </p>
-                <p className="mt-4 font-mono text-5xl text-moss-bright">
-                  $14,200
-                </p>
-                <p className="text-sm text-bone/40">recovered per month</p>
-                <p className="mt-6 text-sm leading-[1.65] text-bone/60">
-                  Estimates that go cold the moment a customer doesn&apos;t
-                  hear back inside 24 hours. SMS routing pulls them back.
-                  Average shop sees this in week two.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-honey/40 bg-gradient-to-b from-honey/10 to-transparent p-8 shadow-pop-honey">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-honey-bright">
-                  Upsell Whisperer
-                </p>
-                <p className="mt-4 font-mono text-5xl text-honey-bright">
-                  +$38,000
-                </p>
-                <p className="text-sm text-bone/60">added monthly revenue</p>
-                <p className="mt-6 text-sm leading-[1.65] text-bone/70">
-                  AI scoring on every visit. The customer who needs aeration,
-                  the one ready for a fall fertilization upsell, the one
-                  whose irrigation timer is on its last season — flagged for
-                  the foreman before they roll.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-8">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-bone/40">
-                  Referral Radar
-                </p>
-                <p className="mt-4 font-mono text-5xl text-moss-bright">
-                  $180,000
-                </p>
-                <p className="text-sm text-bone/40">net new annual revenue</p>
-                <p className="mt-6 text-sm leading-[1.65] text-bone/60">
-                  Neighbor outreach the day your crew is on someone&apos;s
-                  lawn. Geo-fenced postcards, SMS intros, satellite-property
-                  matching. Highest-LTV channel in landscaping.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-honey/40 bg-gradient-to-b from-honey/10 to-transparent p-8 shadow-pop-honey">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-honey-bright">
-                  Cadence · NEW
-                </p>
-                <p className="mt-4 font-mono text-5xl text-honey-bright">
-                  $12,800
-                </p>
-                <p className="text-sm text-bone/60">
-                  recovered per month from late invoices
-                </p>
-                <p className="mt-6 text-sm leading-[1.65] text-bone/70">
-                  Personalized SMS + email reminders that pull on Site Memory
-                  context — the gate code, the dog&apos;s name, the back zone.
-                  Drives <span className="text-honey-bright">+24% retention</span>.
-                  A single Cadence rescue covers the Professional tier{" "}
-                  <span className="font-mono">12.8x</span> over.
-                </p>
-              </div>
+            <div className="mx-auto mt-16 grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {ROI_CARDS.map((card) => {
+                const isHoney = card.tone === "honey";
+                const cardCls = isHoney
+                  ? "rounded-2xl border border-honey/40 bg-gradient-to-b from-honey/10 to-transparent p-8 shadow-pop-honey"
+                  : "rounded-2xl border border-bone/10 bg-bone/[0.02] p-8";
+                const eyebrowCls = isHoney
+                  ? "text-xs font-semibold uppercase tracking-[0.2em] text-honey-bright"
+                  : "text-xs font-semibold uppercase tracking-[0.2em] text-bone/40";
+                const amountCls = isHoney
+                  ? "mt-4 font-mono text-5xl text-honey-bright"
+                  : "mt-4 font-mono text-5xl text-moss-bright";
+                const cadenceCls = isHoney
+                  ? "text-sm text-bone/60"
+                  : "text-sm text-bone/40";
+                const bodyCls = isHoney
+                  ? "mt-6 text-sm leading-[1.65] text-bone/70"
+                  : "mt-6 text-sm leading-[1.65] text-bone/60";
+                return (
+                  <div key={card.name} className={cardCls}>
+                    <p className={eyebrowCls}>{card.name}</p>
+                    <p className={amountCls}>{card.amount}</p>
+                    <p className={cadenceCls}>{card.cadence}</p>
+                    <p className={bodyCls}>{card.body}</p>
+                  </div>
+                );
+              })}
             </div>
 
             <div className="mx-auto mt-16 max-w-3xl">
               <p className="text-base leading-[1.7] text-bone/80">
-                Run the numbers for the Professional tier. Two crews at $997
-                each is{" "}
-                <span className="font-mono text-moss-bright">$1,994</span> per
-                month — call it{" "}
-                <span className="font-mono text-honey-bright">$23,928</span> a
-                year. The Quote Intercept engine alone, at the average{" "}
-                <span className="font-mono text-moss-bright">$14,200</span> in
-                recovered estimates per month, returns{" "}
-                <span className="font-mono text-honey-bright">$170,400</span>{" "}
-                annually. That&apos;s a{" "}
-                <span className="font-mono text-moss-bright">7.1x</span>{" "}
-                payback on the engine that installs itself in week one. Add
-                Upsell Whisperer&apos;s $38,000-a-month, Referral Radar&apos;s
-                $180,000-a-year, and Cadence&apos;s $12,800-a-month in
-                recovered late invoices, and the conversation stops being
-                about subscription cost. It becomes a question of how fast
-                you can train the foremen to use it.
-              </p>
-              <p className="mt-6 text-base leading-[1.7] text-bone/80">
-                A single recovered $14,200 month covers your Professional
-                tier{" "}
-                <span className="font-mono text-honey-bright">14x</span> over.
-                We&apos;re not pricing this as software. We&apos;re pricing
-                it as a percentage of the leak we plug. Anyone charging less
-                is selling you a CRM that doesn&apos;t do the work. Anyone
-                charging more is selling you ten years of accumulated
-                middleware and a sales rep&apos;s commission.
+                Stack the six engines above and the recovered revenue lines
+                clear{" "}
+                <span className="font-mono text-moss-bright">
+                  $840,000
+                </span>{" "}
+                a year on a typical 2-crew Professional shop. Two crews at
+                $997 each is{" "}
+                <span className="font-mono text-honey-bright">$1,994</span>{" "}
+                per month —{" "}
+                <span className="font-mono text-honey-bright">$23,928</span>{" "}
+                per year. That math comes out to a{" "}
+                <span className="font-mono text-moss-bright">~70x</span>{" "}
+                annual payback before you touch QuickHook&apos;s
+                first-touch-win premium or Ghost Recovery&apos;s dead-lead
+                resurrection. We&apos;re not pricing this as software.
+                We&apos;re pricing it as a percentage of the leak we plug.
               </p>
               <p className="mt-6 text-sm leading-[1.65] text-bone/40">
                 Numbers above are 90-day cohort averages from operators
-                running 2–6 crews after engine tuning. Your mileage will
-                vary with route density, average ticket size, and how
-                disciplined your foremen are about closing tickets in the
-                field. We will show you a 30/60/90 model on the demo with
-                your route count plugged in.
+                running 2–6 crews after engine tuning. Your mileage will vary
+                with route density, average ticket size, and how disciplined
+                your foremen are about closing tickets in the field. We will
+                show you a 30/60/90 model on the demo with your route count
+                plugged in.
               </p>
             </div>
           </div>
         </section>
 
-        {/* FAQ */}
+        {/* Platform tier breakdown */}
         <section className="border-t border-bone/5 bg-forest-mid py-28">
           <div className="mx-auto max-w-7xl px-6">
             <div className="mx-auto max-w-3xl text-center">
-              <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-moss/30 bg-moss/5 px-3 py-1 text-xs font-medium text-moss-bright">
-                Pricing FAQ
+              <Eyebrow tone="honey" className="mb-3">
+                Platform tier breakdown
+              </Eyebrow>
+              <h2 className="font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
+                Twenty-seven engines, organized into five tiers.
+              </h2>
+              <p className="mt-4 text-base leading-[1.65] text-bone/60">
+                Every tier ships on every plan. Click any card to read the
+                tier&apos;s engine roster on the platform page.
               </p>
+            </div>
+
+            <div className="mx-auto mt-14 grid max-w-6xl grid-cols-1 gap-5 md:grid-cols-3 lg:grid-cols-5">
+              {ENGINE_TIERS.map((tier) => {
+                const isHoney = tier.accent === "honey";
+                const cardCls = isHoney
+                  ? "group flex h-full flex-col rounded-2xl border border-honey/30 bg-gradient-to-b from-honey/5 to-transparent p-6 transition-colors hover:border-honey-bright/60"
+                  : "group flex h-full flex-col rounded-2xl border border-moss/30 bg-gradient-to-b from-moss/5 to-transparent p-6 transition-colors hover:border-moss-bright/60";
+                const eyebrowCls = isHoney
+                  ? "text-[10px] font-semibold uppercase tracking-[0.18em] text-honey-bright"
+                  : "text-[10px] font-semibold uppercase tracking-[0.18em] text-moss-bright";
+                const countCls = isHoney
+                  ? "font-mono text-3xl text-honey-bright"
+                  : "font-mono text-3xl text-moss-bright";
+                return (
+                  <a
+                    key={tier.slug}
+                    href={`/platform#${tier.slug}`}
+                    className={cardCls}
+                  >
+                    <p className={eyebrowCls}>{tier.name}</p>
+                    <div className="mt-4 flex items-baseline gap-2">
+                      <span className={countCls}>
+                        {ENGINE_TIER_COUNTS[tier.slug]}
+                      </span>
+                      <span className="text-xs text-bone/40">engines</span>
+                    </div>
+                    <p className="mt-3 text-sm font-medium text-bone">
+                      {tier.tagline}
+                    </p>
+                    <p className="mt-auto pt-4 text-xs leading-[1.55] text-bone/50">
+                      {tier.blurb.split(".")[0]}.
+                    </p>
+                  </a>
+                );
+              })}
+            </div>
+
+            <div className="mx-auto mt-12 max-w-3xl text-center text-sm text-bone/50">
+              Field tooling lives at{" "}
+              <a href="/field" className="text-moss-bright hover:text-bone">
+                /field
+              </a>
+              . The benchmarking score lives at{" "}
+              <a href="/score" className="text-honey-bright hover:text-bone">
+                /score
+              </a>
+              . Integrations live at{" "}
+              <a href="/integrations" className="text-moss-bright hover:text-bone">
+                /integrations
+              </a>
+              .
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section className="border-t border-bone/5 bg-forest-deep py-28">
+          <div className="mx-auto max-w-7xl px-6">
+            <div className="mx-auto max-w-3xl text-center">
+              <Pill tone="moss" className="mb-3">
+                Pricing FAQ
+              </Pill>
               <h2 className="font-serif text-4xl tracking-[-0.02em] text-bone md:text-5xl">
                 The questions every owner asks before they sign.
               </h2>
@@ -570,19 +683,19 @@ export default function PricingPage() {
         </section>
 
         {/* Final CTA — talk to founders */}
-        <section className="relative overflow-hidden border-t border-bone/5 bg-forest-deep py-32">
+        <section className="relative overflow-hidden border-t border-bone/5 bg-forest-mid py-32">
           <div className="mx-auto max-w-4xl px-6 text-center">
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-moss/30 bg-moss/5 px-3 py-1 text-xs font-medium text-moss-bright">
+            <Pill tone="moss" className="mb-4">
               Talk to founders
-            </p>
+            </Pill>
             <h2 className="font-serif text-5xl tracking-[-0.02em] text-bone md:text-7xl">
               Twenty minutes. Zero pressure.
             </h2>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-bone/60 md:text-xl">
               Screen-shared. We&apos;ll plug your route count and average
-              ticket into the model and walk you through a 30/60/90 payback.
-              No sales rep, no SDR — the founders run every demo until it
-              stops scaling, and we&apos;re nowhere close.
+              ticket into the model and walk you through a 30/60/90 payback
+              across all 27 engines. No sales rep, no SDR — the founders run
+              every demo until it stops scaling, and we&apos;re nowhere close.
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <a
@@ -590,7 +703,7 @@ export default function PricingPage() {
                 className="group inline-flex items-center gap-2 rounded-full bg-lime-bright px-8 py-4 text-lg font-semibold text-forest shadow-cta transition-colors hover:bg-moss"
               >
                 Book the founder demo
-                <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </a>
               <a
                 href="mailto:founders@gladiusturf.com"

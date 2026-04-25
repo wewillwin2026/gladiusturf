@@ -11,6 +11,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/demo",
     "/surplus-yard",
     "/find-a-crew",
+    "/platform",
+    "/integrations",
+    "/security",
+    "/field",
+    "/score",
   ];
   const lastModified = new Date();
   return routes.map((r) => ({

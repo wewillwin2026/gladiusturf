@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Fragment } from "react";
 import { ArrowRight, Check, Minus } from "lucide-react";
 import { CtaBand } from "@/components/cta-band";
 import { Eyebrow } from "@/components/eyebrow";
@@ -6,9 +7,10 @@ import { Footer } from "@/components/footer";
 import { Nav } from "@/components/nav";
 
 export const metadata: Metadata = {
-  title: "Why crews leave Aspire, LMN, Service Autopilot, and Jobber",
+  title:
+    "Why crews leave Aspire, LMN, Service Autopilot, and Jobber — 27-engine comparison",
   description:
-    "An honest, side-by-side comparison of GladiusTurf vs. Aspire, LMN, Service Autopilot, Jobber, and Real Green. Revenue intelligence for landscape crews — not another all-in-one ERP.",
+    "An honest, side-by-side comparison of GladiusTurf's 27 engines vs. Aspire, LMN, Service Autopilot, Jobber, and Real Green. Includes the Field Crew App PWA, Client Portal, LRI Score, and the intelligence engines (Intent Scorer, UrgencySync, WinMemory) competitors don't ship at all.",
 };
 
 type Support = "yes" | "partial" | "no";
@@ -23,118 +25,344 @@ type FeatureRow = {
   serviceAutopilot: Support;
 };
 
-const FEATURES: FeatureRow[] = [
+type FeatureSection = {
+  tier: string;
+  blurb: string;
+  rows: FeatureRow[];
+};
+
+const FEATURE_SECTIONS: FeatureSection[] = [
   {
-    feature: "Quote Intercept",
-    detail: "Routed estimates with hard SLAs and escalation when reps go cold",
-    gladius: "yes",
-    aspire: "no",
-    lmn: "no",
-    jobber: "no",
-    serviceAutopilot: "no",
+    tier: "Revenue",
+    blurb: "How you win the work.",
+    rows: [
+      {
+        feature: "Quote Intercept",
+        detail:
+          "Routed estimates with hard SLAs and escalation when reps go cold",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "no",
+        serviceAutopilot: "no",
+      },
+      {
+        feature: "QuickHook",
+        detail:
+          "60-second auto-reply on every inbound — wins the race against the four other shops",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "no",
+        serviceAutopilot: "no",
+      },
+      {
+        feature: "Upsell Whisperer",
+        detail:
+          "AI scans property photos and prior tickets to surface the next job",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "no",
+        serviceAutopilot: "no",
+      },
+      {
+        feature: "Referral Radar",
+        detail:
+          "Detects neighbor opportunities from active job sites and triggers outreach",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "partial",
+        serviceAutopilot: "no",
+      },
+      {
+        feature: "VoiceQuote",
+        detail:
+          "Voice-driven estimates — foreman walks the lawn, the estimate writes itself",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "no",
+        serviceAutopilot: "no",
+      },
+      {
+        feature: "Property Hunter",
+        detail:
+          "Cold outreach engine — satellite-matched property targeting at street-by-street resolution",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "no",
+        serviceAutopilot: "no",
+      },
+      {
+        feature: "Ghost Recovery",
+        detail:
+          "Voss-style escalation that reawakens leads everyone else gave up on",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "no",
+        serviceAutopilot: "no",
+      },
+      {
+        feature: "ServiceMagnet",
+        detail:
+          "Semantic re-engagement — pulls dormant customers back into upsell windows",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "no",
+        serviceAutopilot: "no",
+      },
+    ],
   },
   {
-    feature: "Upsell Whisperer",
-    detail: "AI scans property photos and prior tickets to surface the next job",
-    gladius: "yes",
-    aspire: "no",
-    lmn: "no",
-    jobber: "no",
-    serviceAutopilot: "no",
+    tier: "Lifecycle",
+    blurb: "How you keep the customer.",
+    rows: [
+      {
+        feature: "Client Portal",
+        detail:
+          "White-labeled self-serve portal — schedule, reschedule, and pay without a phone call",
+        gladius: "yes",
+        aspire: "partial",
+        lmn: "no",
+        jobber: "partial",
+        serviceAutopilot: "no",
+      },
+      {
+        feature: "Cadence",
+        detail:
+          "NOAA-timed, Site-Memory personalized cadences — not template blasts",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "partial",
+        serviceAutopilot: "partial",
+      },
+      {
+        feature: "Site Memory",
+        detail:
+          "Per-property memory: gate codes, dog names, where the irrigation valve hides",
+        gladius: "yes",
+        aspire: "partial",
+        lmn: "partial",
+        jobber: "partial",
+        serviceAutopilot: "partial",
+      },
+      {
+        feature: "Weather Pivot",
+        detail: "Storm-aware re-routing with automatic client communication",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "no",
+        serviceAutopilot: "no",
+      },
+      {
+        feature: "ShowRate Max",
+        detail:
+          "7-touch confirmation cadence — drives appointment-show rate from 64% to 92%",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "partial",
+        serviceAutopilot: "no",
+      },
+      {
+        feature: "LifeHook",
+        detail:
+          "Life-event detection — divorce, baby, retirement, move-in — triggers tuned outreach",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "no",
+        serviceAutopilot: "no",
+      },
+    ],
   },
   {
-    feature: "Referral Radar",
-    detail:
-      "Detects neighbor opportunities from active job sites and triggers outreach",
-    gladius: "yes",
-    aspire: "no",
-    lmn: "no",
-    jobber: "partial",
-    serviceAutopilot: "no",
+    tier: "Intelligence",
+    blurb: "How the AI gets smarter every night.",
+    rows: [
+      {
+        feature: "Intent Scorer",
+        detail: "Every inbound inquiry scored 1–100 for buying intent",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "no",
+        serviceAutopilot: "no",
+      },
+      {
+        feature: "UrgencySync",
+        detail:
+          "Real-time temperature scoring across the funnel — tells your closer who's hot today",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "no",
+        serviceAutopilot: "no",
+      },
+      {
+        feature: "ToneRadar",
+        detail:
+          "Stylometric ghost prediction — flags the message that means a customer is about to bail",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "no",
+        serviceAutopilot: "no",
+      },
+      {
+        feature: "WinMemory",
+        detail:
+          "Vector store of every won deal — Cortex retrieves the closest analog before your closer types a word",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "no",
+        serviceAutopilot: "no",
+      },
+      {
+        feature: "Market Anchor",
+        detail:
+          "Pricing intelligence — compares your number against the local market in real time",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "no",
+        serviceAutopilot: "no",
+      },
+      {
+        feature: "LRI Score",
+        detail:
+          "Landscaping Revenue Intelligence — nightly 0–100 operational benchmark per shop, crew, property",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "no",
+        serviceAutopilot: "no",
+      },
+    ],
   },
   {
-    feature: "Applicator Shield",
-    detail: "State-by-state pesticide compliance with license expiry watch",
-    gladius: "yes",
-    aspire: "partial",
-    lmn: "partial",
-    jobber: "no",
-    serviceAutopilot: "no",
+    tier: "Operations",
+    blurb: "How the crews actually execute.",
+    rows: [
+      {
+        feature: "Safety Shield",
+        detail:
+          "State-by-state pesticide and applicator compliance with license expiry watch",
+        gladius: "yes",
+        aspire: "partial",
+        lmn: "partial",
+        jobber: "no",
+        serviceAutopilot: "no",
+      },
+      {
+        feature: "Quality Radar",
+        detail:
+          "Photo-based QA on every visit — before/after, missed edges, dead zones, callback risk",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "no",
+        serviceAutopilot: "no",
+      },
+      {
+        feature: "Operator Score",
+        detail:
+          "Portable crew passport — performance, safety, and customer-satisfaction reputation that travels with the crew",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "no",
+        serviceAutopilot: "no",
+      },
+      {
+        feature: "Field Crew App",
+        detail:
+          "Offline-first PWA — works on any phone, syncs when signal returns, no app-store gatekeeping",
+        gladius: "yes",
+        aspire: "partial",
+        lmn: "partial",
+        jobber: "partial",
+        serviceAutopilot: "partial",
+      },
+      {
+        feature: "Job Costing",
+        detail:
+          "Line-item profitability per ticket — labor, materials, drive time, equipment depreciation",
+        gladius: "yes",
+        aspire: "yes",
+        lmn: "partial",
+        jobber: "partial",
+        serviceAutopilot: "partial",
+      },
+    ],
   },
   {
-    feature: "Site Memory",
-    detail:
-      "Per-property memory: gate codes, dog names, where the irrigation valve hides",
-    gladius: "yes",
-    aspire: "partial",
-    lmn: "partial",
-    jobber: "partial",
-    serviceAutopilot: "partial",
+    tier: "Marketplace",
+    blurb: "How the network compounds.",
+    rows: [
+      {
+        feature: "Surplus Yard",
+        detail:
+          "Resell leftover sod, mulch, pavers, plants between local crews",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "no",
+        serviceAutopilot: "no",
+      },
+      {
+        feature: "Knowledge Codex",
+        detail:
+          "Auto-categorized SOP library — tribal knowledge becomes searchable company memory",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "no",
+        serviceAutopilot: "no",
+      },
+    ],
   },
   {
-    feature: "Client Portal",
-    detail:
-      "White-labeled self-serve portal — schedule, reschedule, and pay without a phone call",
-    gladius: "yes",
-    aspire: "partial",
-    lmn: "no",
-    jobber: "partial",
-    serviceAutopilot: "no",
-  },
-  {
-    feature: "Intelligent follow-up cadences",
-    detail:
-      "NOAA-timed, Site-Memory personalized cadences — not template blasts",
-    gladius: "yes",
-    aspire: "no",
-    lmn: "no",
-    jobber: "partial",
-    serviceAutopilot: "partial",
-  },
-  {
-    feature: "Weather Pivot",
-    detail: "Storm-aware re-routing with automatic client communication",
-    gladius: "yes",
-    aspire: "no",
-    lmn: "no",
-    jobber: "no",
-    serviceAutopilot: "no",
-  },
-  {
-    feature: "Surplus Yard",
-    detail: "Resell leftover sod, mulch, pavers, plants between local crews",
-    gladius: "yes",
-    aspire: "no",
-    lmn: "no",
-    jobber: "no",
-    serviceAutopilot: "no",
-  },
-  {
-    feature: "AI-native operations",
-    detail: "Built on LLMs end to end — not bolted on after the fact",
-    gladius: "yes",
-    aspire: "partial",
-    lmn: "no",
-    jobber: "partial",
-    serviceAutopilot: "partial",
-  },
-  {
-    feature: "Per-crew pricing",
-    detail: "Flat fee per crew, unlimited seats, no per-user surcharge",
-    gladius: "yes",
-    aspire: "no",
-    lmn: "no",
-    jobber: "no",
-    serviceAutopilot: "no",
-  },
-  {
-    feature: "Switch from spreadsheets in 7 days",
-    detail: "Guided import from QuickBooks, Google Sheets, or paper route sheets",
-    gladius: "yes",
-    aspire: "no",
-    lmn: "partial",
-    jobber: "yes",
-    serviceAutopilot: "partial",
+    tier: "Foundation",
+    blurb: "How the business is structured.",
+    rows: [
+      {
+        feature: "AI-native operations",
+        detail: "Built on LLMs end to end — not bolted on after the fact",
+        gladius: "yes",
+        aspire: "partial",
+        lmn: "no",
+        jobber: "partial",
+        serviceAutopilot: "partial",
+      },
+      {
+        feature: "Per-crew pricing",
+        detail: "Flat fee per crew, unlimited seats, no per-user surcharge",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "no",
+        jobber: "no",
+        serviceAutopilot: "no",
+      },
+      {
+        feature: "Switch from spreadsheets in 7 days",
+        detail:
+          "Guided import from QuickBooks, Google Sheets, or paper route sheets — all 27 engines live on day 7",
+        gladius: "yes",
+        aspire: "no",
+        lmn: "partial",
+        jobber: "yes",
+        serviceAutopilot: "partial",
+      },
+    ],
   },
 ];
 
@@ -156,8 +384,10 @@ const COMPETITORS: Competitor[] = [
     weaknesses: [
       "Implementation runs three to six months and a five-figure professional services bill before you write a single ticket. Most owner-operators do not have that runway.",
       "The pricing model penalizes growth — every new estimator, foreman, or office admin is another seat fee, which encourages owners to limit access instead of expanding it.",
-      "Revenue intelligence is missing. Aspire reports on jobs that already happened. It does not intercept stalled quotes, surface neighbor referrals from active jobs, or scan property photos for upsell. You still run those motions on a whiteboard.",
       "Customer portal is basic and Aspire-branded, with no native Stripe collection — your clients see a vendor logo, not yours, and your CSR still chases card numbers by phone.",
+      "No Intent Scorer or UrgencySync — every inbound is treated the same, so a hot $40K commercial RFP and a curious one-time mow lookup hit the same queue at the same priority.",
+      "No Field Crew App PWA — their field tool is online-only, which means a crew at a property with no signal is a crew that types nothing into the system for the rest of the day.",
+      "No LRI Score or peer benchmarking — Aspire reports on what already happened, but it cannot tell you whether your win rate is good for your zip code.",
     ],
     migration:
       "We import your Aspire opportunities, work tickets, properties, and YTD revenue in a single ETL pass and run the two systems in parallel for 30 days so your CFO never loses a number.",
@@ -169,8 +399,9 @@ const COMPETITORS: Competitor[] = [
     strengths:
       "LMN is honest about what it is — a strong estimating and scheduling tool with a built-in budgeting workflow that mid-market crews genuinely use. The estimate-to-schedule pipeline is solid, the time-tracking app holds up in the field, and the Mark Bradley training content is some of the best operational education in the industry. Crews that switched to LMN from spreadsheets generally do not regret it.",
     weaknesses: [
-      "LMN ends at the schedule. There is no upsell engine, no referral capture, no SLA on dead quotes, no compliance shield. The revenue side of the business stays in your head.",
-      "The UI shows its age — it is a desktop-first product retrofitted for mobile, and crews complain about the field app.",
+      "LMN ends at the schedule. There is no upsell engine, no referral capture, no SLA on dead quotes, no Quote Intercept. The revenue side of the business stays in your head.",
+      "No QuickHook auto-reply — if a lead messages your shop at 9pm, they hear back when the office opens, and by then they have already booked with someone else.",
+      "No intelligence layer at all — no Intent Scorer, no WinMemory, no ToneRadar — so every closer is starting from scratch on every deal with no AI memory of what worked before.",
       "Pesticide and chemical compliance is logging only. If you run lawn care or tree services in a regulated state, you still maintain a separate paper or Real Green workflow.",
       "No customer portal and no automated follow-up cadence engine — every reschedule, payment reminder, and seasonal renewal still rides on a CSR's task list.",
     ],
@@ -180,14 +411,16 @@ const COMPETITORS: Competitor[] = [
   },
   {
     name: "Service Autopilot",
-    positioning: "Broad field-service platform spanning lawn, cleaning, and pest control.",
+    positioning:
+      "Broad field-service platform spanning lawn, cleaning, and pest control.",
     strengths:
       "Service Autopilot is genuinely versatile — it serves lawn maintenance, snow, cleaning, and pest control out of the same platform, and the routing optimization is competent. The marketing automation module (drip campaigns, two-way SMS) is more capable than anything Jobber ships, and the reporting catalog is wide.",
     weaknesses: [
       "Versatility is also the weakness. Because Service Autopilot serves four industries, none of the workflows are tuned for landscape revenue specifically — you bend the tool to fit your business instead of the other way around.",
-      "The interface is dense and the learning curve is steep. Most shops only use 30 to 40 percent of what they pay for.",
       "Per-user pricing on top of the base platform fee means a 6-person office and 4 crews quickly crosses $1,000 per month before you have shipped a single estimate.",
-      "Customer portal is not included with the base platform — it is sold as a separate product, and the cadence module ships templates without AI personalization.",
+      "No Operator Score — there is no portable crew passport, so every time you hire a foreman from a competitor, you are starting their reputation tracking from zero.",
+      "No Quality Radar — photo-based QA on every visit is not in the product, so callback risk is a vibe, not a number.",
+      "Customer portal is not included with the base platform — it is sold as a separate product, and the cadence module ships templates without AI personalization off Site Memory.",
     ],
     migration:
       "We map Service Autopilot accounts, jobs, services, and route plans into GladiusTurf in 7 days, and keep your existing payment processor connected.",
@@ -200,8 +433,9 @@ const COMPETITORS: Competitor[] = [
       "Jobber is the easiest software in this category to start using. The setup wizard is excellent, the client experience (online booking, branded quotes, payment links) is genuinely best-in-class, and the support team responds quickly. For a one-truck operation that just needs to look professional and get paid, Jobber is hard to beat.",
     weaknesses: [
       "Jobber serves plumbers, painters, dog groomers, and landscapers from the same template. There is no soil-and-seasonality intelligence, no chemical compliance, no crew-scale routing.",
-      "The reporting is shallow. You can see what you billed, but not why your renewal rate dropped in August or which crew leaks the most upsell on stop-three of the route.",
       "Per-user pricing scales painfully. A 4-crew operation with foremen on the app is paying more for Jobber than they would pay GladiusTurf for the entire revenue layer.",
+      "No Property Hunter or VoiceQuote — outbound is whatever the owner manages to do between fielding inbound calls, and estimates still get typed by hand.",
+      "No LifeHook — Jobber has no concept of life-event triggers, so a customer who just bought a house is the same customer they were six months ago in the system.",
       "The cadence engine is template-only — no AI personalization off Site Memory, no NOAA-aware timing — so your follow-ups land on the same Tuesday morning regardless of weather, season, or what the property actually needs.",
     ],
     migration:
@@ -210,17 +444,19 @@ const COMPETITORS: Competitor[] = [
   },
   {
     name: "Real Green",
-    positioning: "Lawn-care-specific platform with a long history in chemical applications.",
+    positioning:
+      "Lawn-care-specific platform with a long history in chemical applications.",
     strengths:
       "Real Green has decades of credibility in the lawn-care vertical. The chemical application workflow, route density tools, and customer-facing service portal are all built around lawn-care economics specifically — which is rare. Established lawn-care operators with 5,000+ customers often have valid reasons to stay.",
     weaknesses: [
       "The interface is genuinely dated and most younger office staff resist using it, which becomes a hiring problem.",
       "Upsell is ad-hoc — service add-ons live in CSRs' heads or paper notes, not in a system that scores accounts and routes the next-best offer.",
-      "The platform is built for lawn care only. If you also run hardscape, irrigation, or landscape design, you operate two systems.",
+      "No WinMemory or ToneRadar — the AI layer that compounds learning across deals does not exist, so the system on day 1,000 is the system on day 1.",
+      "No Field Crew App PWA — field tooling assumes always-online, which fails the moment a crew is out of cell coverage in a rural service zone.",
       "Cadence templates are not personalized to property memory — every customer gets the same seasonal email regardless of soil type, last service, or what the foreman noted on the last visit.",
     ],
     migration:
-      "We mirror your Real Green customer file, service history, and chemical log into GladiusTurf and stand up Applicator Shield with your state's current label library on day one.",
+      "We mirror your Real Green customer file, service history, and chemical log into GladiusTurf and stand up Safety Shield with your state's current label library on day one.",
     tone: "honey",
   },
   {
@@ -231,7 +467,7 @@ const COMPETITORS: Competitor[] = [
     weaknesses: [
       "Every quote that does not close lives in a notebook nobody re-reads. We typically find $80K to $180K of stalled estimates within 90 days of import.",
       "The owner is the system. When the owner takes a Friday off, intake stalls, dispatch drifts, and renewals get missed.",
-      "Compliance and crew safety records depend on whoever picks up the clipboard last — and state inspectors do not accept that.",
+      "No intelligence layer at all — Intent Scorer, UrgencySync, WinMemory, LRI Score do not exist on a spreadsheet, and they are the exact tools that turn a $1M shop into a $5M shop.",
       "There is no portal at all — every reschedule, payment, and seasonal renewal is a phone call, and at scale that becomes a part-time CSR you did not budget for.",
     ],
     migration:
@@ -240,7 +476,13 @@ const COMPETITORS: Competitor[] = [
   },
 ];
 
-function MarkCell({ value, highlight = false }: { value: Support; highlight?: boolean }) {
+function MarkCell({
+  value,
+  highlight = false,
+}: {
+  value: Support;
+  highlight?: boolean;
+}) {
   if (value === "yes") {
     return (
       <span
@@ -253,9 +495,7 @@ function MarkCell({ value, highlight = false }: { value: Support; highlight?: bo
       >
         <Check
           className={
-            highlight
-              ? "h-4 w-4 text-moss-bright"
-              : "h-5 w-5 text-honey-bright"
+            highlight ? "h-4 w-4 text-moss-bright" : "h-5 w-5 text-honey-bright"
           }
           strokeWidth={highlight ? 3 : 2.5}
         />
@@ -266,11 +506,7 @@ function MarkCell({ value, highlight = false }: { value: Support; highlight?: bo
     return (
       <span
         aria-label="Partial"
-        className={
-          highlight
-            ? "inline-flex h-6 w-6 items-center justify-center text-[14px] font-semibold text-moss-bright"
-            : "inline-flex h-6 w-6 items-center justify-center text-[14px] font-semibold text-honey-bright/60"
-        }
+        className="inline-flex h-6 w-6 items-center justify-center text-[14px] font-semibold text-honey-bright/60"
       >
         ~
       </span>
@@ -290,32 +526,27 @@ const STEPS = [
   {
     week: "Week 0",
     title: "Discovery and export",
-    body:
-      "30-minute call. We pull your export from Aspire, LMN, Jobber, Service Autopilot, Real Green, or your spreadsheets. You give us read-only QuickBooks access. No commitment yet.",
+    body: "30-minute call. We pull your export from Aspire, LMN, Jobber, Service Autopilot, Real Green, or your spreadsheets. You give us read-only QuickBooks access. No commitment yet.",
   },
   {
     week: "Week 1",
-    title: "Data normalization",
-    body:
-      "Our import team maps your customers, properties, services, crews, and 12 months of revenue into GladiusTurf. We surface duplicates, stalled quotes, and missing service addresses while we are in there.",
+    title: "Data normalization + all 27 engines live",
+    body: "Our import team maps your customers, properties, services, crews, and 12 months of revenue into GladiusTurf. By day 7 every one of the 27 engines is firing on your data — Quote Intercept, the Field Crew App PWA, Intent Scorer, the LRI Score, all of it.",
   },
   {
     week: "Week 2",
     title: "Configuration and training",
-    body:
-      "We configure your service catalog, routes, crews, pricing, and compliance rules. Two 60-minute training sessions — one for the office, one for the foremen. Your team logs in and runs a real Monday.",
+    body: "We configure your service catalog, routes, crews, pricing, and compliance rules. Two 60-minute training sessions — one for the office, one for the foremen. Your team logs in and runs a real Monday.",
   },
   {
     week: "Week 3",
     title: "Parallel run",
-    body:
-      "You run GladiusTurf and your old system side by side. We reconcile every job and every dollar daily so finance signs off before the cutover. Most crews bail on the old system by day 14 anyway.",
+    body: "You run GladiusTurf and your old system side by side. We reconcile every job and every dollar daily so finance signs off before the cutover. Most crews bail on the old system by day 14 anyway.",
   },
   {
     week: "Week 4",
     title: "Cutover and revenue review",
-    body:
-      "Old system goes read-only. We run a revenue intelligence review — stalled quote recovery, upsell opportunities surfaced, referral radar set live, applicator shield on. You see the first dollar that came back.",
+    body: "Old system goes read-only. We run a revenue intelligence review — stalled quote recovery, upsell opportunities surfaced, Referral Radar set live, Safety Shield on, the LRI Score baselined. You see the first dollar that came back.",
   },
 ];
 
@@ -328,33 +559,27 @@ export default function ComparePage() {
         <section className="border-b border-bone/10 bg-forest-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <Eyebrow tone="honey" className="mb-6">
-              Compare
+              Compare · 27 engines
             </Eyebrow>
             <h1 className="max-w-5xl font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-6xl">
               Why crews are leaving Aspire, LMN, Service Autopilot, and Jobber.
             </h1>
             <div className="mt-10 grid max-w-3xl gap-6 text-lg leading-[1.6] text-bone/60 md:text-xl">
               <p>
-                GladiusTurf is not another all-in-one landscaping ERP. We are
-                not trying to replace Aspire&apos;s job-costing engine,
-                LMN&apos;s estimating module, or QuickBooks&apos; general
-                ledger. Those tools work — and for plenty of established crews,
-                they will keep working.
+                GladiusTurf is not another all-in-one landscaping ERP. We do
+                not try to replace Aspire&apos;s job-costing engine, LMN&apos;s
+                estimating module, or QuickBooks&apos; general ledger. Those
+                tools work — and for plenty of established crews, they will
+                keep working.
               </p>
               <p>
-                What we are is the revenue intelligence layer that sits on top
-                of (or in place of) the legacy stack. We watch every quote,
-                every property, every route, every chemical application, and
-                every customer interaction, and we surface the dollars your
-                crew is leaving in the grass — stalled estimates, missed
-                upsells, neighbor referrals on active job sites, surplus
-                materials sitting in the yard, compliance lapses that turn
-                into fines. The incumbents report on what already happened.
-                GladiusTurf intervenes before the dollar walks. And yes — it
-                includes a branded client portal for self-serve reschedule and
-                pay, plus an intelligent cadence engine for automated follow-ups
-                and reminders. Things our competitors charge as bolt-ons or do
-                not offer at all.
+                What we are is the 27-engine revenue and operations layer that
+                sits on top of (or in place of) the legacy stack. That includes
+                the Field Crew App PWA, a white-labeled Client Portal, the LRI
+                Score nightly benchmark, and a full intelligence tier — Intent
+                Scorer, UrgencySync, ToneRadar, WinMemory — that competitors
+                do not ship at all. The incumbents report on what already
+                happened. GladiusTurf intervenes before the dollar walks.
               </p>
             </div>
           </div>
@@ -364,11 +589,12 @@ export default function ComparePage() {
         <section className="border-b border-bone/10 bg-forest-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <div className="mx-auto max-w-3xl text-center">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright">
+              <Eyebrow tone="moss" className="mb-3">
                 Feature by feature
-              </p>
+              </Eyebrow>
               <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
-                The capabilities that change a crew&apos;s revenue, side by side.
+                Twenty-seven engines, organized into five tiers, against the
+                legacy stack.
               </h2>
               <p className="mt-4 text-lg text-bone/60">
                 Moss check in the GladiusTurf column means shipped and
@@ -396,7 +622,7 @@ export default function ComparePage() {
                           GladiusTurf
                         </div>
                         <div className="mt-1 text-[10px] font-medium uppercase tracking-wider text-moss-bright/70">
-                          Revenue layer
+                          27-engine layer
                         </div>
                       </th>
                       <th className="py-5 text-center">
@@ -434,52 +660,74 @@ export default function ComparePage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {FEATURES.map((row, i) => (
-                      <tr
-                        key={row.feature}
-                        className={`border-b border-bone/5 align-top ${
-                          i % 2 === 0 ? "" : "bg-bone/[0.015]"
-                        }`}
-                      >
-                        <td className="py-4 pr-6">
-                          <p className="text-sm font-medium text-bone">
-                            {row.feature}
-                          </p>
-                          <p className="mt-1 text-[13px] leading-[1.5] text-bone/60">
-                            {row.detail}
-                          </p>
-                        </td>
-                        <td className="relative py-4">
-                          <div
-                            aria-hidden
-                            className="absolute inset-x-2 inset-y-0 -z-10 bg-moss-bright/[0.04]"
-                          />
-                          <div className="flex justify-center text-bone/80">
-                            <MarkCell value={row.gladius} highlight />
-                          </div>
-                        </td>
-                        <td className="py-4">
-                          <div className="flex justify-center text-bone/80">
-                            <MarkCell value={row.aspire} />
-                          </div>
-                        </td>
-                        <td className="py-4">
-                          <div className="flex justify-center text-bone/80">
-                            <MarkCell value={row.lmn} />
-                          </div>
-                        </td>
-                        <td className="py-4">
-                          <div className="flex justify-center text-bone/80">
-                            <MarkCell value={row.jobber} />
-                          </div>
-                        </td>
-                        <td className="py-4">
-                          <div className="flex justify-center text-bone/80">
-                            <MarkCell value={row.serviceAutopilot} />
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                    {FEATURE_SECTIONS.map((section, sectionIdx) => {
+                      const isHoneySection = sectionIdx % 2 === 1;
+                      const headerCls = isHoneySection
+                        ? "text-[10px] font-semibold uppercase tracking-[0.2em] text-honey-bright"
+                        : "text-[10px] font-semibold uppercase tracking-[0.2em] text-moss-bright";
+                      return (
+                        <Fragment key={section.tier}>
+                          <tr className="border-b border-bone/10 bg-bone/[0.05]">
+                            <td colSpan={6} className="py-3 pr-6">
+                              <div className="flex items-baseline gap-3">
+                                <span className={headerCls}>
+                                  {section.tier} tier
+                                </span>
+                                <span className="text-[11px] text-bone/40">
+                                  {section.blurb}
+                                </span>
+                              </div>
+                            </td>
+                          </tr>
+                          {section.rows.map((row, i) => (
+                            <tr
+                              key={`${section.tier}-${row.feature}`}
+                              className={`border-b border-bone/5 align-top ${
+                                i % 2 === 0 ? "" : "bg-bone/[0.015]"
+                              }`}
+                            >
+                              <td className="py-4 pr-6">
+                                <p className="text-sm font-medium text-bone">
+                                  {row.feature}
+                                </p>
+                                <p className="mt-1 text-[13px] leading-[1.5] text-bone/60">
+                                  {row.detail}
+                                </p>
+                              </td>
+                              <td className="relative py-4">
+                                <div
+                                  aria-hidden
+                                  className="absolute inset-x-2 inset-y-0 -z-10 bg-moss-bright/[0.04]"
+                                />
+                                <div className="flex justify-center text-bone/80">
+                                  <MarkCell value={row.gladius} highlight />
+                                </div>
+                              </td>
+                              <td className="py-4">
+                                <div className="flex justify-center text-bone/80">
+                                  <MarkCell value={row.aspire} />
+                                </div>
+                              </td>
+                              <td className="py-4">
+                                <div className="flex justify-center text-bone/80">
+                                  <MarkCell value={row.lmn} />
+                                </div>
+                              </td>
+                              <td className="py-4">
+                                <div className="flex justify-center text-bone/80">
+                                  <MarkCell value={row.jobber} />
+                                </div>
+                              </td>
+                              <td className="py-4">
+                                <div className="flex justify-center text-bone/80">
+                                  <MarkCell value={row.serviceAutopilot} />
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </Fragment>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -495,13 +743,66 @@ export default function ComparePage() {
           </div>
         </section>
 
+        {/* Beyond the matrix */}
+        <section className="border-b border-bone/10 bg-forest-mid">
+          <div className="mx-auto max-w-7xl px-6 py-28">
+            <div className="mx-auto max-w-3xl text-center">
+              <Eyebrow tone="honey" className="mb-3">
+                Beyond the matrix
+              </Eyebrow>
+              <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
+                What a feature checkbox doesn&apos;t capture.
+              </h2>
+            </div>
+
+            <div className="mx-auto mt-14 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2">
+              <div className="rounded-2xl border border-moss/30 bg-gradient-to-b from-moss/10 to-transparent p-8">
+                <Eyebrow tone="moss" className="mb-4">
+                  We invented new categories
+                </Eyebrow>
+                <h3 className="font-serif text-2xl font-semibold text-bone">
+                  We don&apos;t just match competitors — we invented new
+                  engines.
+                </h3>
+                <p className="mt-4 text-base leading-[1.65] text-bone/70">
+                  Intent Scorer, UrgencySync, ToneRadar, WinMemory, the LRI
+                  Score, Operator Score, Property Hunter, Ghost Recovery,
+                  LifeHook — these are not features the legacy stack ships
+                  poorly. They are categories that did not exist in landscaping
+                  software until we built them. The feature checkbox above is
+                  an undercount because the columns to the right of GladiusTurf
+                  do not have these rows on their roadmap.
+                </p>
+              </div>
+              <div className="rounded-2xl border border-honey/30 bg-gradient-to-b from-honey/10 to-transparent p-8">
+                <Eyebrow tone="honey" className="mb-4">
+                  Compounding intelligence
+                </Eyebrow>
+                <h3 className="font-serif text-2xl font-semibold text-bone">
+                  Our AI gets smarter every night. Theirs is the same on day
+                  1,000 as day 1.
+                </h3>
+                <p className="mt-4 text-base leading-[1.65] text-bone/70">
+                  Cortex runs autonomous hypothesis tests against your closed
+                  deals every night. ResponseOptimizer A/B tests every cadence
+                  message in production and ships the winner. WinMemory pulls
+                  the closest analog from your own win history before your
+                  closer types a word. The legacy stack does not have any of
+                  this. Every quote starts from scratch. Every closer
+                  re-learns. Every season is a coin flip.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Honest competitor reviews — alternating sections */}
         <section className="border-b border-bone/10 bg-forest-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <div className="mx-auto max-w-3xl text-center">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright">
+              <Eyebrow tone="moss" className="mb-3">
                 Honest competitor reviews
-              </p>
+              </Eyebrow>
               <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                 What each platform does well — and where the revenue leaks out.
               </h2>
@@ -571,7 +872,7 @@ export default function ComparePage() {
                         Where GladiusTurf is the better fit
                       </p>
                       <h4 className="mt-4 font-serif text-2xl font-semibold text-bone">
-                        Revenue intelligence the legacy stack does not ship.
+                        Twenty-seven engines the legacy stack does not ship.
                       </h4>
                       <ul className="mt-6 grid gap-4">
                         {c.weaknesses.map((w) => (
@@ -600,11 +901,12 @@ export default function ComparePage() {
         <section className="border-b border-bone/10 bg-forest-deep">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <div className="mx-auto max-w-3xl text-center">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright">
+              <Eyebrow tone="moss" className="mb-3">
                 30-day switch
-              </p>
+              </Eyebrow>
               <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
-                Running on GladiusTurf inside a month. Most crews inside two weeks.
+                All 27 engines live by day 7. Most crews on GladiusTurf inside
+                two weeks.
               </h2>
               <p className="mt-4 text-lg text-bone/60">
                 Switching software is the most common reason crews stay on a
@@ -622,7 +924,9 @@ export default function ComparePage() {
                 const dotCls = isHoney
                   ? "bg-honey-bright/15 text-honey-bright ring-honey-bright/30"
                   : "bg-moss-bright/15 text-moss-bright ring-moss-bright/30";
-                const labelCls = isHoney ? "text-honey-bright" : "text-moss-bright";
+                const labelCls = isHoney
+                  ? "text-honey-bright"
+                  : "text-moss-bright";
                 return (
                   <div
                     key={s.week}
@@ -657,9 +961,9 @@ export default function ComparePage() {
         <section className="bg-forest-mid">
           <div className="mx-auto max-w-7xl px-6 py-28">
             <div className="mx-auto max-w-3xl text-center">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-moss-bright">
+              <Eyebrow tone="moss" className="mb-3">
                 See it on your data
-              </p>
+              </Eyebrow>
               <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                 30 minutes. Founders run the call.
               </h2>
@@ -683,6 +987,12 @@ export default function ComparePage() {
                   className="inline-flex items-center gap-2 rounded-lg border border-honey/40 px-6 py-3 text-sm font-semibold text-honey-bright transition-colors hover:bg-honey/10"
                 >
                   Or see pricing →
+                </a>
+                <a
+                  href="/platform"
+                  className="inline-flex items-center gap-2 rounded-lg border border-moss/40 px-6 py-3 text-sm font-semibold text-moss-bright transition-colors hover:bg-moss/10"
+                >
+                  Browse all 27 engines →
                 </a>
               </div>
             </div>
