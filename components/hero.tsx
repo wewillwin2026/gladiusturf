@@ -110,6 +110,16 @@ export function Hero() {
               </Link>
             </motion.div>
 
+            {/* Risk-reversal sub-line below CTAs */}
+            <motion.p
+              {...fadeUp(0.30)}
+              className="mt-6 text-xs uppercase tracking-crest text-bone/45"
+            >
+              30-day money-back guarantee
+              <span className="mx-3 text-bone/25">·</span>
+              Switch from your current stack in 48 hours
+            </motion.p>
+
             {/* Heritage proof strip — small caps, champagne-tone */}
             <motion.p
               {...fadeUp(0.34)}

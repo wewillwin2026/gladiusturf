@@ -15,11 +15,13 @@ import { CtaBand } from "@/components/cta-band";
 import { EnginesGrid } from "@/components/engines-grid";
 import { Eyebrow } from "@/components/eyebrow";
 import { Footer } from "@/components/footer";
+import { FounderVideo } from "@/components/founder-video";
 import { Hero } from "@/components/hero";
 import { Nav } from "@/components/nav";
 import { Pill } from "@/components/pill";
 import { PricingSection } from "@/components/pricing-section";
 import { ScrollReveal } from "@/components/scroll-reveal";
+import { SocialProofStrip } from "@/components/social-proof-strip";
 
 export const metadata: Metadata = {
   description:
@@ -290,12 +292,12 @@ export default function HomePage() {
         <section className="border-y border-bone/10 bg-slate-deep py-14">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
-              <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-bone/45">
-                Built on infrastructure your shop already trusts
+              <p className="text-center text-xs font-semibold uppercase tracking-crest text-bone/55">
+                Same infrastructure trusted by Stripe, OpenAI, and Linear.
               </p>
             </ScrollReveal>
             <ScrollReveal delay={0.1}>
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+              <div className="mt-7 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
                 {TECH_STACK.map((label, i) => (
                   <span
                     key={label}
@@ -308,8 +310,37 @@ export default function HomePage() {
                 ))}
               </div>
             </ScrollReveal>
+            <ScrollReveal delay={0.18}>
+              <p className="mx-auto mt-5 max-w-xl text-center text-xs leading-relaxed text-bone/45">
+                Built on the modern stack — not stitched together from
+                2010-era field-service software.
+              </p>
+            </ScrollReveal>
           </div>
         </section>
+
+        {/* b2. Founder video — lazy-loaded YouTube embed */}
+        {/* TODO: swap for real founder video — see CONTENT.md */}
+        <section className="border-b border-bone/10 bg-pitch py-20">
+          <div className="mx-auto max-w-5xl px-6">
+            <ScrollReveal>
+              <div className="text-center">
+                <Eyebrow tone="champagne">From the founder</Eyebrow>
+                <h2 className="mt-4 font-serif text-3xl font-semibold tracking-[-0.02em] text-bone md:text-4xl">
+                  Sixty seconds on what we actually do.
+                </h2>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal delay={0.12}>
+              <div className="mt-10">
+                <FounderVideo youtubeId="dQw4w9WgXcQ" />
+              </div>
+            </ScrollReveal>
+          </div>
+        </section>
+
+        {/* b3. Social proof strip — placeholder logos / quote / pilot stats */}
+        <SocialProofStrip />
 
         {/* c. The real cost — problem section */}
         <section className="relative overflow-hidden py-28">
