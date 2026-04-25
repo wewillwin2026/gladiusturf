@@ -16,13 +16,13 @@ import { EnginesGrid } from "@/components/engines-grid";
 import { Eyebrow } from "@/components/eyebrow";
 import { BdcExplainer } from "@/components/bdc-explainer";
 import { Footer } from "@/components/footer";
-import { FounderVideo } from "@/components/founder-video";
 import { Hero } from "@/components/hero";
 import { HomeFaq } from "@/components/home-faq";
 import { HowItWorks } from "@/components/how-it-works";
 import { Nav } from "@/components/nav";
 import { Pill } from "@/components/pill";
 import { PricingSection } from "@/components/pricing-section";
+import { ProductLoop } from "@/components/product-loop";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { SocialProofStrip } from "@/components/social-proof-strip";
 
@@ -322,21 +322,25 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* b2. Founder video — lazy-loaded YouTube embed */}
-        {/* TODO: swap for real founder video — see CONTENT.md */}
+        {/* b2. Animated product loop — replaces founder video. SVG/CSS interim;
+                 swap for /animations/product-loop.json + Lottie player when ready. */}
         <section className="border-b border-bone/10 bg-pitch py-20">
           <div className="mx-auto max-w-5xl px-6">
             <ScrollReveal>
               <div className="text-center">
-                <Eyebrow tone="champagne">From the founder</Eyebrow>
+                <Eyebrow tone="champagne">The loop</Eyebrow>
                 <h2 className="mt-4 font-serif text-3xl font-semibold tracking-[-0.02em] text-bone md:text-4xl">
-                  Sixty seconds on what we actually do.
+                  Watch what happens when an inbound lead hits the system.
                 </h2>
+                <p className="mx-auto mt-3 max-w-xl text-sm italic text-bone/60">
+                  Real workflow, sped up. The same loop runs on every customer,
+                  every day.
+                </p>
               </div>
             </ScrollReveal>
             <ScrollReveal delay={0.12}>
               <div className="mt-10">
-                <FounderVideo youtubeId="dQw4w9WgXcQ" />
+                <ProductLoop />
               </div>
             </ScrollReveal>
           </div>
