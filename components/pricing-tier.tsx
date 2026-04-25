@@ -12,7 +12,19 @@ const TIER_EYEBROWS: Record<Tier["id"], string> = {
   enterprise: "Tier 03",
 };
 
-export function PricingTier({ tier }: { tier: Tier }) {
+export function PricingTier({
+  tier,
+  billing = "monthly",
+}: {
+  tier: Tier;
+  billing?: "monthly" | "annual";
+}) {
+  const isAnnual = billing === "annual";
+  const displayPrice = isAnnual ? tier.price * 10 : tier.price;
+  const periodLabel = isAnnual
+    ? tier.period.replace("/ mo", "/ yr").replace("/mo", "/yr")
+    : tier.period;
+
   return (
     <div
       className={cn(
@@ -42,19 +54,22 @@ export function PricingTier({ tier }: { tier: Tier }) {
       </h3>
       <p className="mt-2 text-sm leading-[1.5] text-bone/60">{tier.tagline}</p>
 
+      {/* min-w-[8ch] reserves space so monthly→annual swap doesn't cause CLS */}
       <div className="mt-6 flex items-baseline gap-1.5">
-        <span className="font-serif text-5xl font-semibold tracking-tight text-bone">
-          ${tier.price.toLocaleString()}
+        <span className="min-w-[8ch] font-serif text-5xl font-semibold tracking-tight text-bone">
+          ${displayPrice.toLocaleString()}
         </span>
-        <span className="text-sm text-bone/50">{tier.period}</span>
+        <span className="text-sm text-bone/50">{periodLabel}</span>
       </div>
       <p
         className={cn(
-          "mt-1 text-xs",
-          tier.featured ? "text-moss-bright/60" : "text-bone/50"
+          "mt-1 text-xs leading-[1.55]",
+          tier.featured ? "text-moss-bright/70" : "text-bone/55"
         )}
       >
-        Unlimited seats. Cancel anytime after month 3.
+        Unlimited seats. 30-day money-back guarantee.
+        <br />
+        Annual prepay: 2 months free.
       </p>
 
       <Link

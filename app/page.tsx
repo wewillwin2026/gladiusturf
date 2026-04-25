@@ -14,9 +14,11 @@ import { ComparisonTable } from "@/components/comparison-table";
 import { CtaBand } from "@/components/cta-band";
 import { EnginesGrid } from "@/components/engines-grid";
 import { Eyebrow } from "@/components/eyebrow";
+import { BdcExplainer } from "@/components/bdc-explainer";
 import { Footer } from "@/components/footer";
 import { FounderVideo } from "@/components/founder-video";
 import { Hero } from "@/components/hero";
+import { HomeFaq } from "@/components/home-faq";
 import { HowItWorks } from "@/components/how-it-works";
 import { Nav } from "@/components/nav";
 import { Pill } from "@/components/pill";
@@ -643,7 +645,13 @@ export default function HomePage() {
         {/* i. Pricing */}
         <PricingSection />
 
-        {/* j. Final CTA */}
+        {/* j. FAQ — 8 questions, native details/summary accordion */}
+        <HomeFaq />
+
+        {/* k. GladiusBDC explainer — replaces the inline single-line addon */}
+        <BdcExplainer />
+
+        {/* l. Final CTA */}
         <CtaBand />
       </main>
       <Footer />

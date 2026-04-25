@@ -43,8 +43,10 @@ export function CtaBand() {
 
         <ScrollReveal delay={0.1}>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-parchment/70 md:text-xl">
-            Switch in 48 hours. Keep your QuickBooks. The first leak we close
-            usually pays for the year.
+            Switch in 48 hours. Keep your QuickBooks.{" "}
+            <span className="text-bone">30-day money-back guarantee.</span>
+            <br className="hidden md:block" />
+            The first leak we close usually pays for the year.
           </p>
         </ScrollReveal>
 
