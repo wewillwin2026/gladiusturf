@@ -143,7 +143,7 @@ const BENCHMARKS: Benchmark[] = [
   {
     pct: "118%",
     label: "Top-shop NRR",
-    body: "The 90th-percentile crew. The customer base compounds 18% on retention alone — before a single new lead lands. This is the bar Save Play is built against.",
+    body: "The 90th-percentile crew. The customer base stacks 18% on retention alone — before a single new lead lands. This is the bar Save Play is built against.",
     accent: "moss",
   },
 ];
@@ -375,9 +375,9 @@ export default function RetentionPage() {
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <div className="max-w-3xl">
-                <Eyebrow tone="champagne">NRR dashboard</Eyebrow>
+                <Eyebrow tone="champagne">Keeping-customers dashboard</Eyebrow>
                 <h2 className="mt-3 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
-                  Net Revenue Retention.{" "}
+                  Keeping the customers you already have.{" "}
                   <span className="text-champagne-bright">
                     The only metric that matters.
                   </span>

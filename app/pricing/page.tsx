@@ -101,7 +101,7 @@ const ROI_CARDS: {
     name: "Ghost Recovery",
     amount: "$11,200",
     cadence: "dead-lead resurrection per month",
-    body: "Voss-style escalation that reawakens the leads everyone else gave up on. Pattern-interrupt phrasing tuned on landscaping deals that closed after going dark for 30+ days.",
+    body: "Multi-touch escalation that reawakens the leads everyone else gave up on. Phrasing tuned on landscaping deals that closed after going dark for 30+ days.",
     tone: "honey",
   },
 ];

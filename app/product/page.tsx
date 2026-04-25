@@ -11,7 +11,7 @@ import { ENGINE_TIERS, type EngineTier } from "@/content/engine-tiers";
 
 export const metadata: Metadata = {
   title:
-    "Product · 33 engines, 5 tiers, one operating system for landscaping",
+    "Product · 33 engines, 5 layers, one system for landscape ops",
   description:
     "GladiusTurf is the first landscaping platform built like a CRM and a BDC stack — 33 AI-orchestrated engines across Revenue, Lifecycle, Intelligence, Operations and Marketplace. Retire your other six tools by month two.",
   alternates: { canonical: "/product" },
@@ -277,7 +277,7 @@ const ENGINES_FULL: ProductEngine[] = [
       "Per-quote urgency score from language, season and weather signals",
       "Adjusts response tempo, follow-up cadence and discount posture",
       "Flags fake-urgency tire-kickers so you stop discounting needlessly",
-      "Feeds back into Intent Scorer — the models compound nightly",
+      "Feeds back into LeadGrade — the models get sharper every night",
     ],
   },
   {
@@ -332,12 +332,12 @@ const ENGINES_FULL: ProductEngine[] = [
     outcome: "predicts churn 60 days out",
     tier: "intelligence",
     description:
-      "The Lawn Relationship Index. A single 0–100 number per customer that fuses payment cadence, complaint history, response latency, attach rate, NPS and Site Health into one churn-risk signal. When LRI drops twenty points in thirty days, your office gets a save-call queue before the customer cancels — because by the time they call to cancel, it's already too late.",
+      "The Customer Health Score. A single 0–100 number per customer that fuses payment timing, complaint history, response latency, attach rate, NPS and Site Health into one walk-risk signal. When the score drops twenty points in thirty days, your office gets a save-call queue before the customer cancels — because by the time they call to cancel, it's already too late.",
     features: [
       "Per-customer 0–100 score updated nightly",
       "Save-call queue triggered on twenty-point drops",
-      "Per-crew LRI roll-up — which foremen quietly burn relationships",
-      "Feeds Cadence and Referral Radar so retention compounds",
+      "Per-crew roll-up — which foremen quietly burn relationships",
+      "Feeds The FollowUp and Referral Radar so customers stick",
     ],
   },
   {
@@ -347,12 +347,12 @@ const ENGINES_FULL: ProductEngine[] = [
     outcome: "churn predicted 60 days out · +18% NRR",
     tier: "intelligence",
     description:
-      "Retention Radar watches every customer for the early signals of churn — payment delays, response-time decay (ToneRadar feed), seasonal lapse, declining service revenue, increasing complaint count — and predicts churn sixty days out with a confidence score. The moment a customer drifts into the at-risk band, Cadence fires a personalized save play and the foreman's queue surfaces a save call before the customer ever picks up the phone to cancel.",
+      "Save Play watches every customer for the early signals nobody picks up on — payment delays, slower replies (ToneRadar feed), seasonal lapse, declining service revenue, more complaint calls — and predicts who's about to walk sixty days out with a confidence score. The moment a customer drifts into the at-risk band, The FollowUp fires a personalized save play and the foreman's queue surfaces a save call before the customer ever picks up the phone to cancel.",
     features: [
-      "Sixty-day churn forecast per customer with confidence score",
-      "Auto-fires Cadence save plays the moment the at-risk band trips",
+      "Sixty-day walk-risk forecast per customer with confidence score",
+      "Auto-fires save plays the moment the at-risk band trips",
       "Per-crew save queue surfaces the live calls foremen should make today",
-      "Net Revenue Retention dashboard — the only metric we obsess over",
+      "Keeping-customers dashboard — the only metric we obsess over",
     ],
   },
   {
@@ -658,7 +658,7 @@ export default function ProductPage() {
               <h1 className="mt-6 max-w-5xl font-serif text-5xl tracking-[-0.02em] text-bone md:text-7xl">
                 Thirty-three engines.{" "}
                 <span className="text-moss-bright">Five tiers.</span>{" "}
-                <span className="text-bone/40">One operating system.</span>
+                <span className="text-bone/40">One system.</span>
               </h1>
               <p className="mt-8 max-w-3xl text-lg leading-[1.55] text-bone/60 md:text-xl">
                 GladiusTurf is the first landscaping platform built like

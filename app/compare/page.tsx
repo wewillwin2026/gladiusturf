@@ -100,7 +100,7 @@ const FEATURE_SECTIONS: FeatureSection[] = [
       {
         feature: "Ghost Recovery",
         detail:
-          "Voss-style escalation that reawakens leads everyone else gave up on",
+          "Multi-touch escalation that reawakens leads everyone else gave up on",
         gladius: "yes",
         aspire: "no",
         lmn: "no",
@@ -307,7 +307,7 @@ const FEATURE_SECTIONS: FeatureSection[] = [
   },
   {
     tier: "Marketplace",
-    blurb: "How the network compounds.",
+    blurb: "How year three pays for years one and two.",
     rows: [
       {
         feature: "Surplus Yard",
@@ -452,7 +452,7 @@ const COMPETITORS: Competitor[] = [
     weaknesses: [
       "The interface is genuinely dated and most younger office staff resist using it, which becomes a hiring problem.",
       "Upsell is ad-hoc — service add-ons live in CSRs' heads or paper notes, not in a system that scores accounts and routes the next-best offer.",
-      "No WinMemory or ToneRadar — the AI layer that compounds learning across deals does not exist, so the system on day 1,000 is the system on day 1.",
+      "No WinPlaybook or ToneRadar — the AI layer that learns from every closed deal does not exist, so the system on day 1,000 is the system on day 1.",
       "No Field Crew App PWA — field tooling assumes always-online, which fails the moment a crew is out of cell coverage in a rural service zone.",
       "Cadence templates are not personalized to property memory — every customer gets the same seasonal email regardless of soil type, last service, or what the foreman noted on the last visit.",
     ],

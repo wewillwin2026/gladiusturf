@@ -169,7 +169,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "What happens if a customer doesn't pay?",
-    a: "The Cadence engine warms the customer over Day 3 / 7 / 14 with archetype-aware messages — terse for BUSY_PRO, gentle for ANXIOUS_FIRST_TIMER. Only after three soft touches does a human get a queued callback with the full thread + Site Memory context already pulled up.",
+    a: "The FollowUp engine warms the customer over Day 3 / 7 / 14 with messages that read different for the busy contractor vs the first-timer — the system knows the difference. Only after three soft touches does a human get a queued callback with the full thread + Site Memory context already pulled up.",
   },
   {
     q: "Can I disable certain features per customer?",
@@ -389,7 +389,7 @@ export default function PortalMarketingPage() {
                 </h2>
                 <p className="mx-auto mt-5 max-w-2xl text-lg text-bone/65">
                   The portal isn&apos;t a separate product — it&apos;s the
-                  visible surface of an operating system. Every customer-facing
+                  visible surface of the system below. Every customer-facing
                   pixel pulls live data from the engines below.
                 </p>
               </div>

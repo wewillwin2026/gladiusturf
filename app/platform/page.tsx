@@ -154,10 +154,10 @@ const AI_CARDS: AiCard[] = [
     accent: "moss",
   },
   {
-    name: "WinMemory",
+    name: "WinPlaybook",
     icon: <Database className="h-5 w-5" />,
-    body: "A pgvector store of every won deal you've ever closed, embedded with OpenAI text-embedding-3-large. When a new prospect arrives, the orchestrator retrieves the top-3 most similar historical wins and feeds them as few-shot examples to the response generator. Your platform gets smarter every Tuesday — automatically.",
-    proof: "1536-dim embeddings · top-3 retrieval · <50ms",
+    body: "A library of every won deal you've ever closed. When a new prospect arrives, the orchestrator pulls the top-3 most similar past wins and uses them as the template for the reply. Your platform gets smarter every Tuesday — automatically.",
+    proof: "Top-3 retrieval · <50ms · drafted in your voice",
     accent: "honey",
   },
   {
@@ -364,7 +364,7 @@ export default function PlatformPage() {
                   Most landscaping software is a CRM bolted onto a billing
                   module bolted onto a dispatch board, held together by CSV
                   exports and crossed fingers. GladiusTurf is one platform —
-                  edge, operating system, and data spine — designed together
+                  edge, system layer, and data spine — designed together
                   from day one.
                 </p>
               </div>

@@ -28,7 +28,7 @@ import { SocialProofStrip } from "@/components/social-proof-strip";
 
 export const metadata: Metadata = {
   description:
-    "GladiusTurf is the thirty-three-engine landscaping operating system across five tiers — revenue, lifecycle, intelligence, operations, marketplace — that catches every forgotten quote, missed upsell, late invoice, and dropped referral your current stack is letting walk.",
+    "GladiusTurf is the thirty-three-engine landscape system across five layers — winning the work, keeping the customer, getting smarter, running the crew, and building the network — that catches every forgotten quote, missed upsell, late invoice, and dropped referral your current stack is letting walk.",
   alternates: { canonical: "/" },
   openGraph: {
     images: [{ url: "/crest.png", width: 600, height: 800 }],
