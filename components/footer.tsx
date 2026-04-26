@@ -25,6 +25,7 @@ const RESOURCES_LINKS = [
 ];
 
 const COMPANY_LINKS = [
+  { href: "/contact", label: "Contact" },
   { href: "/demo", label: "Book a demo" },
   { href: "mailto:founders@gladiusturf.com", label: "Email the founder" },
   { href: "https://gladiusstone.com", label: "GladiusStone" },

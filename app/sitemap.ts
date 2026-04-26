@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/compare",
     "/manifesto",
     "/demo",
+    "/contact",
     "/surplus-yard",
     "/find-a-crew",
     "/platform",

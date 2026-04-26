@@ -11,7 +11,7 @@ const PRIMARY_LINKS: { href: string; label: string }[] = [
   { href: "/product", label: "Engines" },
   { href: "/pricing", label: "Pricing" },
   { href: "/compare", label: "Compare" },
-  { href: "/manifesto", label: "Resources" },
+  { href: "/contact", label: "Contact" },
 ];
 
 const MOBILE_SECTIONS: { title: string; links: { href: string; label: string }[] }[] = [
@@ -48,6 +48,14 @@ const MOBILE_SECTIONS: { title: string; links: { href: string; label: string }[]
     links: [
       { href: "/security", label: "Security" },
       { href: "/integrations", label: "Integrations" },
+    ],
+  },
+  {
+    title: "Talk to us",
+    links: [
+      { href: "/contact", label: "Contact" },
+      { href: "/demo", label: "Book a demo" },
+      { href: "/council", label: "The Council" },
     ],
   },
 ];
