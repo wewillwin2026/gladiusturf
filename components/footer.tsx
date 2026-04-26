@@ -152,9 +152,18 @@ export function Footer() {
               ))}
             </ul>
           </div>
-          <p className="font-serif text-[14px] italic text-champagne-bright">
-            Not a CRM
-          </p>
+          <div className="flex items-center gap-4">
+            <a
+              href="/founders/login"
+              className="text-[11px] uppercase tracking-[0.2em] text-bone/30 transition-colors hover:text-champagne-bright"
+              aria-label="Founders log in"
+            >
+              ◆
+            </a>
+            <p className="font-serif text-[14px] italic text-champagne-bright">
+              Not a CRM
+            </p>
+          </div>
         </div>
       </div>
     </footer>

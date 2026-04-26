@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Inter, Fraunces, JetBrains_Mono } from "next/font/google";
+import { UtmCapture } from "@/components/utm-capture";
 import "./globals.css";
 
 const inter = Inter({
@@ -58,7 +60,17 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${inter.variable} ${fraunces.variable} ${jetbrains.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <UtmCapture />
+        {process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN && (
+          <Script
+            src="https://plausible.io/js/script.tagged-events.js"
+            data-domain={process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN}
+            strategy="afterInteractive"
+          />
+        )}
+      </body>
     </html>
   );
 }
