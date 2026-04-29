@@ -5,11 +5,7 @@ import { ENGINES } from "@/content/engines";
 import { ENGINE_TIERS } from "@/content/engine-tiers";
 import { mockUiFor, type EngineMockRow } from "./mock-ui";
 
-export const dynamic = "force-static";
-
-export function generateStaticParams() {
-  return ENGINES.map((engine) => ({ slug: engine.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
