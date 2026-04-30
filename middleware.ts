@@ -15,10 +15,17 @@ import { NextResponse, type NextRequest } from "next/server";
 export function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
 
-  // 1. /preview/* → /app/*
+  // 1. /preview/* → /app/*. The old /preview shipped /preview/engines/[slug]
+  //    drill-ins that don't exist in /app anymore; redirect those to the
+  //    /app dashboard so morning-shipped URLs from Joshua resolve to a
+  //    real screen, not a 404. Other /preview/* paths map 1:1 to /app/*.
   if (pathname === "/preview" || pathname.startsWith("/preview/")) {
     const target = req.nextUrl.clone();
-    target.pathname = pathname.replace(/^\/preview/, "/app") || "/app";
+    if (pathname.startsWith("/preview/engines")) {
+      target.pathname = "/app";
+    } else {
+      target.pathname = pathname.replace(/^\/preview/, "/app") || "/app";
+    }
     return NextResponse.redirect(target, { status: 308 });
   }
 
