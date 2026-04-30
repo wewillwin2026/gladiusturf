@@ -7,6 +7,7 @@ import { CommandPaletteProvider } from "./CommandPaletteContext";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
 import { CommandPalette } from "./CommandPalette";
+import { FloatingAskGladiusButton } from "./AskGladius";
 import { TooltipProvider } from "./ui/Tooltip";
 import { type ProductKind } from "./engines";
 
@@ -34,6 +35,7 @@ export function AppShell({
               </main>
             </div>
             <CommandPalette product={product} />
+            <FloatingAskGladiusButton product={product} />
             <Toaster
               position="top-right"
               theme="dark"
