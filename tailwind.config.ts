@@ -34,11 +34,31 @@ const config: Config = {
       stone: "#6B6B6B",
       white: "#FFFFFF",
       black: "#000000",
+      // Gladius app/War-Room palette (Option-2). CSS vars defined in app.css.
+      // These only render correctly inside the .gladius-app wrapper.
+      "g-bg": "var(--g-bg)",
+      "g-surface": "var(--g-surface)",
+      "g-surface-2": "var(--g-surface-2)",
+      "g-border": "var(--g-border)",
+      "g-border-subtle": "var(--g-border-subtle)",
+      "g-text": "var(--g-text)",
+      "g-text-muted": "var(--g-text-muted)",
+      "g-text-faint": "var(--g-text-faint)",
+      "g-accent": "var(--g-accent)",
+      "g-accent-hover": "var(--g-accent-hover)",
+      "g-accent-faint": "var(--g-accent-faint)",
+      "g-success": "var(--g-success)",
+      "g-warning": "var(--g-warning)",
+      "g-danger": "var(--g-danger)",
+      "g-info": "var(--g-info)",
     },
     fontFamily: {
       sans: ["var(--font-inter)", "system-ui", "sans-serif"],
       serif: ["var(--font-fraunces)", "ui-serif", "serif"],
       mono: ["var(--font-jetbrains)", "ui-monospace", "monospace"],
+      // App/War Room only — used inside .gladius-app
+      "geist-sans": ["var(--font-geist-sans)", "system-ui", "sans-serif"],
+      "geist-mono": ["var(--font-geist-mono)", "ui-monospace", "monospace"],
     },
     borderRadius: {
       none: "0",

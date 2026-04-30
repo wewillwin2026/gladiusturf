@@ -1,0 +1,64 @@
+import { NextResponse, type NextRequest } from "next/server";
+
+/**
+ * Lightweight middleware:
+ *   1. Permanent redirect /preview/* → /app/* (24h+ grace for the URLs we
+ *      shipped this morning).
+ *   2. Optional cookie pre-check on /app/** and /founders/war-room/** so
+ *      requests without any session cookie short-circuit straight to the
+ *      respective login. The actual cryptographic verification happens in the
+ *      gated layouts (cookies()) — this is purely a fast-path filter.
+ *
+ * Note: middleware runs on the Edge runtime, so we cannot import node:crypto
+ * here. The full HMAC verification stays in the server-component layouts.
+ */
+export function middleware(req: NextRequest) {
+  const { pathname, search } = req.nextUrl;
+
+  // 1. /preview/* → /app/*
+  if (pathname === "/preview" || pathname.startsWith("/preview/")) {
+    const target = req.nextUrl.clone();
+    target.pathname = pathname.replace(/^\/preview/, "/app") || "/app";
+    return NextResponse.redirect(target, { status: 308 });
+  }
+
+  // 2. Fast-path cookie presence check.
+  if (pathname.startsWith("/app") && pathname !== "/app/login") {
+    const hasCookie =
+      req.cookies.get("gladius_demo_session")?.value ||
+      req.cookies.get("gt_preview_session")?.value;
+    if (!hasCookie) {
+      const target = req.nextUrl.clone();
+      target.pathname = "/app/login";
+      target.search = "";
+      return NextResponse.redirect(target);
+    }
+  }
+
+  if (pathname.startsWith("/founders/war-room")) {
+    const hasCookie =
+      req.cookies.get("gladius_founder_session")?.value ||
+      req.cookies.get("gt_founders_session")?.value;
+    if (!hasCookie) {
+      const target = req.nextUrl.clone();
+      target.pathname = "/founders/login";
+      target.search = "";
+      return NextResponse.redirect(target);
+    }
+  }
+
+  // No-op for everything else.
+  void search;
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: [
+    "/preview",
+    "/preview/:path*",
+    "/app",
+    "/app/:path*",
+    "/founders/war-room",
+    "/founders/war-room/:path*",
+  ],
+};

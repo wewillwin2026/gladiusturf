@@ -1,41 +1,66 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight, Loader2, Mail } from "lucide-react";
 
 export function LoginForm() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/login", {
+      const res = await fetch("/api/founders/magic", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || "Login failed");
+        throw new Error(body.error || "Failed to send link");
       }
-      router.push("/founders/war-room");
-      router.refresh();
+      setSent(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(err instanceof Error ? err.message : "Failed to send link");
+    } finally {
       setLoading(false);
     }
   }
 
+  if (sent) {
+    return (
+      <div className="flex flex-col items-center gap-3 py-2 text-center">
+        <div className="rounded-full border border-champagne/30 bg-champagne-bright/10 p-3 text-champagne-bright">
+          <Mail className="h-5 w-5" />
+        </div>
+        <p className="text-[15px] text-bone">
+          If your email is approved, a sign-in link is on its way.
+        </p>
+        <p className="text-[12px] text-bone/55">
+          Link expires in 15 minutes. You&rsquo;ll need your authenticator app for the
+          TOTP code.
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            setSent(false);
+            setEmail("");
+          }}
+          className="mt-3 text-[12px] uppercase tracking-[0.16em] text-champagne-bright hover:underline"
+        >
+          Use a different email
+        </button>
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-      <Field label="Email">
+      <Field label="Founder email">
         <input
           type="email"
           name="email"
@@ -44,17 +69,7 @@ export function LoginForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className={inputCls}
-        />
-      </Field>
-      <Field label="Password">
-        <input
-          type="password"
-          name="password"
-          autoComplete="current-password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className={inputCls}
+          placeholder="founder@gladiusturf.com"
         />
       </Field>
 
@@ -66,21 +81,25 @@ export function LoginForm() {
 
       <button
         type="submit"
-        disabled={loading || !email || !password}
+        disabled={loading || !email}
         className="group mt-1 inline-flex items-center justify-center gap-2 rounded-full bg-lime-bright px-6 py-3 text-sm font-semibold text-forest-deep shadow-cta transition-all hover:bg-lime hover:shadow-cta-hover disabled:cursor-not-allowed disabled:opacity-60"
       >
         {loading ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
-            Verifying…
+            Sending link…
           </>
         ) : (
           <>
-            Enter the War Room
+            Email me a sign-in link
             <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
           </>
         )}
       </button>
+
+      <p className="text-center text-[11px] text-bone/40">
+        Two founders only. Activity is logged.
+      </p>
     </form>
   );
 }

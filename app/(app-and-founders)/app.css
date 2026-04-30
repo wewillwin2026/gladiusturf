@@ -1,0 +1,100 @@
+/*
+ * Option-2 design system — Linear/Stripe operator.
+ * Scoped to .gladius-app so it doesn't leak into the marketing site.
+ * Loaded once via the root layout's import.
+ */
+
+.gladius-app {
+  --g-bg: #0a0a0b;
+  --g-surface: #141416;
+  --g-surface-2: #1c1c20;
+  --g-border: #26262a;
+  --g-border-subtle: #1f1f23;
+  --g-text: #fafafa;
+  --g-text-muted: #a1a1aa;
+  --g-text-faint: #71717a;
+  --g-accent: #00d26a;
+  --g-accent-hover: #00e878;
+  --g-accent-faint: #042414;
+  --g-success: #22c55e;
+  --g-warning: #f59e0b;
+  --g-danger: #ef4444;
+  --g-info: #3b82f6;
+
+  background: var(--g-bg);
+  color: var(--g-text);
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "ss01", "cv11";
+}
+
+.gladius-app[data-theme="light"] {
+  --g-bg: #fafaf9;
+  --g-surface: #ffffff;
+  --g-surface-2: #f4f4f5;
+  --g-border: #e4e4e7;
+  --g-border-subtle: #f1f1f3;
+  --g-text: #0a0a0b;
+  --g-text-muted: #52525b;
+  --g-text-faint: #71717a;
+  --g-accent: #00a852;
+  --g-accent-hover: #00c25f;
+  --g-accent-faint: #e8f8ee;
+  --g-success: #16a34a;
+  --g-warning: #d97706;
+  --g-danger: #dc2626;
+  --g-info: #2563eb;
+}
+
+.gladius-app .mono,
+.gladius-app [data-mono] {
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  font-feature-settings: "tnum", "cv11";
+}
+
+.gladius-app h1 {
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.gladius-app h2 {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+.gladius-app h3 {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.gladius-app *:focus-visible {
+  outline: 2px solid var(--g-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.gladius-app ::selection {
+  background: var(--g-accent-faint);
+  color: var(--g-accent);
+}
+
+.g-card {
+  background: var(--g-surface);
+  border: 1px solid var(--g-border);
+  border-radius: 10px;
+}
+.g-surface-2 {
+  background: var(--g-surface-2);
+}
+.g-divider {
+  border-color: var(--g-border);
+}
+.g-divider-subtle {
+  border-color: var(--g-border-subtle);
+}

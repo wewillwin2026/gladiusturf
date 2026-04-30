@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { Inter, Fraunces, JetBrains_Mono } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import { UtmCapture } from "@/components/utm-capture";
 import "./globals.css";
+import "./(app-and-founders)/app.css";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -59,7 +62,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${fraunces.variable} ${jetbrains.variable}`}>
+    <html
+      lang="en"
+      className={`${inter.variable} ${fraunces.variable} ${jetbrains.variable} ${GeistSans.variable} ${GeistMono.variable}`}
+    >
       <body>
         {children}
         <UtmCapture />

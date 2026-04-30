@@ -1,53 +1,54 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import { LogOut } from "lucide-react";
-import { verifySessionCookieValue, ADMIN_COOKIE_NAME } from "@/lib/admin-auth";
+import {
+  FOUNDER_COOKIE_NAME,
+  verifyFounderSessionCookieValue,
+} from "@/lib/founders/auth";
+import { ADMIN_COOKIE_NAME, verifySessionCookieValue } from "@/lib/admin-auth";
+import { AppShell } from "@/components/app/AppShell";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = {
+  title: "War Room · GladiusTurf",
+  robots: { index: false, follow: false },
+};
 
 export default async function FoundersAuthedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = await cookies();
-  const session = cookieStore.get(ADMIN_COOKIE_NAME)?.value;
-  if (!verifySessionCookieValue(session)) redirect("/founders/login");
+  const store = await cookies();
+
+  // Honor the new gladius_founder_session cookie first.
+  const founderRaw = store.get(FOUNDER_COOKIE_NAME)?.value;
+  const founder = verifyFounderSessionCookieValue(founderRaw);
+
+  // 24-hour grace for the legacy gt_founders_session HMAC cookie so currently
+  // signed-in founders aren't kicked out at deploy time.
+  const legacyOk = !founder
+    ? verifySessionCookieValue(store.get(ADMIN_COOKIE_NAME)?.value)
+    : false;
+
+  if (!founder && !legacyOk) redirect("/founders/login");
+
+  const email = founder?.email ?? "founder@gladiusturf.com";
+  const name = nameFromEmail(email);
 
   return (
-    <div className="min-h-screen bg-pitch text-bone">
-      <header className="sticky top-0 z-40 border-b border-bone/10 bg-pitch/95 backdrop-blur supports-[backdrop-filter]:bg-pitch/80">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <Link
-            href="/founders/war-room"
-            className="font-serif text-lg tracking-tight text-bone"
-          >
-            GladiusTurf
-            <span className="ml-2 text-xs uppercase tracking-crest text-champagne-bright">
-              Founders
-            </span>
-          </Link>
-          <nav className="flex items-center gap-4">
-            <Link
-              href="/founders/war-room"
-              className="rounded-md border border-champagne/30 px-3 py-1.5 text-xs uppercase tracking-tagline text-champagne-bright transition-colors hover:bg-champagne-bright/10"
-            >
-              War Room
-            </Link>
-            <form action="/api/admin/logout" method="POST">
-              <button
-                type="submit"
-                className="flex items-center gap-1.5 rounded-md border border-bone/10 px-3 py-1.5 text-xs uppercase tracking-tagline text-bone/70 transition-colors hover:bg-bone/5 hover:text-bone"
-              >
-                <LogOut className="h-3.5 w-3.5" />
-                Logout
-              </button>
-            </form>
-          </nav>
-        </div>
-      </header>
-      <main className="mx-auto max-w-7xl px-6 py-10">{children}</main>
-    </div>
+    <AppShell
+      product="founders"
+      user={{ name, subtitle: email }}
+      logoutHref="/api/founders/logout"
+    >
+      {children}
+    </AppShell>
   );
+}
+
+function nameFromEmail(email: string): string {
+  if (email.startsWith("ricardo")) return "Ricardo Gamón";
+  if (email.startsWith("joshua")) return "Joshua Pyorke";
+  return email.split("@")[0]!;
 }
