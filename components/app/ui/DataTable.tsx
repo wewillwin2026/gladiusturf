@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
@@ -20,25 +18,28 @@ export interface DataTableProps<T> {
   rowHref?: (row: T) => string | null;
   empty?: React.ReactNode;
   caption?: React.ReactNode;
-  pageSize?: number;
+  /** Maximum rows to render. Beyond this, a footer hint shows the total. */
+  maxRows?: number;
   rowKey?: (row: T, idx: number) => string;
   className?: string;
 }
 
+/**
+ * Server component table. Renders up to `maxRows` rows; for full pagination
+ * we'd switch to a client island, but Phase 2 only needs ≥8 rendered rows
+ * with a "+ N more" hint.
+ */
 export function DataTable<T>({
   columns,
   rows,
   rowHref,
   empty,
   caption,
-  pageSize = 50,
+  maxRows = 50,
   rowKey,
   className,
 }: DataTableProps<T>) {
-  const [page, setPage] = React.useState(0);
   const total = rows.length;
-  const pageCount = Math.max(1, Math.ceil(total / pageSize));
-  const visible = rows.slice(page * pageSize, (page + 1) * pageSize);
 
   if (!total)
     return (
@@ -46,6 +47,8 @@ export function DataTable<T>({
         {empty ?? "No rows yet."}
       </div>
     );
+
+  const visible = rows.slice(0, maxRows);
 
   return (
     <div className={cn("g-card overflow-hidden", className)}>
@@ -77,90 +80,53 @@ export function DataTable<T>({
           <tbody>
             {visible.map((row, i) => {
               const href = rowHref?.(row) ?? null;
-              const k = rowKey?.(row, i) ?? `${page}-${i}`;
-              const cells = columns.map((c) => (
-                <td
-                  key={c.key}
-                  className={cn(
-                    "px-4 py-2.5 text-g-text border-b border-g-border-subtle last:border-b-0",
-                    c.align === "right" && "text-right",
-                    c.align === "center" && "text-center",
-                    c.mono && "font-geist-mono tabular-nums",
-                    c.className,
-                  )}
-                >
-                  {c.cell(row)}
-                </td>
-              ));
+              const k = rowKey?.(row, i) ?? `${i}`;
               return (
                 <tr
                   key={k}
                   className={cn(
-                    "transition-colors",
-                    href && "hover:bg-g-surface-2 cursor-pointer",
+                    "border-b border-g-border-subtle last:border-b-0 transition-colors",
+                    href && "hover:bg-g-surface-2",
                   )}
                 >
-                  {href ? (
-                    <td colSpan={columns.length} className="p-0">
-                      <Link
-                        href={href}
-                        prefetch
-                        className="grid w-full"
-                        style={{
-                          gridTemplateColumns: columns
-                            .map((c) => c.width ?? "1fr")
-                            .join(" "),
-                        }}
-                      >
-                        {cells.map((cell, idx) => (
-                          <div
-                            key={idx}
-                            className={cn(
-                              "px-4 py-2.5 text-g-text border-b border-g-border-subtle last:border-b-0 flex items-center",
-                              columns[idx]!.align === "right" && "justify-end",
-                              columns[idx]!.align === "center" && "justify-center",
-                              columns[idx]!.mono && "font-geist-mono tabular-nums",
-                              columns[idx]!.className,
-                            )}
+                  {columns.map((c, ci) => {
+                    const cls = cn(
+                      "px-4 py-2.5 text-g-text",
+                      c.align === "right" && "text-right",
+                      c.align === "center" && "text-center",
+                      c.mono && "font-geist-mono tabular-nums",
+                      c.className,
+                    );
+                    return (
+                      <td key={c.key} className={cls}>
+                        {href && ci === 0 ? (
+                          <Link
+                            href={href}
+                            prefetch
+                            className="block text-g-text hover:text-g-accent"
                           >
-                            {(cell as React.ReactElement<{ children?: React.ReactNode }>).props.children}
-                          </div>
-                        ))}
-                      </Link>
-                    </td>
-                  ) : (
-                    cells
-                  )}
+                            {c.cell(row)}
+                          </Link>
+                        ) : (
+                          c.cell(row)
+                        )}
+                      </td>
+                    );
+                  })}
                 </tr>
               );
             })}
           </tbody>
         </table>
       </div>
-      {pageCount > 1 && (
+      {total > maxRows && (
         <div className="flex items-center justify-between px-4 py-2 border-t border-g-border-subtle text-[11px] text-g-text-muted">
           <span className="font-geist-mono tabular-nums">
-            {page * pageSize + 1}–{Math.min((page + 1) * pageSize, total)} of{" "}
-            {total}
+            Showing 1–{maxRows} of {total}
           </span>
-          <div className="flex items-center gap-1">
-            <button
-              type="button"
-              disabled={page === 0}
-              onClick={() => setPage((p) => Math.max(0, p - 1))}
-              className="px-2 py-1 rounded hover:bg-g-surface-2 disabled:opacity-40"
-            >
-              Prev
-            </button>
-            <button
-              type="button"
-              disabled={page >= pageCount - 1}
-              onClick={() => setPage((p) => Math.min(pageCount - 1, p + 1))}
-              className="px-2 py-1 rounded hover:bg-g-surface-2 disabled:opacity-40"
-            >
-              Next
-            </button>
-          </div>
+          <span className="text-g-text-faint">
+            (full pagination ships in Phase 4 — Reports)
+          </span>
         </div>
       )}
     </div>
