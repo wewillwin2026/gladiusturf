@@ -1,11 +1,7 @@
-import { notFound } from "next/navigation";
-import { specFor } from "@/lib/demo/engine-specs";
-import { EngineFromSpec } from "@/components/app/EngineFromSpec";
+import { PayrollBrowser } from "@/components/app/PayrollBrowser";
 
 export const dynamic = "force-dynamic";
 
 export default function Page() {
-  const spec = specFor("payroll");
-  if (!spec) notFound();
-  return <EngineFromSpec product="demo" spec={spec} />;
+  return <PayrollBrowser product="demo" />;
 }

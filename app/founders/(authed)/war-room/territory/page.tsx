@@ -1,11 +1,7 @@
-import { notFound } from "next/navigation";
-import { specFor } from "@/lib/demo/engine-specs";
-import { EngineFromSpec } from "@/components/app/EngineFromSpec";
+import { TerritoryBrowser } from "@/components/app/TerritoryBrowser";
 
 export const dynamic = "force-dynamic";
 
 export default function Page() {
-  const spec = specFor("territory");
-  if (!spec) notFound();
-  return <EngineFromSpec product="founders" spec={spec} />;
+  return <TerritoryBrowser product="founders" />;
 }

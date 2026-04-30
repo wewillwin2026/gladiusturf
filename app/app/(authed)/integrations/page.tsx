@@ -1,11 +1,7 @@
-import { notFound } from "next/navigation";
-import { specFor } from "@/lib/demo/engine-specs";
-import { EngineFromSpec } from "@/components/app/EngineFromSpec";
+import { IntegrationsBrowser } from "@/components/app/IntegrationsBrowser";
 
 export const dynamic = "force-dynamic";
 
 export default function Page() {
-  const spec = specFor("integrations");
-  if (!spec) notFound();
-  return <EngineFromSpec product="demo" spec={spec} />;
+  return <IntegrationsBrowser product="demo" />;
 }

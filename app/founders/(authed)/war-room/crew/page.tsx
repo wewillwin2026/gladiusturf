@@ -1,11 +1,7 @@
-import { notFound } from "next/navigation";
-import { specFor } from "@/lib/demo/engine-specs";
-import { EngineFromSpec } from "@/components/app/EngineFromSpec";
+import { CrewBrowser } from "@/components/app/CrewBrowser";
 
 export const dynamic = "force-dynamic";
 
 export default function Page() {
-  const spec = specFor("crew");
-  if (!spec) notFound();
-  return <EngineFromSpec product="founders" spec={spec} />;
+  return <CrewBrowser product="founders" />;
 }

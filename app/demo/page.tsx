@@ -6,6 +6,7 @@ import {
   Sparkles,
   Users,
 } from "lucide-react";
+import { BDCCallbackButton } from "@/components/bdc-callback-button";
 import { DemoForm } from "@/components/demo-form";
 import { Eyebrow } from "@/components/eyebrow";
 import { Footer } from "@/components/footer";
@@ -96,6 +97,14 @@ export default function DemoPage() {
                 dollars — what GladiusTurf would have put in your bank last
                 quarter, and exactly what migration looks like.
               </p>
+
+              <div className="mt-10">
+                <BDCCallbackButton />
+                <p className="mt-2.5 text-[12px] text-bone/40">
+                  Or skip the form. We&rsquo;ll call you back inside a minute,
+                  founder voice on the line.
+                </p>
+              </div>
 
               <ul className="mt-10 flex flex-col gap-3 text-[15px] leading-[1.6] text-bone/70">
                 <li className="flex items-start gap-3">
