@@ -3,6 +3,7 @@ import Script from "next/script";
 import { Inter, Fraunces, JetBrains_Mono } from "next/font/google";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
+import { TrackingScript } from "@/components/tracking-script";
 import { UtmCapture } from "@/components/utm-capture";
 import "./globals.css";
 import "./(app-and-founders)/app.css";
@@ -68,6 +69,7 @@ export default function RootLayout({
     >
       <body>
         {children}
+        <TrackingScript />
         <UtmCapture />
         {process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN && (
           <Script

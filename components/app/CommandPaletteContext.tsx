@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { track } from "@/lib/tracking/client";
 
 const CmdKCtx = React.createContext<{
   isOpen: boolean;
@@ -25,7 +26,11 @@ export function CommandPaletteProvider({
     function onKey(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        setOpen((o) => !o);
+        setOpen((o) => {
+          const next = !o;
+          if (next) track("cmdk_open", { source: "shortcut" });
+          return next;
+        });
       } else if (e.key === "Escape") {
         setOpen(false);
       }
@@ -37,11 +42,19 @@ export function CommandPaletteProvider({
   const value = React.useMemo(
     () => ({
       isOpen,
-      open: () => setOpen(true),
+      open: () => {
+        track("cmdk_open", { source: "click" });
+        setOpen(true);
+      },
       close: () => setOpen(false),
-      toggle: () => setOpen((o) => !o),
+      toggle: () =>
+        setOpen((o) => {
+          const next = !o;
+          if (next) track("cmdk_open", { source: "toggle" });
+          return next;
+        }),
     }),
-    [isOpen],
+    [],
   );
 
   return <CmdKCtx.Provider value={value}>{children}</CmdKCtx.Provider>;

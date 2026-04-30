@@ -7,6 +7,7 @@ import { Button } from "./ui/Button";
 import { Textarea } from "./ui/Input";
 import { type ProductKind } from "./engines";
 import { cn } from "@/lib/cn";
+import { track } from "@/lib/tracking/client";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -77,6 +78,7 @@ export function AskGladius({
     push({ role: "user", content: trimmed });
     setLoading(true);
     setPending("");
+    track("ai_chat_message", { product, length: trimmed.length });
     try {
       const res = await fetch("/api/ai/chat", {
         method: "POST",
@@ -278,7 +280,10 @@ export function FloatingAskGladiusButton({
       {!open && (
         <button
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={() => {
+            track("ai_chat_open", { product, source: "floating" });
+            setOpen(true);
+          }}
           aria-label="Open Ask Gladius"
           className="fixed bottom-6 right-6 z-40 h-14 w-14 rounded-full bg-g-accent text-black shadow-2xl flex items-center justify-center hover:bg-g-accent-hover transition-all hover:scale-105 active:scale-95"
         >

@@ -9,6 +9,7 @@ import {
   Users,
   Zap,
 } from "lucide-react";
+import { SettingsBillingTracker } from "./SettingsBillingTracker";
 import { PageHeader } from "./PageHeader";
 import { KPICard } from "./ui/KPICard";
 import { StatusPill } from "./ui/StatusPill";
@@ -125,6 +126,7 @@ export function SettingsBrowser({ product }: { product: ProductKind }) {
 
   return (
     <div className="flex flex-col gap-6">
+      <SettingsBillingTracker product={product} />
       <PageHeader
         eyebrow={product === "demo" ? "Cypress Lawn" : "War Room"}
         title="Settings"

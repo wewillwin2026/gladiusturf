@@ -17,6 +17,7 @@ import { SatelliteCanvas } from "./SatelliteCanvas";
 import { SERVICE_RATES, priceFor } from "@/lib/shared/pricing";
 import { money, num, sqft } from "@/lib/shared/format";
 import { cn } from "@/lib/cn";
+import { trackConversion } from "@/lib/tracking/client";
 
 const TAMPA_ADDRESSES: { value: string; label: string }[] = [
   { value: "2231 Lakeshore Way, Tampa FL 33606", label: "2231 Lakeshore Way" },
@@ -168,6 +169,16 @@ export function AIQuoteDrafter({ mapboxToken }: { mapboxToken: string | null }) 
     await new Promise((r) => setTimeout(r, 700));
     setSending(false);
     setStep("sent");
+    const turf = measurements?.turfSqft ?? 0;
+    const totalDollars = Array.from(selected).reduce(
+      (s, slug) => s + (priceFor(slug, turf) || 0),
+      0,
+    );
+    trackConversion("quote_drafted", Math.round(totalDollars * 100), {
+      address,
+      services: Array.from(selected),
+      turfSqft: turf,
+    });
     toast.success("Quote sent · text + email", {
       description: `Delivered to a customer at ${address.split(",")[0]}.`,
     });

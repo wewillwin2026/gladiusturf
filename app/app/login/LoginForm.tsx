@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Loader2 } from "lucide-react";
+import { trackConversion } from "@/lib/tracking/client";
 
 const DEMO_EMAIL = "admin@gladiuscrm.com";
 const DEMO_PASSWORD = "test123";
@@ -28,6 +29,7 @@ export function LoginForm() {
         const body = await res.json().catch(() => ({}));
         throw new Error(body.error || "Sign in failed");
       }
+      trackConversion("demo_login", 0, { email });
       router.push("/app");
       router.refresh();
     } catch (err) {

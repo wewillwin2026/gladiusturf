@@ -10,6 +10,7 @@ import {
   trackDemoSlotPicked,
   trackDemoTierSelected,
 } from "@/lib/track";
+import { track, trackConversion } from "@/lib/tracking/client";
 
 type Status = "idle" | "submitting" | "success" | "error";
 type Tier = "independent" | "professional" | "enterprise";
@@ -148,6 +149,7 @@ export function DemoForm() {
     if (startedRef.current) return;
     startedRef.current = true;
     trackDemoFormStart();
+    track("demo_form_focus");
   }
 
   function selectTier(next: Tier) {
@@ -229,6 +231,12 @@ export function DemoForm() {
         throw new Error(errBody.error || "Something went wrong");
       }
       trackDemoBooked(tier, wantsBdc, crewSize);
+      trackConversion("demo_form_submit", 0, {
+        tier,
+        crewSize,
+        currentSoftware,
+        wantsBdc,
+      });
       setStatus("success");
       // Reset state
       setCrewName("");
@@ -270,6 +278,7 @@ export function DemoForm() {
       <Field label="Crew / shop name">
         <input
           name="crewName"
+          data-track="demo_form_crewName"
           required
           autoComplete="organization"
           value={crewName}
@@ -281,6 +290,7 @@ export function DemoForm() {
       <Field label="Your name">
         <input
           name="ownerName"
+          data-track="demo_form_ownerName"
           required
           autoComplete="name"
           value={ownerName}
@@ -294,6 +304,7 @@ export function DemoForm() {
           <input
             type="email"
             name="email"
+            data-track="demo_form_email"
             required
             autoComplete="email"
             value={email}
@@ -305,6 +316,7 @@ export function DemoForm() {
           <input
             type="tel"
             name="phone"
+            data-track="demo_form_phone"
             required
             autoComplete="tel"
             value={phone}
@@ -317,6 +329,7 @@ export function DemoForm() {
       <Field label="Current software">
         <select
           name="currentSoftware"
+          data-track="demo_form_currentSoftware"
           required
           className={inputCls}
           value={currentSoftware}
