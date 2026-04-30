@@ -9,7 +9,7 @@ export interface KPICardProps {
   delta?: string;
   trend?: "up" | "down" | "flat";
   spark?: number[];
-  hint?: string;
+  hint?: React.ReactNode;
   className?: string;
 }
 
