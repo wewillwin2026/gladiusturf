@@ -1,11 +1,19 @@
-import { notFound } from "next/navigation";
-import { specFor } from "@/lib/demo/engine-specs";
-import { EngineFromSpec } from "@/components/app/EngineFromSpec";
+import { PageHeader } from "@/components/app/PageHeader";
+import { AIQuoteDrafter } from "@/components/app/AIQuoteDrafter";
 
 export const dynamic = "force-dynamic";
 
-export default function Page() {
-  const spec = specFor("quotes/new");
-  if (!spec) notFound();
-  return <EngineFromSpec product="demo" spec={spec} />;
+export default function AIQuoteDrafterPage() {
+  return (
+    <div className="flex flex-col gap-6">
+      <PageHeader
+        eyebrow="Phase 3 · live · Anthropic streaming"
+        title="AI Quote Drafter"
+        subtitle="Address → satellite measure → quote in 30 seconds. Bundled, not bolted-on."
+      />
+      <AIQuoteDrafter
+        mapboxToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? null}
+      />
+    </div>
+  );
 }
