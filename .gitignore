@@ -45,3 +45,6 @@ next-env.d.ts
 supabase/.temp/
 
 .env*.local
+
+# MCP (project-scope config holds tokens)
+.mcp.json
