@@ -338,9 +338,9 @@ export const MIKE_JACKSON_HISTORY = [
   },
   {
     date: "2025-09-21",
-    title: "Up-light replacement during rain — warranty",
+    title: "Up-light replacement — in the rain — warranty",
     detail:
-      "Cristian replaced BL-MJ-024 the day Mike called. It was raining. New 5-yr Cast warranty issued to 2030-09. Customer's Google review references this visit.",
+      "Cristian came out the day Mike called and replaced BL-MJ-024 in the rain. New 5-yr Cast warranty issued to 2030-09. Customer's Google review references this visit verbatim.",
     invoiced: false,
   },
 ] as const;
@@ -607,7 +607,7 @@ export const SPAM_REVIEWS = [
   },
   {
     author: "(unsigned)",
-    excerpt: "Lorem ipsum dolor sit amet ⭐⭐⭐⭐⭐ best service ever check out my crypto…",
+    excerpt: "amazing job ⭐⭐⭐⭐⭐ best service ever check out my crypto signals at telegram dot me slash …",
     flagged: "bot gibberish",
   },
   {

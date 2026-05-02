@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./bright-lights.css";
 
 export const metadata: Metadata = {
-  title: "Bright Lights — Command Center",
+  title: { absolute: "Bright Lights — Command Center" },
   description:
     "Bright Lights Landscape Lighting · Command Center. Sarasota, FL.",
   robots: { index: false, follow: false },
