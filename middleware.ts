@@ -54,6 +54,22 @@ export function middleware(req: NextRequest) {
     }
   }
 
+  // 3. Bright Lights demo gate. The unlock screen (root path) and the unlock
+  //    POST route stay open; everything deeper requires the signed cookie.
+  if (
+    pathname.startsWith("/demo/bright-lights-encina") &&
+    pathname !== "/demo/bright-lights-encina" &&
+    pathname !== "/demo/bright-lights-encina/"
+  ) {
+    const hasCookie = req.cookies.get("bright_lights_demo")?.value;
+    if (!hasCookie) {
+      const target = req.nextUrl.clone();
+      target.pathname = "/demo/bright-lights-encina";
+      target.search = "";
+      return NextResponse.redirect(target);
+    }
+  }
+
   // No-op for everything else.
   void search;
   return NextResponse.next();
@@ -67,5 +83,7 @@ export const config = {
     "/app/:path*",
     "/founders/war-room",
     "/founders/war-room/:path*",
+    "/demo/bright-lights-encina",
+    "/demo/bright-lights-encina/:path*",
   ],
 };

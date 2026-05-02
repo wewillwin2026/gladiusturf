@@ -1,0 +1,183 @@
+/* Bright Lights brand palette per /docs/bright-lights-demo-handoff.md §1.
+   Scoped to .bl-root so we don't leak these vars into the rest of the site. */
+
+.bl-root {
+  --bl-primary-dark: #0e1628;
+  --bl-bg: #1a2438;
+  --bl-bg-2: #243049;
+  --bl-bg-3: #2d3a55;
+  --bl-border: rgba(245, 239, 230, 0.12);
+  --bl-border-strong: rgba(245, 239, 230, 0.22);
+  --bl-accent: #f4b860;
+  --bl-accent-2: #e89b3c;
+  --bl-text: #f5efe6;
+  --bl-text-muted: rgba(245, 239, 230, 0.72);
+  --bl-text-faint: rgba(245, 239, 230, 0.45);
+  --bl-success: #9cd86e;
+  --bl-alert: #e85f5f;
+  --bl-info: #7cc8e8;
+
+  background: var(--bl-primary-dark);
+  color: var(--bl-text);
+  font-family: var(--font-geist-sans, ui-sans-serif, system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.bl-root * {
+  box-sizing: border-box;
+}
+
+.bl-root .bl-card {
+  background: var(--bl-bg);
+  border: 1px solid var(--bl-border);
+  border-radius: 12px;
+}
+
+.bl-root .bl-card-elevated {
+  background: var(--bl-bg-2);
+  border: 1px solid var(--bl-border-strong);
+  border-radius: 12px;
+}
+
+.bl-root .bl-glow {
+  background: radial-gradient(
+    circle at 50% 0%,
+    rgba(244, 184, 96, 0.18) 0%,
+    rgba(244, 184, 96, 0.06) 30%,
+    transparent 60%
+  );
+}
+
+.bl-root .bl-eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bl-accent);
+}
+
+.bl-root .bl-eyebrow-muted {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bl-text-faint);
+}
+
+.bl-root .bl-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 11px;
+  border: 1px solid var(--bl-border-strong);
+  background: var(--bl-bg-3);
+  color: var(--bl-text-muted);
+}
+
+.bl-root .bl-pill-warn {
+  background: rgba(232, 95, 95, 0.12);
+  color: var(--bl-alert);
+  border-color: rgba(232, 95, 95, 0.4);
+}
+
+.bl-root .bl-pill-amber {
+  background: rgba(244, 184, 96, 0.12);
+  color: var(--bl-accent);
+  border-color: rgba(244, 184, 96, 0.4);
+}
+
+.bl-root .bl-pill-success {
+  background: rgba(156, 216, 110, 0.1);
+  color: var(--bl-success);
+  border-color: rgba(156, 216, 110, 0.4);
+}
+
+.bl-root .bl-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--bl-accent);
+  color: #1a1208;
+  font-weight: 600;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+  transition: background 160ms ease;
+}
+
+.bl-root .bl-btn-primary:hover {
+  background: var(--bl-accent-2);
+}
+
+.bl-root .bl-btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.bl-root .bl-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--bl-text-muted);
+  font-size: 12px;
+  border: 1px solid var(--bl-border-strong);
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.bl-root .bl-btn-ghost:hover {
+  color: var(--bl-text);
+  border-color: var(--bl-accent);
+}
+
+.bl-root .bl-input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--bl-border-strong);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--bl-text);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 160ms ease;
+}
+
+.bl-root .bl-input:focus {
+  border-color: var(--bl-accent);
+}
+
+.bl-root .bl-mono {
+  font-family: var(--font-geist-mono, ui-monospace, "SFMono-Regular", monospace);
+  font-variant-numeric: tabular-nums;
+}
+
+.bl-root .bl-serif {
+  font-family: var(--font-fraunces, "Fraunces", "Iowan Old Style", serif);
+}
+
+@keyframes bl-pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.bl-root .bl-pulse {
+  animation: bl-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes bl-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.bl-root .bl-fade-in {
+  animation: bl-fade-in 240ms ease-out;
+}
