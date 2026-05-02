@@ -65,9 +65,14 @@ export default function PricingPage() {
         </p>
         <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
           <RoiStat label="New ARR" value={`$${PROJECTED_ARR.toLocaleString()}`} accent />
-          <RoiStat label="Annual Gladius" value={`$${ANNUAL_PRO.toLocaleString()}`} />
+          <RoiStat label="Annual cost" value={`$${ANNUAL_PRO.toLocaleString()}`} />
           <RoiStat label="Net year 1" value={`$${(PROJECTED_ARR - ANNUAL_PRO).toLocaleString()}`} />
-          <RoiStat label="Payback" value="~2.2 months" success />
+          <RoiStat
+            label="Payback"
+            value="~2.2 months"
+            subtitle="from first signed plan"
+            success
+          />
         </div>
       </section>
 
@@ -189,11 +194,13 @@ function PricingCard({ tier }: { tier: (typeof GLADIUS_TIERS)[number] }) {
 function RoiStat({
   label,
   value,
+  subtitle,
   accent,
   success,
 }: {
   label: string;
   value: string;
+  subtitle?: string;
   accent?: boolean;
   success?: boolean;
 }) {
@@ -219,6 +226,14 @@ function RoiStat({
       >
         {value}
       </div>
+      {subtitle && (
+        <div
+          className="mt-0.5 text-[11px]"
+          style={{ color: "#8A8578" }}
+        >
+          {subtitle}
+        </div>
+      )}
     </div>
   );
 }

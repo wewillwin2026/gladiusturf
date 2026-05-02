@@ -652,8 +652,10 @@ export const GLADIUS_TIERS: GladiusTier[] = [
     bullets: [
       "1 user seat",
       "Up to 100 active customers",
-      "Quoting + invoicing",
-      "For solo operators",
+      "Quoting + invoicing + payments",
+      "Online booking + scheduling",
+      "Branded client portal",
+      "Mobile crew app",
     ],
   },
   {
