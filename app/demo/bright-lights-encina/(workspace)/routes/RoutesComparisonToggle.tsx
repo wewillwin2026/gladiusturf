@@ -24,7 +24,7 @@ export function RoutesComparisonToggle({
       </button>
       {showWithout && (
         <div
-          className="hidden items-center gap-3 text-[11px] md:flex"
+          className="flex flex-wrap items-center gap-3 text-[11px]"
           style={{ color: "var(--bl-text-muted)" }}
         >
           <span className="bl-mono">

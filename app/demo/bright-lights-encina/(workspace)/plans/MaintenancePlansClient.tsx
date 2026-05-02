@@ -495,11 +495,6 @@ function ProjectionCard({
         plans (Beacon Outdoor, Landscape Lighting Pro). Default weighting:
         30% Basics · 50% Care · 20% Guardian.
       </p>
-      <style jsx global>{`
-        .bl-range {
-          accent-color: var(--bl-accent);
-        }
-      `}</style>
     </div>
   );
 }

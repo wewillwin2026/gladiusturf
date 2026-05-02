@@ -115,6 +115,11 @@
   background: var(--bl-accent-2);
 }
 
+.bl-root .bl-btn-primary:focus-visible {
+  outline: 2px solid var(--bl-accent);
+  outline-offset: 2px;
+}
+
 .bl-root .bl-btn-primary:disabled {
   opacity: 0.4;
   cursor: not-allowed;
@@ -137,6 +142,15 @@
 .bl-root .bl-btn-ghost:hover {
   color: var(--bl-text);
   border-color: var(--bl-accent);
+}
+
+.bl-root .bl-btn-ghost:focus-visible {
+  outline: 2px solid var(--bl-accent);
+  outline-offset: 2px;
+}
+
+.bl-root .bl-range {
+  accent-color: var(--bl-accent);
 }
 
 .bl-root .bl-input {

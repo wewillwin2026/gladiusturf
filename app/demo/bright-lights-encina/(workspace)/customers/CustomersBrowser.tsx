@@ -214,6 +214,14 @@ function AddCustomerModal({
   const [phone, setPhone] = React.useState("");
   const [language, setLanguage] = React.useState<"en" | "es">("en");
 
+  React.useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
   const canSave = name.trim().length > 1 && address.trim().length > 1;
 
   function save(e: React.FormEvent) {

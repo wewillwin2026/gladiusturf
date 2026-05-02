@@ -49,7 +49,7 @@ export default function DashboardPage() {
     <div className="flex flex-col gap-6">
       {/* Greeting */}
       <section className="flex flex-col gap-1">
-        <span className="bl-eyebrow-muted">Today, Friday May 1</span>
+        <span className="bl-eyebrow-muted">Today, Sunday May 3</span>
         <h1
           className="bl-serif text-[28px] leading-[1.1]"
           style={{ color: "var(--bl-text)" }}
