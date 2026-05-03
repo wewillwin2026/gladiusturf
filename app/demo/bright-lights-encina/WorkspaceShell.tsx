@@ -11,6 +11,7 @@ import {
   Compass,
   CreditCard,
   FileSpreadsheet as QbIcon,
+  FileText,
   HelpCircle,
   LayoutDashboard,
   LifeBuoy,
@@ -53,6 +54,12 @@ const SECTIONS: NavSection[] = [
         href: "/demo/bright-lights-encina/customers",
         icon: Users,
         match: (p) => p.startsWith("/demo/bright-lights-encina/customers"),
+      },
+      {
+        label: "Quotes",
+        href: "/demo/bright-lights-encina/quotes",
+        icon: FileText,
+        match: (p) => p.startsWith("/demo/bright-lights-encina/quotes"),
       },
       {
         label: "Routes",
@@ -241,31 +248,24 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
 
 function SidebarBrand() {
   return (
-    <div className="flex items-center gap-2.5 px-2 pt-1">
+    <div className="flex flex-col items-center gap-2 px-2 pb-1 pt-2">
       <div
-        className="flex h-9 w-9 items-center justify-center rounded-md"
+        className="flex h-20 w-20 items-center justify-center rounded-md"
         style={{ background: "rgba(0,0,0,0.4)" }}
       >
         <Image
           src="/bright-lights/logo.png"
           alt="Bright Lights"
-          width={28}
-          height={22}
+          width={64}
+          height={50}
+          priority
         />
       </div>
-      <div className="min-w-0">
-        <div
-          className="bl-serif truncate text-[14px] leading-tight"
-          style={{ color: "var(--bl-text)" }}
-        >
-          Bright Lights
-        </div>
-        <div
-          className="text-[10px] leading-tight"
-          style={{ color: "var(--bl-text-faint)" }}
-        >
-          Command Center
-        </div>
+      <div
+        className="bl-serif text-center text-[15px] leading-tight"
+        style={{ color: "var(--bl-text)" }}
+      >
+        Bright Lights
       </div>
     </div>
   );
@@ -457,14 +457,13 @@ function DesktopTopbar({
       style={{ borderBottom: "1px solid var(--bl-border)" }}
     >
       <div className="flex items-baseline gap-3">
-        <span className="bl-eyebrow-muted">Workspace</span>
         <span
           className="bl-serif text-[18px]"
           style={{ color: "var(--bl-text)" }}
         >
           {BRAND.name}
         </span>
-        <span className="bl-eyebrow-muted">· Sarasota, FL</span>
+        <span className="bl-eyebrow-muted">· Workspace</span>
       </div>
       <div className="flex items-center gap-3">
         <div

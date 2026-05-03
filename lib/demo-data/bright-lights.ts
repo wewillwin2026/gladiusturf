@@ -736,3 +736,300 @@ export function projectARR(
 }
 
 export const DEFAULT_TIER_WEIGHTING = { basics: 30, care: 50, guardian: 20 };
+
+// ---- Quote system: fixture / infrastructure / labor catalog ----
+//
+// Pricing reflects mid-2026 Florida residential landscape lighting market for
+// Cast Lighting / Unique Lighting Systems / FX Luminaire-caliber brass fixtures
+// (the brands Bright Lights actually installs). Prices are turnkey "installed,"
+// inclusive of fixture cost + standard labor on existing low-voltage runs.
+// Trenching, transformer upgrades, and demo of legacy fixtures bill separately.
+
+export type CatalogItem = {
+  sku: string;
+  category: "fixture" | "infrastructure" | "labor";
+  group: string; // sub-group label e.g. "Path", "Up-light"
+  name: string;
+  description: string;
+  unit: "ea" | "ft";
+  unitPrice: number; // in dollars
+  brand?: string;
+};
+
+export const FIXTURE_CATALOG: CatalogItem[] = [
+  {
+    sku: "CAST-PATH-LED3W",
+    category: "fixture",
+    group: "Path",
+    name: "Cast LED Path Light · 3W",
+    description: "Solid brass, 3W LED MR16, frosted lens. Lifetime warranty.",
+    unit: "ea",
+    unitPrice: 185,
+    brand: "Cast Lighting",
+  },
+  {
+    sku: "CAST-UPLT-MR16-5W",
+    category: "fixture",
+    group: "Up-light",
+    name: "Cast Up-light · 5W MR16",
+    description: "Brass adjustable knuckle, 5W LED, 35° beam.",
+    unit: "ea",
+    unitPrice: 215,
+    brand: "Cast Lighting",
+  },
+  {
+    sku: "UNIQUE-WELL-7W",
+    category: "fixture",
+    group: "Well",
+    name: "Unique Well Light · 7W",
+    description: "In-ground brass, 7W LED, drive-over rated.",
+    unit: "ea",
+    unitPrice: 245,
+    brand: "Unique Lighting Systems",
+  },
+  {
+    sku: "CAST-STEP-LED",
+    category: "fixture",
+    group: "Step",
+    name: "Cast Step / Deck Light",
+    description: "Low-profile brass, hard-wired, surface mount.",
+    unit: "ea",
+    unitPrice: 195,
+    brand: "Cast Lighting",
+  },
+  {
+    sku: "FX-HARDSCAPE",
+    category: "fixture",
+    group: "Hardscape",
+    name: "FX Hardscape Light",
+    description: "Mortar-mounted under-cap, 1.5W LED, brass body.",
+    unit: "ea",
+    unitPrice: 265,
+    brand: "FX Luminaire",
+  },
+  {
+    sku: "UNIQUE-POND-9W",
+    category: "fixture",
+    group: "Underwater",
+    name: "Unique Underwater · 9W",
+    description: "Sealed brass for pond/pool, 9W LED, 50° beam.",
+    unit: "ea",
+    unitPrice: 385,
+    brand: "Unique Lighting Systems",
+  },
+  {
+    sku: "CAST-WALLWASH",
+    category: "fixture",
+    group: "Wall wash",
+    name: "Cast Wall Wash · 6W",
+    description: "Brass, asymmetric beam, ideal for stucco wall facades.",
+    unit: "ea",
+    unitPrice: 245,
+    brand: "Cast Lighting",
+  },
+];
+
+export const INFRASTRUCTURE_CATALOG: CatalogItem[] = [
+  {
+    sku: "TF-MULTI-300W",
+    category: "infrastructure",
+    group: "Transformer",
+    name: "Multi-tap Transformer · 300W",
+    description: "Stainless, 12/13/14/15V taps, photocell ready.",
+    unit: "ea",
+    unitPrice: 695,
+  },
+  {
+    sku: "TF-MULTI-600W",
+    category: "infrastructure",
+    group: "Transformer",
+    name: "Multi-tap Transformer · 600W",
+    description: "Stainless, 12-22V taps, dual circuit, photocell ready.",
+    unit: "ea",
+    unitPrice: 895,
+  },
+  {
+    sku: "TF-MULTI-900W",
+    category: "infrastructure",
+    group: "Transformer",
+    name: "Multi-tap Transformer · 900W",
+    description: "Stainless, 4-circuit, smart-controller ready.",
+    unit: "ea",
+    unitPrice: 1195,
+  },
+  {
+    sku: "WIRE-12-2",
+    category: "infrastructure",
+    group: "Wire",
+    name: "Low-voltage Wire · 12-2",
+    description: "Direct-bury rated, copper.",
+    unit: "ft",
+    unitPrice: 1.95,
+  },
+  {
+    sku: "CTRL-WIFI",
+    category: "infrastructure",
+    group: "Controller",
+    name: "Smart Controller · Wi-Fi",
+    description: "App + voice control, scheduling, vacation mode.",
+    unit: "ea",
+    unitPrice: 475,
+  },
+  {
+    sku: "PHOTO-CELL",
+    category: "infrastructure",
+    group: "Sensor",
+    name: "Photocell Sensor",
+    description: "Dusk-to-dawn auto-on/off.",
+    unit: "ea",
+    unitPrice: 85,
+  },
+];
+
+export const LABOR_CATALOG: CatalogItem[] = [
+  {
+    sku: "LABOR-TRENCH",
+    category: "labor",
+    group: "Trenching",
+    name: "Trenching · per linear ft",
+    description: "Hand-trench 6-8\" depth, restoration included.",
+    unit: "ft",
+    unitPrice: 4.5,
+  },
+  {
+    sku: "LABOR-DEMO",
+    category: "labor",
+    group: "Removal",
+    name: "Demo / removal · per fixture",
+    description: "Disconnect, pull, dispose old halogen / dead fixture.",
+    unit: "ea",
+    unitPrice: 25,
+  },
+  {
+    sku: "LABOR-PERMIT",
+    category: "labor",
+    group: "Permit",
+    name: "Permit fee (if required)",
+    description: "City of Sarasota permit for new transformer install.",
+    unit: "ea",
+    unitPrice: 175,
+  },
+];
+
+export const ALL_CATALOG: CatalogItem[] = [
+  ...FIXTURE_CATALOG,
+  ...INFRASTRUCTURE_CATALOG,
+  ...LABOR_CATALOG,
+];
+
+// ---- Sample quotes (loaded into /quotes for demo) ----
+
+export type QuoteLine = {
+  sku: string;
+  qty: number;
+  // Snapshot at time of quote — never mutates if catalog price changes.
+  unitPrice: number;
+  description: string;
+  unit: "ea" | "ft";
+};
+
+export type QuoteStatus = "draft" | "sent" | "accepted" | "expired";
+
+export type Quote = {
+  id: string;
+  number: string;
+  customerId: string;
+  customerName: string;
+  address: string;
+  date: string; // ISO YYYY-MM-DD
+  validThrough: string;
+  status: QuoteStatus;
+  notes?: string;
+  lines: QuoteLine[];
+};
+
+export const SALES_TAX_RATE = 0.075; // 7.5% Florida
+
+export const SAMPLE_QUOTES: Quote[] = [
+  {
+    id: "BL-Q-2026-0142",
+    number: "BL-Q-2026-0142",
+    customerId: "BL-MJ",
+    customerName: "Mike Jackson",
+    address: "4118 Bayshore Dr, Sarasota, FL 34234",
+    date: "2026-05-03",
+    validThrough: "2026-06-02",
+    status: "draft",
+    notes:
+      "Retrofit of 8 dead halogen path fixtures + 6 new up-lights on the oaks. Customer also wants the in-ground wells along the seawall that we discussed in 2025-09 walkthrough.",
+    lines: [
+      { sku: "CAST-PATH-LED3W", qty: 8, unitPrice: 185, description: "Cast LED Path Light · 3W (driveway run)", unit: "ea" },
+      { sku: "CAST-UPLT-MR16-5W", qty: 6, unitPrice: 215, description: "Cast Up-light · 5W MR16 (oak / palm)", unit: "ea" },
+      { sku: "UNIQUE-WELL-7W", qty: 3, unitPrice: 245, description: "Unique Well Light · 7W (seawall accent)", unit: "ea" },
+      { sku: "TF-MULTI-600W", qty: 1, unitPrice: 895, description: "Multi-tap Transformer · 600W (replaces 300W)", unit: "ea" },
+      { sku: "WIRE-12-2", qty: 250, unitPrice: 1.95, description: "Low-voltage Wire · 12-2", unit: "ft" },
+      { sku: "CTRL-WIFI", qty: 1, unitPrice: 475, description: "Smart Controller · Wi-Fi", unit: "ea" },
+      { sku: "LABOR-DEMO", qty: 8, unitPrice: 25, description: "Demo / removal · old halogen path fixtures", unit: "ea" },
+    ],
+  },
+  {
+    id: "BL-Q-2026-0141",
+    number: "BL-Q-2026-0141",
+    customerId: "BL-CD",
+    customerName: "Charles Diehl",
+    address: "1820 Hyde Park St, Sarasota, FL 34239",
+    date: "2026-05-01",
+    validThrough: "2026-05-31",
+    status: "sent",
+    lines: [
+      { sku: "CAST-UPLT-MR16-5W", qty: 4, unitPrice: 215, description: "Cast Up-light · 5W MR16 (front facade)", unit: "ea" },
+      { sku: "FX-HARDSCAPE", qty: 6, unitPrice: 265, description: "FX Hardscape Light (front step caps)", unit: "ea" },
+      { sku: "TF-MULTI-300W", qty: 1, unitPrice: 695, description: "Multi-tap Transformer · 300W", unit: "ea" },
+      { sku: "WIRE-12-2", qty: 120, unitPrice: 1.95, description: "Low-voltage Wire · 12-2", unit: "ft" },
+    ],
+  },
+  {
+    id: "BL-Q-2026-0140",
+    number: "BL-Q-2026-0140",
+    customerId: "BL-JZ",
+    customerName: "John Zagelmeier",
+    address: "5511 Riegels Harbor Rd, Sarasota, FL 34242",
+    date: "2026-04-26",
+    validThrough: "2026-05-26",
+    status: "accepted",
+    lines: [
+      { sku: "UNIQUE-POND-9W", qty: 4, unitPrice: 385, description: "Unique Underwater · 9W (pool wash)", unit: "ea" },
+      { sku: "CAST-WALLWASH", qty: 3, unitPrice: 245, description: "Cast Wall Wash · 6W (stucco facade)", unit: "ea" },
+      { sku: "CAST-PATH-LED3W", qty: 12, unitPrice: 185, description: "Cast LED Path Light · 3W (paver path)", unit: "ea" },
+      { sku: "TF-MULTI-900W", qty: 1, unitPrice: 1195, description: "Multi-tap Transformer · 900W", unit: "ea" },
+      { sku: "WIRE-12-2", qty: 380, unitPrice: 1.95, description: "Low-voltage Wire · 12-2", unit: "ft" },
+      { sku: "CTRL-WIFI", qty: 1, unitPrice: 475, description: "Smart Controller · Wi-Fi", unit: "ea" },
+      { sku: "LABOR-TRENCH", qty: 80, unitPrice: 4.5, description: "Trenching · paver run", unit: "ft" },
+    ],
+  },
+  {
+    id: "BL-Q-2026-0136",
+    number: "BL-Q-2026-0136",
+    customerId: "BL-KM",
+    customerName: "Karen Magno",
+    address: "311 Madeira Ave, Naples, FL 34108",
+    date: "2026-04-12",
+    validThrough: "2026-05-12",
+    status: "expired",
+    lines: [
+      { sku: "CAST-PATH-LED3W", qty: 6, unitPrice: 185, description: "Cast LED Path Light · 3W", unit: "ea" },
+      { sku: "TF-MULTI-300W", qty: 1, unitPrice: 695, description: "Multi-tap Transformer · 300W", unit: "ea" },
+    ],
+  },
+];
+
+export function quoteSubtotal(quote: Quote): number {
+  return quote.lines.reduce((s, l) => s + l.qty * l.unitPrice, 0);
+}
+
+export function quoteTotal(quote: Quote): { subtotal: number; tax: number; total: number } {
+  const subtotal = quoteSubtotal(quote);
+  const tax = Math.round(subtotal * SALES_TAX_RATE * 100) / 100;
+  const total = Math.round((subtotal + tax) * 100) / 100;
+  return { subtotal, tax, total };
+}
