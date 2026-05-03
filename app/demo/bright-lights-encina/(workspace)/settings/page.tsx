@@ -35,7 +35,7 @@ export default function SettingsPage() {
               className="text-[11px]"
               style={{ color: "var(--bl-text-faint)" }}
             >
-              2 seats · Professional tier
+              2 seats · Grow tier
             </span>
           </header>
           <ul>
@@ -114,8 +114,8 @@ export default function SettingsPage() {
               color: "var(--bl-text-faint)",
             }}
           >
-            Add seat upgrade — Professional includes 2 seats. Add more on
-            Monday onboarding.
+            Add seat upgrade — Grow includes 2 seats. Add more on Monday
+            onboarding.
           </div>
         </div>
 

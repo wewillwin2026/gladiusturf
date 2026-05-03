@@ -637,53 +637,45 @@ export const STORM_PLAYBOOK = {
 // ---- Gladius pricing tiers shown inside the demo (priority prompt §4.2 Beat 8) ----
 
 export type GladiusTier = {
-  id: "independent" | "professional" | "enterprise";
+  id: "operate" | "grow";
   name: string;
   price: number; // $/mo
   bullets: string[];
   recommendedForBL?: boolean;
+  tagline: string;
 };
 
 export const GLADIUS_TIERS: GladiusTier[] = [
   {
-    id: "independent",
-    name: "Independent",
-    price: 99,
-    bullets: [
-      "1 user seat",
-      "Up to 100 active customers",
-      "Quoting + invoicing + payments",
-      "Online booking + scheduling",
-      "Branded client portal",
-      "Mobile crew app",
-    ],
-  },
-  {
-    id: "professional",
-    name: "Professional",
-    price: 399,
-    recommendedForBL: true,
+    id: "operate",
+    name: "Operate",
+    price: 199,
+    tagline: "Run the shop — every job, every storm.",
     bullets: [
       "2 user seats — Cristian + Felipe",
-      "Up to 500 active customers",
-      "Maintenance plan engine included",
-      "Bilingual templates included",
-      "Storm Mode included",
+      "Up to 250 active customers",
+      "Quoting + invoicing + payments",
+      "Online booking + scheduling",
+      "Mobile crew app",
+      "Branded client portal",
+      "Bilingual templates (EN + ES)",
       "Route batching included",
-      "AI receptionist (coming Q3 2026)",
-      "Centurion Live tracking (coming July 2026)",
+      "Storm Mode included — Helene/Milton playbook",
     ],
   },
   {
-    id: "enterprise",
-    name: "Enterprise",
-    price: 999,
+    id: "grow",
+    name: "Grow",
+    price: 229,
+    recommendedForBL: true,
+    tagline: "Operate, plus the website + recurring revenue engine.",
     bullets: [
-      "5+ user seats",
-      "Unlimited customers",
-      "Multi-branch support",
-      "Outbound revenue agent (coming Q4 2026)",
-      "Custom integrations",
+      "Everything in Operate",
+      "Branded website + hosting + ongoing maintenance",
+      "Maintenance plan engine (Bright Care campaigns)",
+      "Reviews auto-ask + spam moderation",
+      "Up to 500 active customers",
+      "Founder-direct priority support",
     ],
   },
 ];

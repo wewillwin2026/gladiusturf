@@ -4,8 +4,8 @@ import { GLADIUS_TIERS } from "@/lib/demo-data/bright-lights";
 export const dynamic = "force-dynamic";
 
 const PROJECTED_ARR = 25_873;
-const ANNUAL_PRO = 4_788;
-const ROI = (PROJECTED_ARR / ANNUAL_PRO).toFixed(1);
+const ANNUAL_GLADIUS = 229 * 12; // Grow tier annual prepay
+const ROI = (PROJECTED_ARR / ANNUAL_GLADIUS).toFixed(1);
 
 export default function PricingPage() {
   return (
@@ -19,12 +19,13 @@ export default function PricingPage() {
           Plans & Pricing — what to put in front of your dad on Monday.
         </h1>
         <p className="text-[13px]" style={{ color: "var(--bl-text-muted)" }}>
-          Independent is for solo operators. Enterprise is for 5+ crew shops.
-          You&rsquo;re a Professional. The math says 5.4× year-one ROI.
+          Operate is the foundation — every Bright Lights crew starts here. Grow
+          adds the branded website and the maintenance engine that turns 247
+          customers into recurring revenue. The math says {ROI}× year-one ROI.
         </p>
       </header>
 
-      <section className="grid grid-cols-1 gap-3 md:grid-cols-3">
+      <section className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-3 md:grid-cols-2">
         {GLADIUS_TIERS.map((tier) => (
           <PricingCard key={tier.id} tier={tier} />
         ))}
@@ -49,7 +50,7 @@ export default function PricingPage() {
           className="bl-serif mt-3 text-[26px] leading-[1.1]"
           style={{ color: "var(--bl-text)" }}
         >
-          ${PROJECTED_ARR.toLocaleString()} new ARR ÷ ${ANNUAL_PRO.toLocaleString()} cost
+          ${PROJECTED_ARR.toLocaleString()} new ARR ÷ ${ANNUAL_GLADIUS.toLocaleString()} cost
           ={" "}
           <span style={{ color: "var(--bl-accent)" }}>{ROI}× year-one ROI.</span>
         </h2>
@@ -65,11 +66,11 @@ export default function PricingPage() {
         </p>
         <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
           <RoiStat label="New ARR" value={`$${PROJECTED_ARR.toLocaleString()}`} accent />
-          <RoiStat label="Annual cost" value={`$${ANNUAL_PRO.toLocaleString()}`} />
-          <RoiStat label="Net year 1" value={`$${(PROJECTED_ARR - ANNUAL_PRO).toLocaleString()}`} />
+          <RoiStat label="Annual cost" value={`$${ANNUAL_GLADIUS.toLocaleString()}`} subtitle="Grow tier · annual prepay" />
+          <RoiStat label="Net year 1" value={`$${(PROJECTED_ARR - ANNUAL_GLADIUS).toLocaleString()}`} />
           <RoiStat
             label="Payback"
-            value="~2.2 months"
+            value="~1.3 months"
             subtitle="from first signed plan"
             success
           />
@@ -108,7 +109,7 @@ export default function PricingPage() {
           </p>
         </div>
         <button className="bl-btn-primary shrink-0">
-          Move forward → Professional
+          Move forward → Grow
         </button>
       </section>
     </div>
@@ -142,12 +143,7 @@ function PricingCard({ tier }: { tier: (typeof GLADIUS_TIERS)[number] }) {
         <Crown
           className="h-4 w-4"
           style={{
-            color:
-              tier.id === "enterprise"
-                ? "#FFD56A"
-                : isPro
-                  ? "var(--bl-accent)"
-                  : "rgba(245,239,230,0.45)",
+            color: isPro ? "var(--bl-accent)" : "rgba(245,239,230,0.45)",
           }}
         />
         <span className="bl-eyebrow">{tier.id}</span>
@@ -158,6 +154,12 @@ function PricingCard({ tier }: { tier: (typeof GLADIUS_TIERS)[number] }) {
       >
         {tier.name}
       </h3>
+      <p
+        className="text-[12px] leading-[1.4]"
+        style={{ color: "var(--bl-text-muted)" }}
+      >
+        {tier.tagline}
+      </p>
       <div className="flex items-baseline gap-2">
         <span
           className="bl-mono text-[32px]"
@@ -170,7 +172,7 @@ function PricingCard({ tier }: { tier: (typeof GLADIUS_TIERS)[number] }) {
         </span>
       </div>
       <span className="text-[11px]" style={{ color: "var(--bl-text-faint)" }}>
-        Annual prepay: ${tier.price * 12} · cancel anytime after month 3
+        Annual prepay: ${(tier.price * 12).toLocaleString()} · cancel anytime after month 3
       </span>
       <ul className="mt-2 flex flex-col gap-2">
         {tier.bullets.map((b) => (

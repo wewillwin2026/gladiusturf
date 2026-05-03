@@ -500,7 +500,7 @@ function ProjectionCard({
 }
 
 function RoiCard({ projection }: { projection: ReturnType<typeof projectARR> }) {
-  const annualGladius = 4788;
+  const annualGladius = 2748; // Grow tier · $229/mo annual prepay
   const roi = (projection.newARR / annualGladius).toFixed(1);
   return (
     <div className="bl-card p-4">
@@ -515,7 +515,7 @@ function RoiCard({ projection }: { projection: ReturnType<typeof projectARR> }) 
         className="mt-1 text-[11px] leading-[1.5]"
         style={{ color: "var(--bl-text-faint)" }}
       >
-        Projected new ARR vs. Gladius Professional ($4,788/yr).
+        Projected new ARR vs. Gladius Grow ($2,748/yr).
       </p>
     </div>
   );
