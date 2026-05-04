@@ -28,6 +28,13 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     background-color: var(--color-obsidian);
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
   }
 
   body {

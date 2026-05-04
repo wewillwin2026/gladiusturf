@@ -20,6 +20,7 @@ import {
   Inbox,
   Key,
   LayoutDashboard,
+  Lightbulb,
   Map,
   MessageSquare,
   Newspaper,
@@ -116,6 +117,7 @@ export const SECRET_TABS = [
   { slug: "secret/replays", name: "Replays", icon: MessageSquare },
   { slug: "secret/compare", name: "Compare", icon: Gauge },
   { slug: "demo-pipeline", name: "Demo Pipeline", icon: Database },
+  { slug: "lighting-leads", name: "Lighting Leads", icon: Lightbulb },
 ] as const;
 
 export type ProductKind = "demo" | "founders";

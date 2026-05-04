@@ -1,0 +1,337 @@
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowRight, Loader2 } from "lucide-react";
+import { cn } from "@/lib/cn";
+import { readFirstTouchUtm } from "@/lib/track";
+import { track, trackConversion } from "@/lib/tracking/client";
+import { CREW_SIZES, FORM, type CrewSize } from "@/lib/lighting/content";
+
+type Status = "idle" | "submitting" | "success" | "error";
+
+const QUALIFYING_PROMPT =
+  "What's the one thing about your business, if it ran better, would change everything?";
+
+const QUALIFYING_LIMIT = 280;
+
+function newIdempotencyKey(): string {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+  return `lighting-${Math.random().toString(36).slice(2)}-${Date.now()}`;
+}
+
+export function LightingLeadForm() {
+  const [status, setStatus] = useState<Status>("idle");
+  const [error, setError] = useState<string | null>(null);
+
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [businessName, setBusinessName] = useState("");
+  const [serviceArea, setServiceArea] = useState("");
+  const [crewSize, setCrewSize] = useState<CrewSize | "">("");
+  const [qualifying, setQualifying] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot — must stay empty
+
+  const startedRef = useRef(false);
+  const idempotencyKeyRef = useRef<string>("");
+
+  // Generate the idempotency key on the client only — avoids hydration mismatch.
+  useEffect(() => {
+    idempotencyKeyRef.current = newIdempotencyKey();
+  }, []);
+
+  const emailValid = useMemo(
+    () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()),
+    [email]
+  );
+
+  const isComplete =
+    fullName.trim() !== "" &&
+    emailValid &&
+    businessName.trim() !== "" &&
+    serviceArea.trim() !== "" &&
+    crewSize !== "";
+
+  function noteStart() {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    track("lighting_lead_form_started");
+  }
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!isComplete) return;
+
+    setStatus("submitting");
+    setError(null);
+
+    const utm = readFirstTouchUtm();
+    const body = {
+      fullName: fullName.trim(),
+      email: email.trim().toLowerCase(),
+      phone: phone.trim() || null,
+      businessName: businessName.trim(),
+      serviceArea: serviceArea.trim(),
+      crewSize,
+      qualifying: qualifying.trim() || null,
+      website, // server drops if filled
+      idempotencyKey: idempotencyKeyRef.current,
+      ...utm,
+      source_page: typeof window !== "undefined" ? window.location.pathname : "/lighting",
+    };
+
+    try {
+      const res = await fetch("/api/lighting/lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({}));
+        throw new Error(errBody.error || "request_failed");
+      }
+      trackConversion("lighting_lead_form_submitted", 0, {
+        crewSize,
+        hasPhone: phone.trim() !== "",
+      });
+      setStatus("success");
+      // Reset (keys to blank) for safety even though form unmounts.
+      setFullName("");
+      setEmail("");
+      setPhone("");
+      setBusinessName("");
+      setServiceArea("");
+      setCrewSize("");
+      setQualifying("");
+    } catch (err) {
+      track("lighting_lead_form_error", {
+        meta: {
+          category: err instanceof Error ? err.message : "unknown",
+        },
+      });
+      setStatus("error");
+      setError(FORM.errorBody);
+    }
+  }
+
+  if (status === "success") {
+    return (
+      <div className="rounded-2xl border border-honey-bright/40 bg-honey/[0.05] p-8">
+        <h3 className="font-serif text-2xl font-semibold text-bone">
+          {FORM.successHeader}
+        </h3>
+        <p className="mt-4 text-[15px] leading-[1.6] text-bone/75">
+          {FORM.successBody}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      onFocusCapture={noteStart}
+      noValidate
+      className="relative flex flex-col gap-5 rounded-2xl border border-bone/10 bg-bone/[0.02] p-7 md:p-8"
+    >
+      {/* Honeypot — visually hidden, never tab-focusable. Bots fill, humans
+          don't. The form is `position: relative` so this absolute element
+          can't escape the form's box and cause horizontal scroll on mobile. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -left-[9999px] -top-[9999px] h-0 w-0 overflow-hidden opacity-0"
+      >
+        <label htmlFor="lighting-website">Website</label>
+        <input
+          id="lighting-website"
+          type="text"
+          name="website"
+          tabIndex={-1}
+          autoComplete="off"
+          value={website}
+          onChange={(e) => setWebsite(e.target.value)}
+        />
+      </div>
+
+      <Field label="Full name" htmlFor="lighting-name">
+        <input
+          id="lighting-name"
+          name="fullName"
+          type="text"
+          required
+          autoComplete="name"
+          maxLength={120}
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          className={inputCls}
+        />
+      </Field>
+
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <Field label="Email" htmlFor="lighting-email">
+          <input
+            id="lighting-email"
+            name="email"
+            type="email"
+            required
+            autoComplete="email"
+            maxLength={200}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className={inputCls}
+            aria-invalid={email.length > 0 && !emailValid}
+          />
+        </Field>
+        <Field label="Phone (optional)" htmlFor="lighting-phone">
+          <input
+            id="lighting-phone"
+            name="phone"
+            type="tel"
+            autoComplete="tel"
+            maxLength={32}
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className={inputCls}
+          />
+        </Field>
+      </div>
+
+      <Field label="Business name" htmlFor="lighting-business">
+        <input
+          id="lighting-business"
+          name="businessName"
+          type="text"
+          required
+          autoComplete="organization"
+          maxLength={120}
+          value={businessName}
+          onChange={(e) => setBusinessName(e.target.value)}
+          className={inputCls}
+        />
+      </Field>
+
+      <Field
+        label="Service area"
+        htmlFor="lighting-service-area"
+        hint="e.g. Sarasota, FL — or Naples to Tampa"
+      >
+        <input
+          id="lighting-service-area"
+          name="serviceArea"
+          type="text"
+          required
+          maxLength={120}
+          value={serviceArea}
+          onChange={(e) => setServiceArea(e.target.value)}
+          className={inputCls}
+        />
+      </Field>
+
+      <Field label="Crew size" htmlFor="lighting-crew-size">
+        <select
+          id="lighting-crew-size"
+          name="crewSize"
+          required
+          value={crewSize}
+          onChange={(e) => setCrewSize(e.target.value as CrewSize | "")}
+          className={inputCls}
+        >
+          <option value="" disabled>
+            Pick one
+          </option>
+          {CREW_SIZES.map((v) => (
+            <option key={v} value={v}>
+              {v}
+            </option>
+          ))}
+        </select>
+      </Field>
+
+      <Field
+        label={QUALIFYING_PROMPT}
+        htmlFor="lighting-qualifying"
+        hint={`Optional · ${qualifying.length}/${QUALIFYING_LIMIT}`}
+      >
+        <textarea
+          id="lighting-qualifying"
+          name="qualifying"
+          maxLength={QUALIFYING_LIMIT}
+          rows={3}
+          value={qualifying}
+          onChange={(e) => setQualifying(e.target.value)}
+          className={cn(inputCls, "h-auto py-3 leading-[1.5]")}
+        />
+      </Field>
+
+      <button
+        type="submit"
+        disabled={status === "submitting" || !isComplete}
+        aria-busy={status === "submitting"}
+        className={cn(
+          "group mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-honey-bright px-6 py-3 text-sm font-semibold text-forest-deep shadow-pop-honey transition-all hover:bg-honey hover:shadow-cta-hover",
+          status === "submitting" && "cursor-wait opacity-70",
+          !isComplete && status !== "submitting" && "cursor-not-allowed opacity-50"
+        )}
+      >
+        {status === "submitting" ? (
+          <>
+            <Loader2
+              className="h-3.5 w-3.5 animate-spin motion-reduce:animate-none"
+              aria-hidden
+            />
+            Sending…
+          </>
+        ) : (
+          <>
+            {FORM.submit}
+            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+          </>
+        )}
+      </button>
+
+      <p className="text-center text-[12px] text-bone/45">{FORM.helper}</p>
+
+      {error && (
+        <p
+          role="alert"
+          aria-live="polite"
+          className="rounded-md border border-honey-bright/40 bg-honey/[0.06] p-3 text-[13px] text-bone/85"
+        >
+          {error}
+        </p>
+      )}
+    </form>
+  );
+}
+
+const inputCls =
+  "h-11 w-full rounded-md border border-bone/10 bg-bone/[0.04] px-3 text-[15px] text-bone placeholder:text-bone/40 focus:border-honey/60 focus:outline-none focus:ring-2 focus:ring-honey/20";
+
+function Field({
+  label,
+  htmlFor,
+  hint,
+  children,
+}: {
+  label: string;
+  htmlFor: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex items-baseline justify-between gap-3">
+        <label
+          htmlFor={htmlFor}
+          className="text-[11px] font-semibold uppercase tracking-[0.18em] text-bone/55"
+        >
+          {label}
+        </label>
+        {hint && <span className="text-[10px] text-bone/40">{hint}</span>}
+      </div>
+      {children}
+    </div>
+  );
+}
