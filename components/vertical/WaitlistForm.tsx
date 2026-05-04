@@ -5,59 +5,74 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { readFirstTouchUtm } from "@/lib/track";
 import { track, trackConversion } from "@/lib/tracking/client";
-import { CREW_SIZES, FORM, type CrewSize } from "@/lib/lighting/content";
+import { CREWS, YEARS_IN_BUSINESS } from "@/lib/vertical/copy";
+import type { VerticalSlug } from "@/lib/vertical/types";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
-const QUALIFYING_PROMPT =
-  "What's the one thing about your business, if it ran better, would change everything?";
-
-const QUALIFYING_LIMIT = 280;
+const PAIN_LIMIT = 280;
 
 function newIdempotencyKey(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
     return crypto.randomUUID();
   }
-  return `lighting-${Math.random().toString(36).slice(2)}-${Date.now()}`;
+  return `wl-${Math.random().toString(36).slice(2)}-${Date.now()}`;
 }
 
-export function LightingLeadForm() {
+type Props = {
+  vertical: VerticalSlug;
+  /** Submit-button label, e.g. "Get on the lighting waitlist". */
+  submitLabel: string;
+  /** Footnote rendered below the button. */
+  footnote: string;
+  /** Success header shown after submission. */
+  successHeader?: string;
+  /** Success body shown after submission. */
+  successBody?: string;
+};
+
+export function WaitlistForm({
+  vertical,
+  submitLabel,
+  footnote,
+  successHeader = "You're on the list.",
+  successBody = "We respond to every waitlist request within one business day. No spam, no drip sequences — just a real call from Ricardo or Joshua.",
+}: Props) {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
 
-  const [fullName, setFullName] = useState("");
+  const [name, setName] = useState("");
+  const [company, setCompany] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [businessName, setBusinessName] = useState("");
   const [serviceArea, setServiceArea] = useState("");
-  const [crewSize, setCrewSize] = useState<CrewSize | "">("");
-  const [qualifying, setQualifying] = useState("");
-  const [website, setWebsite] = useState(""); // honeypot — must stay empty
+  const [years, setYears] = useState("");
+  const [crews, setCrews] = useState("");
+  const [pain, setPain] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot
 
   const startedRef = useRef(false);
-  const idempotencyKeyRef = useRef<string>("");
+  const idempotencyRef = useRef<string>("");
 
-  // Generate the idempotency key on the client only — avoids hydration mismatch.
   useEffect(() => {
-    idempotencyKeyRef.current = newIdempotencyKey();
+    idempotencyRef.current = newIdempotencyKey();
   }, []);
 
   const emailValid = useMemo(
     () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()),
-    [email]
+    [email],
   );
 
   const isComplete =
-    fullName.trim() !== "" &&
+    name.trim() !== "" &&
+    company.trim() !== "" &&
     emailValid &&
-    businessName.trim() !== "" &&
-    serviceArea.trim() !== "" &&
-    crewSize !== "";
+    serviceArea.trim() !== "";
 
   function noteStart() {
     if (startedRef.current) return;
     startedRef.current = true;
-    track("lighting_lead_form_started");
+    track(`waitlist_form_started_${vertical}`);
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -69,21 +84,23 @@ export function LightingLeadForm() {
 
     const utm = readFirstTouchUtm();
     const body = {
-      fullName: fullName.trim(),
+      vertical,
+      name: name.trim(),
+      company: company.trim(),
       email: email.trim().toLowerCase(),
       phone: phone.trim() || null,
-      businessName: businessName.trim(),
       serviceArea: serviceArea.trim(),
-      crewSize,
-      qualifying: qualifying.trim() || null,
-      website, // server drops if filled
-      idempotencyKey: idempotencyKeyRef.current,
+      yearsInBusiness: years || null,
+      crews: crews || null,
+      painPoint: pain.trim() || null,
+      website,
+      idempotencyKey: idempotencyRef.current,
       ...utm,
-      source_page: typeof window !== "undefined" ? window.location.pathname : "/lighting",
+      source_page: typeof window !== "undefined" ? window.location.pathname : `/${vertical}`,
     };
 
     try {
-      const res = await fetch("/api/lighting/lead", {
+      const res = await fetch("/api/vertical/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -92,27 +109,20 @@ export function LightingLeadForm() {
         const errBody = await res.json().catch(() => ({}));
         throw new Error(errBody.error || "request_failed");
       }
-      trackConversion("lighting_lead_form_submitted", 0, {
-        crewSize,
-        hasPhone: phone.trim() !== "",
+      trackConversion(`waitlist_submitted_${vertical}`, 0, {
+        vertical,
+        crews,
+        years,
       });
       setStatus("success");
-      // Reset (keys to blank) for safety even though form unmounts.
-      setFullName("");
-      setEmail("");
-      setPhone("");
-      setBusinessName("");
-      setServiceArea("");
-      setCrewSize("");
-      setQualifying("");
     } catch (err) {
-      track("lighting_lead_form_error", {
-        meta: {
-          category: err instanceof Error ? err.message : "unknown",
-        },
+      track(`waitlist_form_error_${vertical}`, {
+        meta: { category: err instanceof Error ? err.message : "unknown" },
       });
       setStatus("error");
-      setError(FORM.errorBody);
+      setError(
+        "Something went wrong. Please try again or email founders@gladiusturf.com directly.",
+      );
     }
   }
 
@@ -120,10 +130,10 @@ export function LightingLeadForm() {
     return (
       <div className="rounded-2xl border border-honey-bright/40 bg-honey/[0.05] p-8">
         <h3 className="font-serif text-2xl font-semibold text-bone">
-          {FORM.successHeader}
+          {successHeader}
         </h3>
         <p className="mt-4 text-[15px] leading-[1.6] text-bone/75">
-          {FORM.successBody}
+          {successBody}
         </p>
       </div>
     );
@@ -136,16 +146,14 @@ export function LightingLeadForm() {
       noValidate
       className="relative flex flex-col gap-5 rounded-2xl border border-bone/10 bg-bone/[0.02] p-7 md:p-8"
     >
-      {/* Honeypot — visually hidden, never tab-focusable. Bots fill, humans
-          don't. The form is `position: relative` so this absolute element
-          can't escape the form's box and cause horizontal scroll on mobile. */}
+      {/* Honeypot — see lead-form.tsx in /lighting for context. */}
       <div
         aria-hidden
         className="pointer-events-none absolute -left-[9999px] -top-[9999px] h-0 w-0 overflow-hidden opacity-0"
       >
-        <label htmlFor="lighting-website">Website</label>
+        <label htmlFor={`${vertical}-website`}>Website</label>
         <input
-          id="lighting-website"
+          id={`${vertical}-website`}
           type="text"
           name="website"
           tabIndex={-1}
@@ -155,42 +163,56 @@ export function LightingLeadForm() {
         />
       </div>
 
-      <Field label="Full name" htmlFor="lighting-name">
+      <Field label="Full name" htmlFor={`${vertical}-name`}>
         <input
-          id="lighting-name"
-          name="fullName"
+          id={`${vertical}-name`}
+          name="name"
           type="text"
           required
           autoComplete="name"
           maxLength={120}
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className={inputCls}
+        />
+      </Field>
+
+      <Field label="Company name" htmlFor={`${vertical}-company`}>
+        <input
+          id={`${vertical}-company`}
+          name="company"
+          type="text"
+          required
+          autoComplete="organization"
+          maxLength={160}
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
           className={inputCls}
         />
       </Field>
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-        <Field label="Email" htmlFor="lighting-email">
+        <Field label="Email" htmlFor={`${vertical}-email`}>
           <input
-            id="lighting-email"
+            id={`${vertical}-email`}
             name="email"
             type="email"
             required
             autoComplete="email"
-            maxLength={200}
+            maxLength={180}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className={inputCls}
             aria-invalid={email.length > 0 && !emailValid}
           />
         </Field>
-        <Field label="Phone (optional)" htmlFor="lighting-phone">
+        <Field label="Phone (optional)" htmlFor={`${vertical}-phone`}>
           <input
-            id="lighting-phone"
+            id={`${vertical}-phone`}
             name="phone"
             type="tel"
             autoComplete="tel"
-            maxLength={32}
+            maxLength={40}
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             className={inputCls}
@@ -198,69 +220,70 @@ export function LightingLeadForm() {
         </Field>
       </div>
 
-      <Field label="Business name" htmlFor="lighting-business">
-        <input
-          id="lighting-business"
-          name="businessName"
-          type="text"
-          required
-          autoComplete="organization"
-          maxLength={120}
-          value={businessName}
-          onChange={(e) => setBusinessName(e.target.value)}
-          className={inputCls}
-        />
-      </Field>
-
       <Field
         label="Service area"
-        htmlFor="lighting-service-area"
-        hint="e.g. Sarasota, FL — or Naples to Tampa"
+        htmlFor={`${vertical}-area`}
+        hint="e.g. Naples to Clearwater, FL"
       >
         <input
-          id="lighting-service-area"
+          id={`${vertical}-area`}
           name="serviceArea"
           type="text"
           required
-          maxLength={120}
+          maxLength={200}
           value={serviceArea}
           onChange={(e) => setServiceArea(e.target.value)}
           className={inputCls}
         />
       </Field>
 
-      <Field label="Crew size" htmlFor="lighting-crew-size">
-        <select
-          id="lighting-crew-size"
-          name="crewSize"
-          required
-          value={crewSize}
-          onChange={(e) => setCrewSize(e.target.value as CrewSize | "")}
-          className={inputCls}
-        >
-          <option value="" disabled>
-            Pick one
-          </option>
-          {CREW_SIZES.map((v) => (
-            <option key={v} value={v}>
-              {v}
-            </option>
-          ))}
-        </select>
-      </Field>
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <Field label="Years in business (optional)" htmlFor={`${vertical}-years`}>
+          <select
+            id={`${vertical}-years`}
+            name="years"
+            value={years}
+            onChange={(e) => setYears(e.target.value)}
+            className={inputCls}
+          >
+            <option value="">— Select —</option>
+            {YEARS_IN_BUSINESS.map((y) => (
+              <option key={y} value={y}>
+                {y}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Crews (optional)" htmlFor={`${vertical}-crews`}>
+          <select
+            id={`${vertical}-crews`}
+            name="crews"
+            value={crews}
+            onChange={(e) => setCrews(e.target.value)}
+            className={inputCls}
+          >
+            <option value="">— Select —</option>
+            {CREWS.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </Field>
+      </div>
 
       <Field
-        label={QUALIFYING_PROMPT}
-        htmlFor="lighting-qualifying"
-        hint={`Optional · ${qualifying.length}/${QUALIFYING_LIMIT}`}
+        label="What's the #1 thing breaking in your business right now?"
+        htmlFor={`${vertical}-pain`}
+        hint={`Optional · ${pain.length}/${PAIN_LIMIT}`}
       >
         <textarea
-          id="lighting-qualifying"
-          name="qualifying"
-          maxLength={QUALIFYING_LIMIT}
+          id={`${vertical}-pain`}
+          name="pain"
+          maxLength={PAIN_LIMIT}
           rows={3}
-          value={qualifying}
-          onChange={(e) => setQualifying(e.target.value)}
+          value={pain}
+          onChange={(e) => setPain(e.target.value)}
           className={cn(inputCls, "h-auto py-3 leading-[1.5]")}
         />
       </Field>
@@ -272,7 +295,7 @@ export function LightingLeadForm() {
         className={cn(
           "group mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-honey-bright px-6 py-3 text-sm font-semibold text-forest-deep shadow-pop-honey transition-all hover:bg-honey hover:shadow-cta-hover",
           status === "submitting" && "cursor-wait opacity-70",
-          !isComplete && status !== "submitting" && "cursor-not-allowed opacity-50"
+          !isComplete && status !== "submitting" && "cursor-not-allowed opacity-50",
         )}
       >
         {status === "submitting" ? (
@@ -285,13 +308,13 @@ export function LightingLeadForm() {
           </>
         ) : (
           <>
-            {FORM.submit}
+            {submitLabel}
             <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
           </>
         )}
       </button>
 
-      <p className="text-center text-[12px] text-bone/45">{FORM.helper}</p>
+      <p className="text-center text-[12px] text-bone/45">{footnote}</p>
 
       {error && (
         <p

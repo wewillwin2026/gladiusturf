@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { LightingFaq } from "./components/faq";
 import { LightingFooterCta } from "./components/footer-cta";
 import { LightingHero } from "./components/hero";
-import { LightingLeadForm } from "./components/lead-form";
 import { LightingPricingTeaser } from "./components/pricing-teaser";
 import { LightingProblem } from "./components/problem-section";
 import { LightingProof } from "./components/proof-section";
@@ -11,6 +10,8 @@ import { LightingStickyCta } from "./components/sticky-cta";
 import { Footer } from "@/components/footer";
 import { Nav } from "@/components/nav";
 import { ScrollReveal } from "@/components/scroll-reveal";
+import { VerticalEcosystemStrip } from "@/components/vertical/VerticalEcosystemStrip";
+import { WaitlistForm } from "@/components/vertical/WaitlistForm";
 import { FAQ, FORM } from "@/lib/lighting/content";
 
 export const metadata: Metadata = {
@@ -100,6 +101,7 @@ export default function LightingPage() {
         <LightingProblem />
         <LightingSolution />
         <LightingProof />
+        <VerticalEcosystemStrip current="lighting" />
         <LightingPricingTeaser />
         <LightingFaq />
 
@@ -148,7 +150,13 @@ export default function LightingPage() {
             </ScrollReveal>
 
             <ScrollReveal delay={0.08}>
-              <LightingLeadForm />
+              <WaitlistForm
+                vertical="lighting"
+                submitLabel={FORM.submit}
+                footnote={FORM.helper}
+                successHeader={FORM.successHeader}
+                successBody={FORM.successBody}
+              />
             </ScrollReveal>
           </div>
         </section>
