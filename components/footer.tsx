@@ -1,4 +1,5 @@
 import { LogoMark } from "@/components/logo-mark";
+import { VERTICALS } from "@/lib/vertical/types";
 
 const PRODUCT_LINKS = [
   { href: "/product", label: "Engines" },
@@ -9,6 +10,15 @@ const PRODUCT_LINKS = [
   { href: "/surplus-yard", label: "Surplus Yard" },
   { href: "/find-a-crew", label: "Find a Crew" },
 ];
+
+// Verticals — /lighting is live, the rest are routed waitlist pages.
+// Live tile gets a bullet-style indicator inline so the marker is visible
+// without needing a separate column.
+const VERTICAL_LINKS = VERTICALS.map((v) => ({
+  href: v.href,
+  label: v.name,
+  live: v.status === "live",
+}));
 
 const BOOKS_LINKS = [
   { href: "/books", label: "Books" },
@@ -51,7 +61,7 @@ function Column({
   links,
 }: {
   title: string;
-  links: { href: string; label: string }[];
+  links: { href: string; label: string; live?: boolean }[];
 }) {
   return (
     <div>
@@ -63,9 +73,15 @@ function Column({
           <li key={l.href}>
             <a
               href={l.href}
-              className="text-bone/70 transition-colors hover:text-champagne-bright"
+              className="inline-flex items-center gap-1.5 text-bone/70 transition-colors hover:text-champagne-bright"
             >
               {l.label}
+              {l.live && (
+                <span
+                  aria-label="Live"
+                  className="inline-block h-1.5 w-1.5 rounded-full bg-honey-bright"
+                />
+              )}
             </a>
           </li>
         ))}
@@ -78,7 +94,7 @@ export function Footer() {
   return (
     <footer className="border-t border-bone/10 bg-pitch text-bone">
       <div className="mx-auto max-w-7xl px-6 py-20">
-        <div className="grid grid-cols-2 gap-x-8 gap-y-12 md:grid-cols-7">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-12 md:grid-cols-8">
           <div className="col-span-2 md:col-span-2">
             <LogoMark size={56} theme="dark" tone="bone" withWordmark />
             <p className="mt-6 max-w-xs text-[13px] leading-[1.6] text-bone/60">
@@ -127,6 +143,7 @@ export function Footer() {
               </a>
             </div>
           </div>
+          <Column title="Verticals" links={VERTICAL_LINKS} />
           <Column title="Product" links={PRODUCT_LINKS} />
           <Column title="Books" links={BOOKS_LINKS} />
           <Column title="Resources" links={RESOURCES_LINKS} />
