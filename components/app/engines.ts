@@ -78,6 +78,7 @@ export const ENGINES: Engine[] = [
   { slug: "reviews", name: "Reviews", group: "sales", icon: Star, ordinal: 6 },
   { slug: "referrals", name: "Referrals", group: "sales", icon: GitFork, ordinal: 7 },
   { slug: "campaigns", name: "Campaigns", group: "sales", icon: Newspaper, ordinal: 8 },
+  { slug: "plans", name: "Plans", group: "sales", icon: Repeat, ordinal: 8.5 },
   { slug: "pricing", name: "Pricing tables", group: "sales", icon: Tag, ordinal: 9 },
 
   // Ops (8)
