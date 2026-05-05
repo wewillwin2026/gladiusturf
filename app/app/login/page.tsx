@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { LoginForm } from "./LoginForm";
 
 export const metadata: Metadata = {
@@ -6,6 +7,11 @@ export const metadata: Metadata = {
   description: "Sign in to your GladiusTurf workspace.",
   robots: { index: false, follow: false },
 };
+
+// useSearchParams() in LoginForm makes this page a client-search-params
+// reader; Next 15 requires a Suspense boundary so the static shell can
+// pre-render and hydrate when the query string lands.
+export const dynamic = "force-dynamic";
 
 export default function AppLoginPage() {
   return (
@@ -19,12 +25,14 @@ export default function AppLoginPage() {
             Sign in to your workspace
           </h1>
           <p className="mt-3 text-[14px] leading-[1.5] text-g-text-muted">
-            Demo environment · Cypress Lawn &amp; Landscape, Tampa FL
+            Real customer? Email yourself a link. Demo? Use shared creds.
           </p>
         </div>
 
         <div className="g-card p-6 shadow-2xl">
-          <LoginForm />
+          <Suspense fallback={<LoginFormSkeleton />}>
+            <LoginForm />
+          </Suspense>
         </div>
 
         <p className="mt-6 text-center text-[11px] text-g-text-faint">
@@ -38,5 +46,14 @@ export default function AppLoginPage() {
         </p>
       </div>
     </main>
+  );
+}
+
+function LoginFormSkeleton() {
+  return (
+    <div className="flex flex-col gap-5">
+      <div className="h-12 rounded-md bg-g-surface" />
+      <div className="h-10 rounded-md bg-g-accent-faint" />
+    </div>
   );
 }

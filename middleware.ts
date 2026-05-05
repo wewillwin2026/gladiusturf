@@ -30,10 +30,17 @@ export function middleware(req: NextRequest) {
   }
 
   // 2. Fast-path cookie presence check.
-  if (pathname.startsWith("/app") && pathname !== "/app/login") {
+  //    /app/auth/verify completes the magic-link flow without a session
+  //    cookie present yet, so it must bypass this gate.
+  if (
+    pathname.startsWith("/app") &&
+    pathname !== "/app/login" &&
+    !pathname.startsWith("/app/auth")
+  ) {
     const hasCookie =
       req.cookies.get("gladius_demo_session")?.value ||
-      req.cookies.get("gt_preview_session")?.value;
+      req.cookies.get("gt_preview_session")?.value ||
+      req.cookies.get("gladius_tenant_session")?.value;
     if (!hasCookie) {
       const target = req.nextUrl.clone();
       target.pathname = "/app/login";
