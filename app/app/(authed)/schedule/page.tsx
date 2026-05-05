@@ -1,11 +1,25 @@
+import { Calendar } from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
 import { KPICard } from "@/components/app/ui/KPICard";
 import { ScheduleBoard } from "@/components/app/ScheduleBoard";
+import { TenantEmptyState } from "@/components/app/TenantEmptyState";
+import { readAppSession } from "@/lib/app/session";
 import { demoState } from "@/lib/demo/state";
 
 export const dynamic = "force-dynamic";
 
-export default function SchedulePage() {
+export default async function SchedulePage() {
+  const session = await readAppSession();
+  if (session.kind === "tenant") {
+    return (
+      <TenantEmptyState
+        engine="Schedule"
+        tenant={session.tenant}
+        icon={Calendar}
+        body="Visits, installs, and warranty calls land here as you schedule them. Storm Mode pre-builds the response queue when NOAA fires."
+      />
+    );
+  }
   const state = demoState();
 
   // Numbers for the KPIs.

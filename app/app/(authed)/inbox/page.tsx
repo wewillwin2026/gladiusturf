@@ -1,11 +1,25 @@
+import { Inbox } from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
 import { KPICard } from "@/components/app/ui/KPICard";
 import { InboxBrowser } from "@/components/app/InboxBrowser";
+import { TenantEmptyState } from "@/components/app/TenantEmptyState";
+import { readAppSession } from "@/lib/app/session";
 import { demoState } from "@/lib/demo/state";
 
 export const dynamic = "force-dynamic";
 
-export default function InboxPage() {
+export default async function InboxPage() {
+  const session = await readAppSession();
+  if (session.kind === "tenant") {
+    return (
+      <TenantEmptyState
+        engine="Inbox"
+        tenant={session.tenant}
+        icon={Inbox}
+        body="SMS, email, and review-request replies route here once you connect a phone line. Bilingual flow defaults match each customer's preferred language."
+      />
+    );
+  }
   const state = demoState();
   const unread = state.messages.filter((m) => !m.read && m.direction === "in").length;
 

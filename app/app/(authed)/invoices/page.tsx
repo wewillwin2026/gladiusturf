@@ -1,12 +1,26 @@
+import { Receipt } from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
 import { KPICard } from "@/components/app/ui/KPICard";
 import { InvoicesBrowser } from "@/components/app/InvoicesBrowser";
+import { TenantEmptyState } from "@/components/app/TenantEmptyState";
+import { readAppSession } from "@/lib/app/session";
 import { demoState } from "@/lib/demo/state";
 import { money } from "@/lib/shared/format";
 
 export const dynamic = "force-dynamic";
 
-export default function InvoicesPage() {
+export default async function InvoicesPage() {
+  const session = await readAppSession();
+  if (session.kind === "tenant") {
+    return (
+      <TenantEmptyState
+        engine="Invoices"
+        tenant={session.tenant}
+        icon={Receipt}
+        body="Issued invoices and payment status land here. QuickBooks Online sync wires up so the same row appears in your accounting system within seconds."
+      />
+    );
+  }
   const state = demoState();
   const overdue = state.invoices.filter((i) => i.status === "Overdue");
   const ar30 = overdue.reduce((s, i) => s + i.amountCents, 0);

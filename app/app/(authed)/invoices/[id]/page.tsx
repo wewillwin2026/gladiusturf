@@ -6,11 +6,14 @@ import {
   CreditCard,
   FileText,
   Mail,
+  Receipt,
   Send,
 } from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
 import { StatusPill } from "@/components/app/ui/StatusPill";
 import { InvoiceActions } from "@/components/app/InvoiceActions";
+import { TenantEmptyState } from "@/components/app/TenantEmptyState";
+import { readAppSession } from "@/lib/app/session";
 import { demoState } from "@/lib/demo/state";
 import { money, shortDate } from "@/lib/shared/format";
 
@@ -21,6 +24,17 @@ export default async function InvoiceDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const session = await readAppSession();
+  if (session.kind === "tenant") {
+    return (
+      <TenantEmptyState
+        engine="Invoice"
+        tenant={session.tenant}
+        icon={Receipt}
+        body="This invoice doesn't have a tenant-scoped record yet. Issued invoices land here when QuickBooks Online sync is wired up."
+      />
+    );
+  }
   const { id } = await params;
   const state = demoState();
   const invoice = state.invoices.find((i) => i.id === id);

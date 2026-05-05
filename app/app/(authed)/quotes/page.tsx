@@ -1,15 +1,28 @@
 import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, FileText, Sparkles } from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
 import { Button } from "@/components/app/ui/Button";
 import { KPICard } from "@/components/app/ui/KPICard";
 import { QuotesKanban } from "@/components/app/QuotesKanban";
+import { TenantEmptyState } from "@/components/app/TenantEmptyState";
+import { readAppSession } from "@/lib/app/session";
 import { demoState } from "@/lib/demo/state";
 import { money, num, pct } from "@/lib/shared/format";
 
 export const dynamic = "force-dynamic";
 
-export default function QuotesPage() {
+export default async function QuotesPage() {
+  const session = await readAppSession();
+  if (session.kind === "tenant") {
+    return (
+      <TenantEmptyState
+        engine="Quotes"
+        tenant={session.tenant}
+        icon={FileText}
+        body="Proposals you draft via the AI Quote Drafter (or manually) will appear here. Linked to customers, fixtures, and the install schedule."
+      />
+    );
+  }
   const state = demoState();
   const customerById = Object.fromEntries(
     state.customers.map((c) => [c.id, c.name] as const),

@@ -1,12 +1,26 @@
+import { Briefcase } from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
 import { KPICard } from "@/components/app/ui/KPICard";
 import { JobsBoard } from "@/components/app/JobsBoard";
+import { TenantEmptyState } from "@/components/app/TenantEmptyState";
+import { readAppSession } from "@/lib/app/session";
 import { demoState } from "@/lib/demo/state";
 import { num } from "@/lib/shared/format";
 
 export const dynamic = "force-dynamic";
 
-export default function JobsPage() {
+export default async function JobsPage() {
+  const session = await readAppSession();
+  if (session.kind === "tenant") {
+    return (
+      <TenantEmptyState
+        engine="Jobs"
+        tenant={session.tenant}
+        icon={Briefcase}
+        body="Completed visits and the per-fixture work performed land here. Photos and signed POs attach to the job, not the customer."
+      />
+    );
+  }
   const state = demoState();
 
   const todayJobs = state.jobs.filter((j) => {

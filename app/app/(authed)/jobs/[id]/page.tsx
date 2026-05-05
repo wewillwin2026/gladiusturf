@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeft,
+  Briefcase,
   Camera,
   CheckCircle2,
   Clock,
@@ -13,6 +14,8 @@ import {
 import { PageHeader } from "@/components/app/PageHeader";
 import { StatusPill } from "@/components/app/ui/StatusPill";
 import { JobActions } from "@/components/app/JobActions";
+import { TenantEmptyState } from "@/components/app/TenantEmptyState";
+import { readAppSession } from "@/lib/app/session";
 import { demoState } from "@/lib/demo/state";
 import { money, shortDate, timeOfDay } from "@/lib/shared/format";
 
@@ -29,6 +32,17 @@ export default async function JobDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const session = await readAppSession();
+  if (session.kind === "tenant") {
+    return (
+      <TenantEmptyState
+        engine="Job"
+        tenant={session.tenant}
+        icon={Briefcase}
+        body="Completed visits and the per-fixture work performed land here. Photos and signed POs attach to the job, not the customer."
+      />
+    );
+  }
   const { id } = await params;
   const state = demoState();
   const job = state.jobs.find((j) => j.id === id);
