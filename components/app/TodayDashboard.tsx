@@ -27,6 +27,9 @@ export type TodayProps = {
   crews: { crew: Crew; status: "Dispatched" | "OnSite" | "Returning" | "Off"; jobsToday: number; revenueTodayCents: number }[];
   activity: ActivityEvent[];
   funnel: { sent: number; viewed: number; won: number; scheduled: number };
+  /** Overrides the default product-based eyebrow. Used by tenant pages to
+   *  show the tenant's display_name instead of the generic "War Room · Real". */
+  eyebrowOverride?: string;
 };
 
 const KPI_ICONS = [DollarSign, Inbox, Truck, Users] as const;
@@ -39,6 +42,7 @@ export function TodayDashboard({
   activity,
   funnel,
   product,
+  eyebrowOverride,
 }: TodayProps) {
   const base = product === "demo" ? "/app" : "/founders/war-room";
 
@@ -46,7 +50,8 @@ export function TodayDashboard({
     <div className="flex flex-col gap-6">
       <PageHeader
         eyebrow={
-          product === "founders" ? "War Room · Real" : "Demo · Cypress Lawn"
+          eyebrowOverride ??
+          (product === "founders" ? "War Room · Real" : "Demo · Cypress Lawn")
         }
         title={greeting}
         subtitle={subtitle}
