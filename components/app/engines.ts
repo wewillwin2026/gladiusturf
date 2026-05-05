@@ -118,6 +118,7 @@ export const SECRET_TABS = [
   { slug: "secret/replays", name: "Replays", icon: MessageSquare },
   { slug: "secret/compare", name: "Compare", icon: Gauge },
   { slug: "demo-pipeline", name: "Demo Pipeline", icon: Database },
+  { slug: "tenants", name: "Tenants", icon: Building2 },
   { slug: "vertical-leads", name: "Vertical Leads", icon: Lightbulb },
 ] as const;
 

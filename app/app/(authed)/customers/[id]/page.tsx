@@ -22,6 +22,7 @@ import { supabaseAdmin } from "@/lib/supabase";
 import { demoState } from "@/lib/demo/state";
 import { money, relTime, shortDate } from "@/lib/shared/format";
 import { cn } from "@/lib/cn";
+import { PlanPicker } from "./PlanPicker";
 
 export const dynamic = "force-dynamic";
 
@@ -90,16 +91,39 @@ export default async function CustomerDetailPage({
 
     const c = customer as DbCustomer;
 
-    const { data: fixturesData } = await sb
-      .from("lighting_fixtures")
-      .select(
-        "id, external_id, fixture_type, brand, model, wattage_text, install_date, warranty_status, warranty_end, notes",
-      )
-      .eq("tenant_id", session.tenant.id)
-      .eq("customer_id", id)
-      .order("external_id", { ascending: true });
+    const [fixturesRes, plansRes, subRes] = await Promise.all([
+      sb
+        .from("lighting_fixtures")
+        .select(
+          "id, external_id, fixture_type, brand, model, wattage_text, install_date, warranty_status, warranty_end, notes",
+        )
+        .eq("tenant_id", session.tenant.id)
+        .eq("customer_id", id)
+        .order("external_id", { ascending: true }),
+      sb
+        .from("plans")
+        .select("id, display_name, annual_price_cents, badge, most_popular")
+        .eq("tenant_id", session.tenant.id)
+        .eq("active", true)
+        .order("annual_price_cents", { ascending: true }),
+      sb
+        .from("plan_subscriptions")
+        .select("plan_id")
+        .eq("tenant_id", session.tenant.id)
+        .eq("customer_id", id)
+        .eq("status", "active")
+        .maybeSingle(),
+    ]);
 
-    const fixtures = (fixturesData ?? []) as DbFixture[];
+    const fixtures = (fixturesRes.data ?? []) as DbFixture[];
+    const planOptions = (plansRes.data ?? []) as Array<{
+      id: string;
+      display_name: string;
+      annual_price_cents: number;
+      badge: string | null;
+      most_popular: boolean;
+    }>;
+    const currentPlanId = (subRes.data as { plan_id: string } | null)?.plan_id ?? null;
 
     const addr = c.service_address ?? {};
     const fullAddress = [addr.street, addr.city, addr.zip].filter(Boolean).join(", ");
@@ -357,14 +381,20 @@ export default async function CustomerDetailPage({
               </div>
             )}
 
+            <PlanPicker
+              customerId={id}
+              currentPlanId={currentPlanId}
+              options={planOptions}
+            />
+
             <div className="g-card p-5">
               <div className="flex items-baseline justify-between">
                 <h2>Outreach</h2>
                 <Star className="h-3.5 w-3.5 text-g-warning" />
               </div>
               <p className="mt-3 text-[12px] text-g-text-faint">
-                Review request, plan upsell, and seasonal check-in flows
-                land here in a later slice.
+                Review request + seasonal check-in flows land here in a
+                later slice.
               </p>
               <button
                 type="button"
