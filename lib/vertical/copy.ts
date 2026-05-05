@@ -47,22 +47,27 @@ export const WAITLIST_COPY: Record<Exclude<VerticalSlug, "lighting">, WaitlistCo
   },
 
   irrigation: {
-    title: "Gladius Irrigation — Zone counts from satellite. Blowouts on autopilot.",
+    title:
+      "Gladius Irrigation — Backflow on autopilot. Spring startups in 2 weeks. Controllers in one map.",
     description:
-      "Built for irrigation operators tired of running clipboards in the truck and spreadsheets in the office. Currently in private development.",
-    h1: "Zone counts from satellite. Blowouts on autopilot. Smart controllers, smart billing.",
+      "Built for the 1-10-truck Florida irrigation contractor that BSI Online, Hindsite, and Aspire all left behind. Per-utility backflow submission for 67 FL counties + 30 municipal water utilities — the moat Jobber and ServiceTitan structurally won't copy.",
+    h1: "Backflow on autopilot. Spring startups bulk-routed. Controllers in one map.",
     subhead:
-      "Built for irrigation operators tired of running clipboards in the truck and spreadsheets in the office. Currently in private development.",
+      "Built for the 1-10-truck Florida irrigation contractor. We talk to BSI Online, Aqua Backflow, JEA, Sarasota County, Pinellas, and Hillsborough — automatically. We push watering schedules to your customers' Hydrawise / Rachio / Rain Bird controllers. We bulk-batch 600 spring startups into a 4-week window. Currently in private development with a select group of operators.",
     whatsComing: [
-      "Satellite zone-count estimation for new quotes",
-      "Blowout season scheduling with weather-trigger dispatch",
-      "Smart controller integration (Rain Bird, Hunter, Rachio)",
-      "Winterization route batching",
-      "Recurring service plans tied to zone count",
+      "Backflow Compliance Autopilot — per-utility submission templates for BSI Online, Aqua Backflow, JEA, Sarasota County, Pinellas, Hillsborough, OUC, Miami-Dade WASD, GRU, Tampa Bay Water",
+      "Spring Startup / Storm Surge Mass-Route Mode — bulk-batch 200-800 startups, one-click rain-day push",
+      "Cross-Brand Smart Controller Fleet — Hydrawise + Rachio + Rain Bird LNK/IQ4 in one map, color-coded by status",
+      "Snowbird-Aware Customer Record — auto-suspends controllers during away periods, summer-monitor recurring product",
+      "FL Watering Restriction Auto-Programmer — derives allowed days from customer address, pushes to their controller",
+      "Bilingual EN/ES field app — offline-first, glove-friendly, sunlight-readable, voice-note translations",
+      "DBPR CILB License & CEU Tracker — auto-warns 90/60/30 days, stores certs for audit",
+      "Hurricane Response Mode — pre-storm shutoff, post-storm photo ticket, insurance-ready PDF",
     ],
     primaryPain:
-      "Real Green owns this category and charges enterprise prices for it. We're building the operator-friendly version.",
-    estimatedAvailability: "Q4 2026 early access.",
+      "Aspire publicly self-disqualifies from the <$1M segment. ServiceTitan starts at $250-500/tech/month with 6-12 month onboarding. The 1-10 truck FL irrigation segment is structurally underserved — and the moat is the per-utility backflow workflow nobody else will build.",
+    estimatedAvailability:
+      "Q3 2026 early access — first 5 FL operators get founder-direct setup + locked pilot pricing.",
   },
 
   landscape: {
