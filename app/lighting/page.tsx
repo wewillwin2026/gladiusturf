@@ -15,28 +15,27 @@ import { WaitlistForm } from "@/components/vertical/WaitlistForm";
 import { FAQ, FORM } from "@/lib/lighting/content";
 
 export const metadata: Metadata = {
-  // `absolute` opts out of root layout's `%s · GladiusTurf` template — the
-  // spec mandates this exact title.
+  // `absolute` opts out of root layout's `%s · GladiusTurf` template.
   title: {
     absolute:
-      "Gladius Lighting — The operating system for landscape lighting businesses",
+      "Gladius for Landscape Lighting — The OS for fixture-level operations",
   },
   description:
-    "Fixture-level inventory, per-fixture warranty timers, bilingual customer flow, storm-response mode, cross-cluster route batching. Built for landscape lighting operators. Not a CRM.",
+    "Per-fixture warranty tracking, bilingual customer flow, AI Quote Drafter, Storm Response Mode. Built for landscape lighting designers, not generic CRM customers.",
   alternates: { canonical: "/lighting" },
   openGraph: {
-    title: "Gladius Lighting",
+    title: "Gladius for Landscape Lighting",
     description:
-      "The operating system for landscape lighting businesses.",
+      "Quote it at 4 PM. Demo it at 9 PM. Install it next week.",
     url: "https://gladiusturf.com/lighting",
     siteName: "GladiusTurf",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Gladius Lighting",
+    title: "Gladius for Landscape Lighting",
     description:
-      "The operating system for landscape lighting businesses.",
+      "Quote it at 4 PM. Demo it at 9 PM. Install it next week.",
   },
 };
 
@@ -45,15 +44,15 @@ const PRODUCT_JSON_LD = {
   "@type": "Product",
   name: "Gladius Lighting",
   description:
-    "The operating system for landscape lighting businesses. Fixture-level inventory, per-fixture warranty timers, bilingual customer flow, storm-response mode, cross-cluster route batching.",
+    "The operating system built for landscape lighting designers. Per-fixture warranty tracking, transformer-load math, bilingual customer flow, AI receptionist, Storm Response Mode.",
   brand: { "@type": "Brand", name: "Gladius" },
   url: "https://gladiusturf.com/lighting",
   category: "Field Service Software",
   offers: {
     "@type": "AggregateOffer",
     priceCurrency: "USD",
-    lowPrice: "397",
-    highPrice: "2997",
+    lowPrice: "99",
+    highPrice: "999",
     offerCount: 3,
     url: "https://gladiusturf.com/pricing",
   },
@@ -82,7 +81,7 @@ export default function LightingPage() {
   return (
     <>
       <Nav />
-      <main id="main">
+      <main id="main" className="bg-tw-bg-base text-tw-text-primary">
         {/* JSON-LD must land in the initial HTML for crawlers — use plain
             <script> rather than next/script (which defers via React hydration
             and would be invisible to Google's first-pass renderer). */}
@@ -110,41 +109,37 @@ export default function LightingPage() {
             covered when smooth-scrolling lands here from a CTA anchor. */}
         <section
           id="lead-form"
-          className="relative scroll-mt-20 overflow-hidden border-b border-bone/10 bg-obsidian py-28"
+          className="relative scroll-mt-20 overflow-hidden border-b border-tw-line bg-tw-bg-elevated py-24 md:py-28"
         >
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[300px] bg-[radial-gradient(ellipse_at_top,rgba(244,204,133,0.08),transparent_60%)]"
-          />
-          <div className="mx-auto grid max-w-content grid-cols-1 gap-12 px-6 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
+          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
             <ScrollReveal>
-              <h2 className="font-serif text-h2-md font-semibold tracking-[-0.01em] text-bone md:text-h2-lg">
+              <h2 className="font-tiempos text-3xl font-medium tracking-[-0.01em] text-tw-text-primary md:text-4xl">
                 {FORM.header}
               </h2>
-              <p className="mt-5 max-w-xl text-[16px] leading-[1.7] text-bone/70">
+              <p className="mt-5 max-w-xl text-[16px] leading-[1.7] text-tw-text-secondary">
                 {FORM.subhead}
               </p>
-              <ul className="mt-8 flex flex-col gap-3 text-[14px] leading-[1.6] text-bone/70">
+              <ul className="mt-8 flex flex-col gap-3 text-[14px] leading-[1.6] text-tw-text-secondary">
                 <li className="flex items-start gap-3">
                   <span
                     aria-hidden
-                    className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-honey-bright"
+                    className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-tw-accent-amber"
                   />
-                  <span>15-minute call. Founders run it.</span>
+                  <span>Real call from Ricardo or Joshua. No SDR.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span
                     aria-hidden
-                    className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-moss-bright"
+                    className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-tw-accent-bronze"
                   />
-                  <span>Live workspace access code shared after booking.</span>
+                  <span>One business day response. Not a drip sequence.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span
                     aria-hidden
-                    className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-honey-bright"
+                    className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-tw-accent-amber"
                   />
-                  <span>No SDR, no slide deck, no junior CSM.</span>
+                  <span>Locked-in pilot pricing for the first 5 in each market.</span>
                 </li>
               </ul>
             </ScrollReveal>

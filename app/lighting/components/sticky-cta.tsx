@@ -51,7 +51,7 @@ export function LightingStickyCta() {
         href="#lead-form"
         data-track="lighting_demo_cta_sticky"
         tabIndex={show ? 0 : -1}
-        className="group flex w-full items-center justify-center gap-2 rounded-full bg-honey-bright px-6 py-3.5 text-sm font-semibold text-forest-deep shadow-pop-honey transition-all hover:bg-honey hover:shadow-cta-hover"
+        className="group flex w-full items-center justify-center gap-2 rounded-md bg-tw-accent-bronze px-6 py-3.5 text-sm font-medium text-tw-bg-base transition-colors hover:bg-tw-accent-amber"
       >
         Book a demo
         <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />

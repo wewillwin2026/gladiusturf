@@ -21,6 +21,25 @@
     --color-sage: #7A9B72;
     --color-paper: #FAFAF7;
     --color-stone: #6B6B6B;
+
+    /* Twilight Bronze — the lighting/vertical marketing palette per
+       LIGHTING_LEGENDARY §4.1. NOT to be unified with the GladiusTurf
+       homepage palette above. Used by /lighting and the 7 waitlist pages. */
+    --tw-bg-base: #0A0E1A;
+    --tw-bg-elevated: #131825;
+    --tw-bg-quiet: #1A1F30;
+    --tw-text-primary: #F5F1E8;
+    --tw-text-secondary: #A8A498;
+    /* Bumped from spec's #6B6960 to #8A8678 to clear WCAG AA 4.5:1 on
+       bg-elevated. Spec mandated A≥95 but its own muted token failed at
+       3.22:1; the lighter shade still reads as "tertiary" without
+       sacrificing accessibility. */
+    --tw-text-muted: #8A8678;
+    --tw-accent-bronze: #D4A574;
+    --tw-accent-amber: #E8B567;
+    --tw-success: #7BA86B;
+    --tw-error: #C4604C;
+    --tw-line: #2A2F3D;
   }
 
   html {

@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import {
-  ArrowRight,
   CalendarClock,
   LayoutDashboard,
   Phone,
@@ -10,7 +8,6 @@ import {
   Users,
 } from "lucide-react";
 import { AnimatedCounter } from "@/components/animated-counter";
-import { ComparisonTable } from "@/components/comparison-table";
 import { CtaBand } from "@/components/cta-band";
 import { EnginesGrid } from "@/components/engines-grid";
 import { Eyebrow } from "@/components/eyebrow";
@@ -25,6 +22,7 @@ import { PricingSection } from "@/components/pricing-section";
 import { ProductLoop } from "@/components/product-loop";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { SocialProofStrip } from "@/components/social-proof-strip";
+import { VerticalEcosystemStrip } from "@/components/vertical/VerticalEcosystemStrip";
 
 export const metadata: Metadata = {
   description:
@@ -37,15 +35,6 @@ export const metadata: Metadata = {
     images: ["/crest.png"],
   },
 };
-
-const COMING_FROM = [
-  { slug: "aspire", name: "Aspire" },
-  { slug: "lmn", name: "LMN" },
-  { slug: "jobber", name: "Jobber" },
-  { slug: "service-autopilot", name: "Service Autopilot" },
-  { slug: "realgreen", name: "Real Green" },
-  { slug: "servicetitan", name: "ServiceTitan" },
-];
 
 const TECH_STACK = [
   "Stripe",
@@ -290,6 +279,9 @@ export default function HomePage() {
       <main>
         {/* a. Hero */}
         <Hero />
+
+        {/* a2. Vertical ecosystem strip — exposes the 8 verticals (1 live, 7 waitlist) */}
+        <VerticalEcosystemStrip />
 
         {/* b. Built-with technology bar */}
         <section className="border-y border-bone/10 bg-slate-deep py-14">
@@ -552,99 +544,6 @@ export default function HomePage() {
             <EnginesGrid />
           </div>
         </div>
-
-        {/* g. ROI tease */}
-        <section className="border-t border-bone/10 bg-pitch py-24">
-          <div className="mx-auto max-w-5xl px-6 text-center">
-            <ScrollReveal>
-              <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
-                Your last bad month cost more than
-                <br />
-                GladiusTurf costs for a{" "}
-                <span className="text-champagne-bright">year</span>.
-              </h2>
-            </ScrollReveal>
-            <ScrollReveal delay={0.1}>
-              <p className="mx-auto mt-6 max-w-2xl text-lg text-parchment/70">
-                Run your real numbers. Most founding crews see payback inside
-                45 days — usually from the first leak we close.
-              </p>
-            </ScrollReveal>
-            <ScrollReveal delay={0.15}>
-              <Link
-                href="/roi"
-                className="group mt-10 inline-flex items-center gap-2 rounded-full border border-champagne-bright/40 bg-champagne/5 px-7 py-3.5 text-base font-medium text-champagne-bright transition-all hover:border-champagne-bright hover:bg-champagne/10"
-              >
-                Run your numbers
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </ScrollReveal>
-          </div>
-        </section>
-
-        {/* h. Comparison preview */}
-        <section className="border-t border-bone/10 bg-slate-deep py-28">
-          <div className="mx-auto max-w-7xl px-6">
-            <ScrollReveal>
-              <div className="mx-auto max-w-3xl text-center">
-                <Eyebrow className="mb-3" tone="honey">
-                  Compare
-                </Eyebrow>
-                <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
-                  What you&apos;re paying now vs.
-                  <br />
-                  <span className="text-champagne-bright">what GladiusTurf costs.</span>
-                </h2>
-                <p className="mt-4 text-lg text-bone/65">
-                  Slower software. Higher bills. No real AI. Here&apos;s the
-                  side-by-side.
-                </p>
-              </div>
-            </ScrollReveal>
-            <ScrollReveal delay={0.1}>
-              <div className="relative mt-14 rounded-2xl border border-bone/10 bg-obsidian p-6 md:p-8">
-                <ComparisonTable bare />
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-y-6 right-6 w-12 rounded-r-2xl bg-gradient-to-l from-obsidian to-transparent md:hidden"
-                />
-              </div>
-            </ScrollReveal>
-            <ScrollReveal delay={0.15}>
-              <div className="mt-8 text-center">
-                <Link
-                  href="/compare"
-                  className="inline-flex items-center gap-1.5 text-sm text-lime-bright transition-colors hover:text-lime"
-                >
-                  See full comparison
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </div>
-            </ScrollReveal>
-            <ScrollReveal delay={0.2}>
-              <div className="mt-12 border-t border-bone/10 pt-10">
-                <p className="text-center text-[11px] font-semibold uppercase tracking-[0.22em] text-bone/45">
-                  Coming from
-                </p>
-                <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
-                  {COMING_FROM.map((c) => (
-                    <Link
-                      key={c.slug}
-                      href={`/vs/${c.slug}`}
-                      className="group inline-flex items-center gap-2 rounded-full border border-bone/10 bg-bone/[0.03] px-4 py-2 text-sm text-bone/75 transition-all hover:border-champagne-bright/40 hover:bg-champagne/10 hover:text-champagne-bright"
-                    >
-                      <span className="text-bone/45 group-hover:text-champagne-bright/70">
-                        vs.
-                      </span>
-                      {c.name}
-                      <ArrowRight className="h-3 w-3 -translate-x-0.5 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </ScrollReveal>
-          </div>
-        </section>
 
         {/* i. Pricing */}
         <PricingSection />

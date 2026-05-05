@@ -1,29 +1,39 @@
-import { Eyebrow } from "@/components/eyebrow";
+import { Plus } from "lucide-react";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { FAQ } from "@/lib/lighting/content";
 
+/**
+ * Eight lighting-specific FAQs per LIGHTING_LEGENDARY §7.6. Native
+ * <details>/<summary> accordion — no JS framework dependency, fully
+ * accessible by default, indexable by search engines for FAQPage schema.
+ */
 export function LightingFaq() {
   return (
-    <section className="border-b border-bone/10 bg-slate-deep py-28">
-      <div className="mx-auto max-w-content px-6">
+    <section className="border-b border-tw-line bg-tw-bg-base py-24 md:py-28">
+      <div className="mx-auto max-w-3xl px-6">
         <ScrollReveal>
-          <Eyebrow tone="honey">FAQ</Eyebrow>
-          <h2 className="mt-3 font-serif text-h2-md font-semibold tracking-[-0.01em] text-bone md:text-h2-lg">
+          <h2 className="font-tiempos text-3xl font-medium tracking-[-0.01em] text-tw-text-primary md:text-4xl">
             Real questions a lighting operator would actually ask.
           </h2>
         </ScrollReveal>
 
-        <div className="mt-12 flex flex-col divide-y divide-bone/10 border-t border-b border-bone/10">
+        <div className="mt-12 flex flex-col divide-y divide-tw-line border-y border-tw-line">
           {FAQ.map((item, i) => (
-            <ScrollReveal key={item.q} delay={(i % 3) * 0.04}>
-              <div className="grid grid-cols-1 gap-3 py-7 md:grid-cols-[1fr_2fr] md:gap-10">
-                <h3 className="font-serif text-[18px] font-semibold leading-[1.3] text-bone">
-                  {item.q}
-                </h3>
-                <p className="text-[15px] leading-[1.65] text-bone/65">
+            <ScrollReveal key={item.q} delay={(i % 4) * 0.04}>
+              <details className="group py-6 [&_summary::-webkit-details-marker]:hidden">
+                <summary className="flex cursor-pointer items-start justify-between gap-6 list-none">
+                  <h3 className="text-[17px] font-medium leading-[1.4] text-tw-text-primary">
+                    {item.q}
+                  </h3>
+                  <Plus
+                    className="mt-1 h-5 w-5 shrink-0 text-tw-accent-bronze transition-transform duration-200 group-open:rotate-45"
+                    aria-hidden
+                  />
+                </summary>
+                <p className="mt-4 max-w-2xl text-[15px] leading-[1.7] text-tw-text-secondary">
                   {item.a}
                 </p>
-              </div>
+              </details>
             </ScrollReveal>
           ))}
         </div>

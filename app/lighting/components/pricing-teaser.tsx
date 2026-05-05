@@ -1,62 +1,80 @@
-import { ArrowRight, Star } from "lucide-react";
-import Link from "next/link";
-import { Eyebrow } from "@/components/eyebrow";
+import { Check } from "lucide-react";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { cn } from "@/lib/cn";
-import { PRICING_TEASER } from "@/lib/lighting/content";
+import { PRICING_TIERS, PRICING_FOOTNOTE } from "@/lib/lighting/content";
 
+/**
+ * Three pricing tiers per LIGHTING_LEGENDARY §7.5. Middle tier
+ * (Professional) gets a bronze highlight border + amber pill labeled
+ * "Most teams pick this." Each tier shows monthly price + per-bullet
+ * features with a Check icon.
+ */
 export function LightingPricingTeaser() {
   return (
-    <section className="border-b border-bone/10 bg-obsidian py-28">
-      <div className="mx-auto max-w-content px-6">
+    <section className="border-b border-tw-line bg-tw-bg-base py-24 md:py-28">
+      <div className="mx-auto max-w-6xl px-6">
         <ScrollReveal>
-          <Eyebrow tone="honey">Pricing</Eyebrow>
-          <h2 className="mt-3 max-w-3xl font-serif text-h2-md font-semibold tracking-[-0.01em] text-bone md:text-h2-lg">
-            Three tiers. One platform.
+          <h2 className="font-tiempos text-3xl font-medium tracking-[-0.01em] text-tw-text-primary md:text-4xl">
+            Pricing for lighting operators.
           </h2>
         </ScrollReveal>
 
-        <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
-          {PRICING_TEASER.tiers.map((tier, i) => (
+        <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-3">
+          {PRICING_TIERS.map((tier, i) => (
             <ScrollReveal key={tier.name} delay={i * 0.06}>
-              <div
+              <article
                 className={cn(
-                  "h-full rounded-2xl border p-7",
-                  tier.featured
-                    ? "border-honey-bright/40 bg-gradient-to-b from-honey/[0.08] to-transparent shadow-pop-honey"
-                    : "border-bone/10 bg-bone/[0.02]"
+                  "relative flex h-full flex-col rounded-lg border bg-tw-bg-elevated p-8",
+                  tier.highlight
+                    ? "border-tw-accent-amber"
+                    : "border-tw-line",
                 )}
               >
-                <div className="flex items-center justify-between">
-                  <h3 className="font-serif text-[20px] font-semibold text-bone">
-                    {tier.name}
-                  </h3>
-                  {tier.featured && (
-                    <span className="inline-flex items-center gap-1 rounded-full border border-honey-bright/40 bg-honey/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-crest text-honey-bright">
-                      <Star className="h-3 w-3" aria-hidden />
-                      Recommended
-                    </span>
-                  )}
-                </div>
-                <p className="mt-4 text-[14px] leading-[1.6] text-bone/65">
-                  {tier.body}
+                {tier.highlight && "highlightLabel" in tier && (
+                  <span className="absolute -top-3 left-8 inline-flex items-center rounded-full bg-tw-accent-amber px-3 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-tw-bg-base">
+                    {tier.highlightLabel}
+                  </span>
+                )}
+
+                <h3 className="text-[20px] font-medium text-tw-text-primary">
+                  {tier.name}
+                </h3>
+                <p className="mt-2 text-[14px] leading-[1.5] text-tw-text-muted">
+                  {tier.pitch}
                 </p>
-              </div>
+
+                <p className="mt-6 font-tiempos text-5xl font-medium text-tw-text-primary">
+                  {tier.monthly}
+                  <span className="ml-1 text-sm font-normal text-tw-text-muted">
+                    /mo
+                  </span>
+                </p>
+
+                <ul className="mt-8 flex flex-col gap-3 text-[14px] leading-[1.5] text-tw-text-secondary">
+                  {tier.features.map((f) => (
+                    <li key={f} className="flex items-start gap-2.5">
+                      <Check
+                        className={cn(
+                          "mt-0.5 h-4 w-4 shrink-0",
+                          tier.highlight
+                            ? "text-tw-accent-amber"
+                            : "text-tw-accent-bronze",
+                        )}
+                        aria-hidden
+                      />
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+              </article>
             </ScrollReveal>
           ))}
         </div>
 
         <ScrollReveal delay={0.2}>
-          <div className="mt-8 flex flex-col items-start justify-between gap-4 border-t border-bone/10 pt-8 sm:flex-row sm:items-center">
-            <p className="text-sm text-bone/55">{PRICING_TEASER.footnote}</p>
-            <Link
-              href="/pricing"
-              className="group inline-flex items-center gap-1.5 text-sm font-medium text-honey-bright transition-colors hover:text-honey"
-            >
-              See full pricing
-              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-            </Link>
-          </div>
+          <p className="mt-10 text-center text-sm text-tw-text-muted">
+            {PRICING_FOOTNOTE}
+          </p>
         </ScrollReveal>
       </div>
     </section>

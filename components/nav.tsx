@@ -6,7 +6,8 @@ import { ArrowRight, Menu, X } from "lucide-react";
 import { LogoMark } from "@/components/logo-mark";
 import { cn } from "@/lib/cn";
 
-const PRIMARY_LINKS: { href: string; label: string }[] = [
+const PRIMARY_LINKS: { href: string; label: string; live?: boolean }[] = [
+  { href: "/lighting", label: "Lighting", live: true },
   { href: "/platform", label: "Platform" },
   { href: "/product", label: "Engines" },
   { href: "/pricing", label: "Pricing" },
@@ -18,6 +19,7 @@ const MOBILE_SECTIONS: { title: string; links: { href: string; label: string }[]
   {
     title: "Explore",
     links: [
+      { href: "/lighting", label: "Lighting" },
       { href: "/platform", label: "Platform" },
       { href: "/product", label: "Engines" },
       { href: "/pricing", label: "Pricing" },
@@ -101,7 +103,7 @@ export function Nav() {
               <a
                 key={link.href}
                 className={cn(
-                  "transition-colors",
+                  "inline-flex items-center gap-1.5 transition-colors",
                   i % 2 === 0
                     ? "hover:text-moss-bright"
                     : "hover:text-honey-bright"
@@ -109,6 +111,12 @@ export function Nav() {
                 href={link.href}
               >
                 {link.label}
+                {link.live && (
+                  <span
+                    aria-label="Live"
+                    className="h-1.5 w-1.5 rounded-full bg-honey-bright"
+                  />
+                )}
               </a>
             ))}
           </nav>

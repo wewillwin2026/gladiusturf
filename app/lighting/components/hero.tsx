@@ -1,75 +1,91 @@
-import { ArrowRight, Lightbulb } from "lucide-react";
-import { Eyebrow } from "@/components/eyebrow";
+import { ChevronRight } from "lucide-react";
 import { ScrollReveal } from "@/components/scroll-reveal";
-import { HERO } from "@/lib/lighting/content";
+import { HERO, HERO_STATS } from "@/lib/lighting/content";
 
+/**
+ * /lighting hero — Twilight Bronze per LIGHTING_LEGENDARY §7.1.
+ * Editorial Tiempos H1, three-line break with the third line in amber.
+ * Single bronze ambient glow bottom-right (the "landscape light at dusk"
+ * motif). No stock photos, no fake dashboard art.
+ */
 export function LightingHero() {
   return (
     <section
       data-lighting-hero
-      className="relative overflow-hidden border-b border-bone/10 bg-pitch py-28 md:py-32"
+      className="relative overflow-hidden bg-tw-bg-base pt-32 pb-24 md:pt-40 md:pb-32"
     >
-      {/* Dusk-to-night gradient — warm at the bottom. The single visual motif
-          for this page (spec §3). */}
+      {/* Bronze ambient glow — bottom-right */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[400px] bg-[radial-gradient(ellipse_at_bottom,rgba(244,204,133,0.18),transparent_70%)]"
+        className="pointer-events-none absolute -bottom-32 -right-32 h-[600px] w-[600px] rounded-full opacity-40 blur-3xl"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(212,165,116,0.35) 0%, rgba(232,181,103,0.10) 40%, transparent 70%)",
+        }}
       />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[300px] bg-[radial-gradient(ellipse_at_top,rgba(15,61,46,0.4),transparent_60%)]"
-      />
-      <div className="relative mx-auto max-w-content px-6">
+
+      <div className="relative mx-auto max-w-6xl px-6">
         <ScrollReveal>
-          <div className="inline-flex items-center gap-2 rounded-full border border-honey-bright/30 bg-honey/5 px-3 py-1">
-            <Lightbulb className="h-3 w-3 text-honey-bright" aria-hidden />
-            <Eyebrow tone="honey" className="text-[11px]">
-              {HERO.eyebrow}
-            </Eyebrow>
-          </div>
+          <p className="mb-6 text-sm uppercase tracking-[0.2em] text-tw-accent-bronze">
+            {HERO.eyebrow}
+          </p>
         </ScrollReveal>
 
         <ScrollReveal delay={0.05}>
-          <h1 className="mt-7 max-w-4xl font-serif text-display-md font-semibold leading-[1.04] tracking-[-0.02em] text-bone md:text-display-lg">
-            {HERO.headline}
+          <h1 className="font-tiempos text-[44px] font-medium leading-[1.05] tracking-[-0.02em] text-tw-text-primary md:text-[64px] lg:text-[72px]">
+            {HERO.headlineLine1}
+            <br />
+            {HERO.headlineLine2}
+            <br />
+            <span className="text-tw-accent-amber">
+              {HERO.headlineLine3Accent}
+            </span>
           </h1>
         </ScrollReveal>
 
         <ScrollReveal delay={0.1}>
-          <p className="mt-7 max-w-2xl text-lg leading-relaxed text-parchment/75 md:text-xl">
+          <p className="mt-8 max-w-2xl text-lg leading-relaxed text-tw-text-secondary md:text-xl">
             {HERO.subhead}
           </p>
         </ScrollReveal>
 
         <ScrollReveal delay={0.15}>
-          <div className="mt-10 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
+          <div className="mt-10 flex flex-col gap-4 sm:flex-row">
             <a
               href="#lead-form"
               data-track="lighting_demo_cta_hero"
-              className="group inline-flex items-center gap-2 rounded-full bg-honey-bright px-7 py-3.5 text-base font-semibold text-forest-deep shadow-pop-honey transition-all hover:bg-honey hover:shadow-cta-hover"
+              className="group inline-flex items-center justify-center gap-1 rounded-md bg-tw-accent-bronze px-6 py-3.5 text-base font-medium text-tw-bg-base transition-colors hover:bg-tw-accent-amber"
             >
               {HERO.primaryCta}
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </a>
-            {/* Spec §4.1 — secondary CTA points at the passcode-gated live
-                workspace. The passcode itself ships only after a lead form
-                submission, so unauth visitors land on the gate page and see
-                the prompt, not the workspace. */}
             <a
-              href="/demo/bright-lights-encina"
-              data-track="lighting_workspace_cta"
-              className="group inline-flex items-center gap-2 rounded-full border border-bone/20 px-6 py-3 text-sm font-medium text-bone/85 transition-all hover:border-honey-bright/60 hover:text-honey-bright"
+              href="/demo"
+              data-track="lighting_book_demo_hero"
+              className="inline-flex items-center justify-center rounded-md border border-tw-line bg-transparent px-6 py-3.5 text-base font-medium text-tw-text-primary transition-colors hover:border-tw-accent-bronze hover:text-tw-accent-bronze"
             >
               {HERO.secondaryCta}
-              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
             </a>
           </div>
         </ScrollReveal>
 
-        <ScrollReveal delay={0.2}>
-          <p className="mt-8 max-w-2xl text-sm italic text-bone/55">
-            {HERO.trust}
-          </p>
+        {/* Stat strip — three real numbers with sources cited */}
+        <ScrollReveal delay={0.22}>
+          <div className="mt-20 grid grid-cols-1 gap-8 border-t border-tw-line pt-12 md:grid-cols-3">
+            {HERO_STATS.map((stat) => (
+              <div key={stat.label}>
+                <p className="font-tiempos text-4xl font-medium text-tw-accent-amber md:text-5xl">
+                  {stat.number}
+                </p>
+                <p className="mt-3 text-sm leading-relaxed text-tw-text-secondary">
+                  {stat.label}
+                </p>
+                <p className="mt-2 text-xs text-tw-text-muted">
+                  — {stat.source}
+                </p>
+              </div>
+            ))}
+          </div>
         </ScrollReveal>
       </div>
     </section>

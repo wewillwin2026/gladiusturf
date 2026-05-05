@@ -51,6 +51,19 @@ const config: Config = {
       "g-warning": "var(--g-warning)",
       "g-danger": "var(--g-danger)",
       "g-info": "var(--g-info)",
+      // Twilight Bronze — lighting + vertical marketing palette only.
+      // Defined as CSS vars in globals.css :root.
+      "tw-bg-base": "var(--tw-bg-base)",
+      "tw-bg-elevated": "var(--tw-bg-elevated)",
+      "tw-bg-quiet": "var(--tw-bg-quiet)",
+      "tw-text-primary": "var(--tw-text-primary)",
+      "tw-text-secondary": "var(--tw-text-secondary)",
+      "tw-text-muted": "var(--tw-text-muted)",
+      "tw-accent-bronze": "var(--tw-accent-bronze)",
+      "tw-accent-amber": "var(--tw-accent-amber)",
+      "tw-success": "var(--tw-success)",
+      "tw-error": "var(--tw-error)",
+      "tw-line": "var(--tw-line)",
     },
     fontFamily: {
       sans: ["var(--font-inter)", "system-ui", "sans-serif"],
@@ -59,6 +72,12 @@ const config: Config = {
       // App/War Room only — used inside .gladius-app
       "geist-sans": ["var(--font-geist-sans)", "system-ui", "sans-serif"],
       "geist-mono": ["var(--font-geist-mono)", "ui-monospace", "monospace"],
+      // Tiempos Headline — editorial hero font for /lighting + verticals.
+      // No woff2 license yet; falls through to Times New Roman / Georgia.
+      // Per LIGHTING_LEGENDARY §2: "If you don't have Tiempos licensed, fall
+      // back to Times New Roman, Georgia — it reads as editorial without
+      // the license."
+      tiempos: ["'Tiempos Headline'", "'Times New Roman'", "Georgia", "serif"],
     },
     borderRadius: {
       none: "0",
