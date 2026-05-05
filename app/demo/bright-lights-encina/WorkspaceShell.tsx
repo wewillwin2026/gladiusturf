@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  Boxes,
   Calendar,
   ChevronRight,
   CloudLightning,
@@ -70,6 +71,12 @@ const SECTIONS: NavSection[] = [
         label: "Storm Mode",
         href: "/demo/bright-lights-encina/storm",
         icon: CloudLightning,
+      },
+      {
+        label: "Inventory",
+        href: "/demo/bright-lights-encina/inventory",
+        icon: Boxes,
+        match: (p) => p.startsWith("/demo/bright-lights-encina/inventory"),
       },
     ],
   },

@@ -5,6 +5,7 @@ import {
   Activity,
   BarChart3,
   Bot,
+  Boxes,
   Building2,
   Calendar,
   ClipboardList,
@@ -89,6 +90,7 @@ export const ENGINES: Engine[] = [
   { slug: "crew", name: "Crew", group: "ops", icon: Building2, ordinal: 15 },
   { slug: "equipment", name: "Equipment", group: "ops", icon: Truck, ordinal: 16 },
   { slug: "chemicals", name: "Chemicals", group: "ops", icon: FlaskConical, ordinal: 17 },
+  { slug: "inventory", name: "Inventory", group: "ops", icon: Boxes, ordinal: 17.5 },
 
   // Money (4)
   { slug: "invoices", name: "Invoices", group: "money", icon: Receipt, ordinal: 18 },
