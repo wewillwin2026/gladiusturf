@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ScanLine } from "lucide-react";
+import { PackagePlus, ScanLine } from "lucide-react";
 import { toast } from "sonner";
 import { DataTable, type Column } from "@/components/app/ui/DataTable";
 import { StatusPill, type Tone } from "@/components/app/ui/StatusPill";
@@ -122,7 +122,20 @@ export function DemoInventoryView({ rows }: { rows: DemoInventoryRow[] }) {
 
   return (
     <>
-      <div className="flex items-center justify-end -mt-2">
+      <div className="flex items-center justify-end gap-2 -mt-2">
+        <Button
+          variant="secondary"
+          size="md"
+          onClick={() =>
+            toast.info("Receiving is live in the real CRM", {
+              description:
+                "In production, this opens a scan-and-stage flow that books units into inventory in seconds.",
+            })
+          }
+        >
+          <PackagePlus className="h-3.5 w-3.5" />
+          Receive
+        </Button>
         <Button
           variant="primary"
           size="md"

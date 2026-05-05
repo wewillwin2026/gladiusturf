@@ -108,6 +108,99 @@ export async function markUnitDamaged(
   return { ok: true };
 }
 
+// ---- receive units --------------------------------------------------
+
+export type ReceiveInput = {
+  itemId: string;
+  qrCodes: string[];
+  costCents?: number | null;
+  location?: string | null;
+};
+
+export type ReceiveResult =
+  | { ok: true; insertedIds: string[] }
+  | { error: string; duplicates?: string[] };
+
+export async function receiveUnits(
+  input: ReceiveInput,
+): Promise<ReceiveResult> {
+  const session = await readAppSession();
+  if (session.kind !== "tenant") {
+    return { error: "unauthenticated" };
+  }
+  if (!input.itemId) return { error: "missing_item_id" };
+
+  const codes = (input.qrCodes ?? [])
+    .map((c) => c.trim())
+    .filter((c) => c.length > 0);
+  if (codes.length === 0) return { error: "missing_qr_codes" };
+
+  // Dedupe within the request before hitting the DB.
+  const unique = Array.from(new Set(codes));
+
+  const sb = supabaseAdmin();
+
+  // Pre-check for codes already in the tenant — we'd rather return a clean
+  // duplicates list than a 23505 conflict mid-batch.
+  const { data: existing, error: dupErr } = await sb
+    .from("inventory_units")
+    .select("qr_code")
+    .eq("tenant_id", session.tenant.id)
+    .in("qr_code", unique);
+  if (dupErr) {
+    console.warn("receiveUnits dupe check error", dupErr);
+    return { error: "lookup_failed" };
+  }
+  const dupes = (existing ?? []).map((r) => r.qr_code as string);
+  const fresh = unique.filter((c) => !dupes.includes(c));
+  if (fresh.length === 0) {
+    return { error: "all_duplicates", duplicates: dupes };
+  }
+
+  // Verify the item belongs to this tenant before insert (otherwise an
+  // attacker could pass any UUID).
+  const { data: item, error: itemErr } = await sb
+    .from("inventory_items")
+    .select("id")
+    .eq("id", input.itemId)
+    .eq("tenant_id", session.tenant.id)
+    .maybeSingle();
+  if (itemErr || !item) {
+    return { error: "item_not_found_in_tenant" };
+  }
+
+  const now = new Date().toISOString();
+  const rows = fresh.map((code) => ({
+    tenant_id: session.tenant.id,
+    item_id: input.itemId,
+    qr_code: code,
+    status: "in_stock" as const,
+    location: input.location?.trim() || null,
+    cost_cents:
+      input.costCents != null && Number.isFinite(input.costCents)
+        ? Math.round(input.costCents)
+        : null,
+    received_at: now,
+    created_at: now,
+    updated_at: now,
+  }));
+
+  const { data: inserted, error } = await sb
+    .from("inventory_units")
+    .insert(rows)
+    .select("id");
+  if (error) {
+    console.warn("receiveUnits insert error", error);
+    return { error: "insert_failed" };
+  }
+
+  revalidatePath("/app/inventory");
+  return {
+    ok: true,
+    insertedIds: (inserted ?? []).map((r) => r.id as string),
+  };
+}
+
 // ---- QR code lookup -------------------------------------------------
 
 export type LookupHit = {

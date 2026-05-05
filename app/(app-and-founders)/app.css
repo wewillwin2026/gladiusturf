@@ -98,3 +98,20 @@
 .g-divider-subtle {
   border-color: var(--g-border-subtle);
 }
+
+@media print {
+  .gladius-app {
+    background: white !important;
+    color: black !important;
+  }
+  .gladius-app aside,
+  .gladius-app nav[role="navigation"],
+  .gladius-app header[role="banner"] {
+    display: none !important;
+  }
+  .gladius-app main {
+    margin: 0 !important;
+    padding: 0.25in !important;
+    max-width: none !important;
+  }
+}

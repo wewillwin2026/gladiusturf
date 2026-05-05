@@ -11,6 +11,7 @@ import {
 import { money } from "@/lib/shared/format";
 import { InventoryTable } from "./_components/InventoryTable";
 import { ScanButton } from "./_components/ScanButton";
+import { InventoryActions } from "./_components/InventoryActions";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +35,7 @@ export default async function InventoryPage() {
         eyebrow={`${session.tenant.display_name} · Ops`}
         title="Inventory"
         subtitle="Move what's been sitting longest."
-        actions={<ScanButton />}
+        actions={<InventoryActions items={items} />}
       />
 
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
