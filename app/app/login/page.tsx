@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { LoginForm } from "./LoginForm";
+import { readAppSession } from "@/lib/app/session";
 
 export const metadata: Metadata = {
   title: "GladiusTurf · Sign in",
@@ -13,7 +15,17 @@ export const metadata: Metadata = {
 // pre-render and hydrate when the query string lands.
 export const dynamic = "force-dynamic";
 
-export default function AppLoginPage() {
+export default async function AppLoginPage() {
+  // Already-signed-in shortcut: when a tenant clicks "Sign in → Lighting"
+  // from the dropdown but they already have a valid session cookie, skip
+  // the form entirely and drop them at /app. The middleware would also
+  // do this on subsequent navigation, but doing it here makes the
+  // round-trip a single redirect instead of "form flash → submit → /app".
+  const session = await readAppSession();
+  if (session.kind !== "unauthenticated") {
+    redirect("/app");
+  }
+
   return (
     <main className="gladius-app min-h-screen flex items-center justify-center px-6 py-16">
       <div className="w-full max-w-md">

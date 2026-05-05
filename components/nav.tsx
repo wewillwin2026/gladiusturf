@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ArrowRight, Menu, X } from "lucide-react";
 import { LogoMark } from "@/components/logo-mark";
+import { SignInDropdown } from "@/components/sign-in-dropdown";
 import { cn } from "@/lib/cn";
+import { VERTICALS } from "@/lib/vertical/types";
 
 const PRIMARY_LINKS: { href: string; label: string; live?: boolean }[] = [
   { href: "/lighting", label: "Lighting", live: true },
@@ -121,6 +123,7 @@ export function Nav() {
             ))}
           </nav>
           <div className="flex items-center gap-3">
+            <SignInDropdown />
             <Link
               href="/demo"
               className="group hidden items-center gap-1.5 rounded-full bg-lime-bright px-4 py-2 text-sm font-semibold text-forest-deep shadow-cta transition-all hover:bg-lime hover:shadow-cta-hover sm:inline-flex"
@@ -167,6 +170,51 @@ export function Nav() {
               </button>
             </div>
             <div className="flex-1 px-6 py-8">
+              {/* Sign-in section — mirrors the desktop SignInDropdown.
+                  Live verticals route to /app/login (magic-link form);
+                  waitlist verticals route to their /<vertical> page. */}
+              <div className="mb-8">
+                <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-bone/40">
+                  Sign in to your workspace
+                </h4>
+                <ul className="mt-4 flex flex-col gap-3 text-base">
+                  {VERTICALS.map((v) => {
+                    const isLive = v.status === "live";
+                    const href = isLive ? "/app/login" : v.href;
+                    return (
+                      <li key={v.slug}>
+                        <a
+                          href={href}
+                          onClick={() => setOpen(false)}
+                          data-track={`signin_dropdown_${v.slug}`}
+                          className="flex items-center justify-between gap-3 text-bone/85 transition-colors hover:text-honey-bright"
+                        >
+                          <span className="inline-flex items-center gap-2">
+                            <v.icon
+                              className={cn(
+                                "h-4 w-4",
+                                isLive ? "text-honey-bright" : "text-bone/55",
+                              )}
+                              aria-hidden
+                            />
+                            {v.name}
+                          </span>
+                          {isLive ? (
+                            <span className="rounded-full border border-honey-bright/40 bg-honey/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-honey-bright">
+                              Live · Sign in
+                            </span>
+                          ) : (
+                            <span className="rounded-full border border-bone/15 bg-bone/[0.04] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-bone/55">
+                              Waitlist
+                            </span>
+                          )}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+
               {MOBILE_SECTIONS.map((section) => (
                 <div key={section.title} className="mb-8">
                   <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-bone/40">
