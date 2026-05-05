@@ -4,6 +4,7 @@ import {
   ArrowLeft,
   Calendar,
   CheckCircle2,
+  CloudRain,
   Lightbulb,
   Mail,
   MapPin,
@@ -12,6 +13,8 @@ import {
   ShieldAlert,
   ShieldCheck,
   Star,
+  Truck,
+  Wrench,
   Zap,
 } from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
@@ -91,7 +94,7 @@ export default async function CustomerDetailPage({
 
     const c = customer as DbCustomer;
 
-    const [fixturesRes, plansRes, subRes] = await Promise.all([
+    const [fixturesRes, plansRes, subRes, scheduleRes] = await Promise.all([
       sb
         .from("lighting_fixtures")
         .select(
@@ -113,6 +116,13 @@ export default async function CustomerDetailPage({
         .eq("customer_id", id)
         .eq("status", "active")
         .maybeSingle(),
+      sb
+        .from("schedule_items")
+        .select("id, type, title, starts_at, status, notes")
+        .eq("tenant_id", session.tenant.id)
+        .eq("customer_id", id)
+        .order("starts_at", { ascending: false })
+        .limit(50),
     ]);
 
     const fixtures = (fixturesRes.data ?? []) as DbFixture[];
@@ -124,6 +134,14 @@ export default async function CustomerDetailPage({
       most_popular: boolean;
     }>;
     const currentPlanId = (subRes.data as { plan_id: string } | null)?.plan_id ?? null;
+    const visits = (scheduleRes.data ?? []) as Array<{
+      id: string;
+      type: string;
+      title: string;
+      starts_at: string;
+      status: string | null;
+      notes: string | null;
+    }>;
 
     const addr = c.service_address ?? {};
     const fullAddress = [addr.street, addr.city, addr.zip].filter(Boolean).join(", ");
@@ -406,6 +424,87 @@ export default async function CustomerDetailPage({
             </div>
           </div>
         </section>
+
+        {/* Timeline — service history. Renders only when there are visits;
+            an empty array means the customer has no logged service yet
+            (most Bright Lights customers are in this state — only Mike
+            Jackson's 5 visits are seeded today). */}
+        {visits.length > 0 && (
+          <section className="g-card p-5">
+            <div className="flex items-baseline justify-between">
+              <h2 className="inline-flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-g-accent" />
+                Service history
+              </h2>
+              <span className="text-[11px] uppercase tracking-[0.14em] text-g-text-faint">
+                {visits.length} visit{visits.length === 1 ? "" : "s"} on file
+              </span>
+            </div>
+
+            <ol className="mt-5 flex flex-col gap-4">
+              {visits.map((v, i) => {
+                const Icon =
+                  v.type === "install"
+                    ? Truck
+                    : v.type === "warranty"
+                      ? ShieldCheck
+                      : v.type === "storm_response"
+                        ? CloudRain
+                        : Wrench;
+                const date = new Date(v.starts_at);
+                const dateLabel = date.toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                });
+                return (
+                  <li
+                    key={v.id}
+                    className="flex gap-4"
+                  >
+                    {/* Rail with icon + connector line */}
+                    <div className="flex flex-col items-center shrink-0">
+                      <div className="h-8 w-8 rounded-full bg-g-surface-2 border border-g-border inline-flex items-center justify-center text-g-accent">
+                        <Icon className="h-3.5 w-3.5" />
+                      </div>
+                      {i < visits.length - 1 && (
+                        <div
+                          aria-hidden
+                          className="mt-2 w-px flex-1 bg-g-border-subtle"
+                        />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0 pb-4">
+                      <div className="flex items-baseline justify-between gap-3">
+                        <h3 className="text-[14px] font-medium text-g-text">
+                          {v.title}
+                        </h3>
+                        <span className="font-geist-mono text-[11px] text-g-text-faint shrink-0">
+                          {dateLabel}
+                        </span>
+                      </div>
+                      <div className="mt-1 flex items-center gap-2">
+                        <span className="rounded-full border border-g-border bg-g-surface-2 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-g-text-muted">
+                          {v.type.replace("_", " ")}
+                        </span>
+                        {v.status && v.status !== "completed" && (
+                          <StatusPill tone="warning">
+                            {v.status}
+                          </StatusPill>
+                        )}
+                      </div>
+                      {v.notes && (
+                        <p className="mt-2 text-[13px] leading-[1.55] text-g-text-muted">
+                          {v.notes}
+                        </p>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
+        )}
       </div>
     );
   }
