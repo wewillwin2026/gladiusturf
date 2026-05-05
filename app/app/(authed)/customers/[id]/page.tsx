@@ -4,19 +4,67 @@ import {
   ArrowLeft,
   Calendar,
   CheckCircle2,
+  Lightbulb,
   Mail,
   MapPin,
   MessageSquare,
   Phone,
+  ShieldAlert,
+  ShieldCheck,
   Star,
+  Zap,
 } from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
 import { KPICard } from "@/components/app/ui/KPICard";
-import { StatusPill } from "@/components/app/ui/StatusPill";
+import { StatusPill, type Tone } from "@/components/app/ui/StatusPill";
+import { readAppSession } from "@/lib/app/session";
+import { supabaseAdmin } from "@/lib/supabase";
 import { demoState } from "@/lib/demo/state";
 import { money, relTime, shortDate } from "@/lib/shared/format";
+import { cn } from "@/lib/cn";
 
 export const dynamic = "force-dynamic";
+
+type DbCustomer = {
+  id: string;
+  display_name: string;
+  primary_email: string | null;
+  primary_phone: string | null;
+  preferred_language: string;
+  service_address: {
+    street?: string;
+    city?: string;
+    state?: string;
+    zip?: string;
+    lat?: number;
+    lng?: number;
+    cluster?: string;
+  } | null;
+  customer_tier: string | null;
+  notes: string | null;
+  acquired_at: string | null;
+  created_at: string;
+};
+
+type DbFixture = {
+  id: string;
+  external_id: string | null;
+  fixture_type: string;
+  brand: string;
+  model: string | null;
+  wattage_text: string | null;
+  install_date: string | null;
+  warranty_status: string | null;
+  warranty_end: string | null;
+  notes: string | null;
+};
+
+const WARRANTY_TONE: Record<string, Tone> = {
+  active: "success",
+  expiring: "warning",
+  expired: "danger",
+  lifetime: "accent",
+};
 
 export default async function CustomerDetailPage({
   params,
@@ -24,6 +72,315 @@ export default async function CustomerDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const session = await readAppSession();
+
+  // Tenant session — render real Supabase data + the lighting_fixtures
+  // rollup. The demo path is preserved below.
+  if (session.kind === "tenant") {
+    const sb = supabaseAdmin();
+    const { data: customer, error: cErr } = await sb
+      .from("customers")
+      .select(
+        "id, display_name, primary_email, primary_phone, preferred_language, service_address, customer_tier, notes, acquired_at, created_at",
+      )
+      .eq("tenant_id", session.tenant.id)
+      .eq("id", id)
+      .maybeSingle();
+    if (cErr || !customer) notFound();
+
+    const c = customer as DbCustomer;
+
+    const { data: fixturesData } = await sb
+      .from("lighting_fixtures")
+      .select(
+        "id, external_id, fixture_type, brand, model, wattage_text, install_date, warranty_status, warranty_end, notes",
+      )
+      .eq("tenant_id", session.tenant.id)
+      .eq("customer_id", id)
+      .order("external_id", { ascending: true });
+
+    const fixtures = (fixturesData ?? []) as DbFixture[];
+
+    const addr = c.service_address ?? {};
+    const fullAddress = [addr.street, addr.city, addr.zip].filter(Boolean).join(", ");
+    const cluster = addr.cluster ?? null;
+
+    const activeWarranty = fixtures.filter((f) => f.warranty_status === "active").length;
+    const expiredWarranty = fixtures.filter((f) => f.warranty_status === "expired").length;
+    const lifetimeWarranty = fixtures.filter((f) => f.warranty_status === "lifetime").length;
+    const installYear = c.acquired_at
+      ? new Date(c.acquired_at).getFullYear()
+      : null;
+
+    return (
+      <div className="flex flex-col gap-6">
+        <Link
+          href="/app/customers"
+          prefetch
+          className="inline-flex items-center gap-1.5 text-[12px] text-g-text-muted hover:text-g-text"
+        >
+          <ArrowLeft className="h-3 w-3" />
+          Back to customers
+        </Link>
+
+        <PageHeader
+          eyebrow={cluster ?? session.tenant.display_name}
+          title={c.display_name}
+          subtitle={
+            <span className="inline-flex flex-wrap items-center gap-3 text-[12px]">
+              {fullAddress && (
+                <span className="inline-flex items-center gap-1">
+                  <MapPin className="h-3 w-3" />
+                  {fullAddress}
+                </span>
+              )}
+              {c.primary_phone && (
+                <span className="inline-flex items-center gap-1">
+                  <Phone className="h-3 w-3" />
+                  {c.primary_phone}
+                </span>
+              )}
+              {c.primary_email && (
+                <span className="inline-flex items-center gap-1">
+                  <Mail className="h-3 w-3" />
+                  {c.primary_email}
+                </span>
+              )}
+              <StatusPill tone="accent">
+                {c.preferred_language === "es" ? "ES" : "EN"}
+              </StatusPill>
+              {installYear && (
+                <span className="text-g-text-faint">Customer since {installYear}</span>
+              )}
+            </span>
+          }
+        />
+
+        {/* KPIs — fixture-led for the lighting vertical. */}
+        <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <KPICard
+            label="Fixtures on file"
+            value={String(fixtures.length)}
+            delta={fixtures.length > 0 ? "live inventory" : "no inventory yet"}
+            trend={fixtures.length > 0 ? "up" : "flat"}
+          />
+          <KPICard
+            label="Active warranty"
+            value={String(activeWarranty + lifetimeWarranty)}
+            delta={
+              lifetimeWarranty > 0
+                ? `${lifetimeWarranty} lifetime · ${activeWarranty} timed`
+                : `${activeWarranty} fixtures`
+            }
+            trend={activeWarranty + lifetimeWarranty > 0 ? "up" : "flat"}
+          />
+          <KPICard
+            label="Expired warranty"
+            value={String(expiredWarranty)}
+            delta={
+              expiredWarranty > 0 ? "consider plan upsell" : "no exposure"
+            }
+            trend={expiredWarranty > 0 ? "down" : "flat"}
+          />
+          <KPICard
+            label="Plan tier"
+            value={c.customer_tier ?? "—"}
+            delta={c.customer_tier ? "active" : "no plan yet"}
+            trend={c.customer_tier ? "up" : "flat"}
+          />
+        </section>
+
+        <section className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+          {/* Fixtures rollup — the centerpiece of the lighting vertical. */}
+          <div className="lg:col-span-3 g-card p-5">
+            <div className="flex items-baseline justify-between">
+              <h2 className="inline-flex items-center gap-2">
+                <Lightbulb className="h-4 w-4 text-g-accent" />
+                Fixtures
+              </h2>
+              <span className="text-[11px] uppercase tracking-[0.14em] text-g-text-faint">
+                {fixtures.length} on this property
+              </span>
+            </div>
+
+            {fixtures.length === 0 ? (
+              <div className="mt-5 rounded-md border border-dashed border-g-border-subtle bg-g-surface-2 p-6 text-center">
+                <p className="text-[13px] text-g-text-muted">
+                  No fixtures logged for this property yet.
+                </p>
+                <p className="mt-2 text-[12px] text-g-text-faint">
+                  Add inventory next time you&apos;re on site to start
+                  per-fixture warranty tracking.
+                </p>
+              </div>
+            ) : (
+              <div className="mt-4 overflow-x-auto">
+                <table className="w-full text-[12px] min-w-[600px]">
+                  <thead>
+                    <tr className="text-left border-b border-g-border-subtle text-g-text-faint">
+                      <th className="py-2 font-medium uppercase tracking-[0.14em] text-[10px]">ID</th>
+                      <th className="py-2 font-medium uppercase tracking-[0.14em] text-[10px]">Type</th>
+                      <th className="py-2 font-medium uppercase tracking-[0.14em] text-[10px]">Brand · Model</th>
+                      <th className="py-2 font-medium uppercase tracking-[0.14em] text-[10px] text-right">Watt</th>
+                      <th className="py-2 font-medium uppercase tracking-[0.14em] text-[10px]">Installed</th>
+                      <th className="py-2 font-medium uppercase tracking-[0.14em] text-[10px]">Warranty</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {fixtures.map((f) => (
+                      <tr
+                        key={f.id}
+                        className="border-b border-g-border-subtle/50 last:border-b-0"
+                      >
+                        <td className="py-2 pr-3 font-geist-mono text-g-text-faint">
+                          {f.external_id ?? f.id.slice(0, 8)}
+                        </td>
+                        <td className="py-2 pr-3 text-g-text">{f.fixture_type}</td>
+                        <td className="py-2 pr-3 text-g-text-muted">
+                          <span className="text-g-text">{f.brand}</span>
+                          {f.model && (
+                            <span className="text-g-text-faint"> · {f.model}</span>
+                          )}
+                        </td>
+                        <td className="py-2 pr-3 font-geist-mono text-right text-g-text-muted">
+                          {f.wattage_text ?? "—"}
+                        </td>
+                        <td className="py-2 pr-3 font-geist-mono text-g-text-muted">
+                          {f.install_date ? shortDate(f.install_date) : "—"}
+                        </td>
+                        <td className="py-2 pr-3">
+                          {f.warranty_status ? (
+                            <StatusPill
+                              tone={WARRANTY_TONE[f.warranty_status] ?? "neutral"}
+                              title={
+                                f.warranty_end
+                                  ? `Through ${shortDate(f.warranty_end)}`
+                                  : f.warranty_status === "lifetime"
+                                    ? "Lifetime fixture"
+                                    : undefined
+                              }
+                            >
+                              {f.warranty_status === "lifetime" ? (
+                                <span className="inline-flex items-center gap-1">
+                                  <ShieldCheck className="h-3 w-3" />
+                                  Lifetime
+                                </span>
+                              ) : f.warranty_status === "active" ? (
+                                <span className="inline-flex items-center gap-1">
+                                  <ShieldCheck className="h-3 w-3" />
+                                  Active
+                                </span>
+                              ) : f.warranty_status === "expired" ? (
+                                <span className="inline-flex items-center gap-1">
+                                  <ShieldAlert className="h-3 w-3" />
+                                  Expired
+                                </span>
+                              ) : (
+                                f.warranty_status
+                              )}
+                            </StatusPill>
+                          ) : (
+                            <span className="text-g-text-faint">—</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {fixtures.some((f) => f.notes) && (
+                  <ul className="mt-4 flex flex-col gap-2 text-[12px] text-g-text-muted">
+                    {fixtures
+                      .filter((f) => f.notes)
+                      .map((f) => (
+                        <li key={`n-${f.id}`} className="flex items-start gap-2">
+                          <Zap
+                            className={cn(
+                              "mt-0.5 h-3 w-3 shrink-0 text-g-accent",
+                            )}
+                          />
+                          <span>
+                            <span className="font-geist-mono text-g-text-faint">
+                              {f.external_id ?? f.id.slice(0, 8)}
+                            </span>
+                            {": "}
+                            {f.notes}
+                          </span>
+                        </li>
+                      ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Right column — property + notes */}
+          <div className="lg:col-span-2 flex flex-col gap-4">
+            <div className="g-card p-5">
+              <div className="flex items-baseline justify-between">
+                <h2>Property</h2>
+                <Calendar className="h-3.5 w-3.5 text-g-text-faint" />
+              </div>
+              <dl className="mt-3 grid grid-cols-2 gap-2 text-[12px]">
+                <dt className="text-g-text-faint">Cluster</dt>
+                <dd className="text-right">{cluster ?? "—"}</dd>
+                <dt className="text-g-text-faint">Language</dt>
+                <dd className="text-right">
+                  {c.preferred_language === "es" ? "Spanish" : "English"}
+                </dd>
+                <dt className="text-g-text-faint">Customer since</dt>
+                <dd className="text-right font-geist-mono">
+                  {installYear ?? "—"}
+                </dd>
+                <dt className="text-g-text-faint">Lat / Lng</dt>
+                <dd className="text-right font-geist-mono text-[11px]">
+                  {addr.lat && addr.lng
+                    ? `${addr.lat.toFixed(3)}, ${addr.lng.toFixed(3)}`
+                    : "—"}
+                </dd>
+              </dl>
+            </div>
+
+            {c.notes && (
+              <div className="g-card p-5">
+                <div className="flex items-baseline justify-between">
+                  <h2 className="inline-flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-g-accent" />
+                    Notes
+                  </h2>
+                </div>
+                <p className="mt-3 text-[13px] leading-relaxed text-g-text-muted">
+                  {c.notes}
+                </p>
+                <p className="mt-3 text-[11px] text-g-text-faint">
+                  Site Memory · pulled from your install record
+                </p>
+              </div>
+            )}
+
+            <div className="g-card p-5">
+              <div className="flex items-baseline justify-between">
+                <h2>Outreach</h2>
+                <Star className="h-3.5 w-3.5 text-g-warning" />
+              </div>
+              <p className="mt-3 text-[12px] text-g-text-faint">
+                Review request, plan upsell, and seasonal check-in flows
+                land here in a later slice.
+              </p>
+              <button
+                type="button"
+                className="mt-3 inline-flex items-center gap-1.5 text-[12px] text-g-accent hover:underline"
+              >
+                <MessageSquare className="h-3 w-3" />
+                Send review request
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  // Demo session — preserve the existing seeded Cypress Lawn detail page.
   const state = demoState();
   const customer = state.customers.find((c) => c.id === id);
   if (!customer) notFound();
