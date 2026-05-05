@@ -39,8 +39,10 @@ export async function GET(req: Request) {
   const { email, tenantSlug } = verified;
 
   // Re-check invitation + tenant existence at verify time (in case either
-  // changed between magic-link issue and click).
-  const invite = tenantInvitationFor(email);
+  // changed between magic-link issue and click — invitations live in
+  // public.tenant_invitations and can be revoked by founders without a
+  // deploy).
+  const invite = await tenantInvitationFor(email);
   if (!invite || invite.tenantSlug !== tenantSlug) {
     return NextResponse.redirect(
       new URL("/app/login?error=no_longer_invited", url.origin),

@@ -4,7 +4,6 @@ import { Resend } from "resend";
 import {
   createTenantMagicToken,
   getTenantBySlug,
-  isInvitedEmail,
   tenantInvitationFor,
 } from "@/lib/app/tenant-auth";
 import { supabaseAdmin } from "@/lib/supabase";
@@ -46,11 +45,12 @@ export async function POST(req: Request) {
 
   // No allowlist hit → silent ok=true. Resend never fires, audit never
   // writes — so anonymous bots can spam any email and learn nothing.
-  if (!isInvitedEmail(email)) {
+  // The invitation lookup hits the tenant_invitations table (db-backed
+  // since Phase 4); founders can revoke or add invitees without a deploy.
+  const invite = await tenantInvitationFor(email);
+  if (!invite) {
     return NextResponse.json({ ok: true });
   }
-
-  const invite = tenantInvitationFor(email)!; // safe — just verified above
 
   const tenant = await getTenantBySlug(invite.tenantSlug);
   if (!tenant || !tenant.active) {

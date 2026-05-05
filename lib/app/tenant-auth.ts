@@ -25,29 +25,46 @@ export const TENANT_COOKIE_NAME = "gladius_tenant_session";
 const SESSION_TTL_DAYS = 7;
 const MAGIC_TOKEN_TTL_SECONDS = 15 * 60; // 15 min
 
-/**
- * v1 invitation map: email → tenant slug + role. When a customer signs in
- * for the first time via magic link, we look them up here and grant them
- * membership in the listed tenant. v2 will replace this with a
- * `tenant_invitations` table managed in the founders' War Room.
- */
-const INVITATIONS: Record<string, { tenantSlug: string; role: TenantRole }> = {
-  // Bright Lights pilot owners (Felipe + Cristian when their emails are
-  // confirmed; founders for testing in the meantime).
-  "ricardo.gamon99@icloud.com": { tenantSlug: "bright-lights-encina", role: "owner" },
-  "joshuapyorke@gmail.com": { tenantSlug: "bright-lights-encina", role: "owner" },
-};
-
 export type TenantRole = "owner" | "admin" | "operator" | "viewer";
 
-export function tenantInvitationFor(
+/**
+ * Look up an active invitation for `email`. Backed by the
+ * `public.tenant_invitations` table (migration 20260505_e_tenant_invitations).
+ *
+ * Founders manage this via the War Room — adding a new tenant + a row here
+ * provisions a new pilot without code changes. The query joins to the
+ * `tenants` table to resolve the slug, since the invitation row only carries
+ * `tenant_id`.
+ *
+ * Returns null on miss OR on db error — the magic-link API treats both as
+ * "not invited" and silently 200s (anti-enumeration). We don't fail the
+ * request for a transient lookup hiccup; the user can simply retry.
+ */
+export async function tenantInvitationFor(
   email: string,
-): { tenantSlug: string; role: TenantRole } | null {
-  return INVITATIONS[email.toLowerCase().trim()] ?? null;
+): Promise<{ tenantSlug: string; role: TenantRole } | null> {
+  const sb = supabaseAdmin();
+  const { data, error } = await sb
+    .from("tenant_invitations")
+    .select("role, tenants!inner(slug)")
+    .eq("email", email.toLowerCase().trim())
+    .eq("status", "active")
+    .maybeSingle();
+  if (error) {
+    console.warn("tenantInvitationFor lookup error", error);
+    return null;
+  }
+  if (!data) return null;
+  // Supabase types the joined relation as Tenant[]; we know it's a single
+  // row because of the 1:M FK and `inner` join, but TS doesn't.
+  const tenants = (data as unknown as { role: TenantRole; tenants: { slug: string } | { slug: string }[] }).tenants;
+  const slug = Array.isArray(tenants) ? tenants[0]?.slug : tenants?.slug;
+  if (!slug) return null;
+  return { tenantSlug: slug, role: (data as unknown as { role: TenantRole }).role };
 }
 
-export function isInvitedEmail(email: string): boolean {
-  return tenantInvitationFor(email) !== null;
+export async function isInvitedEmail(email: string): Promise<boolean> {
+  return (await tenantInvitationFor(email)) !== null;
 }
 
 const FALLBACK_SECRET = "gladius-tenant-fallback-secret-not-for-prod-rotate-me";
@@ -84,6 +101,13 @@ export function createTenantMagicToken(email: string, tenantSlug: string): strin
   ].join(".");
 }
 
+/**
+ * Verify the HMAC token. Pure crypto, no DB lookup — callers cross-check
+ * the email/tenant against the live invitation table separately. Splitting
+ * it this way keeps the token-verification code synchronous + side-effect-
+ * free and makes db hiccups a different failure mode (instead of
+ * "looks like a forged token").
+ */
 export function verifyTenantMagicToken(
   raw: string | undefined,
 ): { email: string; tenantSlug: string } | null {
@@ -101,9 +125,6 @@ export function verifyTenantMagicToken(
   } catch {
     return null;
   }
-  // Cross-check the email/tenant pair against the invitation map.
-  const invite = tenantInvitationFor(email);
-  if (!invite || invite.tenantSlug !== tenantSlug) return null;
   const expected = createHmac("sha256", sessionSecret())
     .update(`${exp}|${nonce}|${email}|${tenantSlug}|tenant-magic`)
     .digest("hex");
