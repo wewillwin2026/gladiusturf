@@ -83,7 +83,10 @@ export async function GET(req: Request) {
       entity_type: "auth.users",
       entity_id: userId,
       metadata: { email, tenant_slug: tenantSlug },
+      // Vercel sets x-vercel-forwarded-for itself; prefer it over the
+      // attacker-spoofable x-forwarded-for first hop.
       ip:
+        req.headers.get("x-vercel-forwarded-for") ||
         req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
         req.headers.get("x-real-ip") ||
         null,

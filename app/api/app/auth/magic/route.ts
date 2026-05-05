@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { createHash } from "node:crypto";
 import { Resend } from "resend";
 import {
   createTenantMagicToken,
@@ -6,6 +7,7 @@ import {
   isInvitedEmail,
   tenantInvitationFor,
 } from "@/lib/app/tenant-auth";
+import { supabaseAdmin } from "@/lib/supabase";
 
 export const runtime = "nodejs";
 
@@ -13,8 +15,22 @@ export const runtime = "nodejs";
  * POST /api/app/auth/magic — request a tenant sign-in magic link.
  *
  * Always returns 200 ok:true to prevent email enumeration. If the email is
- * in the v1 invitation map, we also send a Resend email with the link.
+ * in the v1 invitation map and the per-IP rate limit hasn't fired, we also
+ * send a Resend email with the link.
+ *
+ * Hardening from the Phase 2 review:
+ *  - Origin is hard-coded (NEXT_PUBLIC_SITE_URL or fallback) — never trust
+ *    the client's `Origin` header, which would let an attacker insert a
+ *    phishing domain into the email body.
+ *  - Per-IP-hash rate limit (5 / hour) using audit_log as the count store.
+ *    Above the limit, the request silently 200s without sending — bots
+ *    can't tell they're throttled.
  */
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://gladiusturf.com";
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
+const RATE_LIMIT_MAX = 5;
+
 export async function POST(req: Request) {
   let body: { email?: string };
   try {
@@ -28,16 +44,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Email required" }, { status: 400 });
   }
 
-  // No allowlist hit → silent ok=true.
+  // No allowlist hit → silent ok=true. Resend never fires, audit never
+  // writes — so anonymous bots can spam any email and learn nothing.
   if (!isInvitedEmail(email)) {
     return NextResponse.json({ ok: true });
   }
 
-  const invite = tenantInvitationFor(email)!; // safe — isInvitedEmail just confirmed
+  const invite = tenantInvitationFor(email)!; // safe — just verified above
 
-  // Confirm the tenant exists in the DB. If it doesn't, skip sending —
-  // a 404 error here would tell the caller "this email is allowlisted but
-  // the tenant isn't provisioned" which is more info than we want to leak.
   const tenant = await getTenantBySlug(invite.tenantSlug);
   if (!tenant || !tenant.active) {
     console.warn(
@@ -47,6 +61,40 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true });
   }
 
+  // Hash the IP for rate-limit keying + audit log. Never store raw IPs.
+  // Vercel sets `x-vercel-forwarded-for` itself; trust that over the
+  // attacker-spoofable `x-forwarded-for` first hop.
+  const ip =
+    req.headers.get("x-vercel-forwarded-for") ||
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    req.headers.get("x-real-ip") ||
+    "";
+  const ipHash = ip
+    ? createHash("sha256").update(ip).digest("hex").slice(0, 32)
+    : "no-ip";
+
+  const sb = supabaseAdmin();
+
+  // Count recent magic-link sends from this IP for this tenant. Audit_log
+  // stores the IP hash in the `ip` text column.
+  try {
+    const since = new Date(Date.now() - RATE_LIMIT_WINDOW_MS).toISOString();
+    const { count } = await sb
+      .from("audit_log")
+      .select("id", { count: "exact", head: true })
+      .eq("action", "tenant_magic_requested")
+      .eq("tenant_id", tenant.id)
+      .eq("ip", ipHash)
+      .gte("created_at", since);
+    if ((count ?? 0) >= RATE_LIMIT_MAX) {
+      // Silent rate limit. Same response shape as success — bots can't
+      // distinguish throttled from sent.
+      return NextResponse.json({ ok: true });
+    }
+  } catch (err) {
+    console.warn("[app/auth/magic] rate-limit check failed (allow-fail)", err);
+  }
+
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     console.error("[app/auth/magic] RESEND_API_KEY missing");
@@ -54,11 +102,9 @@ export async function POST(req: Request) {
   }
 
   const token = createTenantMagicToken(email, invite.tenantSlug);
-  // Link goes straight to the API verify route — it returns a 302 redirect
-  // either to /app (with a session cookie set) or back to /app/login with
-  // an error code. No intermediate UI page is needed for v1 (no TOTP).
-  const origin = req.headers.get("origin") || "https://gladiusturf.com";
-  const link = `${origin}/api/app/auth/verify?token=${encodeURIComponent(token)}`;
+  // Origin is hard-coded so the link in the email always points at our
+  // domain — never the attacker-controlled `Origin` header.
+  const link = `${SITE_URL}/api/app/auth/verify?token=${encodeURIComponent(token)}`;
 
   try {
     const resend = new Resend(apiKey);
@@ -79,6 +125,23 @@ export async function POST(req: Request) {
     });
   } catch (err) {
     console.warn("[app/auth/magic] Resend send failed", err);
+  }
+
+  // Best-effort audit row — both for compliance + as the rate-limit count
+  // source. Non-fatal on failure.
+  try {
+    await sb.from("audit_log").insert({
+      tenant_id: tenant.id,
+      user_id: null,
+      action: "tenant_magic_requested",
+      entity_type: "auth.magic",
+      entity_id: email,
+      metadata: { tenant_slug: invite.tenantSlug },
+      ip: ipHash,
+      user_agent: req.headers.get("user-agent") || null,
+    });
+  } catch (err) {
+    console.warn("[app/auth/magic] audit insert failed (non-fatal)", err);
   }
 
   return NextResponse.json({ ok: true });

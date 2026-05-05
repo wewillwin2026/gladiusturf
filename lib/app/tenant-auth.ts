@@ -50,12 +50,20 @@ export function isInvitedEmail(email: string): boolean {
   return tenantInvitationFor(email) !== null;
 }
 
+const FALLBACK_SECRET = "gladius-tenant-fallback-secret-not-for-prod-rotate-me";
+
 function sessionSecret(): string {
-  return (
-    process.env.TENANT_SESSION_SECRET ||
-    process.env.FOUNDER_SESSION_SECRET ||
-    "gladius-tenant-fallback-secret-not-for-prod-rotate-me"
-  );
+  const explicit =
+    process.env.TENANT_SESSION_SECRET || process.env.FOUNDER_SESSION_SECRET;
+  if (explicit) return explicit;
+  // Hard-fail in production rather than silently using the public fallback.
+  // Anyone with the source could otherwise mint valid tokens.
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "TENANT_SESSION_SECRET (or FOUNDER_SESSION_SECRET) must be set in production",
+    );
+  }
+  return FALLBACK_SECRET;
 }
 
 // ---- magic link tokens (email + tenant slug in payload) ----
