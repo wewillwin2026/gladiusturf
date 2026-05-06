@@ -1,22 +1,18 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  Boxes,
-  ClipboardList,
-  Sparkles,
-  Upload,
-  UserPlus,
-} from "lucide-react";
+import { ArrowRight, Boxes, Sparkles, Upload, UserPlus } from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
 import { Button } from "@/components/app/ui/Button";
-import { KPICard } from "@/components/app/ui/KPICard";
 import type { TenantRow } from "@/lib/app/tenant-auth";
 
 /**
  * First-run shell for a tenant whose workspace has no customers yet.
- * Renders instead of TodayDashboard when `customerCount === 0` so a paying
- * tenant on day one sees a clear path to populate the workspace, not a sea
- * of zeroed KPIs that look broken.
+ * Renders instead of TodayDashboard when `customerCount === 0`.
+ *
+ * Board (2026-05-07): Jobs + Product called the prior 3-CTA fork
+ * "indecision wearing a tuxedo" — the hero now has ONE dominant action
+ * (drop a list / paste a list) and demotes manual entry + starter
+ * inventory to small links. The first emotion should be momentum, not
+ * a fork in the road.
  */
 export function TenantOnboardingHero({
   tenant,
@@ -31,127 +27,81 @@ export function TenantOnboardingHero({
     <div className="flex flex-col gap-6">
       <PageHeader
         eyebrow={`${tenant.display_name} · Day 1`}
-        title={`Welcome to GladiusTurf, ${tenant.display_name}.`}
-        subtitle="Three ways to get rolling — pick whichever feels easiest."
+        title={`Welcome, ${tenant.display_name}.`}
+        subtitle="Drop your customer list — we'll handle the rest."
       />
 
-      <section className="grid gap-3 md:grid-cols-3">
-        <Link href="/app/import/customers" prefetch className="group">
-          <div className="g-card flex h-full flex-col gap-3 p-5 transition-colors group-hover:bg-g-surface-2">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-g-accent-faint text-g-accent">
-                <Upload className="h-4 w-4" />
-              </span>
-              <span className="text-[11px] uppercase tracking-[0.12em] text-g-text-faint">
-                Recommended
-              </span>
-            </div>
-            <div>
-              <div className="text-[15px] font-medium text-g-text">
-                Import your customer list
-              </div>
-              <p className="mt-1 text-[13px] text-g-text-muted">
-                Upload a CSV from your current tool — Jobber, ServicePro, a
-                spreadsheet, anywhere. We&apos;ll map columns and bring them in.
-              </p>
-            </div>
-            <div className="mt-auto inline-flex items-center gap-1 text-[12px] font-medium text-g-accent">
-              Start the import
-              <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
-            </div>
-          </div>
-        </Link>
-
-        <Link href="/app/customers" prefetch className="group">
-          <div className="g-card flex h-full flex-col gap-3 p-5 transition-colors group-hover:bg-g-surface-2">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-g-surface-2 text-g-text">
-                <UserPlus className="h-4 w-4" />
-              </span>
-            </div>
-            <div>
-              <div className="text-[15px] font-medium text-g-text">
-                Add your first customer
-              </div>
-              <p className="mt-1 text-[13px] text-g-text-muted">
-                Just type one in. The customer page becomes your hub — fixtures,
-                plans, schedule, history all live there.
-              </p>
-            </div>
-            <div className="mt-auto inline-flex items-center gap-1 text-[12px] font-medium text-g-text-muted group-hover:text-g-text">
-              Open customers
-              <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
-            </div>
-          </div>
-        </Link>
-
-        <Link href="/app/inventory" prefetch className="group">
-          <div className="g-card flex h-full flex-col gap-3 p-5 transition-colors group-hover:bg-g-surface-2">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-g-surface-2 text-g-text">
-                <Boxes className="h-4 w-4" />
-              </span>
-              <span className="text-[11px] uppercase tracking-[0.12em] text-g-text-faint">
-                Already wired
-              </span>
-            </div>
-            <div>
-              <div className="text-[15px] font-medium text-g-text">
-                Browse starter inventory
-              </div>
-              <p className="mt-1 text-[13px] text-g-text-muted">
-                {starterItemCount} starter SKUs and {starterUnitCount} sample
-                units are loaded as a head-start catalog. Customize, replace, or
-                clear them when you&apos;re ready.
-              </p>
-            </div>
-            <div className="mt-auto inline-flex items-center gap-1 text-[12px] font-medium text-g-text-muted group-hover:text-g-text">
-              Open inventory
-              <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
-            </div>
-          </div>
-        </Link>
-      </section>
-
-      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <KPICard label="Customers" value="0" delta="add your first" trend="flat" />
-        <KPICard
-          label="Starter SKUs"
-          value={String(starterItemCount)}
-          delta="customize or clear"
-          trend="flat"
+      <Link
+        href="/app/import/customers"
+        prefetch
+        className="group relative block overflow-hidden rounded-xl border-2 border-dashed border-g-accent/40 bg-g-accent-faint/40 p-10 transition-colors hover:border-g-accent/70 hover:bg-g-accent-faint/60"
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-0 opacity-50"
+          style={{
+            background:
+              "radial-gradient(ellipse at top right, rgba(0,210,106,0.15) 0%, rgba(0,210,106,0.04) 50%, transparent 80%)",
+          }}
         />
-        <KPICard
-          label="Starter units"
-          value={String(starterUnitCount)}
-          delta="ready to scan"
-          trend="flat"
-        />
-        <KPICard label="Plan upsell" value="—" delta="needs customers" trend="flat" />
-      </section>
-
-      <div className="g-card flex flex-col gap-3 p-5 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-start gap-3">
-          <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-g-surface-2 text-g-text">
-            <Sparkles className="h-4 w-4" />
+        <div className="relative flex flex-col items-center gap-3 text-center">
+          <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-g-accent text-black">
+            <Upload className="h-6 w-6" />
           </span>
-          <div>
-            <div className="text-[14px] font-medium text-g-text">
-              Need a hand?
-            </div>
-            <p className="mt-1 text-[12px] text-g-text-muted">
-              Founder-direct support during your first week. Reply to any
-              GladiusTurf email and a real person picks it up — usually within
-              the hour.
-            </p>
+          <div className="text-[20px] font-medium text-g-text">
+            Drop your customer list
           </div>
-        </div>
-        <Link href="/app/onboarding/profile" prefetch>
-          <Button variant="secondary" size="md" type="button">
-            <ClipboardList className="h-3.5 w-3.5" />
-            Tell us about your shop
+          <p className="max-w-md text-[14px] text-g-text-muted">
+            CSV from Jobber, ServicePro, LMN, Aspire, QuickBooks, or any
+            spreadsheet. We&apos;ll read it, map the columns, and bring your
+            customers in. Two minutes.
+          </p>
+          <Button variant="primary" size="lg" type="button" className="mt-2">
+            Upload CSV
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </Button>
+        </div>
+      </Link>
+
+      <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[12px] text-g-text-muted">
+        <span>Or:</span>
+        <Link
+          href="/app/customers/new"
+          prefetch
+          className="inline-flex items-center gap-1 hover:text-g-text"
+        >
+          <UserPlus className="h-3 w-3" />
+          Add one customer manually
         </Link>
+        <span className="text-g-text-faint">·</span>
+        <Link
+          href="/app/inventory"
+          prefetch
+          className="inline-flex items-center gap-1 hover:text-g-text"
+        >
+          <Boxes className="h-3 w-3" />
+          Browse {starterItemCount} starter SKUs ({starterUnitCount} units)
+        </Link>
+        <span className="text-g-text-faint">·</span>
+        <Link
+          href="/app/onboarding/profile"
+          prefetch
+          className="inline-flex items-center gap-1 hover:text-g-text"
+        >
+          <Sparkles className="h-3 w-3" />
+          Tell us about your shop
+        </Link>
+      </div>
+
+      <div className="g-card flex items-start gap-3 p-4 text-[13px] text-g-text-muted">
+        <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-g-accent-faint text-g-accent text-[11px] font-semibold">
+          ✓
+        </span>
+        <div>
+          <strong className="text-g-text">Founder-direct support, your first week.</strong>{" "}
+          Reply to any GladiusTurf email and a real person picks it up — usually
+          within the hour. We ride along on Mondays during your first month.
+        </div>
       </div>
     </div>
   );

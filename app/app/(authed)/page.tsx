@@ -1,10 +1,12 @@
 import { TodayDashboard } from "@/components/app/TodayDashboard";
 import { TenantOnboardingHero } from "@/components/app/TenantOnboardingHero";
+import { StormRadarTile } from "@/components/app/StormRadarTile";
 import { readAppSession } from "@/lib/app/session";
 import { supabaseAdmin } from "@/lib/supabase";
 import { demoState } from "@/lib/demo/state";
 import { rng } from "@/lib/shared/prng";
 import { registryFor } from "@/lib/vertical/registry";
+import { FL_HURRICANE_ZIPS } from "@/lib/storm/zips";
 import type { ActivityEvent, KPI } from "@/lib/shared/types";
 
 export const dynamic = "force-dynamic";
@@ -32,7 +34,10 @@ export default async function AppHomePage() {
       await Promise.all([
         sb
           .from("customers")
-          .select("id, customer_tier, preferred_language", { count: "exact" })
+          .select(
+            "id, customer_tier, preferred_language, service_address",
+            { count: "exact" },
+          )
           .eq("tenant_id", session.tenant.id),
         assetQuery,
         sb
@@ -114,17 +119,46 @@ export default async function AppHomePage() {
     // Pass empty arrays — TodayDashboard renders graceful empty states.
     const activity: ActivityEvent[] = [];
 
+    // Storm Radar — count customers in watched FL hurricane ZIPs. Calm
+    // most days; pulses red when even one customer falls in the watched
+    // footprint. v2 will pull live NOAA active-storm reports.
+    const inStormZipCount = customers.filter((row) => {
+      const zip = (row as { service_address?: { zip?: string } })
+        .service_address?.zip;
+      return zip ? FL_HURRICANE_ZIPS.has(zip) : false;
+    }).length;
+    const guardianInStormCount = customers.filter((row) => {
+      const r = row as {
+        service_address?: { zip?: string };
+        customer_tier?: string | null;
+      };
+      const zip = r.service_address?.zip;
+      const tier = (r.customer_tier ?? "").toLowerCase();
+      return (
+        zip != null &&
+        FL_HURRICANE_ZIPS.has(zip) &&
+        tier.includes("guardian")
+      );
+    }).length;
+
     return (
-      <TodayDashboard
-        product="founders"
-        eyebrowOverride={`${session.tenant.display_name} · Live`}
-        greeting={greeting}
-        subtitle={subtitle}
-        kpis={kpis}
-        crews={[]}
-        activity={activity}
-        funnel={{ sent: 0, viewed: 0, won: 0, scheduled: 0 }}
-      />
+      <div className="flex flex-col gap-4">
+        <StormRadarTile
+          inStormZipCount={inStormZipCount}
+          totalCustomerCount={customerCount}
+          guardianInStormCount={guardianInStormCount}
+        />
+        <TodayDashboard
+          product="founders"
+          eyebrowOverride={`${session.tenant.display_name} · Live`}
+          greeting={greeting}
+          subtitle={subtitle}
+          kpis={kpis}
+          crews={[]}
+          activity={activity}
+          funnel={{ sent: 0, viewed: 0, won: 0, scheduled: 0 }}
+        />
+      </div>
     );
   }
 

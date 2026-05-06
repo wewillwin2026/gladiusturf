@@ -71,6 +71,8 @@ export async function POST(req: Request) {
     "- Keep answers tight: 60-180 words is the sweet spot.",
     "- Sound like an operator, not a chatbot. Drop hedging language.",
     "- When listing customers, format as 'Customer Name ($X)' inline.",
+    "- CITATIONS: when you reference a specific record (customer, invoice, quote, route), append the source identifier inline using the format [src:type:id] — for example 'Janet Cole ($14,200) [src:customer:c_0421]'. The UI renders these as audit hyperlinks. If the snapshot doesn't include an id for what you're referencing, omit the citation rather than fabricating one. NEVER invent a [src:...] tag.",
+    "- HALLUCINATION GUARD: If asked about a customer / invoice / fact not in the snapshot, respond 'I don't see that in the current snapshot' instead of guessing.",
     "",
     "Operational snapshot (current data):",
     JSON.stringify(snapshot, null, 2),

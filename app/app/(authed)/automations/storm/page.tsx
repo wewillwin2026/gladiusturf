@@ -14,6 +14,7 @@ import { TenantEmptyState } from "@/components/app/TenantEmptyState";
 import { StormActivateButton } from "./_components/StormActivateButton";
 import { readAppSession } from "@/lib/app/session";
 import { supabaseAdmin } from "@/lib/supabase";
+import { FL_HURRICANE_ZIPS } from "@/lib/storm/zips";
 
 export const dynamic = "force-dynamic";
 
@@ -27,23 +28,10 @@ export const metadata = {
  * workspace shipped this first (Bright Lights case study); this is the
  * tenant-aware production version that gates on actual customer ZIPs.
  *
- * v1: pre-baked Florida hurricane ZIPs (Helene + Milton 2024 footprint).
+ * v1: pre-baked Florida hurricane ZIPs (Helene + Milton 2024 footprint,
+ * shared with the /app home Storm Radar tile via lib/storm/zips.ts).
  * v2 will pull live NOAA active storms once the integration ships.
  */
-
-// Florida ZIPs that took the brunt of Helene + Milton 2024. Pre-baked so a
-// tenant who lives in any of these can see Storm Mode go from theory to
-// triggered without an external feed dependency on day one.
-const FL_HURRICANE_ZIPS = new Set([
-  "33301", "33602", "33701", "33606", "33611", "33612", "33616", "33617",
-  "33619", "33625", "33626", "33629", "33647",
-  "34102", "34103", "34108", "34110", "34112", "34113", "34114",
-  "34201", "34202", "34203", "34205", "34207", "34208", "34209", "34210",
-  "34211", "34212", "34215", "34217", "34219", "34221",
-  "34228", "34229", "34230", "34231", "34232", "34233", "34234", "34236",
-  "34237", "34238", "34239", "34240", "34241", "34242", "34243",
-  "33950", "33952", "33953", "33954", "33955", "33980", "33981", "33983",
-]);
 
 const RECENT_STORMS = [
   {

@@ -1,29 +1,66 @@
-feat(app): log a service visit from customer detail
+feat(board-day-2): one-CTA welcome + storm radar tile + AI citations
 
-Closes the operations cycle on the customer profile. The detail page
-already queried schedule_items and rendered a service-history timeline,
-but there was no way to actually CREATE a visit row from the UI — the
-timeline was read-only.
+7-director board (now incl. Buffett + Jobs) reviewed the day-1 work and
+converged on three small-but-emotional moves. Shipping the cheapest of
+the consensus items first; the larger asks (Storm Mode v2 LangGraph,
+Trust Console, RLS-as-real-boundary) tracked for follow-on sessions.
 
-- New action logServiceVisit(customerId, type, title, startsAt, notes?)
-  in app/(authed)/customers/[id]/actions.ts. Tenant-scoped insert into
-  schedule_items with status=completed for past dates and status=
-  scheduled for future. Audit-log row written best-effort.
-- New LogVisitButton.tsx — opens a dialog with: type radio
-  (service / install / warranty / storm_response / inspection), title
-  (required), datetime-local picker pre-filled with now in local TZ,
-  optional notes textarea. Toast confirms; router.refresh() pulls the
-  new row into the timeline.
-- Wired into PageHeader actions on /app/customers/[id]. Visible for
-  every tenant vertical, not just lighting.
+Welcome hero — one CTA (Jobs #1, Product #1):
+- components/app/TenantOnboardingHero.tsx rewritten. Was a 3-card fork
+  ("Import / Add manually / Browse inventory") which Jobs called
+  "indecision wearing a tuxedo." Now: ONE dominant drop-zone hero
+  ("Drop your customer list — we'll handle the rest"), big primary CTA
+  to /app/import/customers. Manual entry + starter inventory + business-
+  profile demoted to a small footer link row. Plus a founder-direct
+  support card. The first emotion is momentum, not data debt.
+
+Live Storm Radar tile (Product #3):
+- New components/app/StormRadarTile.tsx. Renders on /app home for tenant
+  sessions above the dashboard. Calm-day rendering: small "Storm Radar
+  — clear" card. Storm-day rendering: red-pulsing CloudLightning icon
+  (CSS animate-ping ring), bold count of customers in watched ZIPs,
+  inline note when top-tier plan members are in path, one-tap "Open"
+  to /app/automations/storm.
+- New lib/storm/zips.ts holds the FL_HURRICANE_ZIPS set (Helene + Milton
+  2024 footprint, ~60 ZIPs across Tampa/Sarasota/Naples/Punta Gorda).
+  Both Storm Mode page and home tile import from it now.
+- app/(authed)/page.tsx populated-tenant branch: extended customers
+  query to include service_address (one extra column, no extra round
+  trip), counts customers + Guardian-tier in storm ZIPs, renders
+  StormRadarTile above TodayDashboard.
+
+AI citations + hallucination guard (Trust #3 + AI guard):
+- /api/ai/chat system prompt: new CITATIONS rule requiring
+  '[src:type:id]' inline tags when referencing snapshot records.
+  Explicit 'NEVER invent a [src:...] tag' clause. New HALLUCINATION
+  GUARD: model must say "I don't see that in the current snapshot"
+  rather than guess.
+- /api/ai/quote system prompt: explicit guard — every measurement cited
+  must be in the user message; missing measurements → "measurement
+  pending"; no competitor product names; no fabricated dates.
+- ai_run audit log already captures prompt_hash so the new prompt
+  versions show up as a different hash automatically — no schema
+  change needed.
 
 Verification:
 - npx tsc --noEmit clean
 - npm run lint clean
-- npm run build: /app/customers/[id] now 6.59 kB (was 2.22 kB) — diff
-  is the dialog + form bundle. Other routes unchanged.
+- npm run build clean
 
-Day-1 onboarding loop is now closed end-to-end:
-  TenantOnboardingHero → Add customer (manual or CSV) → /app/customers
-  list → /app/customers/[id] detail → Log a visit → service history
-  populates → cron picks up units when they age into staleness.
+Note from the board's input that's NOT in this commit (worth raising
+with the user before next session):
+- Buffett: "raise the price to $597, kill 7 of 12 engines, refuse VC,
+  pick lighting for 3 years"
+- Jobs: "delete the 33-engine sidebar, kill the customer profile page
+  as it exists, first contact is a phone call from a real human"
+- Strategy: "rebrand GladiusTurf → Gladius (vertical-suffixed),
+  publish anti-Aspire manifesto, signed Founding Council charter"
+- Trust: "ship customer-facing Trust Console, cryptographic Merkle-
+  rooted audit log, AI transparency receipts to end customers"
+- AI: "real LangGraph quote-to-close state machine, nightly eval
+  harness over the audit log, BrainMemory over per-customer rows"
+- Engineering: "Inngest for jobs, Postgres+ClickHouse split, kill
+  supabaseAdmin() on read paths, agentic tool-use over the registry"
+
+These are the next session's menu — most need user-level direction
+(brand rename, pricing, focus narrowing) before code lands.

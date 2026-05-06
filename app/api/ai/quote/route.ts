@@ -83,6 +83,7 @@ export async function POST(req: Request) {
     "- Sign off with a single line: 'Crew availability: Tuesday or Thursday this week.'",
     "- Never invent a price. Never include bullet lists.",
     "- Don't use markdown. Plain text only.",
+    "- HALLUCINATION GUARD: every measurement you cite must be in the user message. If a measurement is missing, say 'measurement pending' — do not estimate. Do not name a competitor's product. Do not promise a date you weren't given.",
   ].join("\n");
 
   const client = new Anthropic({ apiKey });
