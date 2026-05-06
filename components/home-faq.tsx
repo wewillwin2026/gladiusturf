@@ -48,7 +48,7 @@ const FAQS: FaqItem[] = [
   },
   {
     q: "Do you have customers in my service area?",
-    a: "Founding cohort spans the East Coast, Midwest, and Texas — and we're geographic-agnostic by design. The engines work the same in Florida as they do in Minnesota. NOAA-timed seasonal logic auto-adjusts to your zone, your frost dates, your storm windows. Snow-belt shops get snow-contract automations on Day 1; Sun Belt shops get year-round irrigation logic instead.",
+    a: "We're early — a Sarasota lighting business is our first paying customer (Bright Lights Landscape Lighting). The engines are geographic-agnostic by design: NOAA-timed seasonal logic auto-adjusts to your zone, your frost dates, your storm windows. Snow-belt shops get snow-contract automations on Day 1; Sun Belt shops get year-round irrigation logic instead. We'd rather tell you the honest count than dress up a customer list.",
   },
 ];
 

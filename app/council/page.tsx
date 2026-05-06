@@ -12,12 +12,12 @@ export const metadata: Metadata = {
   title:
     "The Council — Where landscape owners build the next 20 years of the trade",
   description:
-    "Founder-led community of landscape and lawn-care owners who refuse to run their trade on 2010-era field-service software. Founding cohort. Locked-in pricing. Direct line to the team.",
+    "Founder-led community of landscape and lawn-care owners who refuse to run their trade on 2010-era field-service software. Annual increase capped at 5%. Direct line to the team.",
   alternates: { canonical: "/council" },
   openGraph: {
     title: "The Council — Where landscape owners build the next 20 years",
     description:
-      "Founder-led community of landscape owners. Founding cohort. Locked-in pricing. Direct line to the team.",
+      "Founder-led community of landscape owners. Annual increase capped at 5%. Direct line to the team.",
   },
 };
 
@@ -177,7 +177,7 @@ export default function CouncilPage() {
                 <div className="flex items-center gap-2">
                   <span className="inline-block h-2 w-2 animate-pulse-dot rounded-full bg-champagne-bright shadow-[0_0_10px_rgba(212,178,122,0.7)]" />
                   <span className="text-xs font-semibold uppercase tracking-crest text-champagne-bright">
-                    Founding cohort · 12 of 20 May 2026 slots remaining
+                    Annual increase capped at 5%, in writing
                   </span>
                 </div>
                 <h2 className="mt-4 font-serif text-3xl font-semibold tracking-[-0.02em] text-bone md:text-4xl">

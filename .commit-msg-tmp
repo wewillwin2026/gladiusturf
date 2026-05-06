@@ -1,31 +1,23 @@
-feat(customer-detail): Customer Heartbeat strip — render the relationship
+chore(copy): drop "Founding cohort" theater from FAQ + Council + Contact
 
-Product Director's #4 board recommendation: "show Felipe his real fans
-at a glance." Replaces the cold contact-card vibe with a visible signal
-strip on every customer profile.
+Smoke test of commit 613ee43 deploy caught three remaining "Founding
+cohort" / "12 of 20 slots" instances that escaped the 0e896b3 sweep:
+- components/home-faq.tsx — FAQ answer "Do you have customers in my
+  service area?" claimed cohort spans East Coast / Midwest / Texas
+  with N=1 paying customer. Replaced with honest "Sarasota lighting
+  business is our first paying customer" framing.
+- app/contact/page.tsx — "Founding cohort: Direct Signal thread"
+  bullet → "Founder-direct: Signal thread."
+- app/council/page.tsx — "Founding cohort · 12 of 20 May 2026 slots
+  remaining" pulse line → "Annual increase capped at 5%, in writing."
+  Page metadata description + OG description also stripped of the
+  cohort phrase.
 
-components/app/CustomerHeartbeat.tsx — pure presentational component.
-Four binary signals (not a percentile, not a 0-100 score):
-  - Active plan        → has plan_subscriptions row with status='active'
-  - Recent visit       → ≥1 schedule_items row in last 90 days
-  - Quote engaged      → ≥1 proposal where status≥sent
-  - 6+ months on book  → acquired_at older than 180 days
+Buffett's hardest line stays the test: "12 of 20 slots remaining is
+theater unless 8 of those slots are signed paper. If they are, say their
+names. If they aren't, take the counter down — a phony scoreboard is
+the fastest way to lose a customer who can count."
 
-Each signal renders as a small pulse + an icon + a one-line "what it
-means today." Aggregate score (0-4) sets the heading: Strong / Warm /
-Cool / New-or-dormant. Top dot animate-pulses when the relationship is
-strong; goes quiet otherwise. The point is operator empathy: Felipe
-opens a customer card and immediately knows whether to call them today
-or schedule a referral ask.
-
-Wired into app/(authed)/customers/[id]/page.tsx:
-- New proposalsRes query in the parallel Promise.all (one extra round-
-  trip; 5 queries instead of 4)
-- Heartbeat signals computed inline from the existing visits + subRes +
-  proposals + customer.acquired_at (no new schema)
-- Renders as the first card in the right-column rail, above Property,
-  Notes, etc.
-
-Verification:
-- npx tsc --noEmit clean
-- npm run lint clean
+Verification: npx tsc clean, npm run build clean, no other "Founding
+cohort" strings in TS/TSX outside docs/audit-* (which are the audit
+docs themselves).

@@ -175,9 +175,9 @@ export default function ContactPage() {
                   <li className="flex items-start gap-3">
                     <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-champagne-bright" />
                     <span>
-                      <span className="text-bone">Founding cohort:</span>{" "}
-                      Direct Signal thread with the founders. Inside an hour,
-                      most days.
+                      <span className="text-bone">Founder-direct:</span>{" "}
+                      Signal thread with the founders. Inside an hour, most
+                      days.
                     </span>
                   </li>
                 </ul>
