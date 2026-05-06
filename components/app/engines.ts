@@ -50,6 +50,7 @@ import {
   Receipt,
   Repeat,
   Route,
+  ShieldCheck,
   Sparkles,
   Star,
   Tag,
@@ -127,9 +128,13 @@ export const ENGINES: Engine[] = [
   { slug: "automations", name: "Automations", group: "loop", icon: Repeat, ordinal: 25 },
   { slug: "ask-gladius", name: "Ask Gladius", group: "loop", icon: Bot, ordinal: 26 },
 
-  // Pulse (2) — metrics + audit, kept separate from Loop conversations
+  // Pulse (3) — metrics + audit, kept separate from Loop conversations
   { slug: "reports", name: "Reports", group: "pulse", icon: BarChart3, ordinal: 23 },
   { slug: "analytics", name: "Analytics", group: "pulse", icon: TrendingUp, ordinal: 24 },
+  // Trust Console — Trust Director's #1 board recommendation 2026-05-08.
+  // Tenant-visible audit chain: AI runs, consent ledger, founder reads,
+  // sub-processors. The "moat no incumbent will copy" engine.
+  { slug: "trust", name: "Trust Console", group: "pulse", icon: ShieldCheck, ordinal: 23.5 },
 
   // Platform (4)
   { slug: "integrations", name: "Integrations", group: "platform", icon: Plug, ordinal: 27 },

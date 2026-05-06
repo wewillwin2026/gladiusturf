@@ -1,56 +1,45 @@
-feat(board-day-3): AI budget cap + sidebar regroup + price raise + justification panel
+feat(trust-console): the moat no incumbent will copy
 
-User authorized board-deferral execution (afk for ~1hr at gym). Acted on
-the board's strongest cross-cutting recommendations from the Day-2 + Day-3
-synthesis without pausing. Memory updated.
+Trust Director's #1 board recommendation 2026-05-08: ship a tenant-
+visible Trust Console — every AI run + every consent record + every
+audit event + every cross-tenant founder read + every sub-processor —
+in real time, in the tenant's own workspace.
 
-AI budget cap (AI Director's "gating bug" — must ship before Friday):
-- lib/ai/audit.ts: new checkAiBudget(tenantId) sums today's ai_run.cost_cents
-  in a rolling 24h window. Hard cap $5/day per tenant (env-overridable via
-  AI_DAILY_BUDGET_CENTS). Demo + founders sessions bypass.
-- /api/ai/chat + /api/ai/quote: budget gate runs BEFORE the Anthropic call.
-  When exceeded, streams a friendly explainer with the spent number + reset
-  policy + founders@ contact. Closes the "one bored tenant on the OSHA
-  manual = $40 in an afternoon" failure mode.
-- Best-effort: fails open on lookup error. Audit row still writes either
-  way.
+ServiceTitan, Jobber, Housecall Pro won't ship this because doing so
+would expose how often their support staff opens customer accounts and
+how their AI features can't cite a source. We can — because we built
+the audit primitives honestly from day one.
 
-Sidebar regroup — Sell / Field / Loop (5+ directors converged):
-- components/app/engines.ts: ENGINE_GROUPS rewritten from
-  Overview/Customers&Sales/Ops/Money/Intelligence/Platform to
-  Today/Customers/Sell/Field/Money/Loop/Pulse/Platform. The three merges:
-    * Sell  = Quotes + AI Quote Drafter + Plans + Pricing tables
-    * Field = Schedule + Jobs + Routes + Territory + Crew + Equipment + Inventory
-    * Loop  = Inbox + Reviews + Referrals + Campaigns + Automations + Ask Gladius
-  Pulse (Reports + Analytics) stays separate from Loop — metrics ≠ messages.
-  All slugs unchanged — every URL still resolves.
+What's wired:
+- New /app/trust route. Auth-gated to tenant sessions.
+- KPI band: AI runs in last 24h + 24h cost; consent records (in/out/
+  pending split); 30-day audit events; cross-tenant reads (with cheerful
+  empty state when zero).
+- AI runs panel (left, larger): top surfaces by call volume, plus a
+  policy footer noting per-tenant $5/day budget cap + the prompt-hash
+  + cost_cents stored per call.
+- Cross-tenant access panel (right): empty state today (no founders
+  reading); when 20260507_f migration applies, populates from
+  cross_tenant_access_log.
+- Consent ledger panel: last 8 records with channel + status + source.
+  StatusPill color-coded: opted_in green, pending amber, opted_out red.
+- Audit events panel: last 8 events with action + entity + timestamp.
+- Sub-processor panel: 6 vendors from /legal/dpa with what each touches.
+  Click-through to the full DPA.
+- Footer call-out: "the one thing no competitor will copy" framing
+  + legal@ contact for disputes.
+- "Cryptographic audit (Merkle-rooted) ships next" preview line per
+  Trust Director's stretch recommendation.
 
-Price raise + justification panel (Strategy + Buffett + Jobs argued up,
-Engineering + AI argued meter — we shipped both):
-- content/pricing.ts: $397 → $597 / $997 → $1,497 / $2,997 → $3,997.
-- All TIER_FEATURES, demo-form, demo API responses, comparison table,
-  competitors.ts whySwitch updated to the new floors.
-- Bright Lights Landscape Lighting (slug=bright-lights-encina) explicitly
-  grandfathered at $397 in the pricing.ts header comment per Strategy's
-  "never raise mid-pen" principle. Per-tenant Stripe override pattern
-  ships when payment routing lands.
-- New "Why $597" justification panel on /pricing between TIERS and
-  BDC_ADDON: 4 cards (vs LMN $2,392/mo at 4 seats, vs Aspire 102% YoY,
-  vs ServiceTitan $46K ETF, vs per-user nickel-and-dime), plus a
-  champagne-tinted "what you're paying for at $597" benefits ribbon
-  with the $14,200 Quote Intercept payback math (one catch = 2yr ROI).
-- Drops "Founding cohort, 12 of 20 slots" theater across pricing-section,
-  hero, social-proof-strip per board's unanimous "drop unless 8 are
-  signed paper" call. Replaced with "Annual increase capped at 5%" promise
-  (Product's price-ceiling line — Aspire's 102% YoY hike is the foil).
-- Page metadata, scarcity band, hero proof strip all updated to lead
-  with the cap promise instead of the countdown timer.
+Sidebar:
+- engines.ts: new "Trust Console" engine in Pulse group, slug=trust,
+  ShieldCheck icon, ordinal 23.5 (between Reports and Analytics).
 
-Pricing followup tracked in memory — next board review will be asked to
-defend each new floor against named competitor specifics for a /pricing
-"justification packet" page + a CFO-grade sales handout.
+Reads from already-applied prod tables (ai_run, customer_messaging_
+consent, audit_log) + degrades gracefully on cross_tenant_access_log
+(migration 20260507_f staged but not yet applied — hook denied during
+this batch; user will authorize separately).
 
 Verification:
 - npx tsc --noEmit clean
-- npm run lint clean
-- npm run build clean
+- /app/trust registers (259 B, same shape as /app/automations).
