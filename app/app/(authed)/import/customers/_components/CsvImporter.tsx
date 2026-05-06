@@ -105,6 +105,7 @@ export function CsvImporter() {
   const [headers, setHeaders] = React.useState<string[]>([]);
   const [rows, setRows] = React.useState<string[][]>([]);
   const [mapping, setMapping] = React.useState<Record<number, Field>>({});
+  const [attestation, setAttestation] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -181,7 +182,10 @@ export function CsvImporter() {
         return;
       }
 
-      const res = await importCustomers(payload);
+      const res = await importCustomers({
+        rows: payload,
+        messagingAttestation: attestation,
+      });
       if ("error" in res) {
         toast.error(
           res.error === "no_rows"
@@ -194,7 +198,10 @@ export function CsvImporter() {
       }
       toast.success(
         `Imported ${res.inserted} customer${res.inserted === 1 ? "" : "s"}` +
-          (res.skipped ? ` · ${res.skipped} duplicates skipped` : ""),
+          (res.skipped ? ` · ${res.skipped} duplicates skipped` : "") +
+          (res.consentsRecorded
+            ? ` · ${res.consentsRecorded} consent attestations logged`
+            : ""),
       );
       router.push("/app/customers");
       router.refresh();
@@ -287,6 +294,23 @@ export function CsvImporter() {
           </tbody>
         </table>
       </div>
+
+      <label className="g-card flex items-start gap-3 p-4 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={attestation}
+          onChange={(e) => setAttestation(e.target.checked)}
+          className="mt-1 h-4 w-4 accent-g-accent shrink-0"
+        />
+        <span className="text-[13px] text-g-text leading-relaxed">
+          <strong className="font-medium">Messaging attestation (optional but recommended).</strong>{" "}
+          I have lawful basis (consent, contract, or legitimate interest) to
+          message these contacts on behalf of my business via SMS or email.
+          Ticking this records a pending consent row per contact for audit
+          purposes — outbound sends still require explicit opt-in (a reply,
+          portal confirmation click, etc.) before they fire.
+        </span>
+      </label>
 
       <div className="flex items-center justify-end gap-2">
         {!hasName && (

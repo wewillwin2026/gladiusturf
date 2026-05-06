@@ -4,6 +4,7 @@ import { readAppSession } from "@/lib/app/session";
 import { supabaseAdmin } from "@/lib/supabase";
 import { demoState } from "@/lib/demo/state";
 import { rng } from "@/lib/shared/prng";
+import { registryFor } from "@/lib/vertical/registry";
 import type { ActivityEvent, KPI } from "@/lib/shared/types";
 
 export const dynamic = "force-dynamic";
@@ -16,16 +17,24 @@ export default async function AppHomePage() {
   // Tenant session — render real KPIs from the tenant's data.
   if (session.kind === "tenant") {
     const sb = supabaseAdmin();
-    const [customersRes, fixturesRes, starterItemsRes, starterUnitsRes] =
+    const reg = registryFor(session.tenant.vertical);
+    // Vertical-aware asset query. Skip if the vertical's asset table isn't
+    // wired yet (placeholder entries) — buildAssetKpis handles empty rows.
+    const assetQuery =
+      reg.assetTable === "__placeholder__"
+        ? Promise.resolve({ data: [], error: null, count: 0 })
+        : sb
+            .from(reg.assetTable)
+            .select(reg.countSelect, { count: "exact" })
+            .eq("tenant_id", session.tenant.id);
+
+    const [customersRes, assetsRes, starterItemsRes, starterUnitsRes] =
       await Promise.all([
         sb
           .from("customers")
           .select("id, customer_tier, preferred_language", { count: "exact" })
           .eq("tenant_id", session.tenant.id),
-        sb
-          .from("lighting_fixtures")
-          .select("id, warranty_status, warranty_end", { count: "exact" })
-          .eq("tenant_id", session.tenant.id),
+        assetQuery,
         sb
           .from("inventory_items")
           .select("id", { count: "exact", head: true })
@@ -39,10 +48,11 @@ export default async function AppHomePage() {
       ]);
 
     const customers = customersRes.data ?? [];
-    const fixtures = fixturesRes.data ?? [];
+    const assets = (
+      Array.isArray(assetsRes.data) ? assetsRes.data : []
+    ) as unknown as Array<Record<string, unknown>>;
 
     const customerCount = customersRes.count ?? customers.length;
-    const fixtureCount = fixturesRes.count ?? fixtures.length;
 
     // Day-1 onboarding: tenant has no customers yet. Show the welcome hero
     // instead of a sea of zeroed KPIs that look broken.
@@ -55,19 +65,8 @@ export default async function AppHomePage() {
         />
       );
     }
-    const activeWarranties = fixtures.filter(
-      (f) => f.warranty_status === "active" || f.warranty_status === "lifetime",
-    ).length;
+    const fixtureCount = assets.length;
     const noPlan = customers.filter((c) => !c.customer_tier).length;
-
-    // Warranties expiring within 90 days — none in seed today, but the math
-    // is wired so it lights up the day Cristian backfills more inventory.
-    const now = Date.now();
-    const expiringSoon = fixtures.filter((f) => {
-      if (f.warranty_status !== "active" || !f.warranty_end) return false;
-      const ms = new Date(f.warranty_end).getTime() - now;
-      return ms > 0 && ms < 90 * 86400_000;
-    }).length;
 
     const today = new Date();
     const dayName = today.toLocaleDateString("en-US", { weekday: "long" });
@@ -77,45 +76,39 @@ export default async function AppHomePage() {
     });
     const greeting = `Today, ${dayName} ${monthDay}`;
     const subtitle =
-      `${customerCount} customers · ${fixtureCount} fixtures tracked · ` +
+      `${customerCount} customers · ${fixtureCount} ${reg.assetLabelPlural} tracked · ` +
       `${noPlan} on no plan — ${
         noPlan > 0 ? `${dollar(noPlan * 31500)} of plan revenue available` : "all on plans"
       }.`;
 
     const r = rng(2031);
-    const kpis: KPI[] = [
-      {
-        label: "Customers",
-        value: String(customerCount),
-        delta: customerCount === 0 ? "no customers yet" : `${session.tenant.display_name}`,
-        trend: customerCount > 0 ? "up" : "flat",
-        spark: spark(r, 14, 1, Math.max(2, customerCount)),
-      },
-      {
-        label: "Fixtures tracked",
-        value: String(fixtureCount),
-        delta: fixtureCount === 0 ? "add inventory" : `${activeWarranties} under warranty`,
-        trend: fixtureCount > 0 ? "up" : "flat",
-        spark: spark(r, 14, 0, Math.max(2, fixtureCount)),
-      },
-      {
-        label: "Plan upsell open",
-        value: String(noPlan),
-        delta:
-          noPlan > 0
-            ? `${dollar(noPlan * 31500)} ARR potential`
-            : "all on plans",
-        trend: noPlan > 0 ? "up" : "flat",
-        spark: spark(r, 14, 0, Math.max(2, noPlan)),
-      },
-      {
-        label: "Warranties expiring · 90d",
-        value: String(expiringSoon),
-        delta: expiringSoon > 0 ? "send Cast outreach" : "no exposure",
-        trend: expiringSoon > 0 ? "down" : "flat",
-        spark: spark(r, 14, 0, Math.max(2, expiringSoon + 1)),
-      },
-    ];
+    const verticalKpis = reg.buildAssetKpis(assets, {
+      customerCount,
+      tenantName: session.tenant.display_name,
+    });
+    // Inject sparkline data the registry doesn't generate (it's purely a
+    // visual flourish, not part of the vertical's domain math).
+    for (const k of verticalKpis) {
+      if (!k.spark || k.spark.length === 0) {
+        const ceil = Number.isFinite(Number(k.value))
+          ? Math.max(2, Number(k.value) + 1)
+          : 2;
+        k.spark = spark(r, 14, 0, ceil);
+      }
+    }
+    // Pad the universal "Plan upsell open" KPI on the end if the vertical
+    // builder returned fewer than 4 cards.
+    const planUpsellKpi: KPI = {
+      label: "Plan upsell open",
+      value: String(noPlan),
+      delta:
+        noPlan > 0
+          ? `${dollar(noPlan * 31500)} ARR potential`
+          : "all on plans",
+      trend: noPlan > 0 ? "up" : "flat",
+      spark: spark(r, 14, 0, Math.max(2, noPlan)),
+    };
+    const kpis: KPI[] = [...verticalKpis, planUpsellKpi].slice(0, 4);
 
     // No crews / activity / funnel data in v1 multi-tenant schema yet.
     // Pass empty arrays — TodayDashboard renders graceful empty states.

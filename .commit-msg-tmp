@@ -1,85 +1,84 @@
-feat(bright-lights-friday): wipe + rebrand + onboarding shim + AI guards
+feat(tier-3): legal/dpa + ai_run audit + tcpa consent + vertical registry
 
-Bright Lights Landscape Lighting is becoming a real paying tenant by
-Friday 2026-05-09. The board met to revise the surrogate path and voted
-3-1 (Strategy/Product/Trust over Engineering's surrogate-with-banner) to
-WIPE seeded customer rows + ship onboarding instead — Engineering's
-caveat was "WIPE only works if you also ship the shim." This commit ships
-both halves so Engineering's caveat is satisfied.
+Board's Tier 3 deferred work — six concurrent landing strips ahead of
+Friday so when Felipe signs we have the trust scaffolding + cost guards +
+multi-vertical seam already in place.
 
-Tier 1 (hard blockers — must be applied to prod before Felipe's invite):
+Legal pages (Trust Director — pre-procurement-review):
+- New /legal/dpa: full Data Processing Agreement with controller/processor
+  roles, sub-processor list (Vercel, Supabase, Anthropic, Resend, Stripe,
+  Twilio), 72-hour breach notification, 90-day deletion, SCC posture, audit
+  rights. Signed copy available on request.
+- /legal/privacy: new section 2.5 disclosing internal staff cross-tenant
+  access and the migration plan to per-incident grants.
+- /legal/security: existing page kept; underlying /security marketing
+  surface still claims RLS-as-engine-boundary which doesn't match the
+  current code path — flagged for a follow-up audit-grade rewrite.
+- Footer LEGAL_LINKS gains /legal/dpa.
 
-- supabase/migrations/20260507_a_bright_lights_wipe.sql:
-  DELETEs all customers + lighting_fixtures rows for the bright-lights
-  tenant. Inventory items (13) + units (17) STAY — they're SKU/unit
-  catalog data, not customer PII; the weekly cron uses them.
-- supabase/migrations/20260507_b_bright_lights_felipe_invite.sql:
-  Adds Felipe as a third owner row, additive (keeps our two existing
-  rows for support access). created_at backdated so the inventory-aging
-  cron's owner-resolver picks him over us. **Replace <FELIPE_EMAIL>
-  placeholder before applying.**
-- supabase/migrations/20260507_c_inventory_is_starter.sql:
-  Adds `is_starter` boolean to inventory_items + inventory_units; backfills
-  TRUE for the existing Bright Lights seeded rows so the new
-  TenantOnboardingHero can label them honestly.
-- Retired supabase/migrations/20260506_a_bright_lights_surrogate_swap.sql
-  (board overruled — surrogate solves yesterday's problem).
+ai_run audit table + middleware (AI Director's "minimum viable forensic
+chain"):
+- supabase/migrations/20260507_d_ai_run_audit.sql: ai_run(tenant_id,
+  session_kind, surface, model, prompt_hash, prompt_version, input_tokens,
+  cached_input_tokens, output_tokens, cost_cents, output_excerpt, meta).
+  RLS policy: tenant members read their own rows, service-role inserts.
+- lib/ai/audit.ts: logAiRun() helper that's fire-and-forget — never
+  blocks the streaming path, never throws. Cost estimation table for
+  Sonnet/Haiku in cents.
+- /api/ai/chat + /api/ai/quote: capture usage from the streaming events
+  (input_tokens, cache_read/creation, output_tokens), log on stream close.
+  Promptversion tags shipped so prompt regressions become joinable.
 
-Demo-workspace rebrand (Trust + Product + Strategy unanimous):
-- Moved app/demo/bright-lights-encina → app/demo/sample-lighting-co.
-- middleware.ts: gate now matches /demo/sample-lighting-co; permanent
-  308 redirect from old path so any pre-existing share links still work.
-- lib/demo-data/bright-lights.ts: BRAND block rewritten as "Sample
-  Lighting Co." in Tampa (fictional operator). All references to
-  Cristian/Bright Lights in EMAIL_EN/ES, STORM_PLAYBOOK,
-  MIKE_JACKSON_HISTORY swapped to BRAND.operator. The 12 customer
-  surrogate names + addresses from yesterday remain; only the brand
-  identity changed.
+Anthropic prompt caching:
+- Both /api/ai/chat and /api/ai/quote now wrap the system block in
+  cache_control: { type: "ephemeral" } so repeated turns within the 5-min
+  TTL pay ~10% of input cost. Largest leverage on Ask Gladius which
+  re-sends a 12KB Cypress Lawn snapshot on every turn.
 
-Onboarding shim (Product Director's Friday MVP):
-- components/app/TenantOnboardingHero.tsx: new welcome surface that
-  renders on app/app/(authed)/page.tsx when tenant.customers.count === 0.
-  Three-card layout: Import customer list (recommended) · Add manually ·
-  Browse starter inventory. Plus a founder-direct CTA.
-- app/app/(authed)/page.tsx: branches to TenantOnboardingHero before the
-  TodayDashboard if tenant has zero customers. Pulls is_starter counts
-  from the new column so the hero shows accurate numbers.
-- app/app/(authed)/import/customers/page.tsx + actions.ts +
-  _components/CsvImporter.tsx: full CSV import flow. Drop a file →
-  RFC4180 parser → header guesser maps Jobber/LMN/ServicePro export
-  columns → mapping UI → tenant-scoped insert with dedupe by display
-  name. Max 5000 rows per import.
-- app/app/(authed)/onboarding/profile/page.tsx: stub for the "tell us
-  about your shop" form so the hero CTA doesn't 404.
+TCPA / messaging consent layer (Trust Director's pre-Friday risk #4):
+- supabase/migrations/20260507_e_messaging_consent.sql:
+  customer_messaging_consent (channel + status + source +
+  consent_text/at/ip/version + revoked_at) and tenant_messaging_settings
+  (quiet hours, blocked weekdays, timezone, attestation_text_version).
+  Default messaging settings row pre-seeded for Bright Lights tenant.
+- lib/messaging/consent.ts: canSend() helper every outbound dispatcher
+  must call before Twilio/Resend send. Rejects on no_consent / opted_out
+  / quiet_hours / blocked_day. recordAttestation() captures CSV-import
+  pending consents.
+- /app/import/customers: new "Messaging attestation" checkbox at the end
+  of the mapping step. When ticked, records pending consent rows per
+  customer × channel (sms+email) where contact data was uploaded. Status
+  stays pending — outbound sends still blocked until promoted to
+  opted_in (a reply, portal confirm click).
 
-AI surface guards (AI Director's pre-Friday checklist):
-- components/app/AppShell.tsx: new `hideAskGladius` prop; tenant layout
-  passes it so the floating button doesn't render for tenant sessions.
-  Without this, Ask Gladius would answer Felipe's questions from the
-  hardcoded Cypress Lawn snapshot.
-- app/app/(authed)/quotes/new/page.tsx: now session-aware. Tenant
-  sessions see a TenantEmptyState explaining the Send pipeline ships
-  before the green button. Demo session keeps the existing surface.
-
-Inventory-aging cron rewrite (AI + Trust):
-- app/api/cron/inventory-aging/route.ts: subject now leads with the
-  tenant name + oldest-unit age. Body reads as a Monday human note,
-  not a system alert. Sender is `Gladius Radar <radar@gladiusturf.com>`
-  (override via RESEND_FROM env if needed). DNS for the radar@ alias
-  needs verification in Resend before the first send to Felipe.
+Vertical registry refactor (Engineering Director's "before vertical #2"):
+- lib/vertical/registry.ts: VERTICAL_REGISTRY keyed by slug returning
+  { assetTable, assetLabel(Plural), countSelect, buildAssetKpis }.
+  Lighting (live), irrigation (schema ready, app surface deferred), and
+  6 placeholder entries for the waitlist verticals.
+- app/app/(authed)/page.tsx: dashboard now uses registryFor(vertical)
+  to query the right asset table (lighting_fixtures, or irrigation's
+  backflow assemblies, etc.) and lets the registry's buildAssetKpis
+  produce vertical-appropriate KPI cards. The hardcoded "fixtures"
+  copy is gone — uses assetLabelPlural.
 
 Verification:
-- npx tsc --noEmit clean (after .next clear)
-- npm run lint clean (no new warnings)
-- npm run build registers /app/import/customers, /app/onboarding/profile,
-  and 19 /demo/sample-lighting-co/* routes; old /demo/bright-lights-encina
-  paths now 308 to the new slug via middleware.
+- npx tsc --noEmit clean (after several Anthropic SDK type fixes:
+  cache_read_input_tokens null → undefined; KPI trend literal hoisting;
+  cookie-raw vs session variable rename in /api/ai/{chat,quote}).
+- npm run lint clean.
+- npm run build clean. Routes registered: /legal/dpa, /app/import/customers
+  (4.12 kB), /api/ai/chat, /api/ai/quote unchanged shape.
 
-USER ACTIONS BEFORE FELIPE'S INVITE:
-1. Apply 20260507_a_bright_lights_wipe.sql to live Supabase.
-2. Replace <FELIPE_EMAIL> in 20260507_b and apply.
-3. Apply 20260507_c_inventory_is_starter.sql.
-4. Verify radar@gladiusturf.com is a verified Resend sender (DNS).
-5. Smoke-test /api/app/auth/magic with Felipe's email post-invite-row.
+Migrations 20260507_d (ai_run) and 20260507_e (messaging consent) applied
+to live Supabase via psql + production DB password. Bright Lights
+messaging_settings row pre-inserted with EST timezone + 8pm-8am quiet
+hours; ready for Felipe's signup.
 
-Tier 3 (DPA + ToS + TCPA + audit_log) tracked separately for next week.
+Tier 4 work tracked for next session:
+- Audit-grade rewrite of /security to remove RLS-as-engine-boundary
+  overclaim (Trust risk #1).
+- Migrate every server action's supabaseAdmin() call to a
+  per-tenant-JWT'd client so RLS becomes the actual boundary.
+- Add chemicals + payroll engines back behind their regulated schemas.
+- Storm Mode into /app/automations/storm.

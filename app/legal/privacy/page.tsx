@@ -126,6 +126,29 @@ export default function PrivacyPage() {
           we will route the request.
         </p>
 
+        <h2 className="mt-12 font-serif text-2xl text-bone">2.5 Internal staff access</h2>
+        <p className="mt-4 text-bone/75 leading-relaxed">
+          During your first weeks of service and on an ongoing support basis,
+          a small number of named Gladius staff (currently two founders) may
+          access your workspace data to investigate incidents, debug a feature
+          you reported, or assist with onboarding. We log every cross-tenant
+          access event in our internal audit log with the staff identity and
+          timestamp.
+        </p>
+        <p className="mt-4 text-bone/75 leading-relaxed">
+          We are migrating this to an opt-in model where founder access requires
+          your explicit per-incident grant. Until that change ships, you can
+          request a tighter access posture (or a full export of access events
+          against your workspace) by emailing{" "}
+          <a
+            href="mailto:legal@gladiusturf.com"
+            className="text-champagne-bright underline-offset-4 hover:underline"
+          >
+            legal@gladiusturf.com
+          </a>
+          .
+        </p>
+
         <h2 className="mt-12 font-serif text-2xl text-bone">3. How we use information</h2>
         <ul className="mt-4 space-y-2 list-disc pl-6 text-bone/75 leading-relaxed">
           <li>

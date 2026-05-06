@@ -6,8 +6,12 @@ import {
   LEGACY_APP_COOKIE_NAME,
   verifyAppSessionCookieValue,
 } from "@/lib/app-auth";
+import { readAppSession } from "@/lib/app/session";
 import { demoState } from "@/lib/demo/state";
+import { logAiRun, type AiSessionKind } from "@/lib/ai/audit";
 import { money } from "@/lib/shared/format";
+
+const PROMPT_VERSION = "ask-gladius@v1";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,9 +28,9 @@ export const dynamic = "force-dynamic";
  */
 export async function POST(req: Request) {
   const store = await cookies();
-  const session =
+  const cookieRaw =
     store.get(APP_COOKIE_NAME)?.value ?? store.get(LEGACY_APP_COOKIE_NAME)?.value;
-  if (!verifyAppSessionCookieValue(session)) {
+  if (!verifyAppSessionCookieValue(cookieRaw)) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
@@ -73,15 +77,42 @@ export async function POST(req: Request) {
   ].join("\n");
 
   const client = new Anthropic({ apiKey });
+  const session = await readAppSession();
+  const sessionKind: AiSessionKind =
+    session.kind === "tenant"
+      ? "tenant"
+      : session.kind === "demo"
+        ? "demo"
+        : "unknown";
+  const tenantId =
+    session.kind === "tenant" ? session.tenant.id : null;
+  const model = "claude-sonnet-4-6";
 
   const encoder = new TextEncoder();
+  let collectedOutput = "";
+  let usage: {
+    input_tokens?: number;
+    cache_read_input_tokens?: number;
+    cache_creation_input_tokens?: number;
+    output_tokens?: number;
+  } = {};
+  const startedAt = Date.now();
   const stream = new ReadableStream({
     async start(controller) {
       try {
         const response = await client.messages.create({
-          model: "claude-sonnet-4-6",
+          model,
           max_tokens: 800,
-          system: systemPrompt,
+          // Prompt caching: ephemeral cache_control on the system block
+          // amortizes the ~12KB Cypress Lawn snapshot across same-session
+          // turns (5-min TTL). ~70% input-cost reduction at scale.
+          system: [
+            {
+              type: "text",
+              text: systemPrompt,
+              cache_control: { type: "ephemeral" },
+            },
+          ],
           messages: messages.map((m) => ({ role: m.role, content: m.content })),
           stream: true,
         });
@@ -90,7 +121,21 @@ export async function POST(req: Request) {
             event.type === "content_block_delta" &&
             event.delta.type === "text_delta"
           ) {
+            collectedOutput += event.delta.text;
             controller.enqueue(encoder.encode(event.delta.text));
+          } else if (event.type === "message_start") {
+            usage = {
+              input_tokens: event.message?.usage?.input_tokens,
+              cache_read_input_tokens:
+                event.message?.usage?.cache_read_input_tokens ?? undefined,
+              cache_creation_input_tokens:
+                event.message?.usage?.cache_creation_input_tokens ?? undefined,
+            };
+          } else if (event.type === "message_delta") {
+            const out = event.usage?.output_tokens;
+            if (typeof out === "number") {
+              usage = { ...usage, output_tokens: out };
+            }
           }
         }
         controller.close();
@@ -102,6 +147,27 @@ export async function POST(req: Request) {
           ),
         );
         controller.close();
+      } finally {
+        // Audit row, fire-and-forget.
+        const cachedInput =
+          (usage.cache_read_input_tokens ?? 0) +
+          (usage.cache_creation_input_tokens ?? 0);
+        void logAiRun({
+          tenantId,
+          sessionKind,
+          surface: "ask-gladius",
+          model,
+          systemPrompt,
+          promptVersion: PROMPT_VERSION,
+          inputTokens: usage.input_tokens ?? null,
+          cachedInputTokens: cachedInput || null,
+          outputTokens: usage.output_tokens ?? null,
+          output: collectedOutput,
+          meta: {
+            latency_ms: Date.now() - startedAt,
+            turns: messages.length,
+          },
+        });
       }
     },
   });

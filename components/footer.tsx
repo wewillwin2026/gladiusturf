@@ -53,6 +53,7 @@ const VERSUS_LINKS = [
 const LEGAL_LINKS = [
   { href: "/legal/privacy", label: "Privacy" },
   { href: "/legal/terms", label: "Terms" },
+  { href: "/legal/dpa", label: "DPA" },
   { href: "/legal/security", label: "Security" },
 ];
 

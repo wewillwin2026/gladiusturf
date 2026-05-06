@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { readAppSession } from "@/lib/app/session";
 import { supabaseAdmin } from "@/lib/supabase";
+import { recordAttestation } from "@/lib/messaging/consent";
 
 export type ImportRow = {
   display_name: string;
@@ -15,22 +16,38 @@ export type ImportRow = {
   notes: string | null;
 };
 
+export type ImportInput = {
+  rows: ImportRow[];
+  /** Tenant attested they have lawful basis to message these contacts. */
+  messagingAttestation: boolean;
+};
+
 export type ImportResult =
-  | { ok: true; inserted: number; skipped: number }
+  | { ok: true; inserted: number; skipped: number; consentsRecorded: number }
   | { error: string };
+
+const ATTESTATION_TEXT_V1 =
+  "Tenant attested at import time: 'I have lawful basis (consent, contract, or legitimate interest) to message these contacts on behalf of my business.'";
 
 /**
  * Bulk-insert customer rows from a CSV-import client component. The shape
  * matches what the import UI emits after column mapping. Inserts are
  * tenant-scoped + idempotent on (tenant_id, display_name) so a re-upload
  * of the same list won't double-insert.
+ *
+ * If `messagingAttestation` is true, we record a pending consent row per
+ * imported customer × channel (sms+email). The tenant can promote pending
+ * to opted_in later when they have stronger evidence (a reply, a portal
+ * confirmation click, etc.). Outbound sends remain blocked by canSend()
+ * until status is opted_in — see lib/messaging/consent.ts.
  */
-export async function importCustomers(rows: ImportRow[]): Promise<ImportResult> {
+export async function importCustomers(input: ImportInput): Promise<ImportResult> {
   const session = await readAppSession();
   if (session.kind !== "tenant") {
     return { error: "unauthenticated" };
   }
-  const cleaned = (rows ?? [])
+  const rows = input?.rows ?? [];
+  const cleaned = rows
     .map((r) => ({
       ...r,
       display_name: r.display_name?.trim() ?? "",
@@ -58,7 +75,7 @@ export async function importCustomers(rows: ImportRow[]): Promise<ImportResult> 
     (r) => !existingNames.has(r.display_name.toLowerCase()),
   );
   if (fresh.length === 0) {
-    return { ok: true, inserted: 0, skipped: cleaned.length };
+    return { ok: true, inserted: 0, skipped: cleaned.length, consentsRecorded: 0 };
   }
 
   const now = new Date().toISOString();
@@ -84,10 +101,42 @@ export async function importCustomers(rows: ImportRow[]): Promise<ImportResult> 
     updated_at: now,
   }));
 
-  const { error } = await sb.from("customers").insert(insertRows);
+  const { data: inserted, error } = await sb
+    .from("customers")
+    .insert(insertRows)
+    .select("id, primary_email, primary_phone");
   if (error) {
     console.warn("importCustomers insert error", error);
     return { error: "insert_failed" };
+  }
+
+  // Record a pending consent attestation per customer × channel where the
+  // tenant ticked the attestation box AND a contact identifier was uploaded.
+  // Pending — not opted_in — so canSend() still blocks outbound until the
+  // tenant promotes the row. The audit row exists either way.
+  let consentsRecorded = 0;
+  if (input.messagingAttestation && inserted) {
+    for (const row of inserted) {
+      const id = row.id as string;
+      if (row.primary_phone) {
+        await recordAttestation(
+          session.tenant.id,
+          id,
+          "sms",
+          ATTESTATION_TEXT_V1,
+        );
+        consentsRecorded += 1;
+      }
+      if (row.primary_email) {
+        await recordAttestation(
+          session.tenant.id,
+          id,
+          "email",
+          ATTESTATION_TEXT_V1,
+        );
+        consentsRecorded += 1;
+      }
+    }
   }
 
   revalidatePath("/app");
@@ -96,5 +145,6 @@ export async function importCustomers(rows: ImportRow[]): Promise<ImportResult> 
     ok: true,
     inserted: fresh.length,
     skipped: cleaned.length - fresh.length,
+    consentsRecorded,
   };
 }
