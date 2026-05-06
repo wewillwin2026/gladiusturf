@@ -15,6 +15,7 @@ import { StormActivateButton } from "./_components/StormActivateButton";
 import { readAppSession } from "@/lib/app/session";
 import { supabaseAdmin } from "@/lib/supabase";
 import { FL_HURRICANE_ZIPS } from "@/lib/storm/zips";
+import { dispatcherMode } from "@/lib/messaging/dispatch";
 
 export const dynamic = "force-dynamic";
 
@@ -165,6 +166,7 @@ export default async function StormModePage() {
           <StormActivateButton
             inStormCount={inStormCount}
             guardianCount={inStormGuardian}
+            dispatcherMode={dispatcherMode()}
           />
         </div>
 
