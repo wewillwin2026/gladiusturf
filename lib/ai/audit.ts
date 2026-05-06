@@ -3,6 +3,68 @@ import { supabaseAdmin } from "@/lib/supabase";
 
 export type AiSessionKind = "demo" | "tenant" | "founders" | "unknown";
 
+/**
+ * Per-tenant daily AI budget. AI Director called this a "gating bug" —
+ * without a cap, a single curious tenant pasting the OSHA manual into
+ * Ask Gladius can hit $40 of Sonnet cost in an afternoon. This caps
+ * each tenant's `ai_run` cost in the rolling-24h window.
+ *
+ * 500 cents = $5/day = ~50k Sonnet output tokens or ~10k turns of
+ * cached-input chat. Independent tier's AI envelope per AI Director's
+ * math is ~$80/mo, so $5/day leaves margin even at the median.
+ */
+export const AI_DAILY_BUDGET_CENTS = Number(
+  process.env.AI_DAILY_BUDGET_CENTS ?? 500,
+);
+
+export type BudgetCheck =
+  | { ok: true; spentCents: number; remainingCents: number }
+  | { ok: false; reason: "exceeded"; spentCents: number };
+
+/**
+ * Sums today's `ai_run.cost_cents` for a tenant and decides whether the
+ * next AI call is allowed. Best-effort — on lookup error, the call
+ * proceeds (we'd rather fall open than block legitimate usage on a
+ * transient DB issue; the audit row will still be written).
+ *
+ * Demo + founders sessions bypass the cap — `tenantId` is null for those.
+ */
+export async function checkAiBudget(
+  tenantId: string | null,
+): Promise<BudgetCheck> {
+  if (!tenantId) {
+    return { ok: true, spentCents: 0, remainingCents: AI_DAILY_BUDGET_CENTS };
+  }
+  try {
+    const sb = supabaseAdmin();
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const { data, error } = await sb
+      .from("ai_run")
+      .select("cost_cents")
+      .eq("tenant_id", tenantId)
+      .gte("created_at", since);
+    if (error) {
+      console.warn("[ai-audit] budget lookup error — failing open", error);
+      return { ok: true, spentCents: 0, remainingCents: AI_DAILY_BUDGET_CENTS };
+    }
+    const spent = (data ?? []).reduce(
+      (s, r) => s + ((r.cost_cents as number) ?? 0),
+      0,
+    );
+    if (spent >= AI_DAILY_BUDGET_CENTS) {
+      return { ok: false, reason: "exceeded", spentCents: spent };
+    }
+    return {
+      ok: true,
+      spentCents: spent,
+      remainingCents: AI_DAILY_BUDGET_CENTS - spent,
+    };
+  } catch (err) {
+    console.warn("[ai-audit] budget check threw — failing open", err);
+    return { ok: true, spentCents: 0, remainingCents: AI_DAILY_BUDGET_CENTS };
+  }
+}
+
 export type AiRunRecord = {
   tenantId: string | null;
   sessionKind: AiSessionKind;

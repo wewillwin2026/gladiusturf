@@ -10,9 +10,9 @@ import { BDC_ADDON, TIERS } from "@/content/pricing";
 
 export const metadata: Metadata = {
   title:
-    "Pricing — All thirty-three engines on every plan. Per crew, no per-seat tax.",
+    "Pricing — Per-crew, every engine included, annual increase capped at 5%.",
   description:
-    "GladiusTurf pricing: $397 Independent, $997 Professional, $2,997 Enterprise per crew per month. All thirty-three engines on every plan, including Field Crew App PWA, Client Portal, Cadence, Books, Payroll, Retention Radar, and the LRI Score. Optional $499 BDC addon for manned weekend phone coverage.",
+    "GladiusTurf pricing: $597 Independent, $1,497 Professional, $3,997 Enterprise per crew per month. Every shipped engine + every roadmap engine on every plan. Annual increase capped at 5%, in writing. Optional $499 BDC addon for manned weekend phone coverage.",
   alternates: { canonical: "/pricing" },
 };
 
@@ -352,7 +352,7 @@ export default function PricingPage() {
             <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-10 md:grid-cols-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-crest text-champagne-bright">
-                  Independent — $397
+                  Independent — $597
                 </p>
                 <p className="mt-3 text-sm leading-[1.65] text-bone/60">
                   Built for the solo operator running one truck and one crew.
@@ -365,7 +365,7 @@ export default function PricingPage() {
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-crest text-moss-bright">
-                  Professional — $997
+                  Professional — $1,497
                 </p>
                 <p className="mt-3 text-sm leading-[1.65] text-bone/60">
                   The tier where the math gets brutal. 2 to 5 crews, priority
@@ -378,7 +378,7 @@ export default function PricingPage() {
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-crest text-champagne-bright">
-                  Enterprise — $2,997
+                  Enterprise — $3,997
                 </p>
                 <p className="mt-3 text-sm leading-[1.65] text-bone/60">
                   6+ crews, multi-location, custom integration builds, custom
@@ -392,6 +392,119 @@ export default function PricingPage() {
                   .
                 </p>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Why we charge $597 — board-mandated justification panel
+            (added 2026-05-08 with the price raise from $397 → $597 per
+            7-director consensus). Anchors the new floor against
+            competitor specifics so the increase lands with its case
+            attached. */}
+        <section className="border-t border-bone/5 bg-obsidian py-28">
+          <div className="mx-auto max-w-6xl px-6">
+            <Pill tone="champagne" className="mb-4">
+              Why $597 — and not $297
+            </Pill>
+            <h2 className="font-serif text-4xl tracking-[-0.01em] text-bone md:text-5xl">
+              Cheap software is the most expensive thing
+              <br />
+              <span className="text-champagne-bright">
+                a landscape owner can buy.
+              </span>
+            </h2>
+            <p className="mt-6 max-w-3xl text-lg leading-relaxed text-bone/65">
+              Per-user pricing is the trick: the published number is small,
+              the bill at the end of the year is not. We bill per crew, not
+              per seat, and we cap the annual increase at 5% in writing.
+              Here&apos;s the math against what we&apos;re actually replacing.
+            </p>
+
+            <div className="mt-12 grid gap-4 md:grid-cols-2">
+              {/* LMN */}
+              <div className="rounded-2xl border border-bone/10 bg-slate-deep p-6">
+                <div className="text-xs font-semibold uppercase tracking-crest text-bone/45">
+                  vs LMN
+                </div>
+                <div className="mt-2 font-serif text-3xl text-bone">
+                  $1,192–$2,392/mo at 4 seats
+                </div>
+                <p className="mt-3 text-sm leading-relaxed text-bone/60">
+                  LMN&apos;s 2026 list moved to $297 Starter / $598 Pro per
+                  user. A 4-seat shop on Pro is $2,392/mo before any add-on.
+                  We&apos;re $597/crew with unlimited seats — your seasonal
+                  hires are free.
+                </p>
+              </div>
+
+              {/* Aspire */}
+              <div className="rounded-2xl border border-bone/10 bg-slate-deep p-6">
+                <div className="text-xs font-semibold uppercase tracking-crest text-bone/45">
+                  vs Aspire
+                </div>
+                <div className="mt-2 font-serif text-3xl text-bone">
+                  102% YoY hikes documented
+                </div>
+                <p className="mt-3 text-sm leading-relaxed text-bone/60">
+                  Aspire bills per-revenue and has a track record of doubling
+                  list price between renewals. We don&apos;t. Annual cap of
+                  5%, written into your contract. Switch the math today; sleep
+                  better in three years.
+                </p>
+              </div>
+
+              {/* ServiceTitan */}
+              <div className="rounded-2xl border border-bone/10 bg-slate-deep p-6">
+                <div className="text-xs font-semibold uppercase tracking-crest text-bone/45">
+                  vs ServiceTitan
+                </div>
+                <div className="mt-2 font-serif text-3xl text-bone">
+                  $46K early-termination fee
+                </div>
+                <p className="mt-3 text-sm leading-relaxed text-bone/60">
+                  Built for HVAC enterprise; the off-ramp is a wall. We&apos;re
+                  month-to-month on every tier. Cancel any day, full data
+                  export inside 24 hours. The leverage stays with you.
+                </p>
+              </div>
+
+              {/* Jobber / Service Autopilot / Housecall */}
+              <div className="rounded-2xl border border-bone/10 bg-slate-deep p-6">
+                <div className="text-xs font-semibold uppercase tracking-crest text-bone/45">
+                  vs Jobber / Service Autopilot / Housecall Pro
+                </div>
+                <div className="mt-2 font-serif text-3xl text-bone">
+                  Per-user × add-on tax
+                </div>
+                <p className="mt-3 text-sm leading-relaxed text-bone/60">
+                  $69–$499/user, plus paid add-ons for AI, payments, online
+                  booking, marketing. Every line item is a renewal
+                  conversation. We ship every shipped engine + every roadmap
+                  engine on every plan. One number, one bill.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-10 rounded-2xl border border-champagne/20 bg-champagne/[0.04] p-6">
+              <div className="text-xs font-semibold uppercase tracking-crest text-champagne-bright">
+                What you&apos;re actually paying for at $597
+              </div>
+              <ul className="mt-4 grid gap-2 text-sm leading-relaxed text-bone/75 sm:grid-cols-2">
+                <li>• Quote Intercept — recovers $14,200/mo on average</li>
+                <li>• Site Memory + Cadence — drives +24% retention</li>
+                <li>• Storm Mode — productized hurricane response (FL-tested)</li>
+                <li>• AI Quote Drafter + Ask Gladius (audit-logged)</li>
+                <li>• Inventory aging cron — Monday morning radar email</li>
+                <li>• Real DPA + signed sub-processor list</li>
+                <li>• Annual increase capped at 5%, in writing</li>
+                <li>• 30-day money-back guarantee</li>
+              </ul>
+              <p className="mt-4 text-xs text-bone/45">
+                $597/crew/mo = $7,164/yr. If GladiusTurf catches even one
+                $14,200 dropped quote (Quote Intercept&apos;s month-one number
+                for the average shop), the platform pays for itself for two
+                years.
+              </p>
             </div>
           </div>
         </section>

@@ -9,17 +9,21 @@ export function PricingSection() {
       className="border-t border-bone/10 bg-slate-deep py-28"
     >
       <div className="mx-auto max-w-7xl px-6">
-        {/* Scarcity band — heritage champagne with pulse for warmth without competing with the marquee CTA. */}
+        {/* Trust band — replaced the prior "founding cohort 12 of 20"
+            scarcity copy 2026-05-08 per board's unanimous "drop the
+            theater unless 8 are signed paper" call. The promise is the
+            durable signal: cap the increase, money-back the start. */}
         <ScrollReveal>
           <div className="mx-auto mb-12 flex max-w-3xl flex-col items-center justify-center gap-3 rounded-2xl border border-champagne/25 bg-champagne/[0.03] px-6 py-4 text-center sm:flex-row sm:gap-6 sm:text-left">
             <div className="flex items-center gap-3">
               <span className="flex h-2 w-2 flex-none animate-pulse-dot rounded-full bg-champagne-bright shadow-[0_0_10px_rgba(212,178,122,0.7)]" />
               <div>
                 <div className="text-sm font-semibold text-bone">
-                  Founding cohort · 12 of 20 slots remaining
+                  Annual increase capped at 5% — forever.
                 </div>
                 <div className="text-xs text-bone/55">
-                  Founder-led white-glove setup. May 2026 cohort starts May 5.
+                  Aspire just hiked their list 102% YoY. We won&apos;t do that
+                  to you, in writing.
                 </div>
               </div>
             </div>

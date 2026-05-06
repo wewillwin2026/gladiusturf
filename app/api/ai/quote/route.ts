@@ -7,7 +7,12 @@ import {
   verifyAppSessionCookieValue,
 } from "@/lib/app-auth";
 import { readAppSession } from "@/lib/app/session";
-import { logAiRun, type AiSessionKind } from "@/lib/ai/audit";
+import {
+  AI_DAILY_BUDGET_CENTS,
+  checkAiBudget,
+  logAiRun,
+  type AiSessionKind,
+} from "@/lib/ai/audit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -97,6 +102,26 @@ export async function POST(req: Request) {
   const tenantId =
     session.kind === "tenant" ? session.tenant.id : null;
   const model = "claude-sonnet-4-6";
+
+  // Per-tenant daily AI budget gate. Demo + founders bypass.
+  const budget = await checkAiBudget(tenantId);
+  if (!budget.ok) {
+    const encoder = new TextEncoder();
+    const text = `Daily AI budget reached for your workspace ($${(AI_DAILY_BUDGET_CENTS / 100).toFixed(2)}/day, currently $${(budget.spentCents / 100).toFixed(2)} spent in the last 24h). Email founders@gladiusturf.com to raise the cap.`;
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(text));
+        controller.close();
+      },
+    });
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Cache-Control": "no-store",
+        "X-Accel-Buffering": "no",
+      },
+    });
+  }
 
   const encoder = new TextEncoder();
   let collectedOutput = "";

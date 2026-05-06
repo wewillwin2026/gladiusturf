@@ -9,18 +9,32 @@ export type Tier = {
   cta: string;
 };
 
+// Pricing repositioned 2026-05-08 per board consensus (Strategy + Buffett +
+// Jobs argued floor was too low for the relief value; Engineering + AI
+// shipped the per-tenant AI budget cap so the higher floor is now
+// honestly priced for cost-to-serve).
+//
+// Tiers raised: 397 → 597 / 997 → 1497 / 2997 → 3997.
+//
+// Bright Lights Landscape Lighting (slug=bright-lights-encina) is
+// grandfathered at $397 — never raise mid-pen (Strategy's "lock the
+// signing customer at the discovery anchor" principle).
+//
+// Annual increase capped at 5% (Product's price-ceiling promise — the
+// foil is Aspire's documented 102% YoY hike).
 export const TIERS: Tier[] = [
   {
     id: "independent",
     name: "Independent",
     tagline: "For the one-crew operator that wants to stop leaking.",
-    price: 397,
+    price: 597,
     period: "/ crew / mo",
     features: [
       "Every shipped engine + every roadmap engine included",
       "Unlimited seats per crew",
       "Quote Intercept + SMS routing",
       "Site Memory, Weather Pivot",
+      "Annual increase capped at 5%",
       "Email + chat support",
     ],
     cta: "Start 14-day pilot",
@@ -29,7 +43,7 @@ export const TIERS: Tier[] = [
     id: "professional",
     name: "Professional",
     tagline: "For the 2–10 crew shop ready to add a truck without adding chaos.",
-    price: 997,
+    price: 1497,
     period: "/ crew / mo",
     featured: true,
     features: [
@@ -46,10 +60,11 @@ export const TIERS: Tier[] = [
     id: "enterprise",
     name: "Enterprise",
     tagline: "For the 10+ crew operator with branches, fleets, foremen.",
-    price: 2997,
+    price: 3997,
     period: "/ crew / mo",
     features: [
       "Everything in Professional",
+      "Tenant Trust Console + Merkle audit export",
       "Multi-branch routing + fleet telemetry",
       "Custom SSO + SCIM",
       "Dedicated revenue strategist",

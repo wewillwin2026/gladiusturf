@@ -125,7 +125,7 @@ export function Hero() {
               className="mt-12 text-xs uppercase tracking-crest text-bone/40"
             >
               <span className="text-champagne-bright/85">
-                Founding cohort · 12 of 20 May 2026 slots remaining
+                Per-crew pricing · annual increase capped at 5%
               </span>
               <span className="mx-3 text-bone/25">·</span>
               <span>Built on Stripe</span>

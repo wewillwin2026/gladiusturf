@@ -45,7 +45,7 @@ export const COMPARISON_ROWS: ComparisonRow[] = [
   },
   {
     vendor: "GladiusTurf",
-    price: "$397–$2,997 / crew, unlimited seats",
+    price: "$597–$3,997 / crew, unlimited seats, 5% annual cap",
     aiNative: "yes",
     compliance: "full",
     marketplace: "yes",

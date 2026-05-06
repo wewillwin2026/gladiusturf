@@ -31,7 +31,7 @@ export const COMPETITORS: Competitor[] = [
       "Aspire takes 6 months to deploy. GladiusTurf compounds revenue in 14 days.",
     whySwitch: [
       "33 engines live day one vs. modules that unlock over 6 months",
-      "Per-crew pricing ($397–$2,997) replaces per-revenue extortion (102% YoY hikes documented)",
+      "Per-crew pricing ($597–$3,997, 5% annual cap in writing) replaces per-revenue extortion (102% YoY hikes documented)",
       "Native AI — Quote Intercept, Ghost Recovery, Upsell Whisperer — not a 2027 roadmap",
     ],
     weaknessKeywords: [

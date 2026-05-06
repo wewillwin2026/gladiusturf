@@ -36,19 +36,19 @@ const TIERS: ReadonlyArray<{
   {
     id: "independent",
     name: "Independent",
-    price: "$397/crew/mo",
+    price: "$597/crew/mo",
     outcome: "Quote Intercept + Upsell Whisperer for the owner-operator.",
   },
   {
     id: "professional",
     name: "Professional",
-    price: "$997/crew/mo",
-    outcome: "All seven engines, Referral Radar, full migration support.",
+    price: "$1,497/crew/mo",
+    outcome: "Every engine, Referral Radar, full migration support.",
   },
   {
     id: "enterprise",
     name: "Enterprise",
-    price: "$2,997/crew/mo",
+    price: "$3,997/crew/mo",
     outcome: "Multi-rooftop ops, dedicated founder line, custom routing.",
   },
 ];

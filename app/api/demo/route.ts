@@ -36,9 +36,9 @@ const FOUNDER_EMAILS = ["ricardo.gamon99@icloud.com", "joshuapyorke@gmail.com"];
 const FROM = "GladiusTurf <demo@gladiusturf.com>";
 
 const TIER_DISPLAY: Record<Tier, string> = {
-  independent: "Independent · $397/crew/mo",
-  professional: "Professional · $997/crew/mo",
-  enterprise: "Enterprise · $2,997/crew/mo",
+  independent: "Independent · $597/crew/mo",
+  professional: "Professional · $1,497/crew/mo",
+  enterprise: "Enterprise · $3,997/crew/mo",
 };
 
 const FIELD_LABELS: Record<string, string> = {

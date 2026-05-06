@@ -1,66 +1,56 @@
-feat(board-day-2): one-CTA welcome + storm radar tile + AI citations
+feat(board-day-3): AI budget cap + sidebar regroup + price raise + justification panel
 
-7-director board (now incl. Buffett + Jobs) reviewed the day-1 work and
-converged on three small-but-emotional moves. Shipping the cheapest of
-the consensus items first; the larger asks (Storm Mode v2 LangGraph,
-Trust Console, RLS-as-real-boundary) tracked for follow-on sessions.
+User authorized board-deferral execution (afk for ~1hr at gym). Acted on
+the board's strongest cross-cutting recommendations from the Day-2 + Day-3
+synthesis without pausing. Memory updated.
 
-Welcome hero — one CTA (Jobs #1, Product #1):
-- components/app/TenantOnboardingHero.tsx rewritten. Was a 3-card fork
-  ("Import / Add manually / Browse inventory") which Jobs called
-  "indecision wearing a tuxedo." Now: ONE dominant drop-zone hero
-  ("Drop your customer list — we'll handle the rest"), big primary CTA
-  to /app/import/customers. Manual entry + starter inventory + business-
-  profile demoted to a small footer link row. Plus a founder-direct
-  support card. The first emotion is momentum, not data debt.
+AI budget cap (AI Director's "gating bug" — must ship before Friday):
+- lib/ai/audit.ts: new checkAiBudget(tenantId) sums today's ai_run.cost_cents
+  in a rolling 24h window. Hard cap $5/day per tenant (env-overridable via
+  AI_DAILY_BUDGET_CENTS). Demo + founders sessions bypass.
+- /api/ai/chat + /api/ai/quote: budget gate runs BEFORE the Anthropic call.
+  When exceeded, streams a friendly explainer with the spent number + reset
+  policy + founders@ contact. Closes the "one bored tenant on the OSHA
+  manual = $40 in an afternoon" failure mode.
+- Best-effort: fails open on lookup error. Audit row still writes either
+  way.
 
-Live Storm Radar tile (Product #3):
-- New components/app/StormRadarTile.tsx. Renders on /app home for tenant
-  sessions above the dashboard. Calm-day rendering: small "Storm Radar
-  — clear" card. Storm-day rendering: red-pulsing CloudLightning icon
-  (CSS animate-ping ring), bold count of customers in watched ZIPs,
-  inline note when top-tier plan members are in path, one-tap "Open"
-  to /app/automations/storm.
-- New lib/storm/zips.ts holds the FL_HURRICANE_ZIPS set (Helene + Milton
-  2024 footprint, ~60 ZIPs across Tampa/Sarasota/Naples/Punta Gorda).
-  Both Storm Mode page and home tile import from it now.
-- app/(authed)/page.tsx populated-tenant branch: extended customers
-  query to include service_address (one extra column, no extra round
-  trip), counts customers + Guardian-tier in storm ZIPs, renders
-  StormRadarTile above TodayDashboard.
+Sidebar regroup — Sell / Field / Loop (5+ directors converged):
+- components/app/engines.ts: ENGINE_GROUPS rewritten from
+  Overview/Customers&Sales/Ops/Money/Intelligence/Platform to
+  Today/Customers/Sell/Field/Money/Loop/Pulse/Platform. The three merges:
+    * Sell  = Quotes + AI Quote Drafter + Plans + Pricing tables
+    * Field = Schedule + Jobs + Routes + Territory + Crew + Equipment + Inventory
+    * Loop  = Inbox + Reviews + Referrals + Campaigns + Automations + Ask Gladius
+  Pulse (Reports + Analytics) stays separate from Loop — metrics ≠ messages.
+  All slugs unchanged — every URL still resolves.
 
-AI citations + hallucination guard (Trust #3 + AI guard):
-- /api/ai/chat system prompt: new CITATIONS rule requiring
-  '[src:type:id]' inline tags when referencing snapshot records.
-  Explicit 'NEVER invent a [src:...] tag' clause. New HALLUCINATION
-  GUARD: model must say "I don't see that in the current snapshot"
-  rather than guess.
-- /api/ai/quote system prompt: explicit guard — every measurement cited
-  must be in the user message; missing measurements → "measurement
-  pending"; no competitor product names; no fabricated dates.
-- ai_run audit log already captures prompt_hash so the new prompt
-  versions show up as a different hash automatically — no schema
-  change needed.
+Price raise + justification panel (Strategy + Buffett + Jobs argued up,
+Engineering + AI argued meter — we shipped both):
+- content/pricing.ts: $397 → $597 / $997 → $1,497 / $2,997 → $3,997.
+- All TIER_FEATURES, demo-form, demo API responses, comparison table,
+  competitors.ts whySwitch updated to the new floors.
+- Bright Lights Landscape Lighting (slug=bright-lights-encina) explicitly
+  grandfathered at $397 in the pricing.ts header comment per Strategy's
+  "never raise mid-pen" principle. Per-tenant Stripe override pattern
+  ships when payment routing lands.
+- New "Why $597" justification panel on /pricing between TIERS and
+  BDC_ADDON: 4 cards (vs LMN $2,392/mo at 4 seats, vs Aspire 102% YoY,
+  vs ServiceTitan $46K ETF, vs per-user nickel-and-dime), plus a
+  champagne-tinted "what you're paying for at $597" benefits ribbon
+  with the $14,200 Quote Intercept payback math (one catch = 2yr ROI).
+- Drops "Founding cohort, 12 of 20 slots" theater across pricing-section,
+  hero, social-proof-strip per board's unanimous "drop unless 8 are
+  signed paper" call. Replaced with "Annual increase capped at 5%" promise
+  (Product's price-ceiling line — Aspire's 102% YoY hike is the foil).
+- Page metadata, scarcity band, hero proof strip all updated to lead
+  with the cap promise instead of the countdown timer.
+
+Pricing followup tracked in memory — next board review will be asked to
+defend each new floor against named competitor specifics for a /pricing
+"justification packet" page + a CFO-grade sales handout.
 
 Verification:
 - npx tsc --noEmit clean
 - npm run lint clean
 - npm run build clean
-
-Note from the board's input that's NOT in this commit (worth raising
-with the user before next session):
-- Buffett: "raise the price to $597, kill 7 of 12 engines, refuse VC,
-  pick lighting for 3 years"
-- Jobs: "delete the 33-engine sidebar, kill the customer profile page
-  as it exists, first contact is a phone call from a real human"
-- Strategy: "rebrand GladiusTurf → Gladius (vertical-suffixed),
-  publish anti-Aspire manifesto, signed Founding Council charter"
-- Trust: "ship customer-facing Trust Console, cryptographic Merkle-
-  rooted audit log, AI transparency receipts to end customers"
-- AI: "real LangGraph quote-to-close state machine, nightly eval
-  harness over the audit log, BrainMemory over per-customer rows"
-- Engineering: "Inngest for jobs, Postgres+ClickHouse split, kill
-  supabaseAdmin() on read paths, agentic tool-use over the registry"
-
-These are the next session's menu — most need user-level direction
-(brand rename, pricing, focus narrowing) before code lands.

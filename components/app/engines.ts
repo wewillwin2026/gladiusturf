@@ -1,8 +1,26 @@
-// The sidebar engines, grouped per the master spec. Currently 31 visible —
-// chemicals + payroll were temporarily hidden 2026-05-06 per board vote until
-// the regulated schemas land (FIFRA pesticide-application records; encrypted
-// employees + payroll-tax compliance).
-// Both /app and /founders/war-room render this same structure.
+// The sidebar engines, regrouped 2026-05-08 per the 7-director board's
+// merge consensus (Strategy + Product + Engineering + AI + Trust + Buffett +
+// Jobs).
+//
+// Old IA: Overview / Customers & Sales / Ops / Money / Intelligence / Platform.
+// New IA: Today / Customers / Sell / Field / Money / Loop / Pulse / Platform.
+//
+// Engines kept their `slug` (URLs unchanged) — only their `group` field
+// shifted. Three merges the board converged on:
+//   * Sell  = Quotes + AI Quote Drafter + Plans + Pricing tables (one
+//             "build the number" mental model, was Strategy/Product/
+//             Engineering/AI/Buffett unanimous)
+//   * Field = Schedule + Jobs + Routes + Territory + Crew + Equipment +
+//             Inventory (one "operator's day" canvas)
+//   * Loop  = Inbox + Reviews + Referrals + Campaigns + Automations +
+//             Ask Gladius (one "voice of customer" room — every word a
+//             customer says, plus AI guidance)
+//
+// Pulse (Reports + Analytics) stays separate from Loop — Reports/Analytics
+// is metrics, not conversation. Trust Director also flagged that mixing
+// audit/metrics with messaging blurs the audit chain.
+//
+// Chemicals + payroll remain hidden 2026-05-06 per board vote.
 
 import {
   Activity,
@@ -45,10 +63,12 @@ import {
 
 export type EngineGroup =
   | "overview"
-  | "sales"
-  | "ops"
+  | "customers"
+  | "sell"
+  | "field"
   | "money"
-  | "intel"
+  | "loop"
+  | "pulse"
   | "platform";
 
 export type Engine = {
@@ -61,56 +81,57 @@ export type Engine = {
 };
 
 export const ENGINE_GROUPS: { id: EngineGroup; label: string }[] = [
-  { id: "overview", label: "Overview" },
-  { id: "sales", label: "Customers & Sales" },
-  { id: "ops", label: "Ops" },
+  { id: "overview", label: "Today" },
+  { id: "customers", label: "Customers" },
+  { id: "sell", label: "Sell" },
+  { id: "field", label: "Field" },
   { id: "money", label: "Money" },
-  { id: "intel", label: "Intelligence" },
+  { id: "loop", label: "Loop" },
+  { id: "pulse", label: "Pulse" },
   { id: "platform", label: "Platform" },
 ];
 
 export const ENGINES: Engine[] = [
-  // Overview (1)
+  // Today (1)
   { slug: "today", name: "Today", group: "overview", icon: LayoutDashboard, ordinal: 1 },
 
-  // Customers & Sales (8)
-  { slug: "customers", name: "Customers", group: "sales", icon: Users, ordinal: 2 },
-  { slug: "quotes", name: "Quotes", group: "sales", icon: PenSquare, ordinal: 4 },
-  { slug: "quotes/new", name: "AI Quote Drafter", group: "sales", icon: Sparkles, ordinal: 5 },
-  { slug: "reviews", name: "Reviews", group: "sales", icon: Star, ordinal: 6 },
-  { slug: "referrals", name: "Referrals", group: "sales", icon: GitFork, ordinal: 7 },
-  { slug: "campaigns", name: "Campaigns", group: "sales", icon: Newspaper, ordinal: 8 },
-  { slug: "plans", name: "Plans", group: "sales", icon: Repeat, ordinal: 8.5 },
-  { slug: "pricing", name: "Pricing tables", group: "sales", icon: Tag, ordinal: 9 },
+  // Customers (1)
+  { slug: "customers", name: "Customers", group: "customers", icon: Users, ordinal: 2 },
 
-  // Ops (8)
-  { slug: "schedule", name: "Schedule", group: "ops", icon: Calendar, ordinal: 10 },
-  { slug: "jobs", name: "Jobs", group: "ops", icon: ClipboardList, ordinal: 11 },
-  { slug: "routes", name: "Routes", group: "ops", icon: Route, ordinal: 13 },
-  { slug: "territory", name: "Territory", group: "ops", icon: Map, ordinal: 14 },
-  { slug: "crew", name: "Crew", group: "ops", icon: Building2, ordinal: 15 },
-  { slug: "equipment", name: "Equipment", group: "ops", icon: Truck, ordinal: 16 },
-  // Chemicals (ordinal 17) hidden 2026-05-06 per board vote — pesticide
-  // application records are state-regulated; restore when the
-  // chemical_applications schema (applicator license, EPA reg #, target pest,
-  // rate, weather, signature) lands.
-  { slug: "inventory", name: "Inventory", group: "ops", icon: Boxes, ordinal: 17.5 },
+  // Sell (4) — was sales group; merged 2026-05-08
+  { slug: "quotes", name: "Quotes", group: "sell", icon: PenSquare, ordinal: 4 },
+  { slug: "quotes/new", name: "AI Quote Drafter", group: "sell", icon: Sparkles, ordinal: 5 },
+  { slug: "plans", name: "Plans", group: "sell", icon: Repeat, ordinal: 8.5 },
+  { slug: "pricing", name: "Pricing tables", group: "sell", icon: Tag, ordinal: 9 },
 
-  // Money (4)
+  // Field (7) — was ops; the operator's day canvas
+  { slug: "schedule", name: "Schedule", group: "field", icon: Calendar, ordinal: 10 },
+  { slug: "jobs", name: "Jobs", group: "field", icon: ClipboardList, ordinal: 11 },
+  { slug: "routes", name: "Routes", group: "field", icon: Route, ordinal: 13 },
+  { slug: "territory", name: "Territory", group: "field", icon: Map, ordinal: 14 },
+  { slug: "crew", name: "Crew", group: "field", icon: Building2, ordinal: 15 },
+  { slug: "equipment", name: "Equipment", group: "field", icon: Truck, ordinal: 16 },
+  // Chemicals (ordinal 17) hidden 2026-05-06.
+  { slug: "inventory", name: "Inventory", group: "field", icon: Boxes, ordinal: 17.5 },
+
+  // Money (2)
   { slug: "invoices", name: "Invoices", group: "money", icon: Receipt, ordinal: 18 },
   { slug: "timesheets", name: "Timesheets", group: "money", icon: Timer, ordinal: 20 },
-  // Payroll (ordinal 21) hidden 2026-05-06 per board vote — needs encrypted
-  // employees schema (SSN, bank routing) + payroll-tax compliance contract
-  // before any tenant clicks "Run payroll." Restore behind the schema.
+  // Payroll (ordinal 21) hidden 2026-05-06.
 
-  // Intelligence (5)
-  { slug: "inbox", name: "Inbox", group: "intel", icon: Inbox, ordinal: 22 },
-  { slug: "reports", name: "Reports", group: "intel", icon: BarChart3, ordinal: 23 },
-  { slug: "analytics", name: "Analytics", group: "intel", icon: TrendingUp, ordinal: 24 },
-  { slug: "automations", name: "Automations", group: "intel", icon: Repeat, ordinal: 25 },
-  { slug: "ask-gladius", name: "Ask Gladius", group: "intel", icon: Bot, ordinal: 26 },
+  // Loop (6) — voice-of-customer cluster, was intel; merged 2026-05-08
+  { slug: "inbox", name: "Inbox", group: "loop", icon: Inbox, ordinal: 22 },
+  { slug: "reviews", name: "Reviews", group: "loop", icon: Star, ordinal: 6 },
+  { slug: "referrals", name: "Referrals", group: "loop", icon: GitFork, ordinal: 7 },
+  { slug: "campaigns", name: "Campaigns", group: "loop", icon: Newspaper, ordinal: 8 },
+  { slug: "automations", name: "Automations", group: "loop", icon: Repeat, ordinal: 25 },
+  { slug: "ask-gladius", name: "Ask Gladius", group: "loop", icon: Bot, ordinal: 26 },
 
-  // Platform (7)
+  // Pulse (2) — metrics + audit, kept separate from Loop conversations
+  { slug: "reports", name: "Reports", group: "pulse", icon: BarChart3, ordinal: 23 },
+  { slug: "analytics", name: "Analytics", group: "pulse", icon: TrendingUp, ordinal: 24 },
+
+  // Platform (4)
   { slug: "integrations", name: "Integrations", group: "platform", icon: Plug, ordinal: 27 },
   { slug: "api", name: "API", group: "platform", icon: Key, ordinal: 28 },
   { slug: "changelog", name: "Changelog", group: "platform", icon: FileText, ordinal: 29 },

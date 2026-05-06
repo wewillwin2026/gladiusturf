@@ -8,7 +8,12 @@ import {
 } from "@/lib/app-auth";
 import { readAppSession } from "@/lib/app/session";
 import { demoState } from "@/lib/demo/state";
-import { logAiRun, type AiSessionKind } from "@/lib/ai/audit";
+import {
+  AI_DAILY_BUDGET_CENTS,
+  checkAiBudget,
+  logAiRun,
+  type AiSessionKind,
+} from "@/lib/ai/audit";
 import { money } from "@/lib/shared/format";
 
 const PROMPT_VERSION = "ask-gladius@v1";
@@ -89,6 +94,29 @@ export async function POST(req: Request) {
   const tenantId =
     session.kind === "tenant" ? session.tenant.id : null;
   const model = "claude-sonnet-4-6";
+
+  // Per-tenant daily AI budget gate. Demo + founders sessions bypass.
+  const budget = await checkAiBudget(tenantId);
+  if (!budget.ok) {
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(
+          encoder.encode(
+            `Daily AI budget reached for your workspace ($${(AI_DAILY_BUDGET_CENTS / 100).toFixed(2)}/day, currently $${(budget.spentCents / 100).toFixed(2)} spent in the last 24h). Resets on a rolling 24-hour window. Email founders@gladiusturf.com if you need a higher cap.`,
+          ),
+        );
+        controller.close();
+      },
+    });
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Cache-Control": "no-store",
+        "X-Accel-Buffering": "no",
+      },
+    });
+  }
 
   const encoder = new TextEncoder();
   let collectedOutput = "";

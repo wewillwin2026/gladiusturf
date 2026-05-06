@@ -30,23 +30,26 @@ export function SocialProofStrip() {
     <section className="border-b border-bone/10 bg-slate-deep py-20">
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid gap-10 md:grid-cols-3 md:gap-8">
-          {/* Left third — cohort scarcity card */}
+          {/* Left third — pricing-promise card. Replaced "12 of 20 slots"
+              theater 2026-05-08 per board's unanimous "drop unless 8 are
+              signed paper" call. The durable signal is the cap, not the
+              countdown. */}
           <ScrollReveal>
             <div className="flex h-full flex-col gap-4 rounded-2xl border border-champagne/20 bg-champagne/[0.03] p-6">
               <div className="flex items-center gap-2">
                 <span className="inline-block h-2 w-2 animate-pulse-dot rounded-full bg-champagne-bright shadow-[0_0_10px_rgba(212,178,122,0.7)]" />
                 <span className="text-xs font-semibold uppercase tracking-crest text-champagne-bright">
-                  Founding cohort · open
+                  Pricing promise
                 </span>
               </div>
               <h3 className="font-serif text-2xl font-semibold leading-tight text-bone">
-                12 of 20 slots remaining
+                Annual increase capped at 5% — forever.
               </h3>
               <p className="text-sm leading-relaxed text-bone/60">
-                May 2026 cohort starts May 5. Founder-led white-glove setup,
-                locked-in founding pricing, direct line to the team. After the
-                cohort closes, Independent tier moves to standard onboarding
-                and pricing resets.
+                Aspire just hiked their list price 102% YoY. We won&apos;t
+                do that to you, in writing. Per-crew pricing means seasonal
+                hires are free. Founder-led white-glove setup. Direct line
+                to the team during your first week.
               </p>
               <div className="pt-2">
                 <a
