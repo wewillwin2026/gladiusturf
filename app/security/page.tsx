@@ -20,7 +20,7 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 export const metadata: Metadata = {
   title: "Security — Multi-tenant by design. Audit-ready by default.",
   description:
-    "Postgres RLS, Clerk multi-tenant auth, Stripe-managed PCI, TCPA compliance built in, SOC 2 Type II in progress.",
+    "App-layer tenant scoping today (RLS migration in progress), magic-link auth, Stripe-tokenized PCI scope = 0, TCPA consent ledger, AI run audit log, public DPA.",
   alternates: { canonical: "/security" },
 };
 
@@ -30,43 +30,43 @@ const PRINCIPLES: { headline: string; body: string }[] = [
     body: "Exportable to CSV any day, by any admin. No data hostage. We will help you migrate OUT if you ever leave — full schema dumps, every table, every record, your format. The day you sign is the day we start earning the right to keep you, and a contract is not a substitute for a product worth keeping.",
   },
   {
-    headline: "Multi-tenant means truly multi-tenant.",
-    body: "Every record carries a companyId. Postgres Row-Level Security policies enforce isolation at the database layer. tRPC middleware enforces it again at the API layer. Two-layer defense, audited on every release. No tenant has ever seen another tenant's data, and that is a guarantee we engineer for, not a marketing line.",
+    headline: "Multi-tenant by design.",
+    body: "Every record carries a tenant_id. Tenant scoping is enforced at the application layer — every server action and route handler reads the session cookie and filters every query by the authenticated tenant. Postgres Row-Level Security policies are also defined on every tenant table; we are migrating reads + writes from the service-role client to a per-tenant JWT'd client so RLS becomes the active boundary alongside application-layer scoping. Status: in progress, tracked on the roadmap.",
   },
   {
     headline: "No card data on our servers.",
     body: "Stripe handles all card data. We never see, store, or transmit a primary account number. PCI scope = zero. When a customer pays an invoice through the Client Portal, the card never touches our infrastructure — it travels directly from the browser to Stripe's tokenization endpoint.",
   },
   {
-    headline: "TCPA compliance is built in, not bolted on.",
-    body: "Every outbound SMS checks consent, state-specific rules, and DNC lists before sending. Quiet-hours logic per state. Stop-keyword honored within 30 seconds. Audit log on every send, exportable. We learned this discipline in the regulated automotive market — class-action exposure starts at $500 per text, and we will not be the reason your shop is named in a complaint.",
+    headline: "TCPA-aware messaging.",
+    body: "Consent is recorded as structured data, not free-text notes: every customer × channel has a row in customer_messaging_consent (status, source, consent text, version, IP, timestamps). Server-side canSend() check enforces opt-in status, per-tenant quiet-hours, and blocked weekdays before any dispatch. CSV import requires an attestation. Outbound auto-cadences ship behind this gate — never before.",
   },
   {
-    headline: "Audit log everything.",
-    body: "Every change to a customer record, property memory, payment, or quote is logged with who, what, when, and why. Append-only. Tamper-evident. Exportable to your own SIEM. If a foreman edits a recurring price on a route, the trail starts in your audit log and ends in your inbox if your policy says it should.",
+    headline: "Forensic AI audit trail.",
+    body: "Every Ask Gladius and AI Quote Drafter call writes a row to ai_run with tenant_id, surface, model, prompt hash + version, token counts (including cached), estimated cost in cents, and a 4KB output excerpt. When a customer asks 'what did your AI tell me three weeks ago,' we can answer with the exact response, model version, and prompt fingerprint that produced it.",
   },
 ];
 
 const AUTH_CARDS: { icon: React.ComponentType<{ className?: string }>; headline: string; body: string }[] = [
   {
     icon: Shield,
-    headline: "Clerk-managed",
-    body: "SOC 2 Type II certified identity provider. Magic-link login, SSO via SAML, MFA on Pro and above. Session lifecycle, password rotation, and breach-list checks handled by a vendor whose entire product is identity.",
+    headline: "Magic-link auth",
+    body: "Tenants and operators sign in with a one-time link emailed via Resend. Tokens are HMAC-SHA256-signed with a per-environment secret, 15-minute TTL, single-use, rate-limited 5/hour per IP. No passwords on the operator-facing surface — phishing surface eliminated. SSO + SAML on the enterprise roadmap.",
   },
   {
     icon: Key,
-    headline: "Role-based access control",
-    body: "Six roles ship out of the box: Admin, Crew Chief, Field Tech, Finance, Customer, Read-Only. Granular permissions per role — Finance can void an invoice, Field Tech cannot. Custom roles available on Enterprise.",
+    headline: "Role-based access",
+    body: "Three roles today: tenant owner, tenant member, founder. Owners get full workspace access; members are reserved for upcoming team-seat features; founders have cross-tenant read access for support, disclosed in /legal/privacy §2.5 and migrating to per-incident opt-in grants.",
   },
   {
     icon: Lock,
     headline: "Session security",
-    body: "JWTs with rotating signing keys (90-day rotation). HttpOnly + Secure cookies, SameSite=Lax. CSRF tokens on every state-changing request. Sessions invalidated server-side on password change or admin revoke.",
+    body: "Cookies are HttpOnly + Secure + SameSite=Lax with HMAC-signed payloads. Session TTL is 7 days; the cookie revalidates on every request against the tenant_invitations table so a revoked owner loses access on the next page load. Production hard-fails if the tenant session secret env var is missing.",
   },
   {
     icon: Eye,
-    headline: "Customer access",
-    body: "Magic-link only on the Client Portal. No passwords for end customers — phishing surface eliminated. 30-day session, revocable any time by the crew owner. One-tap log-out clears every device.",
+    headline: "Founder access transparency",
+    body: "When founders read a tenant's workspace for support, the access is disclosed in the privacy policy and we are shipping a per-tenant opt-in grant system so the tenant explicitly authorizes each support session. Until that ships, all founder cross-tenant reads are restricted to two named individuals on file.",
   },
 ];
 
@@ -82,29 +82,32 @@ const COMPLIANCE: ComplianceColumn[] = [
     status: "done",
     title: "Done now",
     items: [
-      { label: "PCI compliance via Stripe" },
-      { label: "TCPA compliance for SMS and voice" },
-      { label: "GDPR data-export endpoint" },
-      { label: "Multi-tenant Postgres RLS" },
-      { label: "Encrypted at rest (AES-256) + in transit (TLS 1.3)" },
+      { label: "PCI scope = 0 (Stripe-tokenized; no PAN ever touches us)" },
+      { label: "Encryption at rest + in transit (Supabase-managed, TLS 1.2+)" },
+      { label: "Per-tenant scoping at the application layer" },
+      { label: "TCPA consent ledger + send-time canSend() gate" },
+      { label: "AI run audit log (model, prompt hash, tokens, cost, output)" },
+      { label: "Data Processing Agreement at /legal/dpa" },
     ],
   },
   {
     status: "in-progress",
     title: "In progress",
     items: [
-      { label: "SOC 2 Type II audit (Q3 2026)" },
-      { label: "HIPAA-readiness for crews servicing hospitals and care facilities" },
-      { label: "State pesticide license API integration — auto-verify before dispatch" },
+      { label: "RLS as the primary security boundary (per-tenant JWT'd client)" },
+      { label: "Per-tenant opt-in grant for founder support access" },
+      { label: "SOC 2 Type II audit (target Q4 2026)" },
+      { label: "Outbound auto-cadence behind the consent gate" },
     ],
   },
   {
     status: "roadmap",
     title: "Roadmap",
     items: [
-      { label: "ISO 27001 (Q1 2027)" },
+      { label: "External penetration test (twice yearly)" },
       { label: "California CCPA portal" },
-      { label: "Penetration test schedule (twice yearly, by an external firm)" },
+      { label: "ISO 27001" },
+      { label: "Pesticide license verification (regulated chemicals engine)" },
     ],
   },
 ];
@@ -152,35 +155,34 @@ export default function SecurityPage() {
               <Shield className="h-3.5 w-3.5" aria-hidden /> Security
             </Pill>
             <h1 className="font-serif text-5xl tracking-[-0.02em] leading-[1.05] text-bone md:text-7xl">
-              Multi-tenant by design.
+              Built honestly.
               <br />
-              Audit-ready by default.
+              Audit-ready in motion.
             </h1>
             <div className="mt-10 grid max-w-4xl gap-6 text-lg leading-relaxed text-bone/70 md:text-xl">
               <p>
-                We&apos;re built on the same security foundation as Gladius CRM
-                (which serves regulated automotive dealers) and Gladius BDC
-                (which handles TCPA-regulated outbound voice). The same
-                Postgres RLS policies, the same Clerk-managed auth stack, the
-                same audit-log infrastructure that survives quarterly review by
-                automotive group risk officers.
+                This page describes our security posture as it exists today,
+                not as marketing aspires to it. Some controls are live, some
+                are mid-migration, and a few are roadmap. We label them
+                accordingly — every claim should hold up to a procurement
+                review, a customer DPA addendum, or a 2 a.m. incident
+                postmortem.
               </p>
               <p>
-                Most landscape software treats security as an afterthought —
-                bolted on after a customer asks, retrofitted after a leak,
-                described in marketing copy that doesn&apos;t survive
-                contact with a procurement reviewer. We built the foundation
-                first, because we serve regulated industries first, and the
-                landscape product inherited the discipline.
+                Most landscape software ships security as a marketing
+                surface — RLS-on-the-box, &ldquo;enterprise-grade,&rdquo;
+                SOC&nbsp;2 banners that paper over the actual code. We&apos;re
+                doing the opposite: shipping the architecture honestly, naming
+                the gaps, and closing them in public on the changelog.
               </p>
             </div>
 
             <div className="mt-14 grid grid-cols-2 gap-6 border-t border-bone/10 pt-10 md:grid-cols-4">
               {[
-                { value: "100%", label: "RLS coverage" },
-                { value: "0", label: "Cross-tenant leaks" },
-                { value: "90-day", label: "Rotating keys" },
-                { value: "Every", label: "Action audit-logged" },
+                { value: "App-layer", label: "Tenant scoping (RLS landing)" },
+                { value: "AI", label: "Audit log live" },
+                { value: "TCPA", label: "Consent gate ready" },
+                { value: "DPA", label: "Public at /legal/dpa" },
               ].map((s) => (
                 <div key={s.label}>
                   <p className="font-mono text-3xl text-champagne-bright md:text-4xl">
@@ -291,43 +293,52 @@ export default function SecurityPage() {
             <div className="mt-16 grid gap-12 md:grid-cols-2 md:gap-20">
               <div className="flex flex-col gap-6 text-base leading-relaxed text-bone/65 md:text-lg">
                 <p>
-                  Every row in our database carries a companyId. That field is
-                  not optional, not nullable, not editable by application code.
-                  It is set once at row-creation time inside a transactional
-                  hook and never moves.
+                  Every tenant-owned row in the database carries a{" "}
+                  <code className="font-mono text-[13px] text-bone/85">tenant_id</code>{" "}
+                  foreign key to{" "}
+                  <code className="font-mono text-[13px] text-bone/85">tenants</code>.
+                  The column is not nullable, the FK cascades on tenant
+                  deletion, and the application layer fills it in from the
+                  authenticated session — never from client-supplied input.
                 </p>
                 <ul className="flex flex-col gap-4 border-l border-champagne/30 pl-6">
                   <li>
                     <span className="font-mono text-xs uppercase tracking-[0.2em] text-moss-bright">
-                      Layer 1 — database
+                      Layer 1 — application (live)
                     </span>
                     <p className="mt-1">
-                      Postgres Row-Level Security policies on every tenant
-                      table. The current companyId is set per-request from the
-                      authenticated session — queries cannot read or write rows
-                      they don&apos;t own, even if application code tries.
+                      Every server action and route handler under{" "}
+                      <code className="font-mono text-[11px] text-bone/85">/app/(authed)</code>{" "}
+                      reads the signed session cookie via{" "}
+                      <code className="font-mono text-[11px] text-bone/85">readAppSession()</code>,
+                      asserts <code className="font-mono text-[11px] text-bone/85">session.kind === &quot;tenant&quot;</code>,
+                      and filters every query by{" "}
+                      <code className="font-mono text-[11px] text-bone/85">tenant_id</code>.
+                      This is the active boundary today.
                     </p>
                   </li>
                   <li>
                     <span className="font-mono text-xs uppercase tracking-[0.2em] text-champagne-bright">
-                      Layer 2 — API
+                      Layer 2 — database (in progress)
                     </span>
                     <p className="mt-1">
-                      tRPC middleware re-checks the companyId on every
-                      procedure. Defense in depth: even if a future RLS policy
-                      regresses, the API layer catches it before a response
-                      leaves the server.
+                      Row-Level Security policies are defined on every tenant
+                      table — they will become the active second boundary
+                      once we finish migrating server-side reads + writes from
+                      the service-role client to a per-request JWT&apos;d
+                      client. Until that lands, RLS is a defense-in-depth
+                      backstop, not a primary boundary.
                     </p>
                   </li>
                   <li>
                     <span className="font-mono text-xs uppercase tracking-[0.2em] text-champagne-bright">
-                      Layer 3 — tests
+                      Layer 3 — tests (roadmap)
                     </span>
                     <p className="mt-1">
-                      Every release runs a cross-tenant leak suite that spins
-                      up two synthetic companies and asserts neither can see
-                      the other&apos;s rows through any code path. The build
-                      fails if it does.
+                      A cross-tenant leak suite that spins up two synthetic
+                      tenants and asserts neither can read the other&apos;s
+                      rows on every release. Lands alongside the RLS
+                      migration above.
                     </p>
                   </li>
                 </ul>
@@ -345,30 +356,30 @@ export default function SecurityPage() {
                       Browser
                     </p>
                     <p className="mt-1 text-sm text-bone/80">
-                      Authenticated session · companyId = ACME
+                      HMAC-signed session cookie · tenant_id = bright-lights
                     </p>
                   </div>
                   <div className="mx-auto h-6 w-px bg-bone/15" aria-hidden />
 
-                  {/* tRPC */}
-                  <div className="rounded-xl border border-champagne/30 bg-champagne/[0.06] px-5 py-4">
-                    <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-champagne-bright">
-                      Layer 2 — tRPC middleware
+                  {/* App layer */}
+                  <div className="rounded-xl border border-moss/30 bg-moss/[0.06] px-5 py-4">
+                    <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-moss-bright">
+                      Layer 1 — server action (live)
                     </p>
                     <p className="mt-1 text-sm text-bone/80">
-                      Asserts session.companyId === input.companyId. Reject
-                      otherwise.
+                      readAppSession() · .eq(&quot;tenant_id&quot;, session.tenant.id)
                     </p>
                   </div>
                   <div className="mx-auto h-6 w-px bg-bone/15" aria-hidden />
 
                   {/* Postgres */}
-                  <div className="rounded-xl border border-moss/30 bg-moss/[0.06] px-5 py-4">
-                    <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-moss-bright">
-                      Layer 1 — Postgres RLS
+                  <div className="rounded-xl border border-champagne/30 bg-champagne/[0.06] px-5 py-4">
+                    <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-champagne-bright">
+                      Layer 2 — Postgres RLS (migrating)
                     </p>
                     <p className="mt-1 text-sm text-bone/80">
-                      USING (company_id = current_setting(&apos;app.company_id&apos;))
+                      USING (is_tenant_member(tenant_id)) · activates once
+                      reads move off service-role
                     </p>
                   </div>
 
@@ -382,7 +393,7 @@ export default function SecurityPage() {
                       <p className="mt-3 font-mono text-xs uppercase tracking-[0.18em] text-moss-bright">
                         Tenant A
                       </p>
-                      <p className="mt-1 text-sm text-bone/70">ACME crew</p>
+                      <p className="mt-1 text-sm text-bone/70">Lighting shop</p>
                     </div>
                     <div className="rounded-xl border border-champagne-bright/30 bg-obsidian/40 p-5 text-center">
                       <Database
@@ -392,7 +403,7 @@ export default function SecurityPage() {
                       <p className="mt-3 font-mono text-xs uppercase tracking-[0.18em] text-champagne-bright">
                         Tenant B
                       </p>
-                      <p className="mt-1 text-sm text-bone/70">Banner Lawn</p>
+                      <p className="mt-1 text-sm text-bone/70">Irrigation crew</p>
                     </div>
                   </div>
                   <p className="mt-6 text-center text-xs text-bone/40">
