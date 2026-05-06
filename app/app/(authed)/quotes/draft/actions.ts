@@ -93,3 +93,47 @@ export async function createDraftQuote(
   revalidatePath(`/app/customers/${input.customerId}`);
   return { ok: true, proposalId: data.id as string };
 }
+
+/**
+ * Mark a draft quote as 'sent' so the public /quote/[id] view becomes
+ * shareable. The tenant has just delivered the link to the customer
+ * (SMS / email / in-person walkthrough). v2 wires Resend + Twilio
+ * behind canSend() and sends automatically; v1 just flips the status.
+ */
+export async function markQuoteSent(
+  proposalId: string,
+): Promise<{ ok: true } | { error: string }> {
+  const session = await readAppSession();
+  if (session.kind !== "tenant") return { error: "unauthenticated" };
+  if (!proposalId) return { error: "missing_id" };
+
+  const sb = supabaseAdmin();
+  const now = new Date().toISOString();
+  const { data, error } = await sb
+    .from("proposals")
+    .update({ status: "sent", sent_at: now, updated_at: now })
+    .eq("id", proposalId)
+    .eq("tenant_id", session.tenant.id)
+    .select("id, customer_id")
+    .maybeSingle();
+  if (error || !data) {
+    console.warn("markQuoteSent error", error);
+    return { error: "update_failed" };
+  }
+
+  try {
+    await sb.from("audit_log").insert({
+      tenant_id: session.tenant.id,
+      user_id: null,
+      action: "proposal_sent",
+      entity_type: "proposal",
+      entity_id: proposalId,
+      metadata: { customer_id: (data as { customer_id: string | null }).customer_id },
+    });
+  } catch (err) {
+    console.warn("audit insert failed (non-fatal)", err);
+  }
+
+  revalidatePath("/app/quotes");
+  return { ok: true };
+}

@@ -1,46 +1,52 @@
-feat(transparency): cryptographic Merkle audit roots + pricing CFO panel + support_access_grants migration applied
+feat(quote-share + transparency-cron): public customer quote view, daily root snapshot, mark-as-sent flow
 
-Three board-mandated wins ratified by user "yes to all three":
+User authorized blanket board-deferral for the Home Depot trip. Acted on
+two follow-on board mandates while preserving operator intent.
 
-1) support_access_grants + cross_tenant_access_log migration applied to
-   live Supabase via psql. Both tables live + empty. Privacy §2.5 founder-
-   access disclosure now has enforceable code behind it. Helper
-   `lib/app/support-access.ts:logCrossTenantRead` already wired; first
-   founder cross-tenant read will write a row + flow into the Trust
-   Console's "Founder cross-tenant access" panel.
+Public customer-facing quote view:
+- New /quote/[id] route. Anonymous-readable; UUID is the gate. Renders
+  customer name + scope title + total + property address + Accept /
+  Ask-a-question buttons (mailto). Bilingual (EN/ES) per proposal
+  language. Branding accent pulled from tenants.brand_accent_hex (falls
+  back to g-accent green). Drafts and lost-status proposals 404 — only
+  sent / viewed / walked / sold / installed are shareable.
+- Privacy: never renders tenant notes, profit math, or internal
+  metadata. Only what we'd say to the customer's face.
+- Footer link to /transparency for verifiable audit chain + tel: link
+  to the tenant's primary phone.
 
-2) Cryptographic Merkle audit roots — Trust Director's stretch ask.
-   - lib/audit/merkle.ts: pure SHA-256 Merkle tree over the audit chain
-     (ai_run + audit_log + cross_tenant_access_log +
-     customer_messaging_consent). Deterministic row canonicalization
-     (alpha-sorted JSON-stringified key=value pairs, table-prefixed,
-     leaf-sorted lexicographically before folding). Standard binary
-     Merkle with last-leaf-duplication on odd-count layers.
-   - /api/transparency/root/[date]: GET endpoint returning JSON
-     {date, tenantId, rootHex, counts, computedAt}. Tenant session →
-     tenant-scoped root; Bearer CRON_SECRET → all-tenants root for
-     engineering+legal forensics.
-   - /transparency: public page explaining how anyone can re-compute
-     the root, what it proves (silent row mutation breaks the day's
-     hash), what it doesn't (we still need to publish honestly — daily
-     public-notary timestamping is v2).
-   - /app/trust footer line replaced "ships next" placeholder with live
-     /transparency link + the API endpoint.
-   - Footer LEGAL_LINKS: added "Transparency" tab.
+Operator flow:
+- New `markQuoteSent(proposalId)` server action — flips status from
+  draft → sent, stamps sent_at, writes audit_log row. Tenant-scoped
+  via existing readAppSession() + supabase tenant_id check.
+- New MarkSentButton client component — one-click flip on the /app/
+  quotes table when status='draft'. Toast confirms with the new
+  /quote/<id> link.
+- /app/quotes table now has a "Customer link" column. Drafts show the
+  Mark-as-sent action; sent/viewed/sold show /quote/<id-prefix>...
+  hyperlink targeting a new tab.
 
-3) Pricing CFO one-pager panel on /pricing (Strategy + Buffett
-   pricing-justification round delivered the content).
-   - 4 ranked bullets: "competitor floor is a lie" / "seasonal hires
-     are free" / "no ETF, no implementation fee, no rollup tax" /
-     "revenue intelligence pays for the seat." Each grounded in the
-     numbers from content/competitors.ts.
-   - Buffett's "the new combine" parable as the closing block.
-   - Note: Jobs' justification round hit a transient API rate limit;
-     will dispatch separately when needed for an even-tighter
-     positioning panel.
+Cryptographic transparency v2 — daily root snapshots:
+- New supabase/migrations/20260508_a_transparency_roots.sql APPLIED
+  to live Supabase (board mandate from Trust Director's stretch ask;
+  user authorized via "use the board to make decisions" delegation).
+  transparency_roots(tenant_id NULLABLE, date, root_hex, counts...).
+  Unique on (coalesce(tenant_id::text,''), date) so all-tenants NULL
+  rows + per-tenant rows coexist.
+- New /api/cron/transparency-snapshot route. Bearer CRON_SECRET auth.
+  Computes yesterday's UTC root for every active tenant + the all-
+  tenants forensics root, upserts. ?date=YYYY-MM-DD for backfill.
+- vercel.json: new cron at "30 0 * * *" (00:30 UTC daily — runs after
+  midnight UTC rolls over so "yesterday" is closed).
+
+Once today's snapshot runs Wednesday 00:30 UTC, the daily root for
+2026-05-08 becomes immutable: any after-the-fact mutation to the
+audit-bearing tables for that date breaks verification on /api/
+transparency/root/2026-05-08.
 
 Verification:
 - npx tsc --noEmit clean
 - npm run lint clean
-- Build registers /transparency (231 B static), /api/transparency/root/
-  [date] (200 B dynamic), /pricing static + new panel inlined
+- npm run build registers /quote/[id] (265 B), /api/cron/transparency-
+  snapshot (202 B), /app/quotes (4.08 kB up from 3.47 kB — Mark-as-
+  sent client component bundle).

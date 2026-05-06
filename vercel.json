@@ -2,6 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
   "crons": [
-    { "path": "/api/cron/inventory-aging", "schedule": "0 12 * * 1" }
+    { "path": "/api/cron/inventory-aging", "schedule": "0 12 * * 1" },
+    { "path": "/api/cron/transparency-snapshot", "schedule": "30 0 * * *" }
   ]
 }

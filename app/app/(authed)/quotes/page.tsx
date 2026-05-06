@@ -10,6 +10,7 @@ import { readAppSession } from "@/lib/app/session";
 import { supabaseAdmin } from "@/lib/supabase";
 import { demoState } from "@/lib/demo/state";
 import { money, num, pct } from "@/lib/shared/format";
+import { MarkSentButton } from "./_components/MarkSentButton";
 
 export const dynamic = "force-dynamic";
 
@@ -154,6 +155,9 @@ export default async function QuotesPage() {
                     Total
                   </th>
                   <th className="px-4 py-2.5 text-right font-medium text-g-text-faint text-[11px] uppercase tracking-[0.12em]">
+                    Customer link
+                  </th>
+                  <th className="px-4 py-2.5 text-right font-medium text-g-text-faint text-[11px] uppercase tracking-[0.12em]">
                     Created
                   </th>
                 </tr>
@@ -177,6 +181,21 @@ export default async function QuotesPage() {
                       </td>
                       <td className="px-4 py-2.5 text-right font-geist-mono tabular-nums">
                         {r.total_cents != null ? money(r.total_cents) : "—"}
+                      </td>
+                      <td className="px-4 py-2.5 text-right">
+                        {r.status === "draft" ? (
+                          <MarkSentButton proposalId={r.id} />
+                        ) : r.status === "lost" ? (
+                          <span className="text-g-text-faint text-[11px]">—</span>
+                        ) : (
+                          <Link
+                            href={`/quote/${r.id}`}
+                            target="_blank"
+                            className="text-[11px] text-g-accent hover:underline font-geist-mono"
+                          >
+                            /quote/{r.id.slice(0, 8)}…
+                          </Link>
+                        )}
                       </td>
                       <td className="px-4 py-2.5 text-right font-geist-mono tabular-nums text-g-text-muted">
                         {new Date(r.created_at).toLocaleDateString()}
