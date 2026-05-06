@@ -63,9 +63,14 @@ export default async function TrustConsolePage() {
   const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
   // ai_run was applied to prod 2026-05-07. Safe to query.
+  // Pull `id` so we can render shareable /receipt/[id] links for the
+  // most-recent runs — Trust Director's "AI transparency receipts to
+  // end customers" mandate.
   const aiRunsRes = await sb
     .from("ai_run")
-    .select("id, surface, model, prompt_version, cost_cents, output_tokens, created_at")
+    .select(
+      "id, surface, model, prompt_version, cost_cents, output_tokens, created_at",
+    )
     .eq("tenant_id", session.tenant.id)
     .gte("created_at", since30d)
     .order("created_at", { ascending: false })
@@ -242,6 +247,44 @@ export default async function TrustConsolePage() {
                   output excerpt to <code className="font-geist-mono text-g-text-muted">ai_run</code>.
                   Per-tenant daily budget cap: $5/day (env-overridable).
                 </p>
+                {aiRuns.length > 0 && (
+                  <details className="mt-3">
+                    <summary className="cursor-pointer text-[11px] text-g-text-muted hover:text-g-text">
+                      Show last {Math.min(5, aiRuns.length)} call
+                      {aiRuns.length === 1 ? "" : "s"} with shareable receipt URLs
+                    </summary>
+                    <ul className="mt-2 flex flex-col gap-1.5 text-[11px]">
+                      {aiRuns.slice(0, 5).map((r) => (
+                        <li
+                          key={r.id}
+                          className="rounded-md bg-g-surface-2 px-2.5 py-1.5"
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-g-text font-medium">
+                              {r.surface}
+                            </span>
+                            <span className="font-geist-mono text-g-text-faint">
+                              {new Date(r.created_at).toLocaleString()}
+                            </span>
+                          </div>
+                          <Link
+                            href={`/receipt/${r.id}`}
+                            target="_blank"
+                            className="mt-0.5 block break-all text-g-accent hover:underline font-geist-mono text-[10px]"
+                          >
+                            /receipt/{r.id}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="mt-2 text-[10px] text-g-text-faint leading-relaxed">
+                      Public receipt URLs anyone can verify. Each shows the
+                      model, prompt fingerprint, output excerpt, and
+                      timestamp — never the prompt body. Drop one of these
+                      in any AI-drafted message you send.
+                    </p>
+                  </details>
+                )}
               </div>
             )}
           </div>
