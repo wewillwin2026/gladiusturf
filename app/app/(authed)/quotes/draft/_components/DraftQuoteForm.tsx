@@ -7,7 +7,11 @@ import { Loader2, PenSquare } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/app/ui/Button";
 import { Input, Textarea } from "@/components/app/ui/Input";
-import { createDraftQuote, markQuoteSent } from "../actions";
+import {
+  createDraftQuote,
+  emailQuoteToCustomer,
+  markQuoteSent,
+} from "../actions";
 
 type CustomerOption = { id: string; name: string; subtitle: string };
 
@@ -90,13 +94,47 @@ export function DraftQuoteForm({
             typeof window !== "undefined"
               ? `${window.location.origin}/quote/${res.proposalId}`
               : `/quote/${res.proposalId}`;
+
+          // Best-effort auto-email via Resend behind the consent gate.
+          // If consent is missing, no email on file, or RESEND_API_KEY
+          // is unset, we fall back to clipboard-copy. The action's audit
+          // entry records what actually happened.
+          const emailRes = await emailQuoteToCustomer(res.proposalId);
+
           try {
             await navigator.clipboard?.writeText(url);
+          } catch {
+            // clipboard not available — non-fatal, the URL is in the toast
+          }
+
+          if ("error" in emailRes) {
             toast.success("Saved + sent. Customer link copied.", {
               description: url,
             });
-          } catch {
-            toast.success("Saved + sent.", { description: url });
+          } else if (emailRes.delivery === "sent") {
+            toast.success("Saved, sent + emailed to customer.", {
+              description: `Email delivered. Link also copied: ${url}`,
+            });
+          } else if (emailRes.delivery === "dry_run") {
+            toast.success("Saved + sent. Email previewed (dry-run).", {
+              description: `Set RESEND_API_KEY to send for real. Link copied: ${url}`,
+            });
+          } else {
+            const why =
+              emailRes.reason === "no_email_on_file"
+                ? "no email on file"
+                : emailRes.reason === "no_consent"
+                  ? "no email consent yet"
+                  : emailRes.reason === "opted_out"
+                    ? "customer opted out"
+                    : emailRes.reason === "quiet_hours"
+                      ? "quiet hours"
+                      : emailRes.reason === "blocked_day"
+                        ? "blocked weekday"
+                        : "skipped";
+            toast.success("Saved + sent. Customer link copied.", {
+              description: `Email skipped (${why}). ${url}`,
+            });
           }
         }
       } else {

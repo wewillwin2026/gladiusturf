@@ -3,6 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { readAppSession } from "@/lib/app/session";
 import { supabaseAdmin } from "@/lib/supabase";
+import {
+  emailDispatcherMode,
+  sendEmailToCustomer,
+} from "@/lib/messaging/email";
 
 export type DraftQuoteInput = {
   customerId: string;
@@ -136,4 +140,123 @@ export async function markQuoteSent(
 
   revalidatePath("/app/quotes");
   return { ok: true };
+}
+
+export type EmailQuoteResult =
+  | {
+      ok: true;
+      mode: "live" | "dry_run";
+      delivery: "sent" | "dry_run" | "skipped";
+      reason?: string;
+    }
+  | { error: string };
+
+/**
+ * Email the public /quote/[id] link to the customer via Resend, behind
+ * the canSend() consent gate. Best-effort — when consent is missing, no
+ * email is on file, or RESEND_API_KEY is not set, the action returns
+ * cleanly so the caller can fall back to clipboard-copy. The audit log
+ * always reflects the actual outcome.
+ */
+export async function emailQuoteToCustomer(
+  proposalId: string,
+): Promise<EmailQuoteResult> {
+  const session = await readAppSession();
+  if (session.kind !== "tenant") return { error: "unauthenticated" };
+  if (!proposalId) return { error: "missing_id" };
+
+  const sb = supabaseAdmin();
+  const { data: proposal, error } = await sb
+    .from("proposals")
+    .select(
+      "id, customer_id, status, total_cents, language, bom, customers!inner(display_name, primary_email)",
+    )
+    .eq("id", proposalId)
+    .eq("tenant_id", session.tenant.id)
+    .maybeSingle();
+  if (error || !proposal) return { error: "not_found" };
+
+  const row = proposal as unknown as {
+    id: string;
+    customer_id: string;
+    status: string;
+    total_cents: number | null;
+    language: string;
+    bom: { title?: string; notes?: string | null } | null;
+    customers:
+      | { display_name: string; primary_email: string | null }
+      | { display_name: string; primary_email: string | null }[];
+  };
+  const customer = Array.isArray(row.customers) ? row.customers[0] : row.customers;
+  if (row.status === "draft" || row.status === "lost") {
+    return { error: "not_shareable" };
+  }
+  if (!row.customer_id || !customer?.primary_email) {
+    return {
+      ok: true,
+      mode: emailDispatcherMode(),
+      delivery: "skipped",
+      reason: "no_email_on_file",
+    };
+  }
+
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://gladiusturf.com";
+  const link = `${baseUrl}/quote/${row.id}`;
+  const tenantName = session.tenant.display_name ?? "GladiusTurf";
+  const title = row.bom?.title ?? "Your quote";
+  const lang = row.language === "es" ? "es" : "en";
+  const subject =
+    lang === "es"
+      ? `Su presupuesto de ${tenantName}`
+      : `Your quote from ${tenantName}`;
+  const greeting =
+    lang === "es"
+      ? `Hola ${customer.display_name},`
+      : `Hi ${customer.display_name},`;
+  const body =
+    lang === "es"
+      ? `Le preparamos un presupuesto: ${title}. Puede revisarlo aquí:`
+      : `We prepared a quote for you: ${title}. You can review it here:`;
+  const closing =
+    lang === "es"
+      ? `Si tiene preguntas, simplemente responda a este correo. — ${tenantName}`
+      : `If you have questions, just reply to this email. — ${tenantName}`;
+  const html = `
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0a0a0a;color:#f5f5f5;padding:32px 24px;max-width:560px;margin:0 auto;">
+      <p style="font-size:14px;line-height:1.6;margin:0 0 16px;">${greeting}</p>
+      <p style="font-size:14px;line-height:1.6;margin:0 0 24px;">${body}</p>
+      <p style="margin:32px 0;">
+        <a href="${link}" style="display:inline-block;padding:14px 22px;background:#00d26a;color:#0a0a0a;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">${
+          lang === "es" ? "Ver mi presupuesto" : "View my quote"
+        }</a>
+      </p>
+      <p style="font-size:12px;line-height:1.55;color:#888;margin:24px 0 0;">${closing}</p>
+      <p style="font-size:11px;line-height:1.55;color:#555;margin:24px 0 0;font-family:ui-monospace,Menlo,monospace;">${link}</p>
+    </div>
+  `;
+  const text = `${greeting}\n\n${body}\n\n${link}\n\n${closing}`;
+
+  const result = await sendEmailToCustomer({
+    tenantId: session.tenant.id,
+    customerId: row.customer_id,
+    subject,
+    html,
+    text,
+    source: "quote-share",
+  });
+
+  if (!result.ok) {
+    return {
+      ok: true,
+      mode: emailDispatcherMode(),
+      delivery: "skipped",
+      reason: result.reason,
+    };
+  }
+  return {
+    ok: true,
+    mode: emailDispatcherMode(),
+    delivery: result.mode,
+  };
 }
