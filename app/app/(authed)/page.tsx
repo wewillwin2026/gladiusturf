@@ -1,6 +1,7 @@
 import { TodayDashboard } from "@/components/app/TodayDashboard";
 import { TenantOnboardingHero } from "@/components/app/TenantOnboardingHero";
 import { StormRadarTile } from "@/components/app/StormRadarTile";
+import { OwnersDailyOneLiner } from "@/components/app/OwnersDailyOneLiner";
 import { readAppSession } from "@/lib/app/session";
 import { supabaseAdmin } from "@/lib/supabase";
 import { demoState } from "@/lib/demo/state";
@@ -30,27 +31,57 @@ export default async function AppHomePage() {
             .select(reg.countSelect, { count: "exact" })
             .eq("tenant_id", session.tenant.id);
 
-    const [customersRes, assetsRes, starterItemsRes, starterUnitsRes] =
-      await Promise.all([
-        sb
-          .from("customers")
-          .select(
-            "id, customer_tier, preferred_language, service_address",
-            { count: "exact" },
-          )
-          .eq("tenant_id", session.tenant.id),
-        assetQuery,
-        sb
-          .from("inventory_items")
-          .select("id", { count: "exact", head: true })
-          .eq("tenant_id", session.tenant.id)
-          .eq("is_starter", true),
-        sb
-          .from("inventory_units")
-          .select("id", { count: "exact", head: true })
-          .eq("tenant_id", session.tenant.id)
-          .eq("is_starter", true),
-      ]);
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+    const startOfMonthIso = startOfMonth.toISOString();
+    const ninetyDaysAgoIso = new Date(
+      Date.now() - 90 * 24 * 60 * 60 * 1000,
+    ).toISOString();
+
+    const [
+      customersRes,
+      assetsRes,
+      starterItemsRes,
+      starterUnitsRes,
+      proposalsRes,
+      visitsThisMonthRes,
+      staleUnitsRes,
+    ] = await Promise.all([
+      sb
+        .from("customers")
+        .select(
+          "id, customer_tier, preferred_language, service_address",
+          { count: "exact" },
+        )
+        .eq("tenant_id", session.tenant.id),
+      assetQuery,
+      sb
+        .from("inventory_items")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", session.tenant.id)
+        .eq("is_starter", true),
+      sb
+        .from("inventory_units")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", session.tenant.id)
+        .eq("is_starter", true),
+      sb
+        .from("proposals")
+        .select("id, status")
+        .eq("tenant_id", session.tenant.id),
+      sb
+        .from("schedule_items")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", session.tenant.id)
+        .gte("starts_at", startOfMonthIso),
+      sb
+        .from("inventory_units")
+        .select("cost_cents, received_at")
+        .eq("tenant_id", session.tenant.id)
+        .eq("status", "in_stock")
+        .lt("received_at", ninetyDaysAgoIso),
+    ]);
 
     const customers = customersRes.data ?? [];
     const assets = (
@@ -141,8 +172,52 @@ export default async function AppHomePage() {
       );
     }).length;
 
+    // Owner's Daily One-Liner inputs — Strategy + Product mandate
+    const proposals = (proposalsRes.data ?? []) as Array<{
+      id: string;
+      status: string;
+    }>;
+    const draftQuotesCount = proposals.filter((p) => p.status === "draft").length;
+    const inFlightQuotesCount = proposals.filter(
+      (p) => p.status === "sent" || p.status === "viewed",
+    ).length;
+    const recentVisitsCount = visitsThisMonthRes.count ?? 0;
+    const staleUnits = (staleUnitsRes.data ?? []) as Array<{
+      cost_cents: number | null;
+      received_at: string;
+    }>;
+    const staleInventoryCount = staleUnits.length;
+    const staleInventoryDollarsCents = staleUnits.reduce(
+      (s, u) => s + (u.cost_cents ?? 0),
+      0,
+    );
+    const oldestStaleAgeDays =
+      staleUnits.length > 0
+        ? Math.max(
+            ...staleUnits.map((u) =>
+              Math.floor(
+                (Date.now() - new Date(u.received_at).getTime()) /
+                  (24 * 60 * 60 * 1000),
+              ),
+            ),
+          )
+        : null;
+
     return (
       <div className="flex flex-col gap-4">
+        <OwnersDailyOneLiner
+          briefing={{
+            tenantName: session.tenant.display_name,
+            customerCount,
+            draftQuotesCount,
+            inFlightQuotesCount,
+            recentVisitsCount,
+            staleInventoryCount,
+            staleInventoryDollarsCents,
+            inStormZipCount,
+            oldestStaleAgeDays,
+          }}
+        />
         <StormRadarTile
           inStormZipCount={inStormZipCount}
           totalCustomerCount={customerCount}

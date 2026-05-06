@@ -1,23 +1,45 @@
-chore(copy): drop "Founding cohort" theater from FAQ + Council + Contact
+feat(app-home): Owner's Daily One-Liner — the product's front door
 
-Smoke test of commit 613ee43 deploy caught three remaining "Founding
-cohort" / "12 of 20 slots" instances that escaped the 0e896b3 sweep:
-- components/home-faq.tsx — FAQ answer "Do you have customers in my
-  service area?" claimed cohort spans East Coast / Midwest / Texas
-  with N=1 paying customer. Replaced with honest "Sarasota lighting
-  business is our first paying customer" framing.
-- app/contact/page.tsx — "Founding cohort: Direct Signal thread"
-  bullet → "Founder-direct: Signal thread."
-- app/council/page.tsx — "Founding cohort · 12 of 20 May 2026 slots
-  remaining" pulse line → "Annual increase capped at 5%, in writing."
-  Page metadata description + OG description also stripped of the
-  cohort phrase.
+Strategy + Product board mandate (top-3 for both directors): not a
+dashboard at 6:47am — a sentence. Felipe opens /app from the truck cab
+on his way to the first job and sees:
 
-Buffett's hardest line stays the test: "12 of 20 slots remaining is
-theater unless 8 of those slots are signed paper. If they are, say their
-names. If they aren't, take the counter down — a phony scoreboard is
-the fastest way to lose a customer who can count."
+  TODAY'S BRIEFING
+  Good Tuesday morning, Bright Lights.
+  6 customers on file · 1 quote in flight · 6 stale units
+  Your one move: 6 fixtures aging 220d+ on the shelf · $1,070 tied up.
+  Sell these first.                                 [Open inventory →]
 
-Verification: npx tsc clean, npm run build clean, no other "Founding
-cohort" strings in TS/TSX outside docs/audit-* (which are the audit
-docs themselves).
+components/app/OwnersDailyOneLiner.tsx — pure presentational. Receives
+a typed DailyBriefingInput and synthesizes:
+  1. Headline based on local time-of-day + tenant name
+  2. Body line — facts: customer count, in-flight quotes, drafts,
+     visits-this-month, stale units (only includes non-zero items)
+  3. "Your one move" — priority-ranked next action with a deep link:
+     storm-watch ZIPs > stale inventory > draft quotes > zero customers
+     > zero recent visits > generic ("draft a quote you've been
+     putting off")
+The whole card is a Link wrapping the next-move destination — one tap
+from briefing to action.
+
+Wired into app/(authed)/page.tsx populated-tenant branch:
+- Three new parallel queries (proposals + visits-this-month +
+  stale-inventory units) added to the existing Promise.all so the
+  one-liner is a free piece of work alongside what was already fetched.
+- Computed inputs: draftQuotesCount, inFlightQuotesCount,
+  recentVisitsCount, staleInventoryCount, staleInventoryDollarsCents,
+  oldestStaleAgeDays.
+- Rendered as the top card on /app home, above StormRadarTile and
+  TodayDashboard.
+
+This is the Strategy/Product unanimous "front door" landing — the
+product no longer opens with a dashboard, it opens with a decision.
+v2 ships per-tenant SMS at 7am ET via Twilio behind the canSend()
+gate (TCPA layer already shipped). v3 turns the next-move logic into
+an LangGraph agent that reads the audit log + ai_run cost + revenue
+trends and writes a more nuanced sentence.
+
+Verification:
+- npx tsc --noEmit clean
+- npm run lint clean
+- npm run build clean
