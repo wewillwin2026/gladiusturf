@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import Link from "next/link";
 import {
-  CheckCircle2,
   Clock,
   Mail,
   MapPin,
@@ -13,6 +12,7 @@ import {
 import type { Metadata } from "next";
 import { supabaseAdmin } from "@/lib/supabase";
 import { money } from "@/lib/shared/format";
+import { AcceptButton } from "./_components/AcceptButton";
 
 export const dynamic = "force-dynamic";
 
@@ -224,17 +224,16 @@ export default async function PublicQuotePage({
         )}
 
         <section className="mt-10 grid gap-3 md:grid-cols-2">
-          <a
-            href={`mailto:${customer.primary_email ?? "founders@gladiusturf.com"}?subject=${encodeURIComponent(`Re: ${title}`)}`}
-            className="group inline-flex items-center justify-center gap-2 rounded-xl px-6 py-4 text-base font-semibold transition-all"
-            style={{
-              background: accent,
-              color: "#0a0a0a",
-            }}
-          >
-            <CheckCircle2 className="h-4 w-4" />
-            {t("Accept this quote", "Aceptar")}
-          </a>
+          <AcceptButton
+            proposalId={row.id}
+            accent={accent}
+            labelEn="Accept this quote"
+            labelEs="Aceptar"
+            language={lang}
+            alreadyAccepted={
+              row.status === "sold" || row.status === "installed"
+            }
+          />
           <a
             href={`mailto:${customer.primary_email ?? "founders@gladiusturf.com"}?subject=${encodeURIComponent(`Question: ${title}`)}`}
             className="group inline-flex items-center justify-center gap-2 rounded-xl border border-bone/20 bg-bone/[0.02] px-6 py-4 text-base font-medium text-bone transition-colors hover:bg-bone/[0.06]"
