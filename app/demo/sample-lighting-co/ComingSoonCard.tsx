@@ -77,7 +77,7 @@ export function ComingSoonCard({
           {notifyLabel}
         </button>
         <Link
-          href="/demo/bright-lights-encina/dashboard"
+          href="/demo/sample-lighting-co/dashboard"
           className="mt-5 inline-flex items-center gap-1.5 text-[12px]"
           style={{ color: "var(--bl-text-faint)" }}
         >

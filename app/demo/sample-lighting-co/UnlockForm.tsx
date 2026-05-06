@@ -31,7 +31,7 @@ export function UnlockForm() {
         setLoading(false);
         return;
       }
-      router.replace("/demo/bright-lights-encina/dashboard");
+      router.replace("/demo/sample-lighting-co/dashboard");
       router.refresh();
     } catch {
       setError("Couldn't reach the server. Try again in a moment.");

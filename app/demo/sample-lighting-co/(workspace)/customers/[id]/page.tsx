@@ -43,7 +43,7 @@ export default async function CustomerDetailPage({
       <div className="flex min-w-0 flex-col gap-5">
         {/* Back + header */}
         <Link
-          href="/demo/bright-lights-encina/dashboard"
+          href="/demo/sample-lighting-co/dashboard"
           className="inline-flex items-center gap-1.5 text-[12px]"
           style={{ color: "var(--bl-text-faint)" }}
         >
@@ -245,7 +245,7 @@ export default async function CustomerDetailPage({
               import.
             </p>
             <Link
-              href="/demo/bright-lights-encina/customers/BL-MJ"
+              href="/demo/sample-lighting-co/customers/BL-MJ"
               className="bl-btn-primary mt-4"
             >
               See Mike Jackson&rsquo;s full record →
@@ -296,7 +296,7 @@ export default async function CustomerDetailPage({
                 }}
               >
                 <Link
-                  href={`/demo/bright-lights-encina/customers/${c.id}`}
+                  href={`/demo/sample-lighting-co/customers/${c.id}`}
                   className="flex items-center justify-between gap-2 px-4 py-2.5 text-[12px] transition-colors hover:bg-black/20"
                 >
                   <span style={{ color: "var(--bl-text)" }}>{c.name}</span>
@@ -312,7 +312,7 @@ export default async function CustomerDetailPage({
           </ul>
         </div>
         <Link
-          href="/demo/bright-lights-encina/plans"
+          href="/demo/sample-lighting-co/plans"
           className="bl-card flex items-center gap-3 px-4 py-3 transition-colors hover:bg-black/20"
         >
           <Sparkles className="h-4 w-4" style={{ color: "var(--bl-accent)" }} />

@@ -61,20 +61,31 @@ export function middleware(req: NextRequest) {
     }
   }
 
-  // 3. Bright Lights demo gate. The unlock screen (root path) and the unlock
-  //    POST route stay open; everything deeper requires the signed cookie.
+  // 3. Sample Lighting Co. demo gate. The unlock screen (root path) and the
+  //    unlock POST route stay open; everything deeper requires the signed
+  //    cookie. Renamed 2026-05-07 from /demo/bright-lights-encina because
+  //    Bright Lights is becoming a real paying tenant — the public demo URL
+  //    is now branded as a fictional operator.
   if (
-    pathname.startsWith("/demo/bright-lights-encina") &&
-    pathname !== "/demo/bright-lights-encina" &&
-    pathname !== "/demo/bright-lights-encina/"
+    pathname.startsWith("/demo/sample-lighting-co") &&
+    pathname !== "/demo/sample-lighting-co" &&
+    pathname !== "/demo/sample-lighting-co/"
   ) {
     const hasCookie = req.cookies.get("bright_lights_demo")?.value;
     if (!hasCookie) {
       const target = req.nextUrl.clone();
-      target.pathname = "/demo/bright-lights-encina";
+      target.pathname = "/demo/sample-lighting-co";
       target.search = "";
       return NextResponse.redirect(target);
     }
+  }
+
+  // 3b. Permanent redirect from the old /demo/bright-lights-encina path so
+  //     any pre-existing share links resolve to the rebranded demo.
+  if (pathname === "/demo/bright-lights-encina" || pathname.startsWith("/demo/bright-lights-encina/")) {
+    const target = req.nextUrl.clone();
+    target.pathname = pathname.replace("/demo/bright-lights-encina", "/demo/sample-lighting-co");
+    return NextResponse.redirect(target, { status: 308 });
   }
 
   // No-op for everything else.
@@ -90,6 +101,8 @@ export const config = {
     "/app/:path*",
     "/founders/war-room",
     "/founders/war-room/:path*",
+    "/demo/sample-lighting-co",
+    "/demo/sample-lighting-co/:path*",
     "/demo/bright-lights-encina",
     "/demo/bright-lights-encina/:path*",
   ],

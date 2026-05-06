@@ -51,7 +51,7 @@ export default function HelpPage() {
         </div>
 
         <Link
-          href="/demo/bright-lights-encina/dashboard"
+          href="/demo/sample-lighting-co/dashboard"
           className="mt-6 inline-flex items-center gap-1.5 text-[12px]"
           style={{ color: "var(--bl-text-faint)" }}
         >

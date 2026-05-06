@@ -15,11 +15,19 @@ export function AppShell({
   product,
   user,
   logoutHref,
+  hideAskGladius = false,
   children,
 }: {
   product: ProductKind;
   user: { name: string; subtitle: string };
   logoutHref: string;
+  /**
+   * When true, the floating Ask Gladius button is not rendered. Used for
+   * tenant sessions until per-tenant retrieval ships — without it, the model
+   * would answer from the static Cypress Lawn snapshot, which would
+   * hallucinate the tenant's customers as Cypress Lawn's.
+   */
+  hideAskGladius?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -35,7 +43,7 @@ export function AppShell({
               </main>
             </div>
             <CommandPalette product={product} />
-            <FloatingAskGladiusButton product={product} />
+            {!hideAskGladius && <FloatingAskGladiusButton product={product} />}
             <Toaster
               position="top-right"
               theme="dark"

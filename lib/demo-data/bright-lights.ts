@@ -1,30 +1,34 @@
 /**
- * Bright Lights Landscape Lighting — demo fixture data.
+ * Sample Lighting Co. — public demo fixture data.
  *
- * Sourced from /docs/bright-lights-demo-handoff.md sections 1, 3, 5.
+ * This file backs the /demo/sample-lighting-co workspace and is shaped on
+ * a generic Florida coastal-lighting business profile. ALL DATA HERE IS
+ * FICTIONAL — invented operator, invented customers, invented addresses.
+ * Cluster + zip + lat/lng are kept Florida-real so Storm Mode and route
+ * geography look believable.
  *
- * Customer names + street addresses are SYNTHETIC SURROGATES (board vote
- * 2026-05-06 — no real third-party PII in demo media). Cluster, zip, and
- * lat/lng are preserved so Florida-local route geography looks real. The
- * BRAND block (Cristian + Felipe Encina, public business info) is the only
- * non-synthetic data here, used with operator authorization.
+ * History: this file used to be Bright Lights Landscape Lighting's actual
+ * data. Bright Lights became a real paying tenant on 2026-05-07; the demo
+ * was rebranded the same day to remove their identifying details. The file
+ * keeps its `bright-lights.ts` name for git-diff continuity but the
+ * exported BRAND + CUSTOMERS are now Sample Lighting Co.
  *
- * v1: read-only static data. No Supabase persistence. The Bright Lights
- * Command Center loads this synchronously, no DB round-trips.
+ * v1: read-only static data. No Supabase persistence. The demo workspace
+ * loads this synchronously, no DB round-trips.
  */
 
-// ---- Brand kit (handoff §1) ----
+// ---- Brand kit ----
 
 export const BRAND = {
-  name: "Bright Lights Landscape Lighting",
-  shortName: "Bright Lights",
-  founder: "Cristian Encina",
-  operator: "Felipe Encina",
-  phone: "(941) 306-6038",
-  email: "cristian.brightlights@gmail.com",
-  website: "brightlightslandscapelighting.com",
-  showroom: "4130 Lancaster Dr, Sarasota, FL 34241",
-  yard: "7215 249th St E, Myakka City, FL 34251",
+  name: "Sample Lighting Co.",
+  shortName: "Sample Lighting",
+  founder: "Daniel Reyes",
+  operator: "Marco Reyes",
+  phone: "(813) 555-0124",
+  email: "hello@samplelightingco.example",
+  website: "samplelightingco.example",
+  showroom: "100 Demo Way, Tampa, FL 33602",
+  yard: "200 Demo Industrial Pkwy, Tampa, FL 33619",
   serviceArea: "Naples → Tampa → Clearwater → St. Petersburg",
   hours: "8 AM – 8 PM, 7 days a week",
   reviewCount: 171,
@@ -310,7 +314,7 @@ export const MIKE_JACKSON_FIXTURES: Fixture[] = [
   { id: "BL-MJ-021", type: "Path Light", brand: "Cast", model: "CPL11", wattage: "3W", installDate: "2020-04-14", warrantyStatus: "expired", warrantyEnd: "2025-04-14" },
   { id: "BL-MJ-022", type: "Up Light (Sabal Palm)", brand: "Cast", model: "CWL5", wattage: "5W", installDate: "2020-04-14", warrantyStatus: "expired", warrantyEnd: "2025-04-14" },
   { id: "BL-MJ-023", type: "Up Light (Sabal Palm)", brand: "Cast", model: "CWL5", wattage: "5W", installDate: "2020-04-14", warrantyStatus: "expired", warrantyEnd: "2025-04-14" },
-  { id: "BL-MJ-024", type: "Replacement Up Light (in rain)", brand: "Cast", model: "CWL5", wattage: "5W", installDate: "2025-09-21", warrantyStatus: "active", warrantyEnd: "2030-09-21", note: "Replaced same-day in the rain — Cristian on truck." },
+  { id: "BL-MJ-024", type: "Replacement Up Light (in rain)", brand: "Cast", model: "CWL5", wattage: "5W", installDate: "2025-09-21", warrantyStatus: "active", warrantyEnd: "2030-09-21", note: "Replaced same-day in the rain — operator on truck." },
 ];
 
 // ---- Mike Jackson's service history (handoff §3) ----
@@ -344,7 +348,7 @@ export const MIKE_JACKSON_HISTORY = [
     date: "2025-09-21",
     title: "Up-light replacement — in the rain — warranty",
     detail:
-      "Cristian came out same-day and replaced BL-MJ-024 in the rain. New 5-yr Cast warranty issued to 2030-09. The kind of visit that drives 5-star reviews.",
+      "Operator came out same-day and replaced BL-MJ-024 in the rain. New 5-yr Cast warranty issued to 2030-09. The kind of visit that drives 5-star reviews.",
     invoiced: false,
   },
 ] as const;
@@ -417,14 +421,14 @@ export const TIERS: Tier[] = [
 // ---- Email templates (handoff §5) ----
 
 export const EMAIL_EN = {
-  from: "Cristian @ Bright Lights Landscape Lighting",
+  from: `${BRAND.operator} @ ${BRAND.name}`,
   replyTo: BRAND.email,
   subject:
-    "{{first_name}}, your Bright Lights system is {{install_age}} years old — let's keep the magic alive",
+    "{{first_name}}, your lighting system is {{install_age}} years old — let's keep the magic alive",
   body: [
     "Hi {{first_name}},",
     "",
-    "It's been {{install_age}} years since we installed your lighting. Florida is rough on outdoor systems — salt air, humidity, plant overgrowth, storms. That's why we built our new Bright Lights maintenance plans.",
+    `It's been {{install_age}} years since we installed your lighting. Florida is rough on outdoor systems — salt air, humidity, plant overgrowth, storms. That's why we built our new ${BRAND.shortName} maintenance plans.`,
     "",
     "Instead of calling every time something goes out, your system gets scheduled visits. We clean the lenses, re-aim, check the wires, swap bulbs before they fail. All included.",
     "",
@@ -432,21 +436,21 @@ export const EMAIL_EN = {
     "",
     "As always, thank you for trusting us.",
     "",
-    "Cristian Encina",
-    "Bright Lights Landscape Lighting",
-    "(941) 306-6038",
+    BRAND.operator,
+    BRAND.name,
+    BRAND.phone,
   ].join("\n"),
 };
 
 export const EMAIL_ES = {
-  from: "Cristian @ Bright Lights Landscape Lighting",
+  from: `${BRAND.operator} @ ${BRAND.name}`,
   replyTo: BRAND.email,
   subject:
-    "{{first_name}}, su sistema Bright Lights tiene {{install_age}} años — mantengamos la magia",
+    "{{first_name}}, su sistema de iluminación tiene {{install_age}} años — mantengamos la magia",
   body: [
     "Hola {{first_name}},",
     "",
-    "Han pasado {{install_age}} años desde que instalamos su iluminación. Florida no es fácil con los sistemas de luz — el aire salado, la humedad, las plantas que crecen, las tormentas. Por eso ofrecemos nuestros nuevos planes de mantenimiento Bright Lights.",
+    `Han pasado {{install_age}} años desde que instalamos su iluminación. Florida no es fácil con los sistemas de luz — el aire salado, la humedad, las plantas que crecen, las tormentas. Por eso ofrecemos nuestros nuevos planes de mantenimiento de ${BRAND.shortName}.`,
     "",
     "En lugar de llamar cada vez que algo falla, su sistema recibe revisiones programadas. Limpiamos los lentes, ajustamos los enfoques, revisamos los cables, cambiamos los focos antes de que fallen. Todo incluido.",
     "",
@@ -454,9 +458,9 @@ export const EMAIL_ES = {
     "",
     "Como siempre, gracias por confiar en nosotros.",
     "",
-    "Cristian Encina",
-    "Bright Lights Landscape Lighting",
-    "(941) 306-6038",
+    BRAND.operator,
+    BRAND.name,
+    BRAND.phone,
   ].join("\n"),
 };
 
@@ -632,10 +636,8 @@ export const STORM_PLAYBOOK = {
   affectedCustomers: 247,
   guardianPriorityCount: 0, // they have no Guardian subs yet — pre-launch
   affectedZips: ["34239", "34243", "34232", "34234", "34231", "34241", "34242", "33955", "34209", "34202"],
-  oneLineEnglish:
-    "Hi {{first_name}} — checking in after the storm. If your Bright Lights system has any damage, reply or click below to book a priority repair window. — Cristian",
-  oneLineSpanish:
-    "Hola {{first_name}} — pasando a saludar después de la tormenta. Si su sistema Bright Lights tiene algún daño, responda o reserve una ventana de reparación prioritaria. — Cristian",
+  oneLineEnglish: `Hi {{first_name}} — checking in after the storm. If your lighting system has any damage, reply or click below to book a priority repair window. — ${BRAND.operator}`,
+  oneLineSpanish: `Hola {{first_name}} — pasando a saludar después de la tormenta. Si su sistema de iluminación tiene algún daño, responda o reserve una ventana de reparación prioritaria. — ${BRAND.operator}`,
 };
 
 // ---- Gladius pricing tiers shown inside the demo (priority prompt §4.2 Beat 8) ----

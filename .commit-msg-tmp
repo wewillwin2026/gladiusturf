@@ -1,0 +1,85 @@
+feat(bright-lights-friday): wipe + rebrand + onboarding shim + AI guards
+
+Bright Lights Landscape Lighting is becoming a real paying tenant by
+Friday 2026-05-09. The board met to revise the surrogate path and voted
+3-1 (Strategy/Product/Trust over Engineering's surrogate-with-banner) to
+WIPE seeded customer rows + ship onboarding instead — Engineering's
+caveat was "WIPE only works if you also ship the shim." This commit ships
+both halves so Engineering's caveat is satisfied.
+
+Tier 1 (hard blockers — must be applied to prod before Felipe's invite):
+
+- supabase/migrations/20260507_a_bright_lights_wipe.sql:
+  DELETEs all customers + lighting_fixtures rows for the bright-lights
+  tenant. Inventory items (13) + units (17) STAY — they're SKU/unit
+  catalog data, not customer PII; the weekly cron uses them.
+- supabase/migrations/20260507_b_bright_lights_felipe_invite.sql:
+  Adds Felipe as a third owner row, additive (keeps our two existing
+  rows for support access). created_at backdated so the inventory-aging
+  cron's owner-resolver picks him over us. **Replace <FELIPE_EMAIL>
+  placeholder before applying.**
+- supabase/migrations/20260507_c_inventory_is_starter.sql:
+  Adds `is_starter` boolean to inventory_items + inventory_units; backfills
+  TRUE for the existing Bright Lights seeded rows so the new
+  TenantOnboardingHero can label them honestly.
+- Retired supabase/migrations/20260506_a_bright_lights_surrogate_swap.sql
+  (board overruled — surrogate solves yesterday's problem).
+
+Demo-workspace rebrand (Trust + Product + Strategy unanimous):
+- Moved app/demo/bright-lights-encina → app/demo/sample-lighting-co.
+- middleware.ts: gate now matches /demo/sample-lighting-co; permanent
+  308 redirect from old path so any pre-existing share links still work.
+- lib/demo-data/bright-lights.ts: BRAND block rewritten as "Sample
+  Lighting Co." in Tampa (fictional operator). All references to
+  Cristian/Bright Lights in EMAIL_EN/ES, STORM_PLAYBOOK,
+  MIKE_JACKSON_HISTORY swapped to BRAND.operator. The 12 customer
+  surrogate names + addresses from yesterday remain; only the brand
+  identity changed.
+
+Onboarding shim (Product Director's Friday MVP):
+- components/app/TenantOnboardingHero.tsx: new welcome surface that
+  renders on app/app/(authed)/page.tsx when tenant.customers.count === 0.
+  Three-card layout: Import customer list (recommended) · Add manually ·
+  Browse starter inventory. Plus a founder-direct CTA.
+- app/app/(authed)/page.tsx: branches to TenantOnboardingHero before the
+  TodayDashboard if tenant has zero customers. Pulls is_starter counts
+  from the new column so the hero shows accurate numbers.
+- app/app/(authed)/import/customers/page.tsx + actions.ts +
+  _components/CsvImporter.tsx: full CSV import flow. Drop a file →
+  RFC4180 parser → header guesser maps Jobber/LMN/ServicePro export
+  columns → mapping UI → tenant-scoped insert with dedupe by display
+  name. Max 5000 rows per import.
+- app/app/(authed)/onboarding/profile/page.tsx: stub for the "tell us
+  about your shop" form so the hero CTA doesn't 404.
+
+AI surface guards (AI Director's pre-Friday checklist):
+- components/app/AppShell.tsx: new `hideAskGladius` prop; tenant layout
+  passes it so the floating button doesn't render for tenant sessions.
+  Without this, Ask Gladius would answer Felipe's questions from the
+  hardcoded Cypress Lawn snapshot.
+- app/app/(authed)/quotes/new/page.tsx: now session-aware. Tenant
+  sessions see a TenantEmptyState explaining the Send pipeline ships
+  before the green button. Demo session keeps the existing surface.
+
+Inventory-aging cron rewrite (AI + Trust):
+- app/api/cron/inventory-aging/route.ts: subject now leads with the
+  tenant name + oldest-unit age. Body reads as a Monday human note,
+  not a system alert. Sender is `Gladius Radar <radar@gladiusturf.com>`
+  (override via RESEND_FROM env if needed). DNS for the radar@ alias
+  needs verification in Resend before the first send to Felipe.
+
+Verification:
+- npx tsc --noEmit clean (after .next clear)
+- npm run lint clean (no new warnings)
+- npm run build registers /app/import/customers, /app/onboarding/profile,
+  and 19 /demo/sample-lighting-co/* routes; old /demo/bright-lights-encina
+  paths now 308 to the new slug via middleware.
+
+USER ACTIONS BEFORE FELIPE'S INVITE:
+1. Apply 20260507_a_bright_lights_wipe.sql to live Supabase.
+2. Replace <FELIPE_EMAIL> in 20260507_b and apply.
+3. Apply 20260507_c_inventory_is_starter.sql.
+4. Verify radar@gladiusturf.com is a verified Resend sender (DNS).
+5. Smoke-test /api/app/auth/magic with Felipe's email post-invite-row.
+
+Tier 3 (DPA + ToS + TCPA + audit_log) tracked separately for next week.

@@ -1,4 +1,5 @@
 import { TodayDashboard } from "@/components/app/TodayDashboard";
+import { TenantOnboardingHero } from "@/components/app/TenantOnboardingHero";
 import { readAppSession } from "@/lib/app/session";
 import { supabaseAdmin } from "@/lib/supabase";
 import { demoState } from "@/lib/demo/state";
@@ -15,22 +16,45 @@ export default async function AppHomePage() {
   // Tenant session — render real KPIs from the tenant's data.
   if (session.kind === "tenant") {
     const sb = supabaseAdmin();
-    const [customersRes, fixturesRes] = await Promise.all([
-      sb
-        .from("customers")
-        .select("id, customer_tier, preferred_language", { count: "exact" })
-        .eq("tenant_id", session.tenant.id),
-      sb
-        .from("lighting_fixtures")
-        .select("id, warranty_status, warranty_end", { count: "exact" })
-        .eq("tenant_id", session.tenant.id),
-    ]);
+    const [customersRes, fixturesRes, starterItemsRes, starterUnitsRes] =
+      await Promise.all([
+        sb
+          .from("customers")
+          .select("id, customer_tier, preferred_language", { count: "exact" })
+          .eq("tenant_id", session.tenant.id),
+        sb
+          .from("lighting_fixtures")
+          .select("id, warranty_status, warranty_end", { count: "exact" })
+          .eq("tenant_id", session.tenant.id),
+        sb
+          .from("inventory_items")
+          .select("id", { count: "exact", head: true })
+          .eq("tenant_id", session.tenant.id)
+          .eq("is_starter", true),
+        sb
+          .from("inventory_units")
+          .select("id", { count: "exact", head: true })
+          .eq("tenant_id", session.tenant.id)
+          .eq("is_starter", true),
+      ]);
 
     const customers = customersRes.data ?? [];
     const fixtures = fixturesRes.data ?? [];
 
     const customerCount = customersRes.count ?? customers.length;
     const fixtureCount = fixturesRes.count ?? fixtures.length;
+
+    // Day-1 onboarding: tenant has no customers yet. Show the welcome hero
+    // instead of a sea of zeroed KPIs that look broken.
+    if (customerCount === 0) {
+      return (
+        <TenantOnboardingHero
+          tenant={session.tenant}
+          starterItemCount={starterItemsRes.count ?? 0}
+          starterUnitCount={starterUnitsRes.count ?? 0}
+        />
+      );
+    }
     const activeWarranties = fixtures.filter(
       (f) => f.warranty_status === "active" || f.warranty_status === "lifetime",
     ).length;

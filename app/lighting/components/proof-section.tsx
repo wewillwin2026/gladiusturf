@@ -3,10 +3,10 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { PROOF } from "@/lib/lighting/content";
 
 /**
- * Proof strip — single full-width section with the Bright Lights pilot
- * callout. Per LIGHTING_LEGENDARY §7.4: do NOT link to the private
- * /demo/bright-lights-encina URL from this public page. CTA scrolls
- * to the lead form.
+ * Proof strip — single full-width section with the founding-cohort pilot
+ * callout. Per LIGHTING_LEGENDARY §7.4: do NOT link to any tenant-specific
+ * demo URL from this public page. CTA scrolls to the lead form. The public
+ * demo lives at /demo/sample-lighting-co (passcode-gated, fictional brand).
  */
 export function LightingProof() {
   return (

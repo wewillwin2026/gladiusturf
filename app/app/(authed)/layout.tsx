@@ -29,6 +29,7 @@ export default async function AppAuthedLayout({
           subtitle: `${session.tenant.display_name} · ${session.tenant.plan_tier}`,
         }}
         logoutHref="/api/app/logout"
+        hideAskGladius
       >
         {children}
       </AppShell>

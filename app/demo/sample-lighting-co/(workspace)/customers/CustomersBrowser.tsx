@@ -124,7 +124,7 @@ export function CustomersBrowser({
               }}
             >
               <Link
-                href={`/demo/bright-lights-encina/customers/${c.id}`}
+                href={`/demo/sample-lighting-co/customers/${c.id}`}
                 className="flex items-center gap-2 text-[13px] hover:underline"
                 style={{ color: "var(--bl-text)" }}
               >

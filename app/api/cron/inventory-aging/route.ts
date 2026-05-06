@@ -22,7 +22,11 @@ export const dynamic = "force-dynamic";
  */
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://gladiusturf.com";
-const FROM_ADDRESS = "GladiusTurf <app@gladiusturf.com>";
+// `radar@gladiusturf.com` so the email reads as a person, not a no-reply
+// system address. Verify the alias on Resend / DNS before the first send to a
+// real tenant — gracefully falls back to the configured RESEND_FROM if set.
+const FROM_ADDRESS =
+  process.env.RESEND_FROM || "Gladius Radar <radar@gladiusturf.com>";
 const STALE_THRESHOLD_DAYS = 90;
 const TOP_N = 5;
 
@@ -68,42 +72,46 @@ function escapeHtml(s: string): string {
 
 function buildEmail(tenantName: string, totalCount: number, topUnits: StaleUnit[]) {
   const ctaUrl = `${SITE_URL}/app/inventory?sort=oldest`;
-  const subject = `${totalCount} fixtures haven't moved in 90+ days. Sell these first.`;
+  const oldestDays = topUnits[0]?.ageDays ?? STALE_THRESHOLD_DAYS;
+  const subject = `${tenantName} — ${totalCount} fixture${totalCount === 1 ? "" : "s"} aging on your shelf (${oldestDays}d+)`;
 
   const htmlList = topUnits
     .map((u) => {
       const sku = escapeHtml(u.sku);
       const name = escapeHtml(u.name);
       const loc = u.location ? escapeHtml(u.location) : "—";
-      return `<li><strong>${sku}</strong> &middot; ${name} &middot; ${u.ageDays} days &middot; ${loc}</li>`;
+      return `<li style="margin-bottom:6px"><strong>${sku}</strong> &middot; ${name} &middot; <strong>${u.ageDays}d</strong> &middot; ${loc}</li>`;
     })
     .join("");
 
   const html = [
-    `<p>Hey ${escapeHtml(tenantName)},</p>`,
-    `<p>Here's what's been sitting in your shop the longest:</p>`,
-    `<ul>${htmlList}</ul>`,
-    `<p><a href="${ctaUrl}">Open inventory</a></p>`,
-    `<p style="color:#666;font-size:12px">— Gladius</p>`,
+    `<p>Hi ${escapeHtml(tenantName)},</p>`,
+    `<p>Quick Monday radar from your inventory engine — these are the units that have been sitting longest in your shop. Worth thinking about which ones to push first this week:</p>`,
+    `<ul style="padding-left:18px">${htmlList}</ul>`,
+    `<p style="margin-top:18px"><a href="${ctaUrl}" style="background:#00d26a;color:#0a0a0a;padding:8px 16px;border-radius:6px;text-decoration:none;font-weight:500">Review inventory →</a></p>`,
+    `<p style="color:#666;font-size:12px;margin-top:32px">This radar fires every Monday morning. To pause it, reply to this email — a real person picks it up.</p>`,
+    `<p style="color:#999;font-size:11px">— Gladius Radar · gladiusturf.com</p>`,
   ].join("");
 
   const textList = topUnits
     .map(
       (u) =>
-        `- ${u.sku} · ${u.name} · ${u.ageDays} days · ${u.location ?? "—"}`,
+        `- ${u.sku} · ${u.name} · ${u.ageDays}d · ${u.location ?? "—"}`,
     )
     .join("\n");
 
   const text = [
-    `Hey ${tenantName},`,
+    `Hi ${tenantName},`,
     ``,
-    `Here's what's been sitting in your shop the longest:`,
+    `Quick Monday radar from your inventory engine — these units have been sitting longest in your shop. Worth thinking about which ones to push first this week:`,
     ``,
     textList,
     ``,
-    `Open inventory: ${ctaUrl}`,
+    `Review inventory: ${ctaUrl}`,
     ``,
-    `— Gladius`,
+    `This radar fires every Monday morning. Reply to pause — a real person picks it up.`,
+    ``,
+    `— Gladius Radar`,
   ].join("\n");
 
   return { subject, html, text };
