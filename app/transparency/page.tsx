@@ -5,6 +5,9 @@ import { Eyebrow } from "@/components/eyebrow";
 import { Footer } from "@/components/footer";
 import { Nav } from "@/components/nav";
 import { Pill } from "@/components/pill";
+import { supabaseAdmin } from "@/lib/supabase";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Transparency — Cryptographic audit roots, recomputable by anyone.",
@@ -14,7 +17,36 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-export default function TransparencyPage() {
+type PublicRoot = {
+  date: string;
+  root_hex: string;
+  ai_runs_count: number;
+  audit_events_count: number;
+  cross_tenant_reads_count: number;
+  consent_events_count: number;
+  created_at: string;
+};
+
+export default async function TransparencyPage() {
+  // Pull the all-tenants forensics roots (tenant_id NULL) — these are
+  // the public chain. Per-tenant roots are private to each tenant and
+  // surface in the Trust Console at /app/trust.
+  const sb = supabaseAdmin();
+  let publicRoots: PublicRoot[] = [];
+  try {
+    const { data } = await sb
+      .from("transparency_roots")
+      .select(
+        "date, root_hex, ai_runs_count, audit_events_count, cross_tenant_reads_count, consent_events_count, created_at",
+      )
+      .is("tenant_id", null)
+      .order("date", { ascending: false })
+      .limit(30);
+    publicRoots = (data ?? []) as PublicRoot[];
+  } catch {
+    /* table not yet migrated on older preview deploys — fall through */
+  }
+
   return (
     <div className="min-h-screen bg-pitch text-bone">
       <Nav />
@@ -130,6 +162,66 @@ export default function TransparencyPage() {
             recipients can verify what the AI was given.
           </p>
         </section>
+
+        {publicRoots.length > 0 && (
+          <section className="mt-10 rounded-2xl border border-bone/15 bg-bone/[0.02] p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Hash className="h-4 w-4 text-champagne-bright" />
+                <span className="text-xs font-semibold uppercase tracking-crest text-champagne-bright">
+                  Published roots — last {publicRoots.length} days
+                </span>
+              </div>
+              <span className="text-[10px] font-mono uppercase tracking-crest text-bone/40">
+                all-tenants forensic chain
+              </span>
+            </div>
+            <div className="mt-4 overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b border-bone/10 text-left text-[10px] uppercase tracking-crest text-bone/45">
+                    <th className="py-2 pr-3 font-semibold">UTC date</th>
+                    <th className="py-2 pr-3 font-semibold">Root (sha256)</th>
+                    <th className="py-2 pr-3 font-semibold text-right">AI runs</th>
+                    <th className="py-2 pr-3 font-semibold text-right">Audit</th>
+                    <th className="py-2 pr-3 font-semibold text-right">Cross-tenant</th>
+                    <th className="py-2 pr-3 font-semibold text-right">Consent</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {publicRoots.map((r) => (
+                    <tr key={r.date} className="border-b border-bone/5 last:border-b-0">
+                      <td className="py-2 pr-3 font-mono text-bone">{r.date}</td>
+                      <td className="py-2 pr-3 font-mono text-bone/75 break-all">
+                        {r.root_hex.slice(0, 32)}…
+                      </td>
+                      <td className="py-2 pr-3 font-mono tabular-nums text-right text-bone/85">
+                        {r.ai_runs_count}
+                      </td>
+                      <td className="py-2 pr-3 font-mono tabular-nums text-right text-bone/85">
+                        {r.audit_events_count}
+                      </td>
+                      <td className="py-2 pr-3 font-mono tabular-nums text-right text-bone/85">
+                        {r.cross_tenant_reads_count}
+                      </td>
+                      <td className="py-2 pr-3 font-mono tabular-nums text-right text-bone/85">
+                        {r.consent_events_count}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="mt-3 text-[10px] text-bone/40 leading-relaxed">
+              Roots show the first 32 hex characters of each SHA-256
+              fingerprint. Hit{" "}
+              <code className="font-mono">/api/transparency/root/YYYY-MM-DD</code>{" "}
+              with your tenant session for the full root + tenant-scoped
+              counts. The all-tenants root above is forensics-grade and
+              not customer-visible per-row.
+            </p>
+          </section>
+        )}
 
         <p className="mt-12 text-sm text-bone/50">
           Questions: email{" "}

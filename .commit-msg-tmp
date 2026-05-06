@@ -1,52 +1,21 @@
-feat(quote-share + transparency-cron): public customer quote view, daily root snapshot, mark-as-sent flow
+fix(transparency): cron upsert via delete+insert + render published chain on /transparency
 
-User authorized blanket board-deferral for the Home Depot trip. Acted on
-two follow-on board mandates while preserving operator intent.
+The transparency-snapshot cron was returning written:0 because PostgREST's
+`onConflict: "tenant_id,date"` couldn't resolve against the migration's
+expression-based unique index (`coalesce(tenant_id::text,'')`). Switched
+to an idempotent delete-then-insert path that handles both NULL-tenant
+all-tenants rows and per-tenant rows with one code path.
 
-Public customer-facing quote view:
-- New /quote/[id] route. Anonymous-readable; UUID is the gate. Renders
-  customer name + scope title + total + property address + Accept /
-  Ask-a-question buttons (mailto). Bilingual (EN/ES) per proposal
-  language. Branding accent pulled from tenants.brand_accent_hex (falls
-  back to g-accent green). Drafts and lost-status proposals 404 — only
-  sent / viewed / walked / sold / installed are shareable.
-- Privacy: never renders tenant notes, profit math, or internal
-  metadata. Only what we'd say to the customer's face.
-- Footer link to /transparency for verifiable audit chain + tel: link
-  to the tenant's primary phone.
-
-Operator flow:
-- New `markQuoteSent(proposalId)` server action — flips status from
-  draft → sent, stamps sent_at, writes audit_log row. Tenant-scoped
-  via existing readAppSession() + supabase tenant_id check.
-- New MarkSentButton client component — one-click flip on the /app/
-  quotes table when status='draft'. Toast confirms with the new
-  /quote/<id> link.
-- /app/quotes table now has a "Customer link" column. Drafts show the
-  Mark-as-sent action; sent/viewed/sold show /quote/<id-prefix>...
-  hyperlink targeting a new tab.
-
-Cryptographic transparency v2 — daily root snapshots:
-- New supabase/migrations/20260508_a_transparency_roots.sql APPLIED
-  to live Supabase (board mandate from Trust Director's stretch ask;
-  user authorized via "use the board to make decisions" delegation).
-  transparency_roots(tenant_id NULLABLE, date, root_hex, counts...).
-  Unique on (coalesce(tenant_id::text,''), date) so all-tenants NULL
-  rows + per-tenant rows coexist.
-- New /api/cron/transparency-snapshot route. Bearer CRON_SECRET auth.
-  Computes yesterday's UTC root for every active tenant + the all-
-  tenants forensics root, upserts. ?date=YYYY-MM-DD for backfill.
-- vercel.json: new cron at "30 0 * * *" (00:30 UTC daily — runs after
-  midnight UTC rolls over so "yesterday" is closed).
-
-Once today's snapshot runs Wednesday 00:30 UTC, the daily root for
-2026-05-08 becomes immutable: any after-the-fact mutation to the
-audit-bearing tables for that date breaks verification on /api/
-transparency/root/2026-05-08.
+/transparency public page now renders the chain:
+- Reads transparency_roots WHERE tenant_id IS NULL — the all-tenants
+  forensic chain we publish.
+- Renders a compact 6-column table: UTC date · root_hex (first 32) ·
+  AI runs · audit · cross-tenant · consent counts.
+- Falls through gracefully if the table doesn't exist on a stale
+  preview deploy.
+- Per-tenant roots stay private to /app/trust + the JSON endpoint at
+  /api/transparency/root/[date].
 
 Verification:
 - npx tsc --noEmit clean
 - npm run lint clean
-- npm run build registers /quote/[id] (265 B), /api/cron/transparency-
-  snapshot (202 B), /app/quotes (4.08 kB up from 3.47 kB — Mark-as-
-  sent client component bundle).

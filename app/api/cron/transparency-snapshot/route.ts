@@ -69,29 +69,37 @@ export async function GET(request: Request): Promise<Response> {
 
     for (const tid of targets) {
       const root = await computeDailyRoot(date, tid);
-      const { error: upsertErr } = await sb
+      // Idempotent delete-then-insert. The migration's unique index is
+      // expression-based (`coalesce(tenant_id::text,'')`), so the
+      // PostgREST `onConflict` flag can't resolve cleanly against it.
+      // Manual delete handles both the tenant-id-NULL all-tenants row
+      // and the per-tenant rows with a single code path.
+      const deleteQuery = sb
         .from("transparency_roots")
-        .upsert(
-          {
-            tenant_id: tid,
-            date,
-            root_hex: root.rootHex,
-            ai_runs_count: root.counts.aiRuns,
-            audit_events_count: root.counts.auditEvents,
-            cross_tenant_reads_count: root.counts.crossTenantReads,
-            consent_events_count: root.counts.consentEvents,
-          },
-          // Tenant_id NULL needs a unique-index handler — the migration
-          // uses coalesce(tenant_id::text,'') in the unique index so
-          // upsert by (tenant_id, date) works for both cases.
-          { onConflict: "tenant_id,date" },
-        );
-      if (upsertErr) {
+        .delete()
+        .eq("date", date);
+      if (tid === null) {
+        await deleteQuery.is("tenant_id", null);
+      } else {
+        await deleteQuery.eq("tenant_id", tid);
+      }
+      const { error: insertErr } = await sb
+        .from("transparency_roots")
+        .insert({
+          tenant_id: tid,
+          date,
+          root_hex: root.rootHex,
+          ai_runs_count: root.counts.aiRuns,
+          audit_events_count: root.counts.auditEvents,
+          cross_tenant_reads_count: root.counts.crossTenantReads,
+          consent_events_count: root.counts.consentEvents,
+        });
+      if (insertErr) {
         console.warn(
-          "[transparency-snapshot] upsert error",
+          "[transparency-snapshot] insert error",
           tid,
           date,
-          upsertErr,
+          insertErr,
         );
         continue;
       }
