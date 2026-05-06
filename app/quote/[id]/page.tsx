@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import Link from "next/link";
 import {
   CheckCircle2,
@@ -100,6 +101,57 @@ export default async function PublicQuotePage({
 
   const customer = Array.isArray(row.customers) ? row.customers[0] : row.customers;
   const tenant = Array.isArray(row.tenants) ? row.tenants[0] : row.tenants;
+
+  // Track first-view: flip sent -> viewed + stamp viewed_at + audit.
+  // Skip when already viewed (or beyond), and when the request looks
+  // like a bot preview (no User-Agent, link-unfurl bots). Best-effort —
+  // a failure here must never block the customer from seeing the quote.
+  if (row.status === "sent") {
+    try {
+      const hdrs = await headers();
+      const ua = (hdrs.get("user-agent") ?? "").toLowerCase();
+      const looksLikeBot =
+        ua === "" ||
+        ua.includes("bot") ||
+        ua.includes("crawler") ||
+        ua.includes("spider") ||
+        ua.includes("preview") ||
+        ua.includes("slack") ||
+        ua.includes("discord") ||
+        ua.includes("twitter") ||
+        ua.includes("facebookexternalhit");
+      if (!looksLikeBot) {
+        // Need tenant_id for the audit row — re-fetch minimally.
+        const { data: meta } = await sb
+          .from("proposals")
+          .select("tenant_id, customer_id")
+          .eq("id", row.id)
+          .maybeSingle();
+        const nowIso = new Date().toISOString();
+        await sb
+          .from("proposals")
+          .update({ status: "viewed", viewed_at: nowIso })
+          .eq("id", row.id)
+          .eq("status", "sent");
+        if (meta?.tenant_id) {
+          await sb.from("audit_log").insert({
+            tenant_id: meta.tenant_id,
+            user_id: null,
+            action: "quote.viewed",
+            entity_type: "proposal",
+            entity_id: row.id,
+            metadata: {
+              customer_id: meta.customer_id,
+              user_agent: ua.slice(0, 200),
+              source: "public_link",
+            },
+          });
+        }
+      }
+    } catch (err) {
+      console.warn("quote.viewed tracking failed", err);
+    }
+  }
   const title = row.bom?.title ?? "Quote";
   const accent = tenant.brand_accent_hex || "#00d26a";
 
