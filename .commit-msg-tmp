@@ -1,49 +1,30 @@
-feat(post-tier4): customer detail vertical-aware + support_access_grants
+feat(app): add customer flow + wire empty-state CTAs
 
-Two follow-on items after the Tier 4 batch:
+The onboarding hero and customers list both had "Add customer" CTAs that
+pointed to /app/quotes/new (the AI Quote Drafter) instead of an actual
+customer-creation form. Felipe lands on /app, clicks "Add your first
+customer" and gets a streaming-quote demo screen — broken UX.
 
-Customer detail page → vertical registry (Engineering Director's "before
-vertical #2" keystone):
-- app/app/(authed)/customers/[id]/page.tsx no longer hardcodes
-  lighting_fixtures for non-lighting tenants. The fixtures rollup section
-  now renders only for tenants where session.tenant.vertical === "lighting";
-  irrigation/pool/etc tenants see a placeholder ("per-asset detail for the
-  {vertical} vertical ships in a follow-up"). The customer profile, plan
-  picker, and visit schedule render unchanged for every vertical.
-- The query for lighting_fixtures is gated behind isLighting so non-
-  lighting tenants don't pay for it. Other tenants can land on this page
-  without 500ing.
+This batch:
+- New /app/customers/new — manual-entry form: name (required), email,
+  phone, full address (street/city/state/zip), language (when tenant is
+  bilingual), free-text notes. Auto-focused name field. On success,
+  routes to /app/customers/[newId] so the operator lands on the just-
+  created customer's profile to add fixtures/plans next.
+- New createCustomer() server action — readAppSession-gated, tenant-
+  scoped insert with source='manual-entry' so we can later distinguish
+  manual rows from CSV-imported ones.
+- /app/customers list (empty + populated states) updated:
+    "Add customer" → /app/customers/new (was /app/quotes/new)
+    "Import CSV"   → /app/import/customers (was a no-op button)
 
-support_access_grants schema + helper (board Decision 4 — REBRAND
-founder cross-tenant access to opt-in):
-- supabase/migrations/20260507_f_support_access_grants.sql:
-    support_access_grants(tenant_id, granted_to_email, scope, status,
-      expires_at, created_at, created_by_email, revoked_at,
-      revoked_by_email)
-    cross_tenant_access_log(tenant_id, actor_email, surface, action,
-      resource_id, reason, granted_by_id, created_at)
-  Both tenant-scoped via is_tenant_member RLS so tenants can read their
-  own grants + access log when the future UI ships.
-- lib/app/support-access.ts: logCrossTenantRead() — best-effort append
-  to the access log, looks up the active grant if one exists and
-  references it by FK. hasActiveGrant() helper for the future opt-in UI.
-- Migration NOT YET APPLIED — user authorized a/b/c/d/e but not this
-  one. Apply via psql when ready; the helper degrades gracefully (logs
-  a warning, doesn't throw) until the tables exist.
+The Day-1 onboarding loop now closes:
+  TenantOnboardingHero → /app/customers → "Add customer" or "Import CSV"
+  → real form that creates a real row → /app/customers/[id] detail page
+  (vertical-aware, post Tier 4 batch).
 
 Verification:
-- /security rewrite probed live (commit 5268468 deploy): "App-layer",
-  "magic-link auth", "Built honestly" copy live; "Postgres RLS" only
-  appears in the migrating-roadmap context.
-- /app/automations/storm + /app/automations 307 to login — auth gate
-  intact, no 500s on the new routes.
-- /api/cron/inventory-aging authed → tenantsNotified:1, totalUnits:6
-  (post-/security rewrite, no regression).
-- /legal/dpa 200 OK (74 KB).
-- Homepage shows "Twelve engines" copy live; old "Thirty-three" gone.
-- npx tsc --noEmit clean. npm run lint clean. npm run build clean.
-
-USER ACTION OUTSTANDING:
-- Apply 20260507_f_support_access_grants.sql to live Supabase via psql
-  when ready. Until then, support-access.ts logs a console warning and
-  no-ops on every founder cross-tenant query — no functional regression.
+- npx tsc --noEmit clean
+- npm run build registers /app/customers/new (2.85 kB) alongside
+  /app/customers (11 kB) and /app/customers/[id] (2.22 kB)
+- All three routes 307 to /app/login when unauthed (auth gate intact)

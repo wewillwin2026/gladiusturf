@@ -111,8 +111,10 @@ export default async function CustomersPage() {
             subtitle="Your customer list lives here. Import a CSV or add your first customer to get started."
             actions={
               <>
-                <Button variant="secondary">Import CSV</Button>
-                <Link href="/app/quotes/new" prefetch>
+                <Link href="/app/import/customers" prefetch>
+                  <Button variant="secondary">Import CSV</Button>
+                </Link>
+                <Link href="/app/customers/new" prefetch>
                   <Button variant="primary">
                     <Plus className="h-3.5 w-3.5" />
                     Add customer
@@ -140,8 +142,10 @@ export default async function CustomersPage() {
           subtitle={`${customers.length} on file · ${session.tenant.bilingual ? "EN + ES" : session.tenant.primary_language.toUpperCase()}`}
           actions={
             <>
-              <Button variant="secondary">Export CSV</Button>
-              <Link href="/app/quotes/new" prefetch>
+              <Link href="/app/import/customers" prefetch>
+                <Button variant="secondary">Import CSV</Button>
+              </Link>
+              <Link href="/app/customers/new" prefetch>
                 <Button variant="primary">
                   <Plus className="h-3.5 w-3.5" />
                   New customer
