@@ -29,6 +29,14 @@ const TENANT_AUTOMATIONS: {
     body: "When a named storm hits your service area, queue a bilingual check-in to every customer in the affected ZIPs. Top-tier plan members jump the queue.",
   },
   {
+    slug: "backflow-radar",
+    href: "/app/automations/backflow-radar",
+    icon: Repeat,
+    name: "Backflow Compliance Radar",
+    status: "live",
+    body: "Irrigation tenants only. Florida backflow assemblies need annual filings — late = shut-off + fines. Radar surfaces overdue + due-soon, routed to the right utility portal (BSI Online, JEA, Sarasota County, etc).",
+  },
+  {
     slug: "inbox-reply",
     href: null,
     icon: Inbox,
