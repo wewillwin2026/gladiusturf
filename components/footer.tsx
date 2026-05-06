@@ -55,6 +55,7 @@ const LEGAL_LINKS = [
   { href: "/legal/terms", label: "Terms" },
   { href: "/legal/dpa", label: "DPA" },
   { href: "/legal/security", label: "Security" },
+  { href: "/transparency", label: "Transparency" },
 ];
 
 function Column({

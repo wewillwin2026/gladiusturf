@@ -490,9 +490,17 @@ export default async function TrustConsolePage() {
       <section className="flex items-center justify-between gap-2 text-[11px] text-g-text-faint">
         <span>
           <AlertTriangle className="h-3 w-3 inline-block mr-1" />
-          Cryptographic audit (Merkle-rooted daily public root) ships next —
-          will replace this dashboard&apos;s audit panel with a hash-verifiable
-          ledger.
+          Cryptographic audit live: each UTC day&apos;s Merkle root is
+          recomputable by anyone — see{" "}
+          <Link
+            href="/transparency"
+            target="_blank"
+            className="text-g-accent hover:underline"
+          >
+            /transparency
+          </Link>
+          {" or fetch your tenant-scoped root via "}
+          <code className="font-geist-mono">/api/transparency/root/YYYY-MM-DD</code>.
         </span>
       </section>
     </div>

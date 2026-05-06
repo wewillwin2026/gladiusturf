@@ -509,6 +509,107 @@ export default function PricingPage() {
           </div>
         </section>
 
+        {/* CFO one-pager — Strategy Director's pricing-justification
+            packet (board-mandated 2026-05-08 follow-up). */}
+        <section className="border-t border-bone/5 bg-slate-deep py-28">
+          <div className="mx-auto max-w-5xl px-6">
+            <Pill tone="champagne" className="mb-4">
+              For the CFO meeting
+            </Pill>
+            <h2 className="font-serif text-3xl tracking-[-0.01em] text-bone md:text-4xl">
+              Per-user pricing punishes growth.
+              <br />
+              Per-revenue pricing punishes success.
+              <br />
+              <span className="text-champagne-bright">
+                We&apos;re per-crew, capped 5% YoY in writing.
+              </span>
+            </h2>
+
+            <ol className="mt-10 grid gap-4 md:grid-cols-2">
+              <li className="rounded-2xl border border-bone/10 bg-obsidian p-6">
+                <div className="text-xs font-semibold uppercase tracking-crest text-bone/45">
+                  1. The competitor floor is a lie
+                </div>
+                <p className="mt-2 text-sm leading-relaxed text-bone/70">
+                  LMN&apos;s &ldquo;$297 Starter&rdquo; is per-user — at 4
+                  seats you&apos;re at $1,188/mo. Jobber&apos;s &ldquo;$39&rdquo;
+                  becomes $589/mo at one Connect Team. Housecall&apos;s
+                  &ldquo;$59&rdquo; becomes $674/mo with the documented
+                  add-on creep. Aspire and ServiceTitan won&apos;t even
+                  publish a floor.{" "}
+                  <strong className="text-bone">
+                    $597/crew is the only number that matches the invoice.
+                  </strong>
+                </p>
+              </li>
+              <li className="rounded-2xl border border-bone/10 bg-obsidian p-6">
+                <div className="text-xs font-semibold uppercase tracking-crest text-bone/45">
+                  2. Seasonal hires are free
+                </div>
+                <p className="mt-2 text-sm leading-relaxed text-bone/70">
+                  Every per-user platform charges you to grow in March and
+                  refuses to refund you in November. We&apos;re per-crew —
+                  hire 6 spring techs at $0 incremental cost. On Service
+                  Autopilot mid-tier that&apos;s $1,194/mo of pure surcharge
+                  you stop paying.{" "}
+                  <strong className="text-bone">
+                    The savings line is bigger than the subscription line.
+                  </strong>
+                </p>
+              </li>
+              <li className="rounded-2xl border border-bone/10 bg-obsidian p-6">
+                <div className="text-xs font-semibold uppercase tracking-crest text-bone/45">
+                  3. No ETF, no implementation fee, no rollup tax
+                </div>
+                <p className="mt-2 text-sm leading-relaxed text-bone/70">
+                  ServiceTitan&apos;s $46,170 ETF, Aspire&apos;s
+                  contract-remainder separation fee, Workwave&apos;s 240%
+                  replacement-tier hikes — these are documented numbers, not
+                  hypotheticals. Our exit cost is $0 and a CSV export.{" "}
+                  <strong className="text-bone">
+                    Pricing power without lock-in is the actual product.
+                  </strong>
+                </p>
+              </li>
+              <li className="rounded-2xl border border-bone/10 bg-obsidian p-6">
+                <div className="text-xs font-semibold uppercase tracking-crest text-bone/45">
+                  4. Revenue intelligence pays for the seat
+                </div>
+                <p className="mt-2 text-sm leading-relaxed text-bone/70">
+                  Quote Intercept recovers $14,200/mo on a typical shop —
+                  23x the $597 floor and 3.5x the $3,997 Enterprise floor.
+                  The competitor question is &ldquo;what does this cost?&rdquo;
+                  The right question is{" "}
+                  <strong className="text-bone">
+                    &ldquo;what is standing still costing me?&rdquo;
+                  </strong>{" "}
+                  On QuickBooks + spreadsheets that&apos;s $14K/mo invisible.
+                </p>
+              </li>
+            </ol>
+
+            <div className="mt-12 rounded-2xl border border-champagne/30 bg-champagne/[0.04] p-8">
+              <div className="text-xs font-semibold uppercase tracking-crest text-champagne-bright">
+                The closing parable
+              </div>
+              <p className="mt-3 font-serif text-xl leading-snug text-bone md:text-2xl">
+                &ldquo;A farmer showed me his combine once — said the new
+                one cost $400,000 and his neighbor called him a fool. I
+                asked what the old one cost him. He pulled out a notebook:
+                rows missed, grain lost, two breakdowns at harvest. Came
+                to $90,000 a year. He laughed and said, the new combine is
+                the cheapest thing I ever bought; I just had to count what
+                the old one was costing me.&rdquo;
+              </p>
+              <p className="mt-3 text-sm leading-relaxed text-bone/55">
+                $597 a crew, for a 20-year business that wants to compound,
+                isn&apos;t a price. It&apos;s the new combine.
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* BDC Addon */}
         <section className="border-t border-bone/5 bg-slate-deep py-28">
           <div className="mx-auto max-w-7xl px-6">
