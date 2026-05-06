@@ -9,6 +9,7 @@ import {
   Mail,
   MapPin,
   MessageSquare,
+  PenSquare,
   Phone,
   ShieldAlert,
   ShieldCheck,
@@ -18,6 +19,7 @@ import {
   Zap,
 } from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
+import { Button } from "@/components/app/ui/Button";
 import { KPICard } from "@/components/app/ui/KPICard";
 import { StatusPill, type Tone } from "@/components/app/ui/StatusPill";
 import { readAppSession } from "@/lib/app/session";
@@ -207,10 +209,18 @@ export default async function CustomerDetailPage({
             </span>
           }
           actions={
-            <LogVisitButton
-              customerId={c.id}
-              customerName={c.display_name}
-            />
+            <div className="flex items-center gap-2">
+              <Link href={`/app/quotes/draft?customer=${c.id}`} prefetch>
+                <Button variant="secondary" size="md" type="button">
+                  <PenSquare className="h-3.5 w-3.5" />
+                  Draft a quote
+                </Button>
+              </Link>
+              <LogVisitButton
+                customerId={c.id}
+                customerName={c.display_name}
+              />
+            </div>
           }
         />
 

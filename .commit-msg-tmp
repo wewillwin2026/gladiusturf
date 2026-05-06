@@ -1,45 +1,44 @@
-feat(trust-console): the moat no incumbent will copy
+feat(quotes): manual draft flow — closes the sales-cycle loop for tenants
 
-Trust Director's #1 board recommendation 2026-05-08: ship a tenant-
-visible Trust Console — every AI run + every consent record + every
-audit event + every cross-tenant founder read + every sub-processor —
-in real time, in the tenant's own workspace.
-
-ServiceTitan, Jobber, Housecall Pro won't ship this because doing so
-would expose how often their support staff opens customer accounts and
-how their AI features can't cite a source. We can — because we built
-the audit primitives honestly from day one.
+Product Director's "First Quote in 90 Seconds" recommendation, scoped to
+the manual path. The AI Drafter for tenants ships behind the real Resend
++ Twilio send pipeline + the citation guardrail (Trust + AI directors'
+prerequisites); this gets a tenant quoting on Day 1 without waiting on
+that pipeline.
 
 What's wired:
-- New /app/trust route. Auth-gated to tenant sessions.
-- KPI band: AI runs in last 24h + 24h cost; consent records (in/out/
-  pending split); 30-day audit events; cross-tenant reads (with cheerful
-  empty state when zero).
-- AI runs panel (left, larger): top surfaces by call volume, plus a
-  policy footer noting per-tenant $5/day budget cap + the prompt-hash
-  + cost_cents stored per call.
-- Cross-tenant access panel (right): empty state today (no founders
-  reading); when 20260507_f migration applies, populates from
-  cross_tenant_access_log.
-- Consent ledger panel: last 8 records with channel + status + source.
-  StatusPill color-coded: opted_in green, pending amber, opted_out red.
-- Audit events panel: last 8 events with action + entity + timestamp.
-- Sub-processor panel: 6 vendors from /legal/dpa with what each touches.
-  Click-through to the full DPA.
-- Footer call-out: "the one thing no competitor will copy" framing
-  + legal@ contact for disputes.
-- "Cryptographic audit (Merkle-rooted) ships next" preview line per
-  Trust Director's stretch recommendation.
+- New /app/quotes/draft route — server component pulls the tenant's
+  customers, hands them to a client-side DraftQuoteForm with a
+  type-as-you-go customer search + "Change customer" pivot.
+- Form fields: customer (required, searchable), title (required), total
+  $, language toggle (when tenant.bilingual), notes textarea. Auto-
+  focus on the search box. Empty-state CTA when zero customers in book
+  ("Add a customer first").
+- New createDraftQuote() server action — tenant-scoped insert into
+  proposals (status='draft', vertical=tenant.vertical, ai_drafted=false,
+  bom={title, notes}), audit_log row written best-effort. Routes back to
+  /app/quotes on success.
+- Pre-fill via querystring: /app/quotes/draft?customer=<id> binds the
+  selected customer immediately. Wired from a new "Draft a quote"
+  button on /app/customers/[id] header — Cristian opens a property,
+  one tap drafts a quote against that customer.
 
-Sidebar:
-- engines.ts: new "Trust Console" engine in Pulse group, slug=trust,
-  ShieldCheck icon, ordinal 23.5 (between Reports and Analytics).
-
-Reads from already-applied prod tables (ai_run, customer_messaging_
-consent, audit_log) + degrades gracefully on cross_tenant_access_log
-(migration 20260507_f staged but not yet applied — hook denied during
-this batch; user will authorize separately).
+/app/quotes itself rebuilt for tenant sessions:
+- Was a TenantEmptyState — now reads the proposals table for the tenant
+  and renders a real KPI band (Drafts / In flight / Pipeline / Win rate)
+  + a clean table with status pills (draft / sent / viewed / walked /
+  sold / installed / lost color-coded via StatusPill tones).
+- Empty-state when no proposals: large "Draft a quote" CTA. The page
+  goes from "nothing to do here" to "actionable on Day 1."
+- Demo session preserves the existing Cypress Lawn QuotesKanban path.
 
 Verification:
 - npx tsc --noEmit clean
-- /app/trust registers (259 B, same shape as /app/automations).
+- npm run lint clean (one Next.js no-html-link-for-pages warning fixed
+  by replacing <a> with <Link prefetch>)
+- npm run build registers /app/quotes/draft (3.24 kB), /app/quotes
+  (3.47 kB tenant, was sharing route with demo).
+
+Day-1 sales loop now end-to-end:
+  Add customer → Customer detail → "Draft a quote" → quote saves to
+  proposals → list shows on /app/quotes with KPIs.
