@@ -1,30 +1,29 @@
-feat(app): add customer flow + wire empty-state CTAs
+feat(app): log a service visit from customer detail
 
-The onboarding hero and customers list both had "Add customer" CTAs that
-pointed to /app/quotes/new (the AI Quote Drafter) instead of an actual
-customer-creation form. Felipe lands on /app, clicks "Add your first
-customer" and gets a streaming-quote demo screen — broken UX.
+Closes the operations cycle on the customer profile. The detail page
+already queried schedule_items and rendered a service-history timeline,
+but there was no way to actually CREATE a visit row from the UI — the
+timeline was read-only.
 
-This batch:
-- New /app/customers/new — manual-entry form: name (required), email,
-  phone, full address (street/city/state/zip), language (when tenant is
-  bilingual), free-text notes. Auto-focused name field. On success,
-  routes to /app/customers/[newId] so the operator lands on the just-
-  created customer's profile to add fixtures/plans next.
-- New createCustomer() server action — readAppSession-gated, tenant-
-  scoped insert with source='manual-entry' so we can later distinguish
-  manual rows from CSV-imported ones.
-- /app/customers list (empty + populated states) updated:
-    "Add customer" → /app/customers/new (was /app/quotes/new)
-    "Import CSV"   → /app/import/customers (was a no-op button)
-
-The Day-1 onboarding loop now closes:
-  TenantOnboardingHero → /app/customers → "Add customer" or "Import CSV"
-  → real form that creates a real row → /app/customers/[id] detail page
-  (vertical-aware, post Tier 4 batch).
+- New action logServiceVisit(customerId, type, title, startsAt, notes?)
+  in app/(authed)/customers/[id]/actions.ts. Tenant-scoped insert into
+  schedule_items with status=completed for past dates and status=
+  scheduled for future. Audit-log row written best-effort.
+- New LogVisitButton.tsx — opens a dialog with: type radio
+  (service / install / warranty / storm_response / inspection), title
+  (required), datetime-local picker pre-filled with now in local TZ,
+  optional notes textarea. Toast confirms; router.refresh() pulls the
+  new row into the timeline.
+- Wired into PageHeader actions on /app/customers/[id]. Visible for
+  every tenant vertical, not just lighting.
 
 Verification:
 - npx tsc --noEmit clean
-- npm run build registers /app/customers/new (2.85 kB) alongside
-  /app/customers (11 kB) and /app/customers/[id] (2.22 kB)
-- All three routes 307 to /app/login when unauthed (auth gate intact)
+- npm run lint clean
+- npm run build: /app/customers/[id] now 6.59 kB (was 2.22 kB) — diff
+  is the dialog + form bundle. Other routes unchanged.
+
+Day-1 onboarding loop is now closed end-to-end:
+  TenantOnboardingHero → Add customer (manual or CSV) → /app/customers
+  list → /app/customers/[id] detail → Log a visit → service history
+  populates → cron picks up units when they age into staleness.

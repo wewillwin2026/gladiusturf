@@ -26,6 +26,7 @@ import { demoState } from "@/lib/demo/state";
 import { money, relTime, shortDate } from "@/lib/shared/format";
 import { cn } from "@/lib/cn";
 import { PlanPicker } from "./PlanPicker";
+import { LogVisitButton } from "./LogVisitButton";
 
 export const dynamic = "force-dynamic";
 
@@ -204,6 +205,12 @@ export default async function CustomerDetailPage({
                 <span className="text-g-text-faint">Customer since {installYear}</span>
               )}
             </span>
+          }
+          actions={
+            <LogVisitButton
+              customerId={c.id}
+              customerName={c.display_name}
+            />
           }
         />
 

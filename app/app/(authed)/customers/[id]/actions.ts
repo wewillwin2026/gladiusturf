@@ -82,3 +82,86 @@ export async function subscribeCustomerToPlan(formData: FormData) {
   revalidatePath("/app/plans");
   return { ok: true } as const;
 }
+
+export type LogVisitInput = {
+  customerId: string;
+  type: "install" | "service" | "warranty" | "storm_response" | "inspection";
+  title: string;
+  startsAt: string;
+  notes?: string | null;
+};
+
+export type LogVisitResult =
+  | { ok: true; visitId: string }
+  | { error: string };
+
+/**
+ * Log a completed (or scheduled) service visit on a customer's profile.
+ * Inserts a row into schedule_items with the appropriate type tag — the
+ * customer detail page already reads this table for the service-history
+ * timeline, so the visit appears the moment the action returns.
+ */
+export async function logServiceVisit(
+  input: LogVisitInput,
+): Promise<LogVisitResult> {
+  const session = await readAppSession();
+  if (session.kind !== "tenant") {
+    return { error: "unauthenticated" };
+  }
+  if (!input.customerId || !input.title?.trim() || !input.startsAt) {
+    return { error: "missing_field" };
+  }
+
+  const sb = supabaseAdmin();
+  const { data: customer } = await sb
+    .from("customers")
+    .select("id")
+    .eq("id", input.customerId)
+    .eq("tenant_id", session.tenant.id)
+    .maybeSingle();
+  if (!customer) return { error: "not_found_in_tenant" };
+
+  const startsAtIso = new Date(input.startsAt).toISOString();
+  const status = new Date(input.startsAt).getTime() <= Date.now()
+    ? "completed"
+    : "scheduled";
+
+  const { data, error } = await sb
+    .from("schedule_items")
+    .insert({
+      tenant_id: session.tenant.id,
+      customer_id: input.customerId,
+      type: input.type,
+      title: input.title.trim(),
+      starts_at: startsAtIso,
+      status,
+      notes: input.notes?.trim() || null,
+    })
+    .select("id")
+    .single();
+  if (error || !data) {
+    console.warn("logServiceVisit error", error);
+    return { error: "insert_failed" };
+  }
+
+  try {
+    await sb.from("audit_log").insert({
+      tenant_id: session.tenant.id,
+      user_id: null,
+      action: "visit_logged",
+      entity_type: "schedule_item",
+      entity_id: data.id as string,
+      metadata: {
+        customer_id: input.customerId,
+        type: input.type,
+        starts_at: startsAtIso,
+      },
+    });
+  } catch (err) {
+    console.warn("audit insert failed (non-fatal)", err);
+  }
+
+  revalidatePath(`/app/customers/${input.customerId}`);
+  revalidatePath("/app/schedule");
+  return { ok: true, visitId: data.id as string };
+}
