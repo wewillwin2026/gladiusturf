@@ -1,21 +1,17 @@
-fix(transparency): cron upsert via delete+insert + render published chain on /transparency
+feat(quotes): "Save + send" combo button on draft form — copy customer link in one tap
 
-The transparency-snapshot cron was returning written:0 because PostgREST's
-`onConflict: "tenant_id,date"` couldn't resolve against the migration's
-expression-based unique index (`coalesce(tenant_id::text,'')`). Switched
-to an idempotent delete-then-insert path that handles both NULL-tenant
-all-tenants rows and per-tenant rows with one code path.
+Polish layer on the draft-quote flow per Product Director's "First Quote
+in 90 Seconds" pitch. The 90-second number was a metaphor; the literal
+fix is removing the round trip "save draft → list → click mark-as-sent
+→ copy URL."
 
-/transparency public page now renders the chain:
-- Reads transparency_roots WHERE tenant_id IS NULL — the all-tenants
-  forensic chain we publish.
-- Renders a compact 6-column table: UTC date · root_hex (first 32) ·
-  AI runs · audit · cross-tenant · consent counts.
-- Falls through gracefully if the table doesn't exist on a stale
-  preview deploy.
-- Per-tenant roots stay private to /app/trust + the JSON endpoint at
-  /api/transparency/root/[date].
+Now: the form has two primary actions side-by-side.
+- "Save as draft" (secondary) — keeps the existing path; quote lands as
+  draft; operator decides later when to share.
+- "Save + send" (primary) — creates the proposal, immediately flips
+  status to sent, copies the public /quote/<id> URL to clipboard, and
+  toasts the URL so the operator can paste it into SMS/email/iMessage.
+  When clipboard isn't available (older browsers, http context), the
+  toast still shows the URL for manual copy.
 
-Verification:
-- npx tsc --noEmit clean
-- npm run lint clean
+Verification: typecheck + lint clean.

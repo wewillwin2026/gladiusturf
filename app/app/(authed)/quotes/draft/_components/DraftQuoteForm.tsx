@@ -7,7 +7,7 @@ import { Loader2, PenSquare } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/app/ui/Button";
 import { Input, Textarea } from "@/components/app/ui/Input";
-import { createDraftQuote } from "../actions";
+import { createDraftQuote, markQuoteSent } from "../actions";
 
 type CustomerOption = { id: string; name: string; subtitle: string };
 
@@ -49,8 +49,7 @@ export function DraftQuoteForm({
 
   const selected = customers.find((c) => c.id === customerId) ?? null;
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function performCreate(thenSend: boolean) {
     if (busy) return;
     if (!customerId) {
       toast.error("Pick a customer first.");
@@ -80,14 +79,45 @@ export function DraftQuoteForm({
         );
         return;
       }
-      toast.success(`Quote drafted for ${selected?.name ?? "customer"}`, {
-        description: title,
-      });
+      if (thenSend) {
+        const send = await markQuoteSent(res.proposalId);
+        if ("error" in send) {
+          toast.warning(
+            "Saved as draft — couldn't mark as sent. Flip status from /app/quotes.",
+          );
+        } else {
+          const url =
+            typeof window !== "undefined"
+              ? `${window.location.origin}/quote/${res.proposalId}`
+              : `/quote/${res.proposalId}`;
+          try {
+            await navigator.clipboard?.writeText(url);
+            toast.success("Saved + sent. Customer link copied.", {
+              description: url,
+            });
+          } catch {
+            toast.success("Saved + sent.", { description: url });
+          }
+        }
+      } else {
+        toast.success(`Quote drafted for ${selected?.name ?? "customer"}`, {
+          description: title,
+        });
+      }
       router.push("/app/quotes");
       router.refresh();
     } finally {
       setBusy(false);
     }
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    await performCreate(false);
+  }
+
+  async function handleSubmitAndSend() {
+    await performCreate(true);
   }
 
   if (customers.length === 0) {
@@ -242,7 +272,7 @@ export function DraftQuoteForm({
         />
       </div>
 
-      <div className="flex justify-end gap-2">
+      <div className="flex flex-wrap items-center justify-end gap-2">
         <Button
           type="button"
           variant="ghost"
@@ -253,7 +283,7 @@ export function DraftQuoteForm({
         </Button>
         <Button
           type="submit"
-          variant="primary"
+          variant="secondary"
           disabled={busy || !customerId || !title.trim()}
         >
           {busy ? (
@@ -264,7 +294,25 @@ export function DraftQuoteForm({
           ) : (
             <>
               <PenSquare className="h-3.5 w-3.5" />
-              Save draft
+              Save as draft
+            </>
+          )}
+        </Button>
+        <Button
+          type="button"
+          variant="primary"
+          onClick={handleSubmitAndSend}
+          disabled={busy || !customerId || !title.trim()}
+        >
+          {busy ? (
+            <>
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              Saving…
+            </>
+          ) : (
+            <>
+              <PenSquare className="h-3.5 w-3.5" />
+              Save + send
             </>
           )}
         </Button>
