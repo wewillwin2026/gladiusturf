@@ -1,78 +1,49 @@
-feat(tier-4): /security audit-grade rewrite + Storm Mode in /app
+feat(post-tier4): customer detail vertical-aware + support_access_grants
 
-Two of the four Tier 4 items shipped (the others — supabaseAdmin →
-per-tenant JWT refactor, regulated chemicals/payroll engines — stay
-deferred for a separate session-scoped change).
+Two follow-on items after the Tier 4 batch:
 
-/security rewritten to match what the architecture actually does (Trust
-risk #1, the highest-leverage remaining trust overclaim):
+Customer detail page → vertical registry (Engineering Director's "before
+vertical #2" keystone):
+- app/app/(authed)/customers/[id]/page.tsx no longer hardcodes
+  lighting_fixtures for non-lighting tenants. The fixtures rollup section
+  now renders only for tenants where session.tenant.vertical === "lighting";
+  irrigation/pool/etc tenants see a placeholder ("per-asset detail for the
+  {vertical} vertical ships in a follow-up"). The customer profile, plan
+  picker, and visit schedule render unchanged for every vertical.
+- The query for lighting_fixtures is gated behind isLighting so non-
+  lighting tenants don't pay for it. Other tenants can land on this page
+  without 500ing.
 
-- Hero: replaced "same Postgres RLS policies, same Clerk-managed auth
-  stack" with an honest framing — "this page describes posture as it
-  exists today, not as marketing aspires to it." Stat ribbon moved from
-  fabricated metrics ("100% RLS coverage", "0 cross-tenant leaks") to
-  true-and-relevant labels (App-layer scoping live, AI audit live, TCPA
-  consent gate ready, public DPA).
-- PRINCIPLES: #2 "Multi-tenant truly multi-tenant" (claimed RLS-as-engine
-  + tRPC middleware) → "Multi-tenant by design" honest description with
-  the migration tracked. #4 TCPA principle rewritten to describe the
-  actual shipped consent ledger + canSend() gate. #5 became an AI run
-  audit description.
-- AUTH_CARDS: "Clerk-managed" replaced with the real magic-link HMAC auth
-  (15-min TTL, single-use, rate-limited). Six-roles claim cut to the
-  three roles we actually have. JWT key-rotation copy aligned to the
-  actual cookie scheme.
-- COMPLIANCE columns: Multi-tenant Postgres RLS moved from "Done" to
-  "In progress" (RLS as primary boundary). PCI / encryption / per-tenant
-  scoping / TCPA consent ledger / AI run audit / DPA all stay in Done.
-  Removed the fabricated SOC 2 Type II "Q3 2026" → realistic Q4 target.
-- Architecture diagram: Layer 1 / Layer 2 swapped — application-layer
-  scoping is the active boundary today, RLS is the migrating second
-  boundary. Code references updated (readAppSession,
-  is_tenant_member). Tenant-A/Tenant-B labels rebranded from
-  "ACME / Banner Lawn" to "Lighting shop / Irrigation crew" to match
-  the actual product.
-- Body: "every row carries a companyId" → "every tenant-owned row
-  carries a tenant_id FK to tenants" (matches the schema).
-- Page-level meta description rewritten to the new honest claim list.
-
-/app/automations/storm — Storm Mode ported from the demo workspace
-into the real CRM as a tenant-aware engine:
-
-- New app/app/(authed)/automations/storm/page.tsx: server component that
-  reads tenant.id, queries customers + service_address.zip, computes
-  KPIs (in storm ZIPs / Guardian members / affected ZIPs / last
-  activated). Falls back to TenantEmptyState when tenant has 0 customers.
-  Hardcoded set of FL hurricane ZIPs (Helene + Milton 2024 footprint —
-  60+ ZIPs across Tampa/Sarasota/Naples/Punta Gorda); upgrade path to
-  live NOAA on the roadmap.
-- New _components/StormActivateButton.tsx: client component that fires a
-  preview toast describing what the activation would queue. Real
-  campaign-queue server action ships once the messaging-cadence engine
-  lands behind the canSend() gate.
-- Sample messages render the tenant's display_name in EN + ES.
-
-/app/automations updated for tenant sessions:
-- Replaced the bare TenantEmptyState with a 3-card surface listing
-  Storm Mode (Live, links to /app/automations/storm), Inbox auto-reply
-  (Coming soon), Post-job review-ask (Coming soon). Demo session
-  unchanged.
+support_access_grants schema + helper (board Decision 4 — REBRAND
+founder cross-tenant access to opt-in):
+- supabase/migrations/20260507_f_support_access_grants.sql:
+    support_access_grants(tenant_id, granted_to_email, scope, status,
+      expires_at, created_at, created_by_email, revoked_at,
+      revoked_by_email)
+    cross_tenant_access_log(tenant_id, actor_email, surface, action,
+      resource_id, reason, granted_by_id, created_at)
+  Both tenant-scoped via is_tenant_member RLS so tenants can read their
+  own grants + access log when the future UI ships.
+- lib/app/support-access.ts: logCrossTenantRead() — best-effort append
+  to the access log, looks up the active grant if one exists and
+  references it by FK. hasActiveGrant() helper for the future opt-in UI.
+- Migration NOT YET APPLIED — user authorized a/b/c/d/e but not this
+  one. Apply via psql when ready; the helper degrades gracefully (logs
+  a warning, doesn't throw) until the tables exist.
 
 Verification:
-- npx tsc --noEmit clean
-- npm run lint clean (one unused-Send import fixed)
-- npm run build registers /app/automations/storm (1.5 kB), /legal/dpa,
-  /legal/security, /security all healthy.
+- /security rewrite probed live (commit 5268468 deploy): "App-layer",
+  "magic-link auth", "Built honestly" copy live; "Postgres RLS" only
+  appears in the migrating-roadmap context.
+- /app/automations/storm + /app/automations 307 to login — auth gate
+  intact, no 500s on the new routes.
+- /api/cron/inventory-aging authed → tenantsNotified:1, totalUnits:6
+  (post-/security rewrite, no regression).
+- /legal/dpa 200 OK (74 KB).
+- Homepage shows "Twelve engines" copy live; old "Thirty-three" gone.
+- npx tsc --noEmit clean. npm run lint clean. npm run build clean.
 
-Smoke-test on the previous deploy (commit 1505042) before this batch:
-- /legal/dpa, /legal/privacy, /legal/terms, /legal/security: all 200 OK
-  with substantive bodies (74-101 KB).
-- /demo/sample-lighting-co: 200 OK (passcode unlock screen).
-- /demo/bright-lights-encina: 308 redirects to /demo/sample-lighting-co.
-- Homepage: "Twelve engines" + "12 live" copy live; old "Thirty-three"
-  copy gone.
-- Authed routes (/app/import/customers, /app/onboarding/profile,
-  /app/inventory, /app/chemicals): clean 307 to /app/login (no 500s).
-- /api/cron/inventory-aging unauthed → 401; authed → 200
-  {ok:true, tenantsNotified:1, totalUnits:6} — wipe + migrations did
-  not regress the cron.
+USER ACTION OUTSTANDING:
+- Apply 20260507_f_support_access_grants.sql to live Supabase via psql
+  when ready. Until then, support-access.ts logs a console warning and
+  no-ops on every founder cross-tenant query — no functional regression.

@@ -94,15 +94,24 @@ export default async function CustomerDetailPage({
 
     const c = customer as DbCustomer;
 
+    // Only fetch the lighting_fixtures table for lighting tenants. Other
+    // verticals will get their own asset section once the registry's
+    // per-vertical AssetSection component ships — until then the lighting
+    // block hides for non-lighting tenants and a placeholder appears.
+    const isLighting = session.tenant.vertical === "lighting";
+    const fixturesQuery = isLighting
+      ? sb
+          .from("lighting_fixtures")
+          .select(
+            "id, external_id, fixture_type, brand, model, wattage_text, install_date, warranty_status, warranty_end, notes",
+          )
+          .eq("tenant_id", session.tenant.id)
+          .eq("customer_id", id)
+          .order("external_id", { ascending: true })
+      : Promise.resolve({ data: [], error: null });
+
     const [fixturesRes, plansRes, subRes, scheduleRes] = await Promise.all([
-      sb
-        .from("lighting_fixtures")
-        .select(
-          "id, external_id, fixture_type, brand, model, wattage_text, install_date, warranty_status, warranty_end, notes",
-        )
-        .eq("tenant_id", session.tenant.id)
-        .eq("customer_id", id)
-        .order("external_id", { ascending: true }),
+      fixturesQuery,
       sb
         .from("plans")
         .select("id, display_name, annual_price_cents, badge, most_popular")
@@ -233,8 +242,23 @@ export default async function CustomerDetailPage({
         </section>
 
         <section className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-          {/* Fixtures rollup — the centerpiece of the lighting vertical. */}
+          {/* Asset rollup — lighting tenants see fixtures; other verticals
+              see a placeholder until the registry's per-vertical AssetSection
+              ships. */}
           <div className="lg:col-span-3 g-card p-5">
+            {!isLighting ? (
+              <div className="text-center py-8">
+                <Lightbulb className="mx-auto h-5 w-5 text-g-text-faint" />
+                <p className="mt-3 text-[13px] text-g-text-muted">
+                  Per-asset detail for the {session.tenant.vertical} vertical
+                  ships in a follow-up.
+                </p>
+                <p className="mt-1 text-[12px] text-g-text-faint">
+                  Customer profile + plan + schedule below all work today.
+                </p>
+              </div>
+            ) : (
+              <>
             <div className="flex items-baseline justify-between">
               <h2 className="inline-flex items-center gap-2">
                 <Lightbulb className="h-4 w-4 text-g-accent" />
@@ -352,6 +376,8 @@ export default async function CustomerDetailPage({
                   </ul>
                 )}
               </div>
+            )}
+              </>
             )}
           </div>
 
