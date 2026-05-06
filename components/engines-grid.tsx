@@ -23,12 +23,12 @@ export function EnginesGrid() {
       <div className="mx-auto max-w-7xl px-6">
         <ScrollReveal>
           <div className="mx-auto max-w-3xl text-center">
-            <Eyebrow className="mb-3">The thirty-three engines</Eyebrow>
+            <Eyebrow className="mb-3">The engine catalog</Eyebrow>
             <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
               One spine. Five tiers.
               <br />
               <span className="text-champagne-bright">
-                Thirty-three revenue engines.
+                Twelve engines live. Twenty-one in development.
               </span>
             </h2>
             <p className="mt-5 text-lg text-parchment/70">

@@ -1,4 +1,7 @@
-// The 33 sidebar engines, grouped per the master spec.
+// The sidebar engines, grouped per the master spec. Currently 31 visible —
+// chemicals + payroll were temporarily hidden 2026-05-06 per board vote until
+// the regulated schemas land (FIFRA pesticide-application records; encrypted
+// employees + payroll-tax compliance).
 // Both /app and /founders/war-room render this same structure.
 
 import {
@@ -14,7 +17,6 @@ import {
   DollarSign,
   Eye,
   FileText,
-  FlaskConical,
   Gauge,
   GitFork,
   Globe2,
@@ -37,7 +39,6 @@ import {
   TrendingUp,
   Truck,
   Users,
-  Wallet,
   Zap,
   type LucideIcon,
 } from "lucide-react";
@@ -89,13 +90,18 @@ export const ENGINES: Engine[] = [
   { slug: "territory", name: "Territory", group: "ops", icon: Map, ordinal: 14 },
   { slug: "crew", name: "Crew", group: "ops", icon: Building2, ordinal: 15 },
   { slug: "equipment", name: "Equipment", group: "ops", icon: Truck, ordinal: 16 },
-  { slug: "chemicals", name: "Chemicals", group: "ops", icon: FlaskConical, ordinal: 17 },
+  // Chemicals (ordinal 17) hidden 2026-05-06 per board vote — pesticide
+  // application records are state-regulated; restore when the
+  // chemical_applications schema (applicator license, EPA reg #, target pest,
+  // rate, weather, signature) lands.
   { slug: "inventory", name: "Inventory", group: "ops", icon: Boxes, ordinal: 17.5 },
 
   // Money (4)
   { slug: "invoices", name: "Invoices", group: "money", icon: Receipt, ordinal: 18 },
   { slug: "timesheets", name: "Timesheets", group: "money", icon: Timer, ordinal: 20 },
-  { slug: "payroll", name: "Payroll", group: "money", icon: Wallet, ordinal: 21 },
+  // Payroll (ordinal 21) hidden 2026-05-06 per board vote — needs encrypted
+  // employees schema (SSN, bank routing) + payroll-tax compliance contract
+  // before any tenant clicks "Run payroll." Restore behind the schema.
 
   // Intelligence (5)
   { slug: "inbox", name: "Inbox", group: "intel", icon: Inbox, ordinal: 22 },

@@ -7,6 +7,7 @@ import { IconButton } from "./ui/IconButton";
 import { useTheme } from "./ThemeProvider";
 import { type ProductKind } from "./engines";
 import { useCmdK } from "./CommandPaletteContext";
+import { MobileNavTrigger } from "./MobileNavTrigger";
 
 export function Topbar({
   product,
@@ -21,15 +22,16 @@ export function Topbar({
   const { open } = useCmdK();
 
   return (
-    <header className="sticky top-0 z-30 flex items-center gap-4 h-12 px-4 border-b border-g-border bg-g-bg/95 backdrop-blur supports-[backdrop-filter]:bg-g-bg/80">
+    <header className="sticky top-0 z-30 flex items-center gap-2 sm:gap-4 h-12 px-3 sm:px-4 border-b border-g-border bg-g-bg/95 backdrop-blur supports-[backdrop-filter]:bg-g-bg/80">
+      <MobileNavTrigger product={product} />
       <button
         type="button"
         onClick={open}
-        className="flex items-center gap-2 h-8 px-2.5 rounded-md border border-g-border bg-g-surface text-g-text-muted text-[12px] hover:bg-g-surface-2 transition-colors min-w-[260px]"
+        className="flex items-center gap-2 h-8 px-2.5 rounded-md border border-g-border bg-g-surface text-g-text-muted text-[12px] hover:bg-g-surface-2 transition-colors min-w-0 flex-1 md:flex-none md:min-w-[260px]"
       >
-        <Search className="h-3.5 w-3.5" />
-        <span>Search jobs, customers, properties…</span>
-        <span className="ml-auto inline-flex items-center gap-0.5 font-geist-mono text-[10px] text-g-text-faint">
+        <Search className="h-3.5 w-3.5 shrink-0" />
+        <span className="truncate">Search jobs, customers, properties…</span>
+        <span className="ml-auto hidden md:inline-flex items-center gap-0.5 font-geist-mono text-[10px] text-g-text-faint">
           <Command className="h-3 w-3" />K
         </span>
       </button>

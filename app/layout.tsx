@@ -36,20 +36,20 @@ export const metadata: Metadata = {
     template: "%s · GladiusTurf",
   },
   description:
-    "Thirty-three revenue engines across five tiers for landscape crew owners. Flat per-crew pricing. Not a CRM.",
+    "Twelve revenue engines live, twenty-one more on the roadmap, across five tiers for landscape crew owners. Flat per-crew pricing. Not a CRM.",
   openGraph: {
     type: "website",
     siteName: "GladiusTurf",
     title: "GladiusTurf — Landscaping Revenue Intelligence",
     description:
-      "Thirty-three revenue engines across five tiers for landscape crew owners. Flat per-crew pricing. Not a CRM.",
+      "Twelve revenue engines live, twenty-one more on the roadmap, across five tiers for landscape crew owners. Flat per-crew pricing. Not a CRM.",
     images: [{ url: "/crest.png", width: 600, height: 800 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "GladiusTurf — Landscaping Revenue Intelligence",
     description:
-      "Thirty-three revenue engines. Flat per-crew pricing. Not a CRM.",
+      "Twelve engines live, twenty-one in development. Flat per-crew pricing. Not a CRM.",
     images: ["/crest.png"],
   },
   icons: {

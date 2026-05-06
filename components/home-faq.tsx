@@ -43,8 +43,8 @@ const FAQS: FaqItem[] = [
     ),
   },
   {
-    q: "Why “33 engines” instead of just calling them features?",
-    a: "A feature is something you ship and forget. An engine is something that runs every night, gets smarter from your data, and produces a measurable revenue outcome. Each of our 33 has a specific dollar number tied to it.",
+    q: "Why call them “engines” instead of features?",
+    a: "A feature is something you ship and forget. An engine is something that runs every night, gets smarter from your data, and produces a measurable revenue outcome. Twelve engines are live today; twenty-one more are on the roadmap. Each has a specific dollar number tied to it.",
   },
   {
     q: "Do you have customers in my service area?",

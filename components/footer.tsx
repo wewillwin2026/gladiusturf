@@ -98,8 +98,9 @@ export function Footer() {
           <div className="col-span-2 md:col-span-2">
             <LogoMark size={56} theme="dark" tone="bone" withWordmark />
             <p className="mt-6 max-w-xs text-[13px] leading-[1.6] text-bone/60">
-              Landscaping Revenue Intelligence. Thirty-three engines for crew
-              owners done leaking revenue to the gaps in their software.
+              Landscaping Revenue Intelligence. Twelve engines live, twenty-one
+              more on the roadmap — for crew owners done leaking revenue to the
+              gaps in their software.
             </p>
             <div className="mt-6 flex items-center gap-4 text-[12px] text-bone/50">
               <a

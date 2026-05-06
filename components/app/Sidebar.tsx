@@ -13,21 +13,33 @@ import {
 import { cn } from "@/lib/cn";
 import { buildVersion } from "@/lib/shared/format";
 
-export function Sidebar({ product }: { product: ProductKind }) {
+export type SidebarVariant = "desktop" | "mobile";
+
+interface SidebarProps {
+  product: ProductKind;
+  /** Desktop = sticky narrow column; mobile = drawer body. Defaults to desktop. */
+  variant?: SidebarVariant;
+  /** Called when a nav link is clicked. Used by the mobile Sheet to close itself. */
+  onNavigate?: () => void;
+}
+
+export function Sidebar({ product, variant = "desktop", onNavigate }: SidebarProps) {
   const pathname = usePathname() ?? "/";
   const base = product === "demo" ? "/app" : "/founders/war-room";
 
   return (
     <nav
       className={cn(
-        "flex flex-col gap-4 p-3 border-r border-g-border bg-g-bg",
-        "w-[232px] shrink-0 overflow-y-auto h-screen sticky top-0",
-        "hidden md:flex",
+        "flex flex-col gap-4 p-3 bg-g-bg",
+        variant === "desktop" &&
+          "hidden md:flex w-[232px] shrink-0 overflow-y-auto h-screen sticky top-0 border-r border-g-border",
+        variant === "mobile" && "h-full w-full overflow-y-auto",
       )}
     >
       <Link
         href={base}
         prefetch
+        onClick={onNavigate}
         className="flex items-center gap-2 px-2 h-10 group"
       >
         <span className="h-6 w-6 rounded-md bg-g-accent-faint border border-g-accent/40 inline-flex items-center justify-center text-g-accent text-[12px] font-medium">
@@ -68,6 +80,7 @@ export function Sidebar({ product }: { product: ProductKind }) {
                     key={e.slug}
                     href={href}
                     prefetch
+                    onClick={onNavigate}
                     className={cn(
                       "flex items-center gap-2.5 px-2 py-1.5 rounded-md text-[13px] transition-colors",
                       active
@@ -98,6 +111,7 @@ export function Sidebar({ product }: { product: ProductKind }) {
                   key={t.slug}
                   href={href}
                   prefetch
+                  onClick={onNavigate}
                   className={cn(
                     "flex items-center gap-2.5 px-2 py-1.5 rounded-md text-[13px] transition-colors",
                     active

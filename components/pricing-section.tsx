@@ -40,8 +40,9 @@ export function PricingSection() {
               Flat per crew. Unlimited seats. Forever.
             </h2>
             <p className="mt-4 text-lg text-bone/65">
-              Every plan ships with all 33 engines. No per-user fees. No add-on
-              tax. Annual prepay = 2 months free.
+              Every plan ships with every engine we&apos;ve built (12 live
+              today, 21 more on the roadmap). No per-user fees. No add-on tax.
+              Annual prepay = 2 months free.
             </p>
           </div>
         </ScrollReveal>

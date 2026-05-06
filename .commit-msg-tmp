@@ -1,0 +1,75 @@
+feat(board-day-1): kill demo-data leaks + drop engine count + mobile nav + surrogates
+
+Implements board-of-directors Day 1 actions ratified 2026-05-06.
+See memory/project_gladiusturf_board_review_2026_05_06.md for full vote
+record + reasoning. Five motions; this commit lands four of them.
+
+Decision 1 (HIDE chemicals + payroll, unanimous 5-0):
+- Removed chemicals (ordinal 17) and payroll (ordinal 21) from
+  components/app/engines.ts ENGINES list. Sidebar drops from 33 to 31
+  visible.
+- app/app/(authed)/chemicals/page.tsx and payroll/page.tsx replaced with
+  honest "Coming Q3 2026" stubs. Deep-links no longer leak Cypress Lawn
+  demo data; pesticide/payroll regulatory schemas land before they return.
+
+Decision 5 (DROP homepage count to 12 + 21, 4-1):
+- app/layout.tsx OG/Twitter description: "Twelve revenue engines live,
+  twenty-one more on the roadmap" replaces "Thirty-three revenue engines."
+- app/page.tsx description + PROBLEM_STATS tile, components/hero.tsx,
+  components/footer.tsx, components/engines-grid.tsx,
+  components/home-faq.tsx, components/pricing-section.tsx,
+  content/pricing.ts: same honest framing across every public surface.
+- Deferred to Day 2: content/competitors.ts (9x), content/sales-battlecards.ts
+  (3x), and the deeper /vs|/integrations|/manifesto|/portal|/platform|/product
+  routes still claim "33 engines." Tracked in board memory.
+
+Cross-cutting (Mobile nav unlock, all directors):
+- components/app/Sidebar.tsx now takes a `variant: "desktop" | "mobile"`
+  prop. Desktop is the existing sticky-column behavior; mobile drops the
+  height/sticky/border so the same JSX renders inside a Sheet.
+- New components/app/MobileNavTrigger.tsx: a hamburger button visible only
+  < md, opens a Radix Dialog drawer containing the same sidebar engine
+  list. Auto-closes on link click. Wired into Topbar.
+- Topbar collapses search width on small screens to fit the menu icon.
+
+Decision 2 (Bright Lights demo: SURROGATE, 4-1):
+- lib/demo-data/bright-lights.ts: 12 customer names + Sarasota addresses
+  swapped to synthetic-but-plausible surrogates. Cluster, zip, lat/lng,
+  installYear, fixture counts preserved so route geography still feels
+  Florida-local. SAMPLE_QUOTES, ACTIVITY_FEED, MIKE_JACKSON_HISTORY all
+  updated to match. Header comment now declares the data is synthetic.
+- supabase/migrations/20260506_a_bright_lights_surrogate_swap.sql:
+  matching UPDATE for the 12 rows already in production Supabase. UUIDs
+  unchanged so lighting_fixtures FKs stay valid. User must apply via
+  Supabase SQL Editor before the next live demo.
+
+Kill 16 demo-data leaks (Action #1 from original 14-day plan):
+Applied the readAppSession + TenantEmptyState pattern from
+app/app/(authed)/quotes/page.tsx:14-25 to every engine that previously
+hardcoded `product="demo"`:
+  routes, territory, crew, equipment, timesheets, analytics, automations,
+  integrations, api, changelog, settings, reviews, referrals, campaigns,
+  pricing, ask-gladius
+For demo sessions the existing XBrowser still renders Cypress Lawn data;
+for tenant sessions, an honest TenantEmptyState surfaces what will appear
+once the engine is wired to tenant-scoped data.
+
+Decision 3 (vertical #2 = IRRIGATION, unanimous): no code change yet —
+sequenced for Day 9-13 of the 14-day plan after the registry refactor.
+
+Decision 4 (founder access REBRAND, 4-1): no code change yet — sequenced
+for Day 8-12 (support_access_grants table + unified audit_log/ai_run).
+
+Verification:
+- npx tsc --noEmit clean
+- npm run lint clean (one apostrophe fix in pricing-section.tsx)
+- npm run build registers /app/chemicals, /app/payroll as dynamic stubs
+  + every restored engine page; first-load JS unchanged.
+
+Open follow-ups (board memory):
+- Day 2: walk content/competitors.ts + sales-battlecards.ts + deeper
+  marketing pages for remaining "33 engines" claims.
+- Day 2: re-check audit-content.md BUG-CONTENT-004 (footer 404s) +
+  BUG-CONTENT-005 (placeholder testimonial) + BUG-CONTENT-007 (phone).
+- User action: apply 20260506_a_bright_lights_surrogate_swap.sql to live
+  Supabase before the next Bright Lights demo.

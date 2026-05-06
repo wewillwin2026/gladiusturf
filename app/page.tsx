@@ -26,7 +26,7 @@ import { VerticalEcosystemStrip } from "@/components/vertical/VerticalEcosystemS
 
 export const metadata: Metadata = {
   description:
-    "GladiusTurf is the thirty-three-engine landscape system across five layers — winning the work, keeping the customer, getting smarter, running the crew, and building the network — that catches every forgotten quote, missed upsell, late invoice, and dropped referral your current stack is letting walk.",
+    "GladiusTurf is the landscape system — twelve engines live across five layers (winning the work, keeping the customer, getting smarter, running the crew, building the network) with twenty-one more on the roadmap — that catches every forgotten quote, missed upsell, late invoice, and dropped referral your current stack is letting walk.",
   alternates: { canonical: "/" },
   openGraph: {
     images: [{ url: "/crest.png", width: 600, height: 800 }],
@@ -60,9 +60,9 @@ const PROBLEM_STATS = [
     label: "lost to missed calls per month at the average shop",
   },
   {
-    value: 33,
-    suffix: " engines",
-    label: "across five layers — one system that closes every leak",
+    value: 12,
+    suffix: " engines live",
+    label: "across five layers — twenty-one more on the roadmap, all priced in",
   },
 ];
 

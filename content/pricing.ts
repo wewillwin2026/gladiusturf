@@ -17,7 +17,7 @@ export const TIERS: Tier[] = [
     price: 397,
     period: "/ crew / mo",
     features: [
-      "All 33 engines included",
+      "Every shipped engine + every roadmap engine included",
       "Unlimited seats per crew",
       "Quote Intercept + SMS routing",
       "Site Memory, Weather Pivot",

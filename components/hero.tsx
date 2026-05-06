@@ -84,10 +84,10 @@ export function Hero() {
               {...fadeUp(0.18)}
               className="mx-auto mt-8 max-w-3xl text-lg text-parchment/70 md:text-xl"
             >
-              Thirty-three engines across five layers — winning the work,
-              keeping the customer, getting smarter, running the crew, and
-              building the network. The first landscape system that learns
-              your shop.
+              Twelve engines live, twenty-one more on the roadmap, across five
+              layers — winning the work, keeping the customer, getting smarter,
+              running the crew, and building the network. The first landscape
+              system that learns your shop.
             </motion.p>
 
             <motion.div
