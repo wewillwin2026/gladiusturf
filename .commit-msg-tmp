@@ -1,44 +1,31 @@
-feat(quotes): manual draft flow — closes the sales-cycle loop for tenants
+feat(customer-detail): Customer Heartbeat strip — render the relationship
 
-Product Director's "First Quote in 90 Seconds" recommendation, scoped to
-the manual path. The AI Drafter for tenants ships behind the real Resend
-+ Twilio send pipeline + the citation guardrail (Trust + AI directors'
-prerequisites); this gets a tenant quoting on Day 1 without waiting on
-that pipeline.
+Product Director's #4 board recommendation: "show Felipe his real fans
+at a glance." Replaces the cold contact-card vibe with a visible signal
+strip on every customer profile.
 
-What's wired:
-- New /app/quotes/draft route — server component pulls the tenant's
-  customers, hands them to a client-side DraftQuoteForm with a
-  type-as-you-go customer search + "Change customer" pivot.
-- Form fields: customer (required, searchable), title (required), total
-  $, language toggle (when tenant.bilingual), notes textarea. Auto-
-  focus on the search box. Empty-state CTA when zero customers in book
-  ("Add a customer first").
-- New createDraftQuote() server action — tenant-scoped insert into
-  proposals (status='draft', vertical=tenant.vertical, ai_drafted=false,
-  bom={title, notes}), audit_log row written best-effort. Routes back to
-  /app/quotes on success.
-- Pre-fill via querystring: /app/quotes/draft?customer=<id> binds the
-  selected customer immediately. Wired from a new "Draft a quote"
-  button on /app/customers/[id] header — Cristian opens a property,
-  one tap drafts a quote against that customer.
+components/app/CustomerHeartbeat.tsx — pure presentational component.
+Four binary signals (not a percentile, not a 0-100 score):
+  - Active plan        → has plan_subscriptions row with status='active'
+  - Recent visit       → ≥1 schedule_items row in last 90 days
+  - Quote engaged      → ≥1 proposal where status≥sent
+  - 6+ months on book  → acquired_at older than 180 days
 
-/app/quotes itself rebuilt for tenant sessions:
-- Was a TenantEmptyState — now reads the proposals table for the tenant
-  and renders a real KPI band (Drafts / In flight / Pipeline / Win rate)
-  + a clean table with status pills (draft / sent / viewed / walked /
-  sold / installed / lost color-coded via StatusPill tones).
-- Empty-state when no proposals: large "Draft a quote" CTA. The page
-  goes from "nothing to do here" to "actionable on Day 1."
-- Demo session preserves the existing Cypress Lawn QuotesKanban path.
+Each signal renders as a small pulse + an icon + a one-line "what it
+means today." Aggregate score (0-4) sets the heading: Strong / Warm /
+Cool / New-or-dormant. Top dot animate-pulses when the relationship is
+strong; goes quiet otherwise. The point is operator empathy: Felipe
+opens a customer card and immediately knows whether to call them today
+or schedule a referral ask.
+
+Wired into app/(authed)/customers/[id]/page.tsx:
+- New proposalsRes query in the parallel Promise.all (one extra round-
+  trip; 5 queries instead of 4)
+- Heartbeat signals computed inline from the existing visits + subRes +
+  proposals + customer.acquired_at (no new schema)
+- Renders as the first card in the right-column rail, above Property,
+  Notes, etc.
 
 Verification:
 - npx tsc --noEmit clean
-- npm run lint clean (one Next.js no-html-link-for-pages warning fixed
-  by replacing <a> with <Link prefetch>)
-- npm run build registers /app/quotes/draft (3.24 kB), /app/quotes
-  (3.47 kB tenant, was sharing route with demo).
-
-Day-1 sales loop now end-to-end:
-  Add customer → Customer detail → "Draft a quote" → quote saves to
-  proposals → list shows on /app/quotes with KPIs.
+- npm run lint clean

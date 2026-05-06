@@ -27,6 +27,7 @@ import { supabaseAdmin } from "@/lib/supabase";
 import { demoState } from "@/lib/demo/state";
 import { money, relTime, shortDate } from "@/lib/shared/format";
 import { cn } from "@/lib/cn";
+import { CustomerHeartbeat } from "@/components/app/CustomerHeartbeat";
 import { PlanPicker } from "./PlanPicker";
 import { LogVisitButton } from "./LogVisitButton";
 
@@ -113,29 +114,35 @@ export default async function CustomerDetailPage({
           .order("external_id", { ascending: true })
       : Promise.resolve({ data: [], error: null });
 
-    const [fixturesRes, plansRes, subRes, scheduleRes] = await Promise.all([
-      fixturesQuery,
-      sb
-        .from("plans")
-        .select("id, display_name, annual_price_cents, badge, most_popular")
-        .eq("tenant_id", session.tenant.id)
-        .eq("active", true)
-        .order("annual_price_cents", { ascending: true }),
-      sb
-        .from("plan_subscriptions")
-        .select("plan_id")
-        .eq("tenant_id", session.tenant.id)
-        .eq("customer_id", id)
-        .eq("status", "active")
-        .maybeSingle(),
-      sb
-        .from("schedule_items")
-        .select("id, type, title, starts_at, status, notes")
-        .eq("tenant_id", session.tenant.id)
-        .eq("customer_id", id)
-        .order("starts_at", { ascending: false })
-        .limit(50),
-    ]);
+    const [fixturesRes, plansRes, subRes, scheduleRes, proposalsRes] =
+      await Promise.all([
+        fixturesQuery,
+        sb
+          .from("plans")
+          .select("id, display_name, annual_price_cents, badge, most_popular")
+          .eq("tenant_id", session.tenant.id)
+          .eq("active", true)
+          .order("annual_price_cents", { ascending: true }),
+        sb
+          .from("plan_subscriptions")
+          .select("plan_id")
+          .eq("tenant_id", session.tenant.id)
+          .eq("customer_id", id)
+          .eq("status", "active")
+          .maybeSingle(),
+        sb
+          .from("schedule_items")
+          .select("id, type, title, starts_at, status, notes")
+          .eq("tenant_id", session.tenant.id)
+          .eq("customer_id", id)
+          .order("starts_at", { ascending: false })
+          .limit(50),
+        sb
+          .from("proposals")
+          .select("id, status")
+          .eq("tenant_id", session.tenant.id)
+          .eq("customer_id", id),
+      ]);
 
     const fixtures = (fixturesRes.data ?? []) as DbFixture[];
     const planOptions = (plansRes.data ?? []) as Array<{
@@ -158,6 +165,25 @@ export default async function CustomerDetailPage({
     const addr = c.service_address ?? {};
     const fullAddress = [addr.street, addr.city, addr.zip].filter(Boolean).join(", ");
     const cluster = addr.cluster ?? null;
+
+    // Customer Heartbeat signals — Product Director's #4. Four binary
+    // pulses computed from existing tables.
+    const proposals = (proposalsRes.data ?? []) as Array<{ id: string; status: string }>;
+    const ENGAGED_QUOTE_STATUSES = ["sent", "viewed", "walked", "sold", "installed"];
+    const NINETY_DAYS_AGO = Date.now() - 90 * 24 * 60 * 60 * 1000;
+    const ONE_HUNDRED_EIGHTY_DAYS_AGO = Date.now() - 180 * 24 * 60 * 60 * 1000;
+    const heartbeat = {
+      hasActivePlan: !!subRes.data,
+      hasRecentVisit: visits.some(
+        (v) => new Date(v.starts_at).getTime() >= NINETY_DAYS_AGO,
+      ),
+      hasEngagedQuote: proposals.some((p) =>
+        ENGAGED_QUOTE_STATUSES.includes(p.status),
+      ),
+      isLongTermCustomer:
+        c.acquired_at != null &&
+        new Date(c.acquired_at).getTime() <= ONE_HUNDRED_EIGHTY_DAYS_AGO,
+    };
 
     const activeWarranty = fixtures.filter((f) => f.warranty_status === "active").length;
     const expiredWarranty = fixtures.filter((f) => f.warranty_status === "expired").length;
@@ -398,8 +424,9 @@ export default async function CustomerDetailPage({
             )}
           </div>
 
-          {/* Right column — property + notes */}
+          {/* Right column — heartbeat + property + notes */}
           <div className="lg:col-span-2 flex flex-col gap-4">
+            <CustomerHeartbeat signals={heartbeat} />
             <div className="g-card p-5">
               <div className="flex items-baseline justify-between">
                 <h2>Property</h2>
