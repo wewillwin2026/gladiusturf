@@ -381,17 +381,28 @@ async function createInstallSlotForAcceptedQuote(args: {
   title: string;
 }) {
   const sb = supabaseAdmin();
-  // Idempotency: if a schedule_item for this proposal already exists,
-  // skip. We track that via the notes field — search for the proposal
-  // id substring. (Using notes vs a dedicated link column avoids a
-  // schema change.)
-  const { data: existing } = await sb
+  // Idempotency: prefer the dedicated proposal_id column when the
+  // 20260507_g migration has landed (O(1) unique-index check). Fall
+  // back to the notes ilike scan when the column is missing so the
+  // logic survives the deploy-before-migration gap.
+  const byColumn = await sb
     .from("schedule_items")
     .select("id")
     .eq("tenant_id", args.tenantId)
-    .ilike("notes", `%proposal:${args.proposalId}%`)
+    .eq("proposal_id", args.proposalId)
     .limit(1);
-  if (existing && existing.length > 0) return;
+  if (byColumn.error) {
+    // Column doesn't exist yet — fall back to legacy notes match.
+    const { data: legacy } = await sb
+      .from("schedule_items")
+      .select("id")
+      .eq("tenant_id", args.tenantId)
+      .ilike("notes", `%proposal:${args.proposalId}%`)
+      .limit(1);
+    if (legacy && legacy.length > 0) return;
+  } else if (byColumn.data && byColumn.data.length > 0) {
+    return;
+  }
 
   // Read tenant's local timezone so 9 AM lands as 9 AM regardless of
   // EST/EDT (or any other zone). Hardcoded UTC offsets break twice a
@@ -405,9 +416,13 @@ async function createInstallSlotForAcceptedQuote(args: {
   const startsAt = computeNextLocal9am(tz, 7);
   const endsAt = new Date(startsAt.getTime() + 4 * 60 * 60 * 1000);
 
-  await sb.from("schedule_items").insert({
+  // Try to insert with proposal_id when the migration has landed.
+  // Some Postgres drivers reject inserts containing unknown columns,
+  // so catch and retry without it.
+  const insertWithLink = await sb.from("schedule_items").insert({
     tenant_id: args.tenantId,
     customer_id: args.customerId,
+    proposal_id: args.proposalId,
     type: "install",
     title: `Install · ${args.title}`,
     starts_at: startsAt.toISOString(),
@@ -415,6 +430,18 @@ async function createInstallSlotForAcceptedQuote(args: {
     status: "scheduled",
     notes: `Auto-scheduled from accepted quote. proposal:${args.proposalId}`,
   });
+  if (insertWithLink.error) {
+    await sb.from("schedule_items").insert({
+      tenant_id: args.tenantId,
+      customer_id: args.customerId,
+      type: "install",
+      title: `Install · ${args.title}`,
+      starts_at: startsAt.toISOString(),
+      ends_at: endsAt.toISOString(),
+      status: "scheduled",
+      notes: `Auto-scheduled from accepted quote. proposal:${args.proposalId}`,
+    });
+  }
 
   await sb.from("audit_log").insert({
     tenant_id: args.tenantId,

@@ -79,6 +79,17 @@ export type Engine = {
   icon: LucideIcon;
   /** Roman ordinal for the build watermark / changelog references. */
   ordinal?: number;
+  /**
+   * Verticals where this engine is shown to tenants. Omit (or set to
+   * undefined) to mean "all verticals." Use specific vertical slugs
+   * (matching tenants.vertical) to gate. The demo workspace is
+   * unaffected — it always shows everything for sales calls.
+   *
+   * Product Director's Day-1 ask: a lighting tenant should not see
+   * 'Chemicals' in their sidebar; an irrigation tenant doesn't want
+   * the Holiday Install surface; etc.
+   */
+  verticals?: string[];
 };
 
 export const ENGINE_GROUPS: { id: EngineGroup; label: string }[] = [
@@ -166,4 +177,17 @@ export function hrefForEngine(product: ProductKind, slug: string): string {
   // "today" is the index page of each product, not a sub-route.
   if (slug === "today") return basePathFor(product);
   return `${basePathFor(product)}/${slug}`;
+}
+
+/**
+ * Filter the engine list to those visible for a given tenant vertical.
+ * Engines without a `verticals` array are visible everywhere. The demo
+ * + founder shells should pass `null` (or skip this helper) to render
+ * the full list; only the tenant-authed shell narrows the surface.
+ */
+export function enginesForVertical(vertical: string | null): Engine[] {
+  if (!vertical) return ENGINES;
+  return ENGINES.filter(
+    (e) => !e.verticals || e.verticals.includes(vertical),
+  );
 }
