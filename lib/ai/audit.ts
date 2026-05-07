@@ -127,10 +127,12 @@ export function estimateCostCents(
 }
 
 /**
- * Best-effort insert into `ai_run`. Never throws — AI surfaces should
- * keep streaming even if logging fails.
+ * Best-effort insert into `ai_run`. Returns the inserted row id (so
+ * downstream audit_log writes can carry `metadata.ai_run_id` for AI
+ * Director's chain-linkage P0), or null on any failure. Never throws —
+ * AI surfaces should keep streaming even if logging fails.
  */
-export async function logAiRun(rec: AiRunRecord): Promise<void> {
+export async function logAiRun(rec: AiRunRecord): Promise<string | null> {
   try {
     const sb = supabaseAdmin();
     const promptHash = rec.systemPrompt ? hashPrompt(rec.systemPrompt) : "";
@@ -146,21 +148,31 @@ export async function logAiRun(rec: AiRunRecord): Promise<void> {
       rec.output && rec.output.length > 4000
         ? rec.output.slice(0, 4000)
         : (rec.output ?? null);
-    await sb.from("ai_run").insert({
-      tenant_id: rec.tenantId,
-      session_kind: rec.sessionKind,
-      surface: rec.surface,
-      model: rec.model,
-      prompt_hash: promptHash,
-      prompt_version: rec.promptVersion ?? null,
-      input_tokens: rec.inputTokens ?? null,
-      cached_input_tokens: rec.cachedInputTokens ?? null,
-      output_tokens: rec.outputTokens ?? null,
-      cost_cents: cost,
-      output_excerpt: excerpt,
-      meta: rec.meta ?? null,
-    });
+    const { data, error } = await sb
+      .from("ai_run")
+      .insert({
+        tenant_id: rec.tenantId,
+        session_kind: rec.sessionKind,
+        surface: rec.surface,
+        model: rec.model,
+        prompt_hash: promptHash,
+        prompt_version: rec.promptVersion ?? null,
+        input_tokens: rec.inputTokens ?? null,
+        cached_input_tokens: rec.cachedInputTokens ?? null,
+        output_tokens: rec.outputTokens ?? null,
+        cost_cents: cost,
+        output_excerpt: excerpt,
+        meta: rec.meta ?? null,
+      })
+      .select("id")
+      .maybeSingle();
+    if (error) {
+      console.warn("[ai-audit] log failed", error);
+      return null;
+    }
+    return (data?.id as string) ?? null;
   } catch (err) {
-    console.warn("[ai-audit] log failed", err);
+    console.warn("[ai-audit] log threw", err);
+    return null;
   }
 }

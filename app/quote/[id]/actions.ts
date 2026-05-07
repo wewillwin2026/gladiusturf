@@ -7,6 +7,7 @@ import { sendInternalAlert } from "@/lib/messaging/email";
 import { parseUaClass } from "@/lib/messaging/ua";
 import { consume, ipKey } from "@/lib/rate-limit/token-bucket";
 import { log } from "@/lib/obs/log";
+import { suggestRepliesForQuestion } from "@/lib/ai/suggest-reply";
 
 /**
  * Customer-facing actions on the public /quote/[id] page. No auth — the
@@ -282,11 +283,47 @@ export async function askQuestionAboutQuote(
     const customerName = customer?.display_name ?? "Customer";
     const tenantName = tenant?.display_name ?? "your team";
     const replyTo = customer?.primary_email ?? undefined;
+    const customerLanguage: "en" | "es" = "en"; // TODO: derive from customer.language when populated
     const safeCustomerName = escapeHtml(customerName);
     const safeTenantName = escapeHtml(tenantName);
     const safeTitle = escapeHtml(title);
     const safeReplyTo = replyTo ? escapeHtml(replyTo) : null;
     const subject = `[Question] ${customerName} on "${title}"`;
+
+    // AI reply suggestions — best-effort. Tenant reads, not customer-
+    // facing, so the blast radius is one human approval away from
+    // leaving the platform. ai_run_id is folded into the alert audit
+    // row via extraAuditMetadata so the chain proves which run wrote
+    // the suggestions.
+    const suggestions = await suggestRepliesForQuestion({
+      tenantId: ex.tenant_id,
+      proposalId,
+      proposalTitle: title,
+      customerName,
+      tenantName,
+      customerLanguage,
+      questionText: trimmed,
+    });
+    const suggestionsBlock = suggestions?.variants.length
+      ? `
+        <div style="margin-top:24px;padding:16px;background:#0f1715;border-left:3px solid #00d26a;border-radius:6px;">
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:#00d26a;margin-bottom:10px;">AI suggested replies (you approve before sending)</div>
+          ${suggestions.variants
+            .map(
+              (v, i) => `
+            <div style="font-size:13px;line-height:1.55;color:#f5f5f5;padding:8px 0;${
+              i < suggestions.variants.length - 1
+                ? "border-bottom:1px solid #1a2724;"
+                : ""
+            }">
+              <span style="display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:10px;color:#888;margin-right:8px;">${i + 1}.</span>
+              ${escapeHtml(v)}
+            </div>`,
+            )
+            .join("")}
+          <p style="font-size:10px;color:#666;margin:10px 0 0;">Drafted by Claude Sonnet · receipt: <a href="${baseUrl}/receipt/${suggestions.aiRunId ?? ""}" style="color:#00d26a;">/receipt/${(suggestions.aiRunId ?? "").slice(0, 8)}</a></p>
+        </div>`
+      : "";
     const html = `
       <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0a0a0a;color:#f5f5f5;padding:32px 24px;max-width:560px;margin:0 auto;">
         <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:#888;">${safeTenantName}</div>
@@ -297,6 +334,7 @@ export async function askQuestionAboutQuote(
         <p style="font-size:16px;line-height:1.4;margin:0 0 20px;">${safeTitle}</p>
         <p style="font-size:14px;line-height:1.6;margin:0 0 8px;color:#bbb;">Message</p>
         <blockquote style="border-left:3px solid #00d26a;padding:8px 0 8px 14px;margin:0 0 24px;font-size:14px;line-height:1.55;color:#f5f5f5;white-space:pre-wrap;">${escapeHtml(trimmed)}</blockquote>
+        ${suggestionsBlock}
         <p style="margin:32px 0;">
           <a href="${baseUrl}/app/quotes" style="display:inline-block;padding:12px 20px;background:#00d26a;color:#0a0a0a;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Open the quote</a>
         </p>
@@ -314,6 +352,12 @@ export async function askQuestionAboutQuote(
       html,
       text,
       replyTo,
+      extraAuditMetadata: suggestions
+        ? {
+            ai_run_id: suggestions.aiRunId,
+            ai_variants_count: suggestions.variants.length,
+          }
+        : undefined,
     });
   } catch (err) {
     log.warn("question alert failed", {

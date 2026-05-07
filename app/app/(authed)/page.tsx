@@ -1,7 +1,10 @@
 import { TodayDashboard } from "@/components/app/TodayDashboard";
 import { TenantOnboardingHero } from "@/components/app/TenantOnboardingHero";
 import { StormRadarTile } from "@/components/app/StormRadarTile";
-import { OwnersDailyOneLiner } from "@/components/app/OwnersDailyOneLiner";
+import {
+  OwnersDailyOneLiner,
+  pickNextMove,
+} from "@/components/app/OwnersDailyOneLiner";
 import { readAppSession } from "@/lib/app/session";
 import { supabaseAdmin } from "@/lib/supabase";
 import { demoState } from "@/lib/demo/state";
@@ -232,22 +235,55 @@ export default async function AppHomePage() {
       0,
     );
 
+    const briefingInputs = {
+      tenantName: session.tenant.display_name,
+      customerCount,
+      draftQuotesCount,
+      inFlightQuotesCount,
+      recentVisitsCount,
+      staleInventoryCount,
+      staleInventoryDollarsCents,
+      inStormZipCount,
+      oldestStaleAgeDays,
+      scheduledTodayCount,
+      openQuestionsCount,
+    };
+
+    // Record the priority decision for AI Director's audit substrate —
+    // one row per (tenant, UTC date, choice). Refreshes within the same
+    // day are no-ops via the unique index. Best-effort; a write failure
+    // never blocks the dashboard render. Catches missing-table errors
+    // gracefully so the action survives the deploy-before-migration
+    // window for 20260507_h_priority_decision.sql.
+    try {
+      const move = pickNextMove(briefingInputs);
+      const inputsForAudit = {
+        customerCount,
+        draftQuotesCount,
+        inFlightQuotesCount,
+        recentVisitsCount,
+        staleInventoryCount,
+        staleInventoryDollarsCents,
+        inStormZipCount,
+        oldestStaleAgeDays,
+        scheduledTodayCount,
+        openQuestionsCount,
+      };
+      await sb.from("priority_decision").insert({
+        tenant_id: session.tenant.id,
+        shown_choice: move.choice,
+        inputs: inputsForAudit,
+        href: move.href,
+        cta: move.cta,
+      });
+    } catch {
+      // Migration not yet applied or duplicate-by-design; both ignored.
+    }
+
     return (
       <div className="flex flex-col gap-4">
         <OwnersDailyOneLiner
-          briefing={{
-            tenantName: session.tenant.display_name,
-            customerCount,
-            draftQuotesCount,
-            inFlightQuotesCount,
-            recentVisitsCount,
-            staleInventoryCount,
-            staleInventoryDollarsCents,
-            inStormZipCount,
-            oldestStaleAgeDays,
-            scheduledTodayCount,
-            openQuestionsCount,
-          }}
+          briefing={briefingInputs}
         />
         <StormRadarTile
           inStormZipCount={inStormZipCount}

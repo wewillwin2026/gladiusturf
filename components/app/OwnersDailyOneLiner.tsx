@@ -42,14 +42,28 @@ function pickHeadline(now: Date, name: string): string {
   return `Good ${day} ${slot}, ${name}.`;
 }
 
-function pickNextMove(b: DailyBriefingInput): {
+export type NextMoveChoice =
+  | "schedule_today"
+  | "open_questions"
+  | "storm_zip"
+  | "stale_inventory"
+  | "draft_quotes"
+  | "first_customer"
+  | "first_visit"
+  | "quiet_day";
+
+export type NextMove = {
+  choice: NextMoveChoice;
   text: string;
   href: string;
   cta: string;
-} {
+};
+
+export function pickNextMove(b: DailyBriefingInput): NextMove {
   if ((b.scheduledTodayCount ?? 0) > 0) {
     const n = b.scheduledTodayCount ?? 0;
     return {
+      choice: "schedule_today",
       text: `${n} job${n === 1 ? "" : "s"} on the calendar today — open the route before crews roll.`,
       href: "/app/schedule",
       cta: "Open schedule",
@@ -58,6 +72,7 @@ function pickNextMove(b: DailyBriefingInput): {
   if ((b.openQuestionsCount ?? 0) > 0) {
     const n = b.openQuestionsCount ?? 0;
     return {
+      choice: "open_questions",
       text: `${n} customer question${n === 1 ? "" : "s"} on a quote — answer first, the deal moves on a reply.`,
       href: "/app/quotes",
       cta: "Open quotes",
@@ -65,6 +80,7 @@ function pickNextMove(b: DailyBriefingInput): {
   }
   if (b.inStormZipCount > 0) {
     return {
+      choice: "storm_zip",
       text: `${b.inStormZipCount} customer${b.inStormZipCount === 1 ? "" : "s"} in storm-watch ZIPs — review Storm Mode first.`,
       href: "/app/automations/storm",
       cta: "Open Storm Mode",
@@ -73,6 +89,7 @@ function pickNextMove(b: DailyBriefingInput): {
   if (b.staleInventoryCount > 0) {
     const dollars = money(b.staleInventoryDollarsCents);
     return {
+      choice: "stale_inventory",
       text: `${b.staleInventoryCount} fixture${b.staleInventoryCount === 1 ? "" : "s"} aging${b.oldestStaleAgeDays ? ` ${b.oldestStaleAgeDays}d+` : ""} on the shelf · ${dollars} tied up. Sell these first.`,
       href: "/app/inventory?sort=oldest",
       cta: "Open inventory",
@@ -80,6 +97,7 @@ function pickNextMove(b: DailyBriefingInput): {
   }
   if (b.draftQuotesCount > 0) {
     return {
+      choice: "draft_quotes",
       text: `${b.draftQuotesCount} quote draft${b.draftQuotesCount === 1 ? "" : "s"} waiting for a final number — push them out.`,
       href: "/app/quotes",
       cta: "Review drafts",
@@ -87,6 +105,7 @@ function pickNextMove(b: DailyBriefingInput): {
   }
   if (b.customerCount === 0) {
     return {
+      choice: "first_customer",
       text: "No customers in your book yet — drop a CSV and we'll bring them in.",
       href: "/app/import/customers",
       cta: "Import customers",
@@ -94,12 +113,14 @@ function pickNextMove(b: DailyBriefingInput): {
   }
   if (b.recentVisitsCount === 0) {
     return {
+      choice: "first_visit",
       text: "No visits logged this month — log today's job from the customer's profile to start the timeline.",
       href: "/app/customers",
       cta: "Open customers",
     };
   }
   return {
+    choice: "quiet_day",
     text: "Quiet day — good time to draft a quote you've been putting off, or run Storm Mode against your watch list.",
     href: "/app/quotes/draft",
     cta: "Draft a quote",

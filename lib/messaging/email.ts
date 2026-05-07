@@ -258,6 +258,8 @@ export type InternalAlertRequest = {
   replyTo?: string;
   /** Optional from override; falls back to RESEND_FROM_EMAIL or platform default. */
   fromEmail?: string;
+  /** Free-form metadata folded into the audit_log row (e.g. ai_run_id). */
+  extraAuditMetadata?: Record<string, unknown>;
 };
 
 export type InternalAlertResult =
@@ -302,6 +304,7 @@ export async function sendInternalAlert(
         recipient_count: req.recipients.length,
         recipients_redacted: recipientLocalParts,
         subject: safeSubject,
+        ...(req.extraAuditMetadata ?? {}),
         ...extra,
       },
     });
