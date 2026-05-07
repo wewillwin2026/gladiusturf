@@ -93,6 +93,19 @@ export default async function TrustConsolePage() {
     .order("created_at", { ascending: false })
     .limit(20);
 
+  // Outbound dispatch summary — count message.* and email.* actions
+  // separately from the generic audit feed so the tenant can see the
+  // canSend() funnel: queued -> blocked -> sent.
+  const dispatchRes = await sb
+    .from("audit_log")
+    .select("action")
+    .eq("tenant_id", session.tenant.id)
+    .gte("created_at", since30d)
+    .or(
+      "action.eq.message.sent,action.eq.message.dry_run,action.eq.message.blocked,action.eq.message.failed,action.eq.email.sent,action.eq.email.dry_run,action.eq.email.blocked,action.eq.email.failed,action.eq.tenant_alert.sent,action.eq.tenant_alert.dry_run,action.eq.tenant_alert.failed",
+    )
+    .limit(2000);
+
   // cross_tenant_access_log — migration 20260507_f not yet applied. Query
   // gracefully and treat missing table as empty.
   let crossTenantReads: Array<{
@@ -115,6 +128,34 @@ export default async function TrustConsolePage() {
   } catch {
     /* table not yet migrated — empty array is the right answer */
   }
+
+  const dispatchRows = (dispatchRes.data ?? []) as Array<{ action: string }>;
+  const dispatchCounts = dispatchRows.reduce<Record<string, number>>(
+    (acc, r) => {
+      acc[r.action] = (acc[r.action] ?? 0) + 1;
+      return acc;
+    },
+    {},
+  );
+  const smsSent = dispatchCounts["message.sent"] ?? 0;
+  const smsDryRun = dispatchCounts["message.dry_run"] ?? 0;
+  const smsBlocked = dispatchCounts["message.blocked"] ?? 0;
+  const smsFailed = dispatchCounts["message.failed"] ?? 0;
+  const emailSent = dispatchCounts["email.sent"] ?? 0;
+  const emailDryRun = dispatchCounts["email.dry_run"] ?? 0;
+  const emailBlocked = dispatchCounts["email.blocked"] ?? 0;
+  const emailFailed = dispatchCounts["email.failed"] ?? 0;
+  const alertSent = dispatchCounts["tenant_alert.sent"] ?? 0;
+  const alertDryRun = dispatchCounts["tenant_alert.dry_run"] ?? 0;
+  const totalDispatch =
+    smsSent +
+    smsDryRun +
+    smsBlocked +
+    smsFailed +
+    emailSent +
+    emailDryRun +
+    emailBlocked +
+    emailFailed;
 
   const aiRuns = (aiRunsRes.data ?? []) as Array<{
     id: string;
@@ -334,6 +375,60 @@ export default async function TrustConsolePage() {
         </div>
       </section>
 
+      <section className="g-card overflow-hidden">
+        <header className="flex items-center justify-between px-5 py-4 border-b border-g-border-subtle">
+          <div className="flex items-center gap-2">
+            <MessageSquare className="h-4 w-4 text-g-accent" />
+            <span className="text-[11px] uppercase tracking-[0.12em] text-g-text-faint">
+              Outbound dispatch funnel — last 30 days
+            </span>
+          </div>
+          <span className="text-[11px] font-geist-mono text-g-text-faint">
+            {totalDispatch} attempts
+          </span>
+        </header>
+        <div className="p-4">
+          {totalDispatch === 0 ? (
+            <p className="text-[13px] text-g-text-muted text-center py-6">
+              No outbound dispatches yet. Once you send your first quote
+              email or arm Storm Mode, the canSend() funnel populates here:
+              attempted &rarr; blocked-by-consent &rarr; sent / dry-run.
+            </p>
+          ) : (
+            <div className="grid gap-3 md:grid-cols-3">
+              <DispatchBlock
+                title="SMS"
+                sent={smsSent}
+                dryRun={smsDryRun}
+                blocked={smsBlocked}
+                failed={smsFailed}
+              />
+              <DispatchBlock
+                title="Email"
+                sent={emailSent}
+                dryRun={emailDryRun}
+                blocked={emailBlocked}
+                failed={emailFailed}
+              />
+              <DispatchBlock
+                title="Owner alerts"
+                sent={alertSent}
+                dryRun={alertDryRun}
+                blocked={0}
+                failed={dispatchCounts["tenant_alert.failed"] ?? 0}
+              />
+            </div>
+          )}
+          <p className="mt-3 text-[11px] text-g-text-faint leading-relaxed">
+            Every send goes through{" "}
+            <code className="font-geist-mono text-g-text-muted">canSend()</code>{" "}
+            for consent + quiet hours + blocked weekday. Dry-run = preview only,
+            no provider call (Twilio / Resend env not set). Blocked = consent
+            gate rejected. Failed = phone/email missing or provider error.
+          </p>
+        </div>
+      </section>
+
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Consent ledger */}
         <div className="g-card overflow-hidden">
@@ -503,6 +598,44 @@ export default async function TrustConsolePage() {
           <code className="font-geist-mono">/api/transparency/root/YYYY-MM-DD</code>.
         </span>
       </section>
+    </div>
+  );
+}
+
+function DispatchBlock({
+  title,
+  sent,
+  dryRun,
+  blocked,
+  failed,
+}: {
+  title: string;
+  sent: number;
+  dryRun: number;
+  blocked: number;
+  failed: number;
+}) {
+  const total = sent + dryRun + blocked + failed;
+  return (
+    <div className="rounded-md bg-g-surface-2 p-3">
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] uppercase tracking-[0.12em] text-g-text-faint">
+          {title}
+        </span>
+        <span className="font-geist-mono text-[11px] text-g-text-muted">
+          {total}
+        </span>
+      </div>
+      <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-[12px]">
+        <span className="text-g-text-muted">Sent</span>
+        <span className="text-right font-geist-mono text-g-accent">{sent}</span>
+        <span className="text-g-text-muted">Dry-run</span>
+        <span className="text-right font-geist-mono text-g-text">{dryRun}</span>
+        <span className="text-g-text-muted">Blocked</span>
+        <span className="text-right font-geist-mono text-g-warning">{blocked}</span>
+        <span className="text-g-text-muted">Failed</span>
+        <span className="text-right font-geist-mono text-g-danger">{failed}</span>
+      </div>
     </div>
   );
 }
