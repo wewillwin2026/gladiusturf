@@ -103,11 +103,11 @@ export async function sendSmsToCustomer(req: SmsRequest): Promise<SmsResult> {
     }
   }
 
-  // 2. Phone lookup. customers.phone is canonical; verify presence.
+  // 2. Phone lookup. customers.primary_phone is canonical; verify presence.
   const sb = supabaseAdmin();
   const { data: customer, error: customerErr } = await sb
     .from("customers")
-    .select("phone, display_name")
+    .select("primary_phone, display_name")
     .eq("tenant_id", req.tenantId)
     .eq("id", req.customerId)
     .maybeSingle();
@@ -126,7 +126,8 @@ export async function sendSmsToCustomer(req: SmsRequest): Promise<SmsResult> {
     });
     return { ok: false, reason: "customer_lookup_failed" };
   }
-  if (!customer.phone) {
+  const phone = customer.primary_phone as string | null;
+  if (!phone) {
     await logAudit({
       tenantId: req.tenantId,
       userId,
@@ -154,7 +155,7 @@ export async function sendSmsToCustomer(req: SmsRequest): Promise<SmsResult> {
       metadata: {
         channel,
         source,
-        to: customer.phone,
+        to: phone,
         from: fromNumber,
         body_excerpt: bodyExcerpt(req.body),
         note:
@@ -171,7 +172,7 @@ export async function sendSmsToCustomer(req: SmsRequest): Promise<SmsResult> {
     const auth = Buffer.from(`${creds.sid}:${creds.token}`).toString("base64");
     const params = new URLSearchParams({
       From: req.fromNumber ?? creds.from,
-      To: customer.phone,
+      To: phone,
       Body: req.body,
     });
     const res = await fetch(url, {
@@ -213,7 +214,7 @@ export async function sendSmsToCustomer(req: SmsRequest): Promise<SmsResult> {
       metadata: {
         channel,
         source,
-        to: customer.phone,
+        to: phone,
         from: req.fromNumber ?? creds.from,
         twilio_sid: sid,
         body_excerpt: bodyExcerpt(req.body),

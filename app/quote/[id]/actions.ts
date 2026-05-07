@@ -48,46 +48,53 @@ export async function acceptQuote(
   };
   const ex = existing as unknown as AcceptRow;
 
-  // Drafts and lost proposals are not customer-actionable. Already
-  // sold/installed = idempotent no-op (still 200, no extra audit row).
+  // Drafts and lost proposals are not customer-actionable.
   if (ex.status === "draft" || ex.status === "lost") {
     return { error: "not_actionable" };
   }
-  if (ex.status === "sold" || ex.status === "installed") {
-    return { ok: true };
-  }
+
+  // Reconcile-rather-than-short-circuit. If a previous accept failed
+  // partway (status flipped but schedule never landed, or audit write
+  // dropped), a retry would silently never fix it. So: only skip the
+  // status flip + audit + alert when we already have a schedule_item
+  // for this proposal. The schedule create is itself idempotent below.
+  const isAlreadySold = ex.status === "sold" || ex.status === "installed";
 
   const nowIso = new Date().toISOString();
-  const { error: updateErr } = await sb
-    .from("proposals")
-    .update({ status: "sold", sold_at: nowIso, updated_at: nowIso })
-    .eq("id", proposalId);
-  if (updateErr) return { error: "update_failed" };
+  if (!isAlreadySold) {
+    const { error: updateErr } = await sb
+      .from("proposals")
+      .update({ status: "sold", sold_at: nowIso, updated_at: nowIso })
+      .eq("id", proposalId);
+    if (updateErr) return { error: "update_failed" };
+  }
 
   let userAgent = "";
   try {
     const hdrs = await headers();
     userAgent = (hdrs.get("user-agent") ?? "").slice(0, 200);
-    await sb.from("audit_log").insert({
-      tenant_id: ex.tenant_id,
-      user_id: null,
-      action: "quote.accepted",
-      entity_type: "proposal",
-      entity_id: proposalId,
-      metadata: {
-        customer_id: ex.customer_id,
-        source: "public_link",
-        user_agent: userAgent,
-        total_cents: ex.total_cents,
-      },
-    });
+    if (!isAlreadySold) {
+      await sb.from("audit_log").insert({
+        tenant_id: ex.tenant_id,
+        user_id: null,
+        action: "quote.accepted",
+        entity_type: "proposal",
+        entity_id: proposalId,
+        metadata: {
+          customer_id: ex.customer_id,
+          source: "public_link",
+          user_agent: userAgent,
+          total_cents: ex.total_cents,
+        },
+      });
+    }
   } catch (err) {
     console.warn("quote.accepted audit failed (non-fatal)", err);
   }
 
-  // Auto-create an install schedule_item so the deal lands on the
-  // tenant's calendar instantly — the tenant can drag it later.
-  // Default: 7 days out, 9 AM tenant-local, 4-hour block.
+  // Auto-create an install schedule_item — idempotent. Always run, even
+  // on the already-sold path, so a previously partial accept can self-
+  // heal on retry.
   try {
     await createInstallSlotForAcceptedQuote({
       tenantId: ex.tenant_id,
@@ -97,6 +104,13 @@ export async function acceptQuote(
     });
   } catch (err) {
     console.warn("createInstallSlotForAcceptedQuote failed (non-fatal)", err);
+  }
+
+  // Already-sold path stops here — no duplicate alert.
+  if (isAlreadySold) {
+    revalidatePath("/app/quotes");
+    revalidatePath(`/quote/${proposalId}`);
+    return { ok: true };
   }
 
   // Notify the tenant's owner(s) via Resend. This is the single
@@ -219,22 +233,28 @@ export async function askQuestionAboutQuote(
         const baseUrl =
           process.env.NEXT_PUBLIC_SITE_URL || "https://gladiusturf.com";
         const title = ex.bom?.title ?? "Quote";
-        const subject = `[Question] ${customer?.display_name ?? "Customer"} on "${title}"`;
+        const safeCustomerName = escapeHtml(customer?.display_name ?? "Customer");
+        const safeTenantName = escapeHtml(tenant?.display_name ?? "your team");
+        const safeTitle = escapeHtml(title);
         const replyTo = customer?.primary_email ?? undefined;
+        const safeReplyTo = replyTo ? escapeHtml(replyTo) : null;
+        const subject = `[Question] ${customer?.display_name ?? "Customer"} on "${title}"`
+          .replace(/[\r\n]+/g, " ")
+          .slice(0, 200);
         const html = `
           <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0a0a0a;color:#f5f5f5;padding:32px 24px;max-width:560px;margin:0 auto;">
-            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:#888;">${tenant?.display_name ?? "your team"}</div>
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:#888;">${safeTenantName}</div>
             <h1 style="font-family:Georgia,serif;font-size:28px;line-height:1.2;margin:6px 0 24px;">A customer asked a question.</h1>
             <p style="font-size:14px;line-height:1.6;margin:0 0 8px;color:#bbb;">From</p>
-            <p style="font-size:16px;line-height:1.4;margin:0 0 20px;font-weight:600;">${customer?.display_name ?? "Customer"}${replyTo ? ` &lt;${replyTo}&gt;` : ""}</p>
+            <p style="font-size:16px;line-height:1.4;margin:0 0 20px;font-weight:600;">${safeCustomerName}${safeReplyTo ? ` &lt;${safeReplyTo}&gt;` : ""}</p>
             <p style="font-size:14px;line-height:1.6;margin:0 0 8px;color:#bbb;">On quote</p>
-            <p style="font-size:16px;line-height:1.4;margin:0 0 20px;">${title}</p>
+            <p style="font-size:16px;line-height:1.4;margin:0 0 20px;">${safeTitle}</p>
             <p style="font-size:14px;line-height:1.6;margin:0 0 8px;color:#bbb;">Message</p>
             <blockquote style="border-left:3px solid #00d26a;padding:8px 0 8px 14px;margin:0 0 24px;font-size:14px;line-height:1.55;color:#f5f5f5;white-space:pre-wrap;">${escapeHtml(trimmed)}</blockquote>
             <p style="margin:32px 0;">
               <a href="${baseUrl}/app/quotes" style="display:inline-block;padding:12px 20px;background:#00d26a;color:#0a0a0a;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Open the quote</a>
             </p>
-            ${replyTo ? `<p style="font-size:12px;line-height:1.55;color:#888;margin:24px 0 0;">Reply directly to this email — the customer is on the To line.</p>` : ""}
+            ${replyTo ? `<p style="font-size:12px;line-height:1.55;color:#888;margin:24px 0 0;">Reply to this email — the customer's address is on Reply-To.</p>` : ""}
           </div>
         `;
         const text = `[Question] ${customer?.display_name ?? "Customer"} on "${title}"\n\n${trimmed}\n\nOpen quote: ${baseUrl}/app/quotes`;
@@ -291,6 +311,74 @@ function escapeHtml(s: string): string {
     .replace(/'/g, "&#39;");
 }
 
+/**
+ * Returns a Date pointing to 09:00 local time in the given IANA timezone,
+ * `daysAhead` days from today (relative to that timezone).
+ *
+ * The trick: read the current y/m/d in the target zone via
+ * Intl.DateTimeFormat, add the offset, format an ISO string with the
+ * zone's literal offset for that future date, parse back to UTC. This
+ * works correctly across DST transitions because each year's
+ * transition is captured by the formatter the day we resolve.
+ */
+function computeNextLocal9am(tz: string, daysAhead: number): Date {
+  const now = new Date();
+  const partsNow = new Intl.DateTimeFormat("en-US", {
+    timeZone: tz,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now);
+  const get = (k: string) =>
+    Number.parseInt(partsNow.find((p) => p.type === k)?.value ?? "0", 10);
+  const y = get("year");
+  const m = get("month");
+  const d = get("day");
+
+  // Pick a target wall-clock date in the target zone. Add daysAhead days
+  // by using Date arithmetic in UTC then re-extracting y/m/d in tz.
+  const utcAnchor = Date.UTC(y, m - 1, d, 12, 0, 0); // noon UTC anchor; safe from DST edges
+  const futureUtc = new Date(utcAnchor + daysAhead * 24 * 60 * 60 * 1000);
+  const futureParts = new Intl.DateTimeFormat("en-US", {
+    timeZone: tz,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(futureUtc);
+  const fy = Number.parseInt(
+    futureParts.find((p) => p.type === "year")?.value ?? "0",
+    10,
+  );
+  const fm = Number.parseInt(
+    futureParts.find((p) => p.type === "month")?.value ?? "0",
+    10,
+  );
+  const fd = Number.parseInt(
+    futureParts.find((p) => p.type === "day")?.value ?? "0",
+    10,
+  );
+
+  // We want 09:00 local on (fy-fm-fd). Iterate to find a UTC ts that,
+  // formatted in tz, yields fy/fm/fd hour=09. Two passes converge given
+  // DST is at most ±1h.
+  let candidate = new Date(Date.UTC(fy, fm - 1, fd, 13, 0, 0)); // start at UTC noon-ish
+  for (let i = 0; i < 3; i++) {
+    const cp = new Intl.DateTimeFormat("en-US", {
+      timeZone: tz,
+      hour: "2-digit",
+      hour12: false,
+    }).formatToParts(candidate);
+    const hour = Number.parseInt(
+      cp.find((p) => p.type === "hour")?.value ?? "0",
+      10,
+    );
+    const drift = 9 - hour;
+    if (drift === 0) break;
+    candidate = new Date(candidate.getTime() + drift * 60 * 60 * 1000);
+  }
+  return candidate;
+}
+
 async function createInstallSlotForAcceptedQuote(args: {
   tenantId: string;
   customerId: string;
@@ -310,9 +398,16 @@ async function createInstallSlotForAcceptedQuote(args: {
     .limit(1);
   if (existing && existing.length > 0) return;
 
-  const startsAt = new Date();
-  startsAt.setUTCDate(startsAt.getUTCDate() + 7);
-  startsAt.setUTCHours(13, 0, 0, 0); // 9 AM ET ≈ 13:00 UTC, good enough default
+  // Read tenant's local timezone so 9 AM lands as 9 AM regardless of
+  // EST/EDT (or any other zone). Hardcoded UTC offsets break twice a
+  // year. Falls back to America/New_York if the settings row is absent.
+  const { data: settings } = await sb
+    .from("tenant_messaging_settings")
+    .select("timezone")
+    .eq("tenant_id", args.tenantId)
+    .maybeSingle();
+  const tz = settings?.timezone || "America/New_York";
+  const startsAt = computeNextLocal9am(tz, 7);
   const endsAt = new Date(startsAt.getTime() + 4 * 60 * 60 * 1000);
 
   await sb.from("schedule_items").insert({
@@ -394,15 +489,23 @@ async function notifyTenantOfAcceptance(args: {
           maximumFractionDigits: 2,
         })}`
       : "—";
-  const subject = `[Sold] ${args.customerName} accepted "${args.title}" — ${dollar}`;
+  // Sanitize every DB-sourced string before HTML interpolation. Subject
+  // also strips CR/LF to prevent header injection (RFC 5322).
+  const safeCustomer = escapeHtml(args.customerName);
+  const safeTenant = escapeHtml(args.tenantName);
+  const safeTitle = escapeHtml(args.title);
+  const safeSubject = `[Sold] ${args.customerName} accepted "${args.title}" — ${dollar}`
+    .replace(/[\r\n]+/g, " ")
+    .slice(0, 200);
+  const subject = safeSubject;
   const html = `
     <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0a0a0a;color:#f5f5f5;padding:32px 24px;max-width:560px;margin:0 auto;">
-      <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:#888;">${args.tenantName}</div>
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:#888;">${safeTenant}</div>
       <h1 style="font-family:Georgia,serif;font-size:32px;line-height:1.15;margin:6px 0 24px;">A quote just sold.</h1>
       <p style="font-size:14px;line-height:1.6;margin:0 0 8px;color:#bbb;">Customer</p>
-      <p style="font-size:18px;line-height:1.4;margin:0 0 20px;font-weight:600;">${args.customerName}</p>
+      <p style="font-size:18px;line-height:1.4;margin:0 0 20px;font-weight:600;">${safeCustomer}</p>
       <p style="font-size:14px;line-height:1.6;margin:0 0 8px;color:#bbb;">Quote</p>
-      <p style="font-size:18px;line-height:1.4;margin:0 0 20px;">${args.title}</p>
+      <p style="font-size:18px;line-height:1.4;margin:0 0 20px;">${safeTitle}</p>
       <p style="font-size:14px;line-height:1.6;margin:0 0 8px;color:#bbb;">Total</p>
       <p style="font-size:24px;line-height:1.3;margin:0 0 28px;font-weight:600;color:#00d26a;">${dollar}</p>
       <p style="margin:32px 0;">

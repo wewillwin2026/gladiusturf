@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2, PenSquare, Plus, Trash2 } from "lucide-react";
+import { Loader2, PenSquare, Plus, Send, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/app/ui/Button";
 import { Input, Textarea } from "@/components/app/ui/Input";
@@ -332,24 +332,33 @@ export function DraftQuoteForm({
         <div className="grid gap-4 md:grid-cols-2">
           <div>
             <label className="text-[11px] uppercase tracking-[0.12em] text-g-text-faint">
-              Total ($)
+              Total
             </label>
-            <Input
-              inputMode="decimal"
-              value={
-                itemsCleaned.length > 0
-                  ? itemsTotalDollars.toFixed(2)
-                  : total
-              }
-              onChange={(e) => setTotal(e.target.value)}
-              disabled={itemsCleaned.length > 0}
-              placeholder="3,250"
-              className="mt-1.5"
-            />
-            {itemsCleaned.length > 0 && (
-              <p className="mt-1 text-[10px] text-g-text-faint">
-                Auto-summed from line items below.
-              </p>
+            {itemsCleaned.length > 0 ? (
+              <div className="mt-1.5 flex h-9 items-center justify-between rounded-md bg-g-surface-2 px-3">
+                <span className="font-serif text-[18px] tabular-nums text-g-text">
+                  ${itemsTotalDollars.toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
+                <span className="text-[10px] uppercase tracking-[0.1em] text-g-text-faint">
+                  Auto-summed
+                </span>
+              </div>
+            ) : (
+              <div className="mt-1.5 relative">
+                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[14px] text-g-text-muted">
+                  $
+                </span>
+                <Input
+                  inputMode="decimal"
+                  value={total}
+                  onChange={(e) => setTotal(e.target.value)}
+                  placeholder="3,250"
+                  className="pl-6"
+                />
+              </div>
             )}
           </div>
           {tenantBilingual && (
@@ -390,76 +399,124 @@ export function DraftQuoteForm({
           )}
         </div>
         {items.length === 0 ? (
-          <p className="text-[12px] text-g-text-muted">
-            Add SKU-level items so the customer sees what they&apos;re paying
-            for. When any are present they auto-sum into the Total above.
-          </p>
+          <button
+            type="button"
+            onClick={() => setItems((arr) => [...arr, newLineItem()])}
+            className="w-full rounded-md border border-dashed border-g-border-subtle bg-g-surface px-4 py-6 text-center transition-colors hover:bg-g-surface-2 hover:border-g-accent/40"
+          >
+            <span className="text-[14px] font-medium text-g-text">
+              <Plus className="h-3.5 w-3.5 mr-1 inline-block" />
+              Add the first line item
+            </span>
+            <span className="block mt-1 text-[11px] text-g-text-faint">
+              Each item shows on the customer&apos;s quote page. Auto-sums into Total.
+            </span>
+          </button>
         ) : (
-          <ul className="flex flex-col gap-2">
+          <ul className="flex flex-col gap-3">
             {items.map((it, idx) => {
               const subtotal = lineSubtotalCents(it);
               return (
                 <li
                   key={it.id}
-                  className="grid grid-cols-[1fr_72px_96px_92px_32px] gap-2 items-start"
+                  className="flex flex-col gap-2 rounded-md bg-g-surface px-3 py-3 md:bg-transparent md:px-0 md:py-0 md:grid md:grid-cols-[1fr_72px_104px_104px_32px] md:gap-2 md:items-start"
                 >
-                  <Input
-                    value={it.description}
-                    onChange={(e) =>
-                      setItems((arr) =>
-                        arr.map((x, i) =>
-                          i === idx ? { ...x, description: e.target.value } : x,
-                        ),
-                      )
-                    }
-                    placeholder="Cast LED Path Light · 4W · brass"
-                    aria-label={`Line item ${idx + 1} description`}
-                  />
-                  <Input
-                    inputMode="decimal"
-                    value={it.qty}
-                    onChange={(e) =>
-                      setItems((arr) =>
-                        arr.map((x, i) =>
-                          i === idx ? { ...x, qty: e.target.value } : x,
-                        ),
-                      )
-                    }
-                    placeholder="Qty"
-                    aria-label={`Line item ${idx + 1} quantity`}
-                  />
-                  <Input
-                    inputMode="decimal"
-                    value={it.unitPrice}
-                    onChange={(e) =>
-                      setItems((arr) =>
-                        arr.map((x, i) =>
-                          i === idx ? { ...x, unitPrice: e.target.value } : x,
-                        ),
-                      )
-                    }
-                    placeholder="$ each"
-                    aria-label={`Line item ${idx + 1} unit price`}
-                  />
-                  <div className="h-9 px-2 rounded-md bg-g-surface-2 flex items-center justify-end font-geist-mono text-[12px] text-g-text-muted">
-                    {fmtMoney(subtotal)}
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] uppercase tracking-[0.1em] text-g-text-faint md:hidden">
+                      Description
+                    </span>
+                    <Input
+                      value={it.description}
+                      onChange={(e) =>
+                        setItems((arr) =>
+                          arr.map((x, i) =>
+                            i === idx ? { ...x, description: e.target.value } : x,
+                          ),
+                        )
+                      }
+                      placeholder="Cast LED Path Light · 4W · brass"
+                      aria-label={`Line item ${idx + 1} description`}
+                    />
                   </div>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setItems((arr) => arr.filter((_, i) => i !== idx))
-                    }
-                    aria-label="Remove line item"
-                    className="h-9 w-8 inline-flex items-center justify-center rounded-md text-g-text-faint hover:text-g-danger hover:bg-g-surface-2"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
+                  <div className="grid grid-cols-[1fr_1fr_1fr_auto] items-start gap-2 md:contents">
+                    <div className="flex flex-col gap-1 md:contents">
+                      <span className="text-[10px] uppercase tracking-[0.1em] text-g-text-faint md:hidden">
+                        Qty
+                      </span>
+                      <Input
+                        inputMode="numeric"
+                        value={it.qty}
+                        onChange={(e) =>
+                          setItems((arr) =>
+                            arr.map((x, i) =>
+                              i === idx ? { ...x, qty: e.target.value } : x,
+                            ),
+                          )
+                        }
+                        placeholder="1"
+                        aria-label={`Line item ${idx + 1} quantity`}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1 md:contents">
+                      <span className="text-[10px] uppercase tracking-[0.1em] text-g-text-faint md:hidden">
+                        Each
+                      </span>
+                      <div className="relative">
+                        <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[13px] text-g-text-muted">
+                          $
+                        </span>
+                        <Input
+                          inputMode="decimal"
+                          value={it.unitPrice}
+                          onChange={(e) =>
+                            setItems((arr) =>
+                              arr.map((x, i) =>
+                                i === idx ? { ...x, unitPrice: e.target.value } : x,
+                              ),
+                            )
+                          }
+                          placeholder="0.00"
+                          aria-label={`Line item ${idx + 1} unit price`}
+                          className="pl-5"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1 md:contents">
+                      <span className="text-[10px] uppercase tracking-[0.1em] text-g-text-faint md:hidden">
+                        Subtotal
+                      </span>
+                      <div className="h-9 px-2 rounded-md bg-g-surface-2 flex items-center justify-end font-geist-mono text-[12px] text-g-text">
+                        {fmtMoney(subtotal)}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setItems((arr) => arr.filter((_, i) => i !== idx));
+                        toast("Line removed", {
+                          action: {
+                            label: "Undo",
+                            onClick: () =>
+                              setItems((arr) => {
+                                const restored = [...arr];
+                                restored.splice(idx, 0, it);
+                                return restored;
+                              }),
+                          },
+                        });
+                      }}
+                      aria-label="Remove line item"
+                      className="h-9 w-8 inline-flex items-center justify-center rounded-md text-g-text-faint hover:text-g-danger hover:bg-g-surface-2"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
                 </li>
               );
             })}
           </ul>
         )}
-        <div>
+        <div className={items.length === 0 ? "hidden" : ""}>
           <Button
             type="button"
             variant="ghost"
@@ -484,47 +541,32 @@ export function DraftQuoteForm({
         />
       </div>
 
-      <div className="flex flex-wrap items-center justify-end gap-2">
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={() => router.push("/app/quotes")}
-          disabled={busy}
-        >
-          Cancel
-        </Button>
-        <Button
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <button
           type="submit"
-          variant="secondary"
           disabled={busy || !customerId || !title.trim()}
+          className="text-[12px] text-g-text-faint underline-offset-4 hover:text-g-text hover:underline disabled:opacity-50"
         >
-          {busy ? (
-            <>
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              Saving…
-            </>
-          ) : (
-            <>
-              <PenSquare className="h-3.5 w-3.5" />
-              Save as draft
-            </>
-          )}
-        </Button>
+          {busy ? "Saving…" : "Save as draft instead"}
+        </button>
         <Button
           type="button"
           variant="primary"
+          size="lg"
           onClick={handleSubmitAndSend}
           disabled={busy || !customerId || !title.trim()}
         >
           {busy ? (
             <>
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              Saving…
+              Sending…
             </>
           ) : (
             <>
-              <PenSquare className="h-3.5 w-3.5" />
-              Save + send
+              <Send className="h-3.5 w-3.5" />
+              {selected?.name
+                ? `Send to ${selected.name.split(/\s+/)[0]}`
+                : "Send quote"}
             </>
           )}
         </Button>

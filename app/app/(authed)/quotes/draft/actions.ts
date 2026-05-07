@@ -271,6 +271,12 @@ export async function emailQuoteToCustomer(
   `;
   const text = `${greeting}\n\n${body}\n\n${link}\n\n${closing}`;
 
+  // Quote-share is a transactional message: the customer asked for a
+  // quote (offline) and the tenant is fulfilling that request. Under
+  // CAN-SPAM and standard ESP transactional definitions, an outstanding
+  // commercial relationship + a one-shot reply is exempt from the
+  // marketing-consent gate. The dispatcher still writes the audit row
+  // with source='quote-share' so the funnel shows the bypass explicitly.
   const result = await sendEmailToCustomer({
     tenantId: session.tenant.id,
     customerId: row.customer_id,
@@ -278,6 +284,7 @@ export async function emailQuoteToCustomer(
     html,
     text,
     source: "quote-share",
+    skipConsentGate: true,
   });
 
   if (!result.ok) {
