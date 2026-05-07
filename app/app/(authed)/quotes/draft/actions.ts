@@ -7,6 +7,7 @@ import {
   emailDispatcherMode,
   sendEmailToCustomer,
 } from "@/lib/messaging/email";
+import { validateBomWrite } from "@/lib/schema/bom";
 
 export type DraftQuoteInput = {
   customerId: string;
@@ -85,15 +86,19 @@ export async function createDraftQuote(
       ? totalFromItems
       : total;
 
-  const bom: Record<string, unknown> = {
-    title,
-    notes: input.notes?.trim() || null,
-  };
-  if (cleanedItems.length > 0) {
-    bom.items = cleanedItems;
-  }
-  if (input.isTest) {
-    bom.is_test = true;
+  // Validate the bom shape at the boundary so a typo / column rename /
+  // bad upstream input crashes here instead of on the public page.
+  let bom: Record<string, unknown>;
+  try {
+    bom = validateBomWrite({
+      title,
+      notes: input.notes?.trim() || null,
+      ...(cleanedItems.length > 0 ? { items: cleanedItems } : {}),
+      ...(input.isTest ? { is_test: true } : {}),
+    });
+  } catch (err) {
+    console.warn("createDraftQuote bom validation failed", err);
+    return { error: "invalid_bom" };
   }
 
   const { data, error } = await sb

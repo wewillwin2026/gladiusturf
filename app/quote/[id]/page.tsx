@@ -12,6 +12,8 @@ import type { Metadata } from "next";
 import { supabaseAdmin } from "@/lib/supabase";
 import { money } from "@/lib/shared/format";
 import { looksLikeBot, parseUaClass } from "@/lib/messaging/ua";
+import { parseBomRead } from "@/lib/schema/bom";
+import { log } from "@/lib/obs/log";
 import { AcceptButton } from "./_components/AcceptButton";
 import { AskQuestionForm } from "./_components/AskQuestionForm";
 
@@ -149,10 +151,18 @@ export default async function PublicQuotePage({
         }
       }
     } catch (err) {
-      console.warn("quote.viewed tracking failed", err);
+      log.warn("quote.viewed tracking failed", {
+        surface: "quote.view",
+        kind: "view_track_failed",
+        proposalId: row.id,
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   }
-  const title = row.bom?.title ?? "Quote";
+  // Parse bom through the lenient read schema so old/malformed rows
+  // get safe defaults instead of crashing the public page.
+  const bom = parseBomRead(row.bom);
+  const title = bom.title ?? "Quote";
   const accent = tenant.brand_accent_hex || "#00d26a";
 
   const created = new Date(row.created_at).toLocaleDateString("en-US", {
@@ -192,21 +202,21 @@ export default async function PublicQuotePage({
             {t("Scope", "Alcance")}
           </div>
           <h2 className="mt-2 font-serif text-2xl text-bone leading-snug">{title}</h2>
-          {row.bom?.notes && (
+          {bom.notes && (
             <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-bone/70">
-              {row.bom.notes}
+              {bom.notes}
             </p>
           )}
         </section>
 
-        {row.bom?.items && row.bom.items.length > 0 && (
+        {bom.items && bom.items.length > 0 && (
           <section className="mt-4 rounded-2xl border border-bone/15 bg-bone/[0.02] p-6">
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-crest text-bone/45">
               <PenSquare className="h-3.5 w-3.5" />
               {t("Line items", "Detalle")}
             </div>
             <ul className="mt-3 divide-y divide-bone/10">
-              {row.bom.items.map((it, i) => {
+              {bom.items.map((it, i) => {
                 const subtotal = Math.round(it.qty * it.unit_price_cents);
                 return (
                   <li

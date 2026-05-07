@@ -6,6 +6,7 @@ import { supabaseAdmin } from "@/lib/supabase";
 import { sendInternalAlert } from "@/lib/messaging/email";
 import { parseUaClass } from "@/lib/messaging/ua";
 import { consume, ipKey } from "@/lib/rate-limit/token-bucket";
+import { log } from "@/lib/obs/log";
 
 /**
  * Customer-facing actions on the public /quote/[id] page. No auth — the
@@ -105,7 +106,14 @@ export async function acceptQuote(
       });
     }
   } catch (err) {
-    console.warn("quote.accepted audit failed (non-fatal)", err);
+    log.warn("quote.accepted audit failed", {
+      surface: "quote.accept",
+      kind: "audit_write_failed",
+      tenantId: ex.tenant_id,
+      customerId: ex.customer_id,
+      proposalId,
+      error: err instanceof Error ? err.message : String(err),
+    });
   }
 
   // Auto-create an install schedule_item — idempotent. Always run, even
@@ -119,7 +127,13 @@ export async function acceptQuote(
       title: ex.bom?.title ?? "Install",
     });
   } catch (err) {
-    console.warn("createInstallSlotForAcceptedQuote failed (non-fatal)", err);
+    log.warn("install slot auto-create failed", {
+      surface: "quote.accept",
+      kind: "schedule_create_failed",
+      tenantId: ex.tenant_id,
+      proposalId,
+      error: err instanceof Error ? err.message : String(err),
+    });
   }
 
   // Already-sold path stops here — no duplicate alert.
@@ -145,7 +159,13 @@ export async function acceptQuote(
       totalCents: ex.total_cents,
     });
   } catch (err) {
-    console.warn("notifyTenantOfAcceptance failed (non-fatal)", err);
+    log.warn("owner alert failed", {
+      surface: "quote.accept",
+      kind: "owner_alert_failed",
+      tenantId: ex.tenant_id,
+      proposalId,
+      error: err instanceof Error ? err.message : String(err),
+    });
   }
 
   revalidatePath("/app/quotes");
@@ -235,7 +255,13 @@ export async function askQuestionAboutQuote(
       },
     });
   } catch (err) {
-    console.warn("quote.question_asked audit failed (non-fatal)", err);
+    log.warn("question audit write failed", {
+      surface: "quote.question",
+      kind: "audit_write_failed",
+      tenantId: ex.tenant_id,
+      proposalId,
+      error: err instanceof Error ? err.message : String(err),
+    });
   }
 
   // Notify tenant owners/admins via the dispatcher.
@@ -290,7 +316,13 @@ export async function askQuestionAboutQuote(
       replyTo,
     });
   } catch (err) {
-    console.warn("notifyTenantOfQuestion failed (non-fatal)", err);
+    log.warn("question alert failed", {
+      surface: "quote.question",
+      kind: "owner_alert_failed",
+      tenantId: ex.tenant_id,
+      proposalId,
+      error: err instanceof Error ? err.message : String(err),
+    });
   }
 
   revalidatePath("/app/quotes");
