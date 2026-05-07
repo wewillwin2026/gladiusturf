@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:consent": "tsx scripts/test-consent-gate.ts",
+    "test": "npm run test:consent"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.91.1",
@@ -60,6 +62,7 @@
     "eslint-config-next": "^15.5.0",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.14",
+    "tsx": "^4.21.0",
     "typescript": "^5.6.3"
   }
 }

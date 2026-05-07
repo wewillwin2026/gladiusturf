@@ -263,7 +263,44 @@ export default async function PublicQuotePage({
           </section>
         )}
 
-        <section className="mt-10 grid gap-3 md:grid-cols-2">
+        {row.status !== "sold" && row.status !== "installed" && (
+          <section className="mt-10 rounded-2xl border border-bone/10 bg-bone/[0.02] p-5">
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-crest text-bone/45">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              {t("When you accept", "Cuando acepta")}
+            </div>
+            <ul className="mt-3 flex flex-col gap-2 text-sm leading-relaxed text-bone/70">
+              <li>
+                {t(
+                  "Your contractor receives an alert with the dollar amount and your name.",
+                  "Su contratista recibe una alerta con el monto y su nombre.",
+                )}
+              </li>
+              <li>
+                {t(
+                  "A tentative install window is reserved on their calendar — they'll confirm the date with you within 24 hours.",
+                  "Se reserva una ventana tentativa de instalación en su calendario — confirmarán la fecha en 24 horas.",
+                )}
+              </li>
+              <li>
+                {t(
+                  "Your acceptance is recorded on a verifiable audit chain. ",
+                  "Su aceptación queda registrada en una cadena auditable verificable. ",
+                )}
+                <Link
+                  href="/transparency"
+                  prefetch
+                  style={{ color: accent }}
+                  className="underline-offset-4 hover:underline"
+                >
+                  {t("Learn more", "Más información")}
+                </Link>
+              </li>
+            </ul>
+          </section>
+        )}
+
+        <section className="mt-6 grid gap-3 md:grid-cols-2">
           <AcceptButton
             proposalId={row.id}
             accent={accent}

@@ -52,15 +52,22 @@ export function AcceptButton({
 
   if (done) {
     return (
-      <div
-        className="group inline-flex items-center justify-center gap-2 rounded-xl px-6 py-4 text-base font-semibold"
-        style={{
-          background: accent,
-          color: "#0a0a0a",
-        }}
-      >
-        <CheckCircle2 className="h-4 w-4" />
-        {language === "es" ? "Aceptado · gracias" : "Accepted · thank you"}
+      <div className="flex flex-col gap-2">
+        <div
+          className="group inline-flex items-center justify-center gap-2 rounded-xl px-6 py-4 text-base font-semibold"
+          style={{
+            background: accent,
+            color: "#0a0a0a",
+          }}
+        >
+          <CheckCircle2 className="h-4 w-4" />
+          {language === "es" ? "Aceptado · gracias" : "Accepted · thank you"}
+        </div>
+        <p className="text-xs leading-relaxed text-bone/60">
+          {language === "es"
+            ? "Su contratista fue notificado y reservó una ventana tentativa en su calendario. Le contactarán en 24 horas para confirmar la fecha de instalación."
+            : "Your contractor has been alerted and reserved a tentative window in their calendar. They'll reach out within 24 hours to confirm the install date."}
+        </p>
       </div>
     );
   }

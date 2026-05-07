@@ -54,7 +54,39 @@ export async function canSend(
     return { ok: false, reason: "lookup_failed" };
   }
 
-  const consent = consentRes.data;
+  return decideConsent({
+    consent: consentRes.data,
+    settings: settingsRes.data,
+    now,
+  });
+}
+
+export type ConsentRow = {
+  status: string;
+  revoked_at: string | null;
+} | null;
+
+export type SettingsRow = {
+  quiet_hours_start: number;
+  quiet_hours_end: number;
+  blocked_weekdays: string;
+  timezone: string;
+} | null;
+
+/**
+ * Pure decision function — no DB, no I/O. Given a consent row, a
+ * settings row, and a clock, decide whether the send should pass.
+ * Exposed for unit testing the gate independently of Supabase.
+ */
+export function decideConsent({
+  consent,
+  settings: settingsIn,
+  now,
+}: {
+  consent: ConsentRow;
+  settings: SettingsRow;
+  now: Date;
+}): ConsentDecision {
   if (!consent) return { ok: false, reason: "no_consent" };
   if (consent.status === "opted_out" || consent.revoked_at) {
     return { ok: false, reason: "opted_out" };
@@ -64,18 +96,28 @@ export async function canSend(
   }
 
   // Tenant settings — fall back to safe defaults if missing.
-  const settings = settingsRes.data ?? {
+  const settings: NonNullable<SettingsRow> = settingsIn ?? {
     quiet_hours_start: 20,
     quiet_hours_end: 8,
     blocked_weekdays: "",
     timezone: "America/New_York",
   };
 
-  const tzNow = new Date(
-    now.toLocaleString("en-US", { timeZone: settings.timezone }),
+  // Resolve hour + weekday in the tenant's timezone via Intl
+  // formatToParts. The earlier toLocaleString-then-parse pattern is a
+  // well-known DST footgun.
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: settings.timezone,
+    weekday: "short",
+    hour: "2-digit",
+    hour12: false,
+  }).formatToParts(now);
+  const hourPart = parts.find((p) => p.type === "hour")?.value ?? "0";
+  const weekdayPart = parts.find((p) => p.type === "weekday")?.value ?? "Sun";
+  const hour = Number.parseInt(hourPart, 10) % 24;
+  const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(
+    weekdayPart,
   );
-  const hour = tzNow.getHours();
-  const weekday = tzNow.getDay();
 
   const blockedDays = (settings.blocked_weekdays || "")
     .split(",")
