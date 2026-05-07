@@ -38,6 +38,12 @@ export default async function AppHomePage() {
     const ninetyDaysAgoIso = new Date(
       Date.now() - 90 * 24 * 60 * 60 * 1000,
     ).toISOString();
+    const startOfTodayIso = new Date(
+      new Date().setHours(0, 0, 0, 0),
+    ).toISOString();
+    const endOfTodayIso = new Date(
+      new Date().setHours(23, 59, 59, 999),
+    ).toISOString();
 
     const [
       customersRes,
@@ -47,6 +53,8 @@ export default async function AppHomePage() {
       proposalsRes,
       visitsThisMonthRes,
       staleUnitsRes,
+      scheduledTodayRes,
+      proposalsWithQuestionsRes,
     ] = await Promise.all([
       sb
         .from("customers")
@@ -81,6 +89,18 @@ export default async function AppHomePage() {
         .eq("tenant_id", session.tenant.id)
         .eq("status", "in_stock")
         .lt("received_at", ninetyDaysAgoIso),
+      sb
+        .from("schedule_items")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", session.tenant.id)
+        .gte("starts_at", startOfTodayIso)
+        .lte("starts_at", endOfTodayIso)
+        .in("status", ["scheduled", "en_route", "on_site"]),
+      sb
+        .from("proposals")
+        .select("bom, status")
+        .eq("tenant_id", session.tenant.id)
+        .neq("status", "lost"),
     ]);
 
     const customers = customersRes.data ?? [];
@@ -202,6 +222,15 @@ export default async function AppHomePage() {
             ),
           )
         : null;
+    const scheduledTodayCount = scheduledTodayRes.count ?? 0;
+    const proposalsWithQuestions = (proposalsWithQuestionsRes.data ?? []) as Array<{
+      bom: { questions?: Array<{ at: string; text: string }> } | null;
+      status: string;
+    }>;
+    const openQuestionsCount = proposalsWithQuestions.reduce(
+      (s, p) => s + (p.bom?.questions?.length ?? 0),
+      0,
+    );
 
     return (
       <div className="flex flex-col gap-4">
@@ -216,6 +245,8 @@ export default async function AppHomePage() {
             staleInventoryDollarsCents,
             inStormZipCount,
             oldestStaleAgeDays,
+            scheduledTodayCount,
+            openQuestionsCount,
           }}
         />
         <StormRadarTile

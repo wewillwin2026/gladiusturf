@@ -26,6 +26,12 @@ export type DailyBriefingInput = {
   staleInventoryDollarsCents: number;
   inStormZipCount: number;
   oldestStaleAgeDays: number | null;
+  /** Optional — schedule_items starting today. Drives the highest-priority
+   * 'open the route' move when non-zero. */
+  scheduledTodayCount?: number;
+  /** Optional — open customer questions on quotes, drives a 'reply to
+   * customer' priority move when non-zero. */
+  openQuestionsCount?: number;
 };
 
 function pickHeadline(now: Date, name: string): string {
@@ -41,6 +47,22 @@ function pickNextMove(b: DailyBriefingInput): {
   href: string;
   cta: string;
 } {
+  if ((b.scheduledTodayCount ?? 0) > 0) {
+    const n = b.scheduledTodayCount ?? 0;
+    return {
+      text: `${n} job${n === 1 ? "" : "s"} on the calendar today — open the route before crews roll.`,
+      href: "/app/schedule",
+      cta: "Open schedule",
+    };
+  }
+  if ((b.openQuestionsCount ?? 0) > 0) {
+    const n = b.openQuestionsCount ?? 0;
+    return {
+      text: `${n} customer question${n === 1 ? "" : "s"} on a quote — answer first, the deal moves on a reply.`,
+      href: "/app/quotes",
+      cta: "Open quotes",
+    };
+  }
   if (b.inStormZipCount > 0) {
     return {
       text: `${b.inStormZipCount} customer${b.inStormZipCount === 1 ? "" : "s"} in storm-watch ZIPs — review Storm Mode first.`,
@@ -92,11 +114,17 @@ export function OwnersDailyOneLiner({ briefing }: { briefing: DailyBriefingInput
   // Build the body line — short, scannable, no markdown.
   const body = [
     `${briefing.customerCount} customer${briefing.customerCount === 1 ? "" : "s"} on file`,
+    (briefing.scheduledTodayCount ?? 0) > 0
+      ? `${briefing.scheduledTodayCount} on the route today`
+      : null,
     briefing.inFlightQuotesCount > 0
       ? `${briefing.inFlightQuotesCount} quote${briefing.inFlightQuotesCount === 1 ? "" : "s"} in flight`
       : null,
     briefing.draftQuotesCount > 0
       ? `${briefing.draftQuotesCount} draft${briefing.draftQuotesCount === 1 ? "" : "s"}`
+      : null,
+    (briefing.openQuestionsCount ?? 0) > 0
+      ? `${briefing.openQuestionsCount} customer question${briefing.openQuestionsCount === 1 ? "" : "s"}`
       : null,
     briefing.recentVisitsCount > 0
       ? `${briefing.recentVisitsCount} visit${briefing.recentVisitsCount === 1 ? "" : "s"} logged this month`
