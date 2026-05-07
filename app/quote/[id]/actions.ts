@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { supabaseAdmin } from "@/lib/supabase";
 import { sendInternalAlert } from "@/lib/messaging/email";
 import { parseUaClass } from "@/lib/messaging/ua";
+import { consume, ipKey } from "@/lib/rate-limit/token-bucket";
 
 /**
  * Customer-facing actions on the public /quote/[id] page. No auth — the
@@ -21,10 +22,25 @@ import { parseUaClass } from "@/lib/messaging/ua";
 
 export type QuoteAcceptResult = { ok: true } | { error: string };
 
+async function rateLimitForCustomerAction(
+  scope: string,
+): Promise<{ allowed: boolean; key: string }> {
+  const hdrs = await headers();
+  const ip =
+    hdrs.get("x-vercel-forwarded-for") ?? hdrs.get("x-forwarded-for") ?? null;
+  const key = `${scope}:${ipKey(ip)}`;
+  // 5 actions per minute per /24. Plenty of headroom for a real
+  // customer; tight enough to stop a forwarded-link auto-clicker.
+  const decision = consume(key, { capacity: 5, refillPerSec: 1 / 12 });
+  return { allowed: decision.allowed, key };
+}
+
 export async function acceptQuote(
   proposalId: string,
 ): Promise<QuoteAcceptResult> {
   if (!proposalId) return { error: "missing_id" };
+  const limit = await rateLimitForCustomerAction("accept");
+  if (!limit.allowed) return { error: "rate_limited" };
   const sb = supabaseAdmin();
 
   const { data: existing, error: lookupErr } = await sb
@@ -155,6 +171,8 @@ export async function askQuestionAboutQuote(
   const trimmed = (message ?? "").trim();
   if (!trimmed) return { error: "empty_message" };
   if (trimmed.length > 2000) return { error: "message_too_long" };
+  const limit = await rateLimitForCustomerAction("question");
+  if (!limit.allowed) return { error: "rate_limited" };
 
   const sb = supabaseAdmin();
   const { data: existing, error: lookupErr } = await sb

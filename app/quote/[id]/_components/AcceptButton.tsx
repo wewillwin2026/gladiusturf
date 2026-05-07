@@ -37,11 +37,19 @@ export function AcceptButton({
     try {
       const res = await acceptQuote(proposalId);
       if ("error" in res) {
-        setError(
-          language === "es"
-            ? "No pudimos confirmar la aceptación. Por favor, responda este correo."
-            : "We couldn't confirm acceptance. Please reply to the email instead.",
-        );
+        if (res.error === "rate_limited") {
+          setError(
+            language === "es"
+              ? "Demasiados intentos — por favor espere un minuto y vuelva a intentar."
+              : "Too many attempts — please wait a minute and try again.",
+          );
+        } else {
+          setError(
+            language === "es"
+              ? "No pudimos confirmar la aceptación. Por favor, responda este correo."
+              : "We couldn't confirm acceptance. Please reply to the email instead.",
+          );
+        }
         return;
       }
       setDone(true);

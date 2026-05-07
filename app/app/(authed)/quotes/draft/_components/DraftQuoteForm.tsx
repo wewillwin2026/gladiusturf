@@ -13,7 +13,12 @@ import {
   markQuoteSent,
 } from "../actions";
 
-type CustomerOption = { id: string; name: string; subtitle: string };
+type CustomerOption = {
+  id: string;
+  name: string;
+  subtitle: string;
+  phone?: string | null;
+};
 
 type LineItemDraft = {
   id: string;
@@ -52,6 +57,7 @@ interface Props {
   defaultCustomerId: string | null;
 }
 
+
 export function DraftQuoteForm({
   customers,
   defaultLanguage,
@@ -69,6 +75,7 @@ export function DraftQuoteForm({
   const [language, setLanguage] = React.useState<"en" | "es">(defaultLanguage);
   const [busy, setBusy] = React.useState(false);
   const [items, setItems] = React.useState<LineItemDraft[]>([]);
+  const [isTest, setIsTest] = React.useState(false);
 
   const lineItemsTotalCents = React.useMemo(
     () => items.reduce((s, it) => s + lineSubtotalCents(it), 0),
@@ -143,6 +150,7 @@ export function DraftQuoteForm({
                 unitPriceCents: it.unitPriceCents,
               }))
             : null,
+        isTest,
       });
       if ("error" in res) {
         toast.error(
@@ -178,17 +186,39 @@ export function DraftQuoteForm({
             // clipboard not available — non-fatal, the URL is in the toast
           }
 
+          // SMS-share fallback: 80% of lighting installers SMS the link
+          // rather than relying on email delivery. Offer one-tap to the
+          // native composer if the customer has a phone on file.
+          const customerPhone = selected?.phone;
+          const smsBody = `Hi ${selected?.name?.split(/\s+/)[0] ?? ""} — your quote: ${url}`;
+          const smsHref = customerPhone
+            ? `sms:${customerPhone}?body=${encodeURIComponent(smsBody)}`
+            : null;
+          const smsAction = smsHref
+            ? {
+                label: "Text it",
+                onClick: () => {
+                  if (typeof window !== "undefined") {
+                    window.location.href = smsHref;
+                  }
+                },
+              }
+            : undefined;
+
           if ("error" in emailRes) {
             toast.success("Saved + sent. Customer link copied.", {
               description: url,
+              action: smsAction,
             });
           } else if (emailRes.delivery === "sent") {
             toast.success("Saved, sent + emailed to customer.", {
               description: `Email delivered. Link also copied: ${url}`,
+              action: smsAction,
             });
           } else if (emailRes.delivery === "dry_run") {
             toast.success("Saved + sent. Email previewed (dry-run).", {
               description: `Set RESEND_API_KEY to send for real. Link copied: ${url}`,
+              action: smsAction,
             });
           } else {
             const why =
@@ -205,6 +235,7 @@ export function DraftQuoteForm({
                         : "skipped";
             toast.success("Saved + sent. Customer link copied.", {
               description: `Email skipped (${why}). ${url}`,
+              action: smsAction,
             });
           }
         }
@@ -540,6 +571,19 @@ export function DraftQuoteForm({
           className="mt-1.5"
         />
       </div>
+
+      <label
+        className="flex items-center gap-2 self-end text-[11px] text-g-text-faint cursor-pointer select-none hover:text-g-text-muted"
+        title="Mark as a test quote (excluded from KPIs and tagged with a chip on the quotes table)."
+      >
+        <input
+          type="checkbox"
+          checked={isTest}
+          onChange={(e) => setIsTest(e.target.checked)}
+          className="h-3.5 w-3.5 rounded border-g-border-subtle bg-g-surface accent-g-accent"
+        />
+        <span>Test quote — exclude from KPIs</span>
+      </label>
 
       <div className="flex flex-wrap items-center justify-between gap-2">
         <button

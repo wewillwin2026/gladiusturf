@@ -9,7 +9,8 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test:consent": "tsx scripts/test-consent-gate.ts",
-    "test": "npm run test:consent"
+    "test:rate-limit": "tsx scripts/test-rate-limit.ts",
+    "test": "npm run test:consent && npm run test:rate-limit"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.91.1",

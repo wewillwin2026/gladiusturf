@@ -2,6 +2,7 @@ import Link from "next/link";
 import {
   ArrowRight,
   FileText,
+  FlaskConical,
   MessageSquare,
   PenSquare,
   Sparkles,
@@ -39,6 +40,7 @@ type DbProposal = {
   bom: {
     title?: string;
     questions?: Array<{ at: string; text: string }>;
+    is_test?: boolean;
   } | null;
   created_at: string;
   customers: { display_name: string } | { display_name: string }[] | null;
@@ -63,20 +65,24 @@ export default async function QuotesPage() {
     }
 
     const rows = (data ?? []) as unknown as DbProposal[];
+    // Exclude test rows from KPIs but keep them visible in the table
+    // (with a chip) so the operator can verify the flow worked.
+    const realRows = rows.filter((r) => !r.bom?.is_test);
+    const testCount = rows.length - realRows.length;
 
-    const draftCount = rows.filter((r) => r.status === "draft").length;
-    const sentCount = rows.filter(
+    const draftCount = realRows.filter((r) => r.status === "draft").length;
+    const sentCount = realRows.filter(
       (r) => r.status === "sent" || r.status === "viewed",
     ).length;
-    const soldCount = rows.filter(
+    const soldCount = realRows.filter(
       (r) => r.status === "sold" || r.status === "installed",
     ).length;
-    const lostCount = rows.filter((r) => r.status === "lost" || r.status === "walked").length;
-    const totalQuestions = rows.reduce(
+    const lostCount = realRows.filter((r) => r.status === "lost" || r.status === "walked").length;
+    const totalQuestions = realRows.reduce(
       (s, r) => s + (r.bom?.questions?.length ?? 0),
       0,
     );
-    const pipelineCents = rows
+    const pipelineCents = realRows
       .filter((r) => r.status === "draft" || r.status === "sent" || r.status === "viewed")
       .reduce((s, r) => s + (r.total_cents ?? 0), 0);
     const winRate =
@@ -91,7 +97,7 @@ export default async function QuotesPage() {
           title="Quotes"
           subtitle={
             rows.length > 0
-              ? `${rows.length} quote${rows.length === 1 ? "" : "s"} on file · ${money(pipelineCents)} in pipeline${totalQuestions > 0 ? ` · ${totalQuestions} customer question${totalQuestions === 1 ? "" : "s"}` : ""}`
+              ? `${realRows.length} quote${realRows.length === 1 ? "" : "s"} on file · ${money(pipelineCents)} in pipeline${totalQuestions > 0 ? ` · ${totalQuestions} customer question${totalQuestions === 1 ? "" : "s"}` : ""}${testCount > 0 ? ` · ${testCount} test` : ""}`
               : "No quotes yet. Draft one in 90 seconds."
           }
           actions={
@@ -182,13 +188,26 @@ export default async function QuotesPage() {
                     : r.customers;
                   const title = r.bom?.title ?? "(no title)";
                   const questionCount = r.bom?.questions?.length ?? 0;
+                  const isTest = r.bom?.is_test === true;
                   return (
-                    <tr key={r.id} className="border-b border-g-border-subtle last:border-b-0">
+                    <tr
+                      key={r.id}
+                      className={
+                        isTest
+                          ? "border-b border-g-border-subtle last:border-b-0 opacity-70"
+                          : "border-b border-g-border-subtle last:border-b-0"
+                      }
+                    >
                       <td className="px-4 py-2.5 text-g-text">
                         {cust?.display_name ?? "—"}
                       </td>
                       <td className="px-4 py-2.5 text-g-text">
                         {title}
+                        {isTest && (
+                          <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-g-surface-2 px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-g-text-faint border border-g-border-subtle">
+                            🧪 Test
+                          </span>
+                        )}
                         {questionCount > 0 && (
                           <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-g-surface-2 px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-g-warning">
                             <MessageSquare className="h-2.5 w-2.5" />

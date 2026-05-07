@@ -40,6 +40,7 @@ export default async function DraftQuotePage({
       id: c.id as string,
       name: (c.display_name as string) ?? "(unnamed)",
       subtitle,
+      phone: (c.primary_phone as string | null) ?? null,
     };
   });
 

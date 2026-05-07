@@ -43,12 +43,28 @@ export function AskQuestionForm({
     try {
       const res = await askQuestionAboutQuote(proposalId, trimmed);
       if ("error" in res) {
-        setError(
-          t(
-            "We couldn't deliver your question. Please try again.",
-            "No pudimos entregar su pregunta. Intente de nuevo.",
-          ),
-        );
+        if (res.error === "rate_limited") {
+          setError(
+            t(
+              "Too many messages — please wait a minute and try again.",
+              "Demasiados mensajes — por favor espere un minuto y vuelva a intentar.",
+            ),
+          );
+        } else if (res.error === "too_many_questions") {
+          setError(
+            t(
+              "This quote has too many questions on it already. Please reply directly to the contractor's email.",
+              "Esta cotización ya tiene demasiadas preguntas. Por favor responda al correo del contratista directamente.",
+            ),
+          );
+        } else {
+          setError(
+            t(
+              "We couldn't deliver your question. Please try again.",
+              "No pudimos entregar su pregunta. Intente de nuevo.",
+            ),
+          );
+        }
         return;
       }
       setDone(true);

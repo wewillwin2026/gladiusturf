@@ -17,6 +17,10 @@ export type DraftQuoteInput = {
   items?:
     | { description: string; qty: number; unitPriceCents: number }[]
     | null;
+  /** When true, the proposal is marked as a test (bom.is_test=true) and
+   * excluded from /app/quotes KPIs. Used by tenants to test the flow
+   * with their own phone/email without polluting analytics. */
+  isTest?: boolean;
 };
 
 export type DraftQuoteResult =
@@ -87,6 +91,9 @@ export async function createDraftQuote(
   };
   if (cleanedItems.length > 0) {
     bom.items = cleanedItems;
+  }
+  if (input.isTest) {
+    bom.is_test = true;
   }
 
   const { data, error } = await sb
