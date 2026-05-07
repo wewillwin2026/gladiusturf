@@ -14,6 +14,9 @@ export type DraftQuoteInput = {
   totalDollars: number;
   language: "en" | "es";
   notes: string | null;
+  items?:
+    | { description: string; qty: number; unitPriceCents: number }[]
+    | null;
 };
 
 export type DraftQuoteResult =
@@ -56,6 +59,36 @@ export async function createDraftQuote(
     .maybeSingle();
   if (!customer) return { error: "not_found_in_tenant" };
 
+  const cleanedItems = (input.items ?? [])
+    .map((it) => ({
+      description: (it.description ?? "").toString().slice(0, 200).trim(),
+      qty: Number.isFinite(it.qty) ? Number(it.qty) : 0,
+      unit_price_cents: Number.isFinite(it.unitPriceCents)
+        ? Math.max(0, Math.round(Number(it.unitPriceCents)))
+        : 0,
+    }))
+    .filter((it) => it.description.length > 0 && it.qty > 0);
+
+  // When items are present, derive total_cents from them so customer-
+  // facing math stays self-consistent. Manual total still wins when no
+  // items.
+  const totalFromItems = cleanedItems.reduce(
+    (s, it) => s + Math.round(it.qty * it.unit_price_cents),
+    0,
+  );
+  const finalTotal =
+    cleanedItems.length > 0
+      ? totalFromItems
+      : total;
+
+  const bom: Record<string, unknown> = {
+    title,
+    notes: input.notes?.trim() || null,
+  };
+  if (cleanedItems.length > 0) {
+    bom.items = cleanedItems;
+  }
+
   const { data, error } = await sb
     .from("proposals")
     .insert({
@@ -63,10 +96,10 @@ export async function createDraftQuote(
       customer_id: input.customerId,
       vertical: session.tenant.vertical,
       status: "draft",
-      total_cents: total,
+      total_cents: finalTotal,
       language: input.language,
       ai_drafted: false,
-      bom: { title, notes: input.notes?.trim() || null },
+      bom,
       notes: input.notes?.trim() || null,
     })
     .select("id")
@@ -86,7 +119,8 @@ export async function createDraftQuote(
       metadata: {
         customer_id: input.customerId,
         title,
-        total_cents: total,
+        total_cents: finalTotal,
+        line_items_count: cleanedItems.length,
       },
     });
   } catch (err) {

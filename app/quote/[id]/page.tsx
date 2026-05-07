@@ -80,12 +80,21 @@ export default async function PublicQuotePage({
     brand_primary_hex: string | null;
     brand_accent_hex: string | null;
   };
+  type LineItem = {
+    description: string;
+    qty: number;
+    unit_price_cents: number;
+  };
   const row = data as unknown as {
     id: string;
     status: string;
     total_cents: number | null;
     language: string;
-    bom: { title?: string; notes?: string | null } | null;
+    bom: {
+      title?: string;
+      notes?: string | null;
+      items?: LineItem[];
+    } | null;
     created_at: string;
     sent_at: string | null;
     viewed_at: string | null;
@@ -198,6 +207,37 @@ export default async function PublicQuotePage({
             </p>
           )}
         </section>
+
+        {row.bom?.items && row.bom.items.length > 0 && (
+          <section className="mt-4 rounded-2xl border border-bone/15 bg-bone/[0.02] p-6">
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-crest text-bone/45">
+              <PenSquare className="h-3.5 w-3.5" />
+              {t("Line items", "Detalle")}
+            </div>
+            <ul className="mt-3 divide-y divide-bone/10">
+              {row.bom.items.map((it, i) => {
+                const subtotal = Math.round(it.qty * it.unit_price_cents);
+                return (
+                  <li
+                    key={i}
+                    className="grid grid-cols-[1fr_64px_92px_104px] gap-2 py-2 text-sm text-bone/80 items-baseline"
+                  >
+                    <span className="truncate">{it.description}</span>
+                    <span className="text-right font-mono text-xs text-bone/60">
+                      {it.qty}
+                    </span>
+                    <span className="text-right font-mono text-xs text-bone/60">
+                      {money(it.unit_price_cents)}
+                    </span>
+                    <span className="text-right font-mono text-bone">
+                      {money(subtotal)}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )}
 
         <section className="mt-4 rounded-2xl border border-bone/15 bg-bone/[0.02] p-6">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-crest text-bone/45">

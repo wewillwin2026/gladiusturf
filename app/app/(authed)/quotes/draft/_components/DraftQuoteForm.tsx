@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2, PenSquare } from "lucide-react";
+import { Loader2, PenSquare, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/app/ui/Button";
 import { Input, Textarea } from "@/components/app/ui/Input";
@@ -14,6 +14,36 @@ import {
 } from "../actions";
 
 type CustomerOption = { id: string; name: string; subtitle: string };
+
+type LineItemDraft = {
+  id: string;
+  description: string;
+  qty: string;
+  unitPrice: string;
+};
+
+function newLineItem(): LineItemDraft {
+  return {
+    id: Math.random().toString(36).slice(2, 10),
+    description: "",
+    qty: "1",
+    unitPrice: "",
+  };
+}
+
+function lineSubtotalCents(it: LineItemDraft): number {
+  const qty = Number.parseFloat(it.qty);
+  const unit = Number.parseFloat(it.unitPrice);
+  if (!Number.isFinite(qty) || !Number.isFinite(unit)) return 0;
+  return Math.round(qty * unit * 100);
+}
+
+function fmtMoney(cents: number): string {
+  return `$${(cents / 100).toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
 
 interface Props {
   customers: CustomerOption[];
@@ -38,6 +68,31 @@ export function DraftQuoteForm({
   const [notes, setNotes] = React.useState("");
   const [language, setLanguage] = React.useState<"en" | "es">(defaultLanguage);
   const [busy, setBusy] = React.useState(false);
+  const [items, setItems] = React.useState<LineItemDraft[]>([]);
+
+  const lineItemsTotalCents = React.useMemo(
+    () => items.reduce((s, it) => s + lineSubtotalCents(it), 0),
+    [items],
+  );
+  const itemsCleaned = React.useMemo(
+    () =>
+      items
+        .map((it) => ({
+          description: it.description.trim(),
+          qty: Number.parseFloat(it.qty),
+          unitPriceCents: Math.round(
+            (Number.parseFloat(it.unitPrice) || 0) * 100,
+          ),
+        }))
+        .filter(
+          (it) =>
+            it.description.length > 0 &&
+            Number.isFinite(it.qty) &&
+            it.qty > 0,
+        ),
+    [items],
+  );
+  const itemsTotalDollars = lineItemsTotalCents / 100;
 
   const filtered = React.useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -65,13 +120,29 @@ export function DraftQuoteForm({
     }
     setBusy(true);
     try {
-      const totalDollars = Number.parseFloat(total);
+      const manualTotal = Number.parseFloat(total);
+      // When line items are present they win — derive the total from them
+      // so the customer-facing math is always self-consistent.
+      const effectiveTotal =
+        itemsCleaned.length > 0
+          ? itemsTotalDollars
+          : Number.isFinite(manualTotal)
+            ? manualTotal
+            : 0;
       const res = await createDraftQuote({
         customerId,
         title,
-        totalDollars: Number.isFinite(totalDollars) ? totalDollars : 0,
+        totalDollars: effectiveTotal,
         language,
         notes: notes || null,
+        items:
+          itemsCleaned.length > 0
+            ? itemsCleaned.map((it) => ({
+                description: it.description,
+                qty: it.qty,
+                unitPriceCents: it.unitPriceCents,
+              }))
+            : null,
       });
       if ("error" in res) {
         toast.error(
@@ -265,11 +336,21 @@ export function DraftQuoteForm({
             </label>
             <Input
               inputMode="decimal"
-              value={total}
+              value={
+                itemsCleaned.length > 0
+                  ? itemsTotalDollars.toFixed(2)
+                  : total
+              }
               onChange={(e) => setTotal(e.target.value)}
+              disabled={itemsCleaned.length > 0}
               placeholder="3,250"
               className="mt-1.5"
             />
+            {itemsCleaned.length > 0 && (
+              <p className="mt-1 text-[10px] text-g-text-faint">
+                Auto-summed from line items below.
+              </p>
+            )}
           </div>
           {tenantBilingual && (
             <div>
@@ -294,6 +375,99 @@ export function DraftQuoteForm({
               </div>
             </div>
           )}
+        </div>
+      </div>
+
+      <div className="g-card p-5 flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <label className="text-[11px] uppercase tracking-[0.12em] text-g-text-faint">
+            Line items (optional)
+          </label>
+          {items.length > 0 && (
+            <span className="text-[11px] font-geist-mono text-g-text-faint">
+              Subtotal {fmtMoney(lineItemsTotalCents)}
+            </span>
+          )}
+        </div>
+        {items.length === 0 ? (
+          <p className="text-[12px] text-g-text-muted">
+            Add SKU-level items so the customer sees what they&apos;re paying
+            for. When any are present they auto-sum into the Total above.
+          </p>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {items.map((it, idx) => {
+              const subtotal = lineSubtotalCents(it);
+              return (
+                <li
+                  key={it.id}
+                  className="grid grid-cols-[1fr_72px_96px_92px_32px] gap-2 items-start"
+                >
+                  <Input
+                    value={it.description}
+                    onChange={(e) =>
+                      setItems((arr) =>
+                        arr.map((x, i) =>
+                          i === idx ? { ...x, description: e.target.value } : x,
+                        ),
+                      )
+                    }
+                    placeholder="Cast LED Path Light · 4W · brass"
+                    aria-label={`Line item ${idx + 1} description`}
+                  />
+                  <Input
+                    inputMode="decimal"
+                    value={it.qty}
+                    onChange={(e) =>
+                      setItems((arr) =>
+                        arr.map((x, i) =>
+                          i === idx ? { ...x, qty: e.target.value } : x,
+                        ),
+                      )
+                    }
+                    placeholder="Qty"
+                    aria-label={`Line item ${idx + 1} quantity`}
+                  />
+                  <Input
+                    inputMode="decimal"
+                    value={it.unitPrice}
+                    onChange={(e) =>
+                      setItems((arr) =>
+                        arr.map((x, i) =>
+                          i === idx ? { ...x, unitPrice: e.target.value } : x,
+                        ),
+                      )
+                    }
+                    placeholder="$ each"
+                    aria-label={`Line item ${idx + 1} unit price`}
+                  />
+                  <div className="h-9 px-2 rounded-md bg-g-surface-2 flex items-center justify-end font-geist-mono text-[12px] text-g-text-muted">
+                    {fmtMoney(subtotal)}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setItems((arr) => arr.filter((_, i) => i !== idx))
+                    }
+                    aria-label="Remove line item"
+                    className="h-9 w-8 inline-flex items-center justify-center rounded-md text-g-text-faint hover:text-g-danger hover:bg-g-surface-2"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+        <div>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => setItems((arr) => [...arr, newLineItem()])}
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Add line item
+          </Button>
         </div>
       </div>
 
