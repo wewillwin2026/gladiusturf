@@ -1,5 +1,11 @@
 import Link from "next/link";
-import { ArrowRight, FileText, PenSquare, Sparkles } from "lucide-react";
+import {
+  ArrowRight,
+  FileText,
+  MessageSquare,
+  PenSquare,
+  Sparkles,
+} from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
 import { Button } from "@/components/app/ui/Button";
 import { KPICard } from "@/components/app/ui/KPICard";
@@ -30,7 +36,10 @@ type DbProposal = {
   status: string;
   total_cents: number | null;
   language: string;
-  bom: { title?: string } | null;
+  bom: {
+    title?: string;
+    questions?: Array<{ at: string; text: string }>;
+  } | null;
   created_at: string;
   customers: { display_name: string } | { display_name: string }[] | null;
 };
@@ -63,6 +72,10 @@ export default async function QuotesPage() {
       (r) => r.status === "sold" || r.status === "installed",
     ).length;
     const lostCount = rows.filter((r) => r.status === "lost" || r.status === "walked").length;
+    const totalQuestions = rows.reduce(
+      (s, r) => s + (r.bom?.questions?.length ?? 0),
+      0,
+    );
     const pipelineCents = rows
       .filter((r) => r.status === "draft" || r.status === "sent" || r.status === "viewed")
       .reduce((s, r) => s + (r.total_cents ?? 0), 0);
@@ -78,7 +91,7 @@ export default async function QuotesPage() {
           title="Quotes"
           subtitle={
             rows.length > 0
-              ? `${rows.length} quote${rows.length === 1 ? "" : "s"} on file · ${money(pipelineCents)} in pipeline`
+              ? `${rows.length} quote${rows.length === 1 ? "" : "s"} on file · ${money(pipelineCents)} in pipeline${totalQuestions > 0 ? ` · ${totalQuestions} customer question${totalQuestions === 1 ? "" : "s"}` : ""}`
               : "No quotes yet. Draft one in 90 seconds."
           }
           actions={
@@ -167,13 +180,23 @@ export default async function QuotesPage() {
                   const cust = Array.isArray(r.customers)
                     ? r.customers[0]
                     : r.customers;
-                  const title = (r.bom as { title?: string } | null)?.title ?? "(no title)";
+                  const title = r.bom?.title ?? "(no title)";
+                  const questionCount = r.bom?.questions?.length ?? 0;
                   return (
                     <tr key={r.id} className="border-b border-g-border-subtle last:border-b-0">
                       <td className="px-4 py-2.5 text-g-text">
                         {cust?.display_name ?? "—"}
                       </td>
-                      <td className="px-4 py-2.5 text-g-text">{title}</td>
+                      <td className="px-4 py-2.5 text-g-text">
+                        {title}
+                        {questionCount > 0 && (
+                          <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-g-surface-2 px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-g-warning">
+                            <MessageSquare className="h-2.5 w-2.5" />
+                            {questionCount}{" "}
+                            {questionCount === 1 ? "question" : "questions"}
+                          </span>
+                        )}
+                      </td>
                       <td className="px-4 py-2.5">
                         <StatusPill tone={STATUS_TONE[r.status] ?? "neutral"}>
                           {r.status}
