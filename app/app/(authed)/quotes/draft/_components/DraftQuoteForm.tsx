@@ -189,11 +189,15 @@ export function DraftQuoteForm({
           // SMS-share fallback: 80% of lighting installers SMS the link
           // rather than relying on email delivery. Offer one-tap to the
           // native composer if the customer has a phone on file.
-          const customerPhone = selected?.phone;
+          // Normalize: strip everything except digits + leading "+";
+          // Android Chrome's intent handler chokes on parens / spaces.
+          const rawPhone = selected?.phone ?? "";
+          const cleanPhone = rawPhone.replace(/[^\d+]/g, "");
           const smsBody = `Hi ${selected?.name?.split(/\s+/)[0] ?? ""} — your quote: ${url}`;
-          const smsHref = customerPhone
-            ? `sms:${customerPhone}?body=${encodeURIComponent(smsBody)}`
-            : null;
+          const smsHref =
+            cleanPhone && cleanPhone.replace(/\D/g, "").length >= 10
+              ? `sms:${cleanPhone}?body=${encodeURIComponent(smsBody)}`
+              : null;
           const smsAction = smsHref
             ? {
                 label: "Text it",
@@ -348,9 +352,23 @@ export function DraftQuoteForm({
         </div>
 
         <div>
-          <label className="text-[11px] uppercase tracking-[0.12em] text-g-text-faint">
-            Title *
-          </label>
+          <div className="flex items-center justify-between gap-2">
+            <label className="text-[11px] uppercase tracking-[0.12em] text-g-text-faint">
+              Title *
+            </label>
+            <label
+              className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.1em] text-g-text-faint cursor-pointer select-none hover:text-g-text-muted"
+              title="Mark as a test quote (excluded from KPIs and tagged with a chip on the quotes table)."
+            >
+              <input
+                type="checkbox"
+                checked={isTest}
+                onChange={(e) => setIsTest(e.target.checked)}
+                className="h-3 w-3 rounded border-g-border-subtle bg-g-surface accent-g-accent"
+              />
+              <span>🧪 Test mode</span>
+            </label>
+          </div>
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -571,19 +589,6 @@ export function DraftQuoteForm({
           className="mt-1.5"
         />
       </div>
-
-      <label
-        className="flex items-center gap-2 self-end text-[11px] text-g-text-faint cursor-pointer select-none hover:text-g-text-muted"
-        title="Mark as a test quote (excluded from KPIs and tagged with a chip on the quotes table)."
-      >
-        <input
-          type="checkbox"
-          checked={isTest}
-          onChange={(e) => setIsTest(e.target.checked)}
-          className="h-3.5 w-3.5 rounded border-g-border-subtle bg-g-surface accent-g-accent"
-        />
-        <span>Test quote — exclude from KPIs</span>
-      </label>
 
       <div className="flex flex-wrap items-center justify-between gap-2">
         <button

@@ -127,10 +127,18 @@ export function pickNextMove(b: DailyBriefingInput): NextMove {
   };
 }
 
-export function OwnersDailyOneLiner({ briefing }: { briefing: DailyBriefingInput }) {
+export function OwnersDailyOneLiner({
+  briefing,
+  move: moveOverride,
+}: {
+  briefing: DailyBriefingInput;
+  /** Pass the pre-computed move from the page so the audit row and the
+   * rendered CTA cannot disagree. Falls back to recomputing if absent. */
+  move?: NextMove;
+}) {
   const now = new Date();
   const headline = pickHeadline(now, briefing.tenantName);
-  const move = pickNextMove(briefing);
+  const move = moveOverride ?? pickNextMove(briefing);
 
   // Build the body line — short, scannable, no markdown.
   const body = [

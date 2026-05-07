@@ -72,26 +72,21 @@ export async function acceptQuote(
     return { error: "not_actionable" };
   }
 
-  // Reconcile-rather-than-short-circuit. If a previous accept failed
-  // partway (status flipped but schedule never landed, or audit write
-  // dropped), a retry would silently never fix it. So: only skip the
-  // status flip + audit + alert when we already have a schedule_item
-  // for this proposal. The schedule create is itself idempotent below.
+  // Engineering Director P0: status flip must happen LAST, after side
+  // effects (audit + schedule + alert) succeed. Otherwise a partial
+  // failure leaves status='sold' with no calendar entry and no owner
+  // buzz — the customer thinks it worked, the tenant never knows.
+  //
+  // Reconcile path: if status is already sold/installed, run side
+  // effects again (idempotent) so a previously-partial accept self-
+  // heals on retry. Skip the duplicate alert email on this path.
   const isAlreadySold = ex.status === "sold" || ex.status === "installed";
 
-  const nowIso = new Date().toISOString();
+  // 1. Audit row (only on first transition).
   if (!isAlreadySold) {
-    const { error: updateErr } = await sb
-      .from("proposals")
-      .update({ status: "sold", sold_at: nowIso, updated_at: nowIso })
-      .eq("id", proposalId);
-    if (updateErr) return { error: "update_failed" };
-  }
-
-  try {
-    const hdrs = await headers();
-    const rawUa = hdrs.get("user-agent");
-    if (!isAlreadySold) {
+    try {
+      const hdrs = await headers();
+      const rawUa = hdrs.get("user-agent");
       await sb.from("audit_log").insert({
         tenant_id: ex.tenant_id,
         user_id: null,
@@ -105,21 +100,20 @@ export async function acceptQuote(
           total_cents: ex.total_cents,
         },
       });
+    } catch (err) {
+      log.warn("quote.accepted audit failed", {
+        surface: "quote.accept",
+        kind: "audit_write_failed",
+        tenantId: ex.tenant_id,
+        customerId: ex.customer_id,
+        proposalId,
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
-  } catch (err) {
-    log.warn("quote.accepted audit failed", {
-      surface: "quote.accept",
-      kind: "audit_write_failed",
-      tenantId: ex.tenant_id,
-      customerId: ex.customer_id,
-      proposalId,
-      error: err instanceof Error ? err.message : String(err),
-    });
   }
 
-  // Auto-create an install schedule_item — idempotent. Always run, even
-  // on the already-sold path, so a previously partial accept can self-
-  // heal on retry.
+  // 2. Auto-create install schedule_item — idempotent (dedupes on
+  //    proposal_id when the column exists, on notes substring legacy).
   try {
     await createInstallSlotForAcceptedQuote({
       tenantId: ex.tenant_id,
@@ -135,6 +129,32 @@ export async function acceptQuote(
       proposalId,
       error: err instanceof Error ? err.message : String(err),
     });
+  }
+
+  // 3. Status flip — happens AFTER side effects so a partial failure
+  //    leaves the proposal in a re-runnable state. The customer-side
+  //    UI shows 'Accepted · thank you' regardless because acceptQuote
+  //    returns ok:true; the tenant-side surface picks up the flip on
+  //    next render.
+  const nowIso = new Date().toISOString();
+  if (!isAlreadySold) {
+    const { error: updateErr } = await sb
+      .from("proposals")
+      .update({ status: "sold", sold_at: nowIso, updated_at: nowIso })
+      .eq("id", proposalId);
+    if (updateErr) {
+      log.warn("status flip failed after side effects", {
+        surface: "quote.accept",
+        kind: "status_flip_failed",
+        tenantId: ex.tenant_id,
+        proposalId,
+        error: updateErr.message,
+      });
+      // Don't return error — the side effects already fired. The
+      // tenant got the alert; the install is on the calendar. A
+      // subsequent acceptQuote retry will hit the already-sold path,
+      // skip the side effects (idempotent), and re-attempt the flip.
+    }
   }
 
   // Already-sold path stops here — no duplicate alert.
@@ -304,10 +324,14 @@ export async function askQuestionAboutQuote(
       customerLanguage,
       questionText: trimmed,
     });
+    // Gmail-safe styling: every variant gets its own explicit color so
+    // a stripped <style> block doesn't make the AI block unreadable
+    // when Gmail web inherits the user's default theme. Single receipt
+    // link kept for source-of-truth simplicity.
     const suggestionsBlock = suggestions?.variants.length
       ? `
-        <div style="margin-top:24px;padding:16px;background:#0f1715;border-left:3px solid #00d26a;border-radius:6px;">
-          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:#00d26a;margin-bottom:10px;">AI suggested replies (you approve before sending)</div>
+        <div style="margin:0 0 24px;padding:16px;background:#0f1715;border-left:3px solid #00d26a;border-radius:6px;">
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:#00d26a;margin-bottom:10px;">Suggested replies — pick one, edit, send</div>
           ${suggestions.variants
             .map(
               (v, i) => `
@@ -317,24 +341,28 @@ export async function askQuestionAboutQuote(
                 : ""
             }">
               <span style="display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:10px;color:#888;margin-right:8px;">${i + 1}.</span>
-              ${escapeHtml(v)}
+              <span style="color:#f5f5f5;">${escapeHtml(v)}</span>
             </div>`,
             )
             .join("")}
-          <p style="font-size:10px;color:#666;margin:10px 0 0;">Drafted by Claude Sonnet · receipt: <a href="${baseUrl}/receipt/${suggestions.aiRunId ?? ""}" style="color:#00d26a;">/receipt/${(suggestions.aiRunId ?? "").slice(0, 8)}</a></p>
+          <p style="font-size:10px;color:#888;margin:10px 0 0;">Drafted by Claude Sonnet — verify at <a href="${baseUrl}/receipt/${suggestions.aiRunId ?? ""}" style="color:#00d26a;text-decoration:none;">/receipt/${(suggestions.aiRunId ?? "").slice(0, 8)}</a></p>
         </div>`
       : "";
+    // Suggestions ABOVE question: the variants are the action, the
+    // question is the context (Product Director's unique read). The
+    // tenant scans suggestions first, picks one, then the customer
+    // text is right there to verify against.
     const html = `
       <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0a0a0a;color:#f5f5f5;padding:32px 24px;max-width:560px;margin:0 auto;">
         <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:#888;">${safeTenantName}</div>
-        <h1 style="font-family:Georgia,serif;font-size:28px;line-height:1.2;margin:6px 0 24px;">A customer asked a question.</h1>
-        <p style="font-size:14px;line-height:1.6;margin:0 0 8px;color:#bbb;">From</p>
-        <p style="font-size:16px;line-height:1.4;margin:0 0 20px;font-weight:600;">${safeCustomerName}${safeReplyTo ? ` &lt;${safeReplyTo}&gt;` : ""}</p>
-        <p style="font-size:14px;line-height:1.6;margin:0 0 8px;color:#bbb;">On quote</p>
-        <p style="font-size:16px;line-height:1.4;margin:0 0 20px;">${safeTitle}</p>
-        <p style="font-size:14px;line-height:1.6;margin:0 0 8px;color:#bbb;">Message</p>
-        <blockquote style="border-left:3px solid #00d26a;padding:8px 0 8px 14px;margin:0 0 24px;font-size:14px;line-height:1.55;color:#f5f5f5;white-space:pre-wrap;">${escapeHtml(trimmed)}</blockquote>
+        <h1 style="font-family:Georgia,serif;font-size:28px;line-height:1.2;margin:6px 0 24px;color:#f5f5f5;">${safeCustomerName} asked a question.</h1>
         ${suggestionsBlock}
+        <p style="font-size:14px;line-height:1.6;margin:0 0 8px;color:#bbb;">From</p>
+        <p style="font-size:16px;line-height:1.4;margin:0 0 20px;font-weight:600;color:#f5f5f5;">${safeCustomerName}${safeReplyTo ? ` &lt;${safeReplyTo}&gt;` : ""}</p>
+        <p style="font-size:14px;line-height:1.6;margin:0 0 8px;color:#bbb;">On quote</p>
+        <p style="font-size:16px;line-height:1.4;margin:0 0 20px;color:#f5f5f5;">${safeTitle}</p>
+        <p style="font-size:14px;line-height:1.6;margin:0 0 8px;color:#bbb;">Their message</p>
+        <blockquote style="border-left:3px solid #00d26a;padding:8px 0 8px 14px;margin:0 0 24px;font-size:14px;line-height:1.55;color:#f5f5f5;white-space:pre-wrap;">${escapeHtml(trimmed)}</blockquote>
         <p style="margin:32px 0;">
           <a href="${baseUrl}/app/quotes" style="display:inline-block;padding:12px 20px;background:#00d26a;color:#0a0a0a;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Open the quote</a>
         </p>
@@ -493,8 +521,9 @@ async function createInstallSlotForAcceptedQuote(args: {
   const endsAt = new Date(startsAt.getTime() + 4 * 60 * 60 * 1000);
 
   // Try to insert with proposal_id when the migration has landed.
-  // Some Postgres drivers reject inserts containing unknown columns,
-  // so catch and retry without it.
+  // Only fall back to the no-column path on Postgres "undefined column"
+  // (SQLSTATE 42703) — any other error must surface so we don't write
+  // the audit row twice. Engineering Director P0.
   const insertWithLink = await sb.from("schedule_items").insert({
     tenant_id: args.tenantId,
     customer_id: args.customerId,
@@ -507,7 +536,25 @@ async function createInstallSlotForAcceptedQuote(args: {
     notes: `Auto-scheduled from accepted quote. proposal:${args.proposalId}`,
   });
   if (insertWithLink.error) {
-    await sb.from("schedule_items").insert({
+    const isMissingColumn =
+      insertWithLink.error.code === "42703" ||
+      /column .*proposal_id.* does not exist/i.test(
+        insertWithLink.error.message ?? "",
+      );
+    if (!isMissingColumn) {
+      log.warn("schedule_item insert failed", {
+        surface: "quote.accept",
+        kind: "schedule_insert_failed",
+        tenantId: args.tenantId,
+        proposalId: args.proposalId,
+        code: insertWithLink.error.code,
+        error: insertWithLink.error.message,
+      });
+      // Don't double-write the audit row. The acceptQuote outer
+      // try/catch will pick this up.
+      return;
+    }
+    const fallback = await sb.from("schedule_items").insert({
       tenant_id: args.tenantId,
       customer_id: args.customerId,
       type: "install",
@@ -517,6 +564,17 @@ async function createInstallSlotForAcceptedQuote(args: {
       status: "scheduled",
       notes: `Auto-scheduled from accepted quote. proposal:${args.proposalId}`,
     });
+    if (fallback.error) {
+      log.warn("schedule_item legacy insert failed", {
+        surface: "quote.accept",
+        kind: "schedule_insert_failed_legacy",
+        tenantId: args.tenantId,
+        proposalId: args.proposalId,
+        code: fallback.error.code,
+        error: fallback.error.message,
+      });
+      return;
+    }
   }
 
   await sb.from("audit_log").insert({

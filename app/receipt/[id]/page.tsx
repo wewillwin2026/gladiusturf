@@ -16,6 +16,7 @@ export const metadata: Metadata = {
 const SURFACE_LABELS: Record<string, string> = {
   "ask-gladius": "Ask Gladius",
   "quote-drafter": "AI Quote Drafter",
+  "question-reply-draft": "Reply Suggestions",
 };
 
 /**

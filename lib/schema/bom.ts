@@ -54,11 +54,26 @@ export type BomRead = z.infer<typeof BomReadSchema>;
 /**
  * Parse an arbitrary value into a BomRead, never throws. Returns a safe
  * default if the value is null / not an object / fails validation.
+ *
+ * Diagnostic: when a non-null value fails to parse, we emit a structured
+ * warn so an existing-row shape problem doesn't disappear silently —
+ * Engineering Director's P1.
  */
 export function parseBomRead(value: unknown): BomRead {
   if (value == null) return { title: "Quote" };
   const result = BomReadSchema.safeParse(value);
   if (result.success) return result.data;
+  // Lazy import to avoid pulling the structured logger into RSC graphs
+  // that don't otherwise need it.
+  void import("@/lib/obs/log").then(({ log }) => {
+    log.warn("bom parse fell open", {
+      surface: "bom.parse",
+      kind: "fallback",
+      issues: result.error.issues
+        .map((i) => `${i.path.join(".")}:${i.code}`)
+        .slice(0, 5),
+    });
+  });
   return { title: "Quote" };
 }
 

@@ -1,0 +1,123 @@
+Board P0/P1 consensus batch (4-director synthesis)
+
+Strategy + Product + Engineering + AI Director synthesis from the
+deferred-items review. Buffett, Trust, Jobs reviews stalled (watchdog
+timeout, not content failure) — executing on the 4-director consensus
+that landed.
+
+ENGINEERING P0 (3 bugs blocking Friday):
+
+1. acceptQuote status-flip ordering — status flipped first, then
+   side effects. A failed schedule/alert left status='sold' with no
+   calendar entry and no owner buzz. Customer thinks it worked,
+   tenant never knows. Reordered: audit -> schedule -> alert ->
+   status flip. Partial-failure path now lands the side effects
+   first, so a status-flip retry on the already-sold path is a
+   no-op (audit/schedule already idempotent). The bug that turns
+   a $999 customer into a refund request is closed.
+
+2. createInstallSlotForAcceptedQuote dual-path INSERT silently
+   swallowed any error from the proposal_id INSERT, including RLS
+   denial / FK violation. Now: only fall back when SQLSTATE 42703
+   (undefined column) or matching message. Other errors structured-
+   logged + return early; no double audit row.
+
+3. pickNextMove computed twice per /app render — once for the
+   priority_decision audit, once inside OwnersDailyOneLiner. A
+   midnight-UTC clock straddle would have audit and CTA disagree.
+   Fixed: page computes once and passes `move` prop to the
+   component; component falls back to recomputing only if the prop
+   is absent (preserves existing call-site contracts).
+
+AI DIRECTOR P0:
+
+4. priority_decision now rolled into the daily Merkle root
+   (lib/audit/merkle.ts). AI Director's covenant: any future "did
+   your AI pick this CTA on May 12?" question is now
+   cryptographically answerable. Counts plumbed through RootSummary,
+   transparency-snapshot cron writes priority_decisions_count when
+   the column exists with PGRST204 fallback. Migration
+   20260507_i_transparency_priority_count.sql adds the column.
+
+5. /receipt/[id] SURFACE_LABELS gained "question-reply-draft":
+   "Reply Suggestions". Receipt URLs in tenant emails now render a
+   human label instead of the raw key.
+
+6. AI reply suggestions (lib/ai/suggest-reply.ts):
+   - JSON code-fence stripping before parse — Sonnet sometimes
+     wraps JSON in ```json blocks despite the explicit instruction.
+     Strip fences + extract outermost {...} as fallback.
+   - Per-question idempotency cache: SHA-256 of (proposal+question),
+     60s TTL, 500-entry LRU. A customer who hits Send twice within
+     rate-limit no longer burns 5 Anthropic calls.
+   - AI_REPLY_SUGGESTIONS_DISABLED env kill switch (defaults ON).
+     Future tenants.tier check can layer on top.
+
+PRODUCT P0:
+
+7. AI suggestions moved ABOVE the question in the alert email.
+   Product Director's unique read: variants are the action, the
+   question is context. Tenant scans suggestions first, picks one,
+   verifies against the customer's text right below. The card is
+   no longer the buried last-scroll afterthought.
+
+8. Email Gmail compatibility — every text node now has explicit
+   color:#f5f5f5 so a stripped <style> block in Gmail web doesn't
+   make the AI variants unreadable. Single receipt link kept (was
+   two).
+
+9. Phone normalization for SMS share — `customers.primary_phone`
+   has parens/spaces in the wild; Android Chrome's intent handler
+   chokes on those. Strip everything except digits and leading "+";
+   require >=10 digits before showing the action.
+
+10. Test-mode checkbox repositioned next to the Title label as a
+    🧪 Test mode chip — visible above the fold on a 375px viewport
+    instead of buried below 4 cards. Removed the duplicate label
+    that was at the bottom of the form.
+
+11. AcceptButton + AskQuestionForm rate_limited copy fixed — said
+    "wait a minute" but the bucket refills in 12 seconds. Now
+    "wait a few seconds and try again" (bilingual EN/ES).
+
+STRATEGY P0 (regulatory):
+
+12. AI disclosure under the question textarea — CCPA §1798.185(a)(16)
+    + GDPR Article 22 require pre-processing notice for automated
+    decision-making. Plain-language: "Your message goes to your
+    contractor. We may use Claude (Anthropic) to draft suggested
+    replies they can review before sending — they always have the
+    final word." Bilingual EN/ES, links to /transparency.
+
+ENGINEERING P1 (defensive):
+
+13. log.ts JSON.stringify wrapped in safeJson() — circular-ref or
+    unserializable values in the context object would have thrown
+    inside the warn path. Now falls back to a tagged sentinel
+    string so the warn line still lands.
+
+14. parseBomRead now structured-logs to surface "bom.parse" /
+    kind "fallback" when a non-null bom value fails validation.
+    Existing-row shape problems no longer disappear silently.
+    Logger import is dynamic to avoid pulling it into RSC graphs
+    that don't otherwise need it.
+
+USER ACTION REQUIRED before deploy:
+  Apply 20260507_g, _h, _i migrations to live Supabase. Code is
+  safe with or without all three (graceful fallbacks throughout).
+
+DEFERRED FROM BOARD (next session):
+  - Engineering: per-tenant JWT (15+ supabaseAdmin sites, prod auth
+    shift; held for explicit consult)
+  - Engineering: rate-limit Vercel KV upgrade (Fluid Compute multi-
+    instance multiplier — fine for tenant #1, before tenant #5)
+  - AI: 10-prompt golden-set eval harness with prompt-version lock
+  - AI: /api/priority-decision/click endpoint for ground-truth signal
+  - AI: typed `linkedAiRunId` field on InternalAlertRequest (replace
+    extraAuditMetadata loose-bag pattern before 3 more callers copy it)
+  - Strategy: deferred-risk doc at /legal/security mentioning the
+    per-tenant JWT Q3 plan for Felipe's compliance officer
+  - Strategy: tenants.tier column + AI gate at suggest-reply.ts:53
+  - Buffett, Trust, Jobs: re-run reviews next session (watchdog stall)
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>

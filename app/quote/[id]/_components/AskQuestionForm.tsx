@@ -46,8 +46,8 @@ export function AskQuestionForm({
         if (res.error === "rate_limited") {
           setError(
             t(
-              "Too many messages — please wait a minute and try again.",
-              "Demasiados mensajes — por favor espere un minuto y vuelva a intentar.",
+              "Too many messages — wait a few seconds and try again.",
+              "Demasiados mensajes — espere unos segundos y vuelva a intentar.",
             ),
           );
         } else if (res.error === "too_many_questions") {
@@ -110,6 +110,20 @@ export function AskQuestionForm({
         disabled={busy}
         className="rounded-xl border border-bone/20 bg-bone/[0.04] px-4 py-3 text-sm text-bone placeholder:text-bone/30 focus:outline-none focus:border-bone/40"
       />
+      <p className="text-[11px] leading-snug text-bone/45">
+        {t(
+          "Your message goes to your contractor. We may use Claude (Anthropic) to draft suggested replies they can review before sending — they always have the final word.",
+          "Su mensaje va a su contratista. Podemos usar Claude (Anthropic) para preparar respuestas sugeridas que ellos revisan antes de enviar — la última palabra siempre es de ellos.",
+        )}{" "}
+        <a
+          href="/transparency"
+          target="_blank"
+          rel="noreferrer"
+          className="underline-offset-4 hover:underline"
+        >
+          {t("Learn more", "Más información")}
+        </a>
+      </p>
       <div className="flex items-center justify-between gap-3">
         <button
           type="button"

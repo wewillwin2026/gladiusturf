@@ -83,7 +83,10 @@ export async function GET(request: Request): Promise<Response> {
       } else {
         await deleteQuery.eq("tenant_id", tid);
       }
-      const { error: insertErr } = await sb
+      // Try to insert with priority_decisions_count. If the column
+      // doesn't exist yet (migration 20260507_i not applied), fall back
+      // to the legacy shape so the cron keeps producing roots.
+      const insertWithPriority = await sb
         .from("transparency_roots")
         .insert({
           tenant_id: tid,
@@ -93,7 +96,22 @@ export async function GET(request: Request): Promise<Response> {
           audit_events_count: root.counts.auditEvents,
           cross_tenant_reads_count: root.counts.crossTenantReads,
           consent_events_count: root.counts.consentEvents,
+          priority_decisions_count: root.counts.priorityDecisions,
         });
+      let insertErr = insertWithPriority.error;
+      if (insertErr && insertErr.code === "PGRST204") {
+        // Column not found in schema cache — pre-migration shape.
+        const legacy = await sb.from("transparency_roots").insert({
+          tenant_id: tid,
+          date,
+          root_hex: root.rootHex,
+          ai_runs_count: root.counts.aiRuns,
+          audit_events_count: root.counts.auditEvents,
+          cross_tenant_reads_count: root.counts.crossTenantReads,
+          consent_events_count: root.counts.consentEvents,
+        });
+        insertErr = legacy.error;
+      }
       if (insertErr) {
         console.warn(
           "[transparency-snapshot] insert error",

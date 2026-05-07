@@ -1,6 +1,48 @@
+import { createHash } from "node:crypto";
 import Anthropic from "@anthropic-ai/sdk";
 import { checkAiBudget, logAiRun } from "./audit";
 import { log } from "@/lib/obs/log";
+
+/**
+ * Per-question idempotency cache. Engineering Director P1: a customer
+ * who hits "Send" twice within the rate limit (5/min) would otherwise
+ * trigger 5 Anthropic calls = 1.5¢ wasted. Cache by SHA-256 of
+ * (proposalId + question text) for 60 seconds.
+ */
+type CacheEntry = { result: SuggestRepliesResult; at: number };
+const cache = new Map<string, CacheEntry>();
+const CACHE_TTL_MS = 60_000;
+const CACHE_MAX = 500;
+
+function cacheKey(proposalId: string, questionText: string): string {
+  return createHash("sha256")
+    .update(`${proposalId}|${questionText}`)
+    .digest("hex")
+    .slice(0, 32);
+}
+
+function cacheGet(key: string): SuggestRepliesResult | null {
+  const entry = cache.get(key);
+  if (!entry) return null;
+  if (Date.now() - entry.at > CACHE_TTL_MS) {
+    cache.delete(key);
+    return null;
+  }
+  return entry.result;
+}
+
+function cacheSet(key: string, result: SuggestRepliesResult): void {
+  if (cache.size > CACHE_MAX) {
+    const drop = cache.size - CACHE_MAX;
+    let i = 0;
+    for (const k of cache.keys()) {
+      cache.delete(k);
+      i += 1;
+      if (i >= drop) break;
+    }
+  }
+  cache.set(key, { result, at: Date.now() });
+}
 
 /**
  * AI reply suggestions — AI Director's #1 ranked feature.
@@ -47,13 +89,33 @@ Constraints:
 - Sign off with the tenant's first name when natural.
 - Output exactly this JSON shape: {"variants": ["...", "...", "..."]}. No prose, no markdown, no code fences.`;
 
+/**
+ * Strategy + AI Director P0: feature flag for AI reply suggestions.
+ * Disable by setting `AI_REPLY_SUGGESTIONS_DISABLED=1`. The default is
+ * ON so existing tenants keep working. Per-tenant tier gating happens
+ * here too once a `tenants.tier` column exists; for now the env flag
+ * is the kill switch.
+ */
+function aiReplySuggestionsEnabled(): boolean {
+  return process.env.AI_REPLY_SUGGESTIONS_DISABLED !== "1";
+}
+
 export async function suggestRepliesForQuestion(
   input: SuggestRepliesInput,
 ): Promise<SuggestRepliesResult | null> {
+  if (!aiReplySuggestionsEnabled()) {
+    return null;
+  }
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return null;
   }
+
+  // Idempotency cache — short-window dedupe on identical (proposal,
+  // question) pairs so retries within rate-limit don't burn budget.
+  const cacheK = cacheKey(input.proposalId, input.questionText);
+  const cached = cacheGet(cacheK);
+  if (cached) return cached;
 
   const budget = await checkAiBudget(input.tenantId);
   if (!budget.ok) {
@@ -89,9 +151,23 @@ export async function suggestRepliesForQuestion(
     const textBlock = result.content.find((c) => c.type === "text");
     const raw = textBlock && textBlock.type === "text" ? textBlock.text : "";
 
+    // Sonnet sometimes wraps JSON in ```json ... ``` despite the
+    // explicit instruction. Strip code fences before parsing, and find
+    // the outermost {...} as a final fallback.
+    const stripped = raw
+      .replace(/^\s*```(?:json)?\s*/i, "")
+      .replace(/\s*```\s*$/i, "")
+      .trim();
+    const firstBrace = stripped.indexOf("{");
+    const lastBrace = stripped.lastIndexOf("}");
+    const jsonText =
+      firstBrace >= 0 && lastBrace > firstBrace
+        ? stripped.slice(firstBrace, lastBrace + 1)
+        : stripped;
+
     let variants: string[] = [];
     try {
-      const parsed = JSON.parse(raw) as { variants?: unknown };
+      const parsed = JSON.parse(jsonText) as { variants?: unknown };
       if (Array.isArray(parsed.variants)) {
         variants = parsed.variants
           .filter((v): v is string => typeof v === "string")
@@ -113,7 +189,7 @@ export async function suggestRepliesForQuestion(
 
     if (variants.length === 0) return null;
 
-    const aiRunId = await logAiRun({
+    const aiRunId: string | null = await logAiRun({
       tenantId: input.tenantId,
       sessionKind: "tenant",
       surface: "question-reply-draft",
@@ -132,7 +208,9 @@ export async function suggestRepliesForQuestion(
       },
     });
 
-    return { variants, aiRunId };
+    const finalResult: SuggestRepliesResult = { variants, aiRunId };
+    cacheSet(cacheK, finalResult);
+    return finalResult;
   } catch (err) {
     log.warn("AI reply call failed", {
       surface: "question-reply-draft",

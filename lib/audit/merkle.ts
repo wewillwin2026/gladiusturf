@@ -10,6 +10,8 @@ import { supabaseAdmin } from "@/lib/supabase";
  *   - audit_log                   (every tenant-side action)
  *   - cross_tenant_access_log     (every founder cross-tenant read)
  *   - customer_messaging_consent  (every consent record / change)
+ *   - priority_decision           (Owner's Daily One-Liner ranking — AI
+ *                                  Director's covenant for AI re-rank)
  *
  * The root is recomputable by anyone with read access to those four
  * tables. We publish the daily root so a tenant — or a regulator, or
@@ -76,6 +78,7 @@ export type RootSummary = {
     auditEvents: number;
     crossTenantReads: number;
     consentEvents: number;
+    priorityDecisions: number;
   };
   computedAt: string;
 };
@@ -135,19 +138,38 @@ export async function computeDailyRoot(
     .order("updated_at", { ascending: true });
   if (tenantId) consentQuery.eq("tenant_id", tenantId);
 
-  const [ai, audit, cross, consent] = await Promise.all([
+  // priority_decision rows — AI Director's covenant for AI re-ranking.
+  // Pulls the chain into the Merkle tree so a future "did your AI pick
+  // this CTA on May 12?" question is cryptographically answerable.
+  // Best-effort: the table may not exist yet on older deploys.
+  const priorityQuery = sb
+    .from("priority_decision")
+    .select(
+      "id, tenant_id, shown_at, shown_choice, href, cta, clicked_at, outcome",
+    )
+    .gte("shown_at", start)
+    .lte("shown_at", end)
+    .order("shown_at", { ascending: true });
+  if (tenantId) priorityQuery.eq("tenant_id", tenantId);
+
+  const [ai, audit, cross, consent, priority] = await Promise.all([
     aiQuery,
     auditQuery,
     crossQuery,
     consentQuery,
+    priorityQuery,
   ]);
 
-  // Best-effort: missing tables (cross_tenant_access_log might not exist
-  // on older deploys) yield an empty array, not an error throw.
+  // Best-effort: missing tables (cross_tenant_access_log or
+  // priority_decision may not exist on older deploys) yield an empty
+  // array, not an error throw.
   const aiRows = (ai.data ?? []) as Array<Record<string, unknown>>;
   const auditRows = (audit.data ?? []) as Array<Record<string, unknown>>;
   const crossRows = (cross.data ?? []) as Array<Record<string, unknown>>;
   const consentRows = (consent.data ?? []) as Array<Record<string, unknown>>;
+  const priorityRows = (priority.data ?? []) as Array<
+    Record<string, unknown>
+  >;
 
   // Hash each row into a leaf with a per-table prefix so a row with
   // colliding shape across tables doesn't accidentally hash the same.
@@ -156,6 +178,7 @@ export async function computeDailyRoot(
     ...auditRows.map((r) => hashRow("audit_log", r)),
     ...crossRows.map((r) => hashRow("cross_tenant_access_log", r)),
     ...consentRows.map((r) => hashRow("customer_messaging_consent", r)),
+    ...priorityRows.map((r) => hashRow("priority_decision", r)),
   ];
   // Lexicographically sort the combined leaf list so the Merkle root is
   // stable regardless of fetch ordering across tables.
@@ -170,6 +193,7 @@ export async function computeDailyRoot(
       auditEvents: auditRows.length,
       crossTenantReads: crossRows.length,
       consentEvents: consentRows.length,
+      priorityDecisions: priorityRows.length,
     },
     computedAt: new Date().toISOString(),
   };

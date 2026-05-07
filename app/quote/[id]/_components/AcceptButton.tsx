@@ -40,8 +40,8 @@ export function AcceptButton({
         if (res.error === "rate_limited") {
           setError(
             language === "es"
-              ? "Demasiados intentos — por favor espere un minuto y vuelva a intentar."
-              : "Too many attempts — please wait a minute and try again.",
+              ? "Demasiados intentos — espere unos segundos y vuelva a intentar."
+              : "Too many attempts — wait a few seconds and try again.",
           );
         } else {
           setError(

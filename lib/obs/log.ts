@@ -25,6 +25,16 @@ export type LogContext = {
   [key: string]: unknown;
 };
 
+function safeJson(payload: unknown): string {
+  try {
+    return JSON.stringify(payload);
+  } catch {
+    // Circular ref or unserializable value — fall back to a tagged
+    // string so the warn line still lands instead of throwing.
+    return '{"_serialize_error":true}';
+  }
+}
+
 function emit(level: LogLevel, message: string, ctx: LogContext): void {
   const payload = {
     level,
@@ -42,7 +52,7 @@ function emit(level: LogLevel, message: string, ctx: LogContext): void {
     at: new Date().toISOString(),
   };
   // Emit as one line so Vercel/Logflare pick it up cleanly.
-  const line = `[gt] ${level} ${ctx.surface} ${message} ${JSON.stringify(payload)}`;
+  const line = `[gt] ${level} ${ctx.surface} ${message} ${safeJson(payload)}`;
   if (level === "error") console.error(line);
   else if (level === "warn") console.warn(line);
   else console.log(line);

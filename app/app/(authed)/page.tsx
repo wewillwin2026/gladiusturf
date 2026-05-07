@@ -249,6 +249,11 @@ export default async function AppHomePage() {
       openQuestionsCount,
     };
 
+    // Compute pickNextMove ONCE so the audit row and the rendered CTA
+    // are guaranteed to agree. Calling it twice creates a clock-straddle
+    // bug at midnight UTC where the audit and the CTA disagree.
+    const move = pickNextMove(briefingInputs);
+
     // Record the priority decision for AI Director's audit substrate —
     // one row per (tenant, UTC date, choice). Refreshes within the same
     // day are no-ops via the unique index. Best-effort; a write failure
@@ -256,7 +261,6 @@ export default async function AppHomePage() {
     // gracefully so the action survives the deploy-before-migration
     // window for 20260507_h_priority_decision.sql.
     try {
-      const move = pickNextMove(briefingInputs);
       const inputsForAudit = {
         customerCount,
         draftQuotesCount,
@@ -284,6 +288,7 @@ export default async function AppHomePage() {
       <div className="flex flex-col gap-4">
         <OwnersDailyOneLiner
           briefing={briefingInputs}
+          move={move}
         />
         <StormRadarTile
           inStormZipCount={inStormZipCount}
