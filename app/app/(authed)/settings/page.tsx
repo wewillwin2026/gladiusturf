@@ -14,8 +14,8 @@ import { PageHeader } from "@/components/app/PageHeader";
 import { SettingsBrowser } from "@/components/app/SettingsBrowser";
 import { readAppSession } from "@/lib/app/session";
 import { supabaseAdmin } from "@/lib/supabase";
-import { dispatcherMode } from "@/lib/messaging/dispatch";
-import { emailDispatcherMode } from "@/lib/messaging/email";
+import { dispatcherMode, twilioCredStatus } from "@/lib/messaging/dispatch";
+import { emailDispatcherMode, resendCredStatus } from "@/lib/messaging/email";
 
 export const dynamic = "force-dynamic";
 
@@ -74,7 +74,21 @@ export default async function Page() {
 
   const smsMode = dispatcherMode();
   const emailMode = emailDispatcherMode();
+  const smsCreds = twilioCredStatus();
+  const emailCreds = resendCredStatus();
   const quietRange = `${settings.quiet_hours_start}:00 → ${settings.quiet_hours_end}:00`;
+
+  const smsMissing = (
+    [
+      ["TWILIO_ACCOUNT_SID", smsCreds.sid],
+      ["TWILIO_AUTH_TOKEN", smsCreds.token],
+      ["TWILIO_FROM_NUMBER", smsCreds.from],
+    ] as const
+  )
+    .filter(([, v]) => !v)
+    .map(([k]) => k);
+  const smsPartial =
+    smsMissing.length > 0 && smsMissing.length < 3;
 
   return (
     <div className="flex flex-col gap-6">
@@ -167,19 +181,23 @@ export default async function Page() {
             icon={MessageSquare}
             title="SMS · Twilio"
             mode={smsMode}
+            partial={smsPartial}
             note={
               smsMode === "live"
-                ? "TWILIO_ACCOUNT_SID, AUTH_TOKEN, FROM_NUMBER are set. Storm Mode + cadence-driven SMS dispatch via Twilio when consent allows."
-                : "Twilio creds not set yet. Sends are previewed only and logged to audit_log as message.dry_run. Set TWILIO_ACCOUNT_SID / AUTH_TOKEN / FROM_NUMBER to flip live."
+                ? "TWILIO_ACCOUNT_SID, AUTH_TOKEN, FROM_NUMBER are all set. Storm Mode + cadence-driven SMS dispatch via Twilio when consent allows."
+                : smsPartial
+                  ? `Partially configured — missing ${smsMissing.join(", ")}. Sends are previewed only and logged to audit_log as message.dry_run until all three are set.`
+                  : "Twilio creds not set yet. Sends are previewed only and logged to audit_log as message.dry_run. Set TWILIO_ACCOUNT_SID / AUTH_TOKEN / FROM_NUMBER to flip live."
             }
           />
           <ProviderRow
             icon={Mail}
             title="Email · Resend"
             mode={emailMode}
+            partial={false}
             note={
               emailMode === "live"
-                ? "RESEND_API_KEY is set. Quote-share emails + tenant alert emails dispatch via Resend when consent allows."
+                ? `RESEND_API_KEY is set${emailCreds.from ? " (custom From override active)" : ""}. Quote-share + tenant alert emails dispatch via Resend.`
                 : "Resend API key not set yet. Sends are previewed only. Set RESEND_API_KEY to flip live."
             }
           />
@@ -287,14 +305,22 @@ function ProviderRow({
   icon: Icon,
   title,
   mode,
+  partial,
   note,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   title: string;
   mode: "live" | "dry_run";
+  partial: boolean;
   note: string;
 }) {
   const isLive = mode === "live";
+  const chipClass = isLive
+    ? "inline-flex items-center gap-1 rounded-full bg-g-accent-faint/40 px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-g-accent"
+    : partial
+      ? "inline-flex items-center gap-1 rounded-full bg-g-warning/15 px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-g-warning border border-g-warning/30"
+      : "inline-flex items-center gap-1 rounded-full bg-g-surface px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-g-text-muted border border-g-border-subtle";
+  const label = isLive ? "Live" : partial ? "Partial · dry-run" : "Dry-run";
   return (
     <div className="rounded-md bg-g-surface-2 p-4">
       <div className="flex items-center justify-between">
@@ -302,15 +328,9 @@ function ProviderRow({
           <Icon className="h-4 w-4 text-g-text" />
           <span className="text-[13px] font-medium text-g-text">{title}</span>
         </div>
-        <span
-          className={
-            isLive
-              ? "inline-flex items-center gap-1 rounded-full bg-g-accent-faint/40 px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-g-accent"
-              : "inline-flex items-center gap-1 rounded-full bg-g-surface px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-g-text-muted border border-g-border-subtle"
-          }
-        >
+        <span className={chipClass}>
           <Cog className="h-2.5 w-2.5" />
-          {isLive ? "Live" : "Dry-run"}
+          {label}
         </span>
       </div>
       <p className="mt-2 text-[12px] text-g-text-muted leading-relaxed">

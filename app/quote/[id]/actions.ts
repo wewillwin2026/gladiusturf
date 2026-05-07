@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
-import { Resend } from "resend";
 import { supabaseAdmin } from "@/lib/supabase";
+import { sendInternalAlert } from "@/lib/messaging/email";
+import { parseUaClass } from "@/lib/messaging/ua";
 
 /**
  * Customer-facing actions on the public /quote/[id] page. No auth — the
@@ -69,10 +70,9 @@ export async function acceptQuote(
     if (updateErr) return { error: "update_failed" };
   }
 
-  let userAgent = "";
   try {
     const hdrs = await headers();
-    userAgent = (hdrs.get("user-agent") ?? "").slice(0, 200);
+    const rawUa = hdrs.get("user-agent");
     if (!isAlreadySold) {
       await sb.from("audit_log").insert({
         tenant_id: ex.tenant_id,
@@ -83,7 +83,7 @@ export async function acceptQuote(
         metadata: {
           customer_id: ex.customer_id,
           source: "public_link",
-          user_agent: userAgent,
+          ua_class: parseUaClass(rawUa),
           total_cents: ex.total_cents,
         },
       });
@@ -181,11 +181,18 @@ export async function askQuestionAboutQuote(
     return { error: "not_actionable" };
   }
 
+  // DoS guard: cap bom.questions[] at 50 entries so a leaked UUID can't
+  // balloon the JSONB row.
+  const existingQuestions = ex.bom?.questions ?? [];
+  if (existingQuestions.length >= 50) {
+    return { error: "too_many_questions" };
+  }
+
   const customer = Array.isArray(ex.customers) ? ex.customers[0] : ex.customers;
   const tenant = Array.isArray(ex.tenants) ? ex.tenants[0] : ex.tenants;
   const nowIso = new Date().toISOString();
   const updatedQuestions = [
-    ...(ex.bom?.questions ?? []),
+    ...existingQuestions,
     { at: nowIso, text: trimmed },
   ];
   const updatedBom = { ...(ex.bom ?? {}), questions: updatedQuestions };
@@ -213,87 +220,57 @@ export async function askQuestionAboutQuote(
     console.warn("quote.question_asked audit failed (non-fatal)", err);
   }
 
-  // Notify tenant owners/admins via Resend.
+  // Notify tenant owners/admins via the dispatcher.
   try {
-    const apiKey = process.env.RESEND_API_KEY;
-    if (apiKey) {
-      const { data: invites } = await sb
-        .from("tenant_invitations")
-        .select("email")
-        .eq("tenant_id", ex.tenant_id)
-        .eq("status", "active")
-        .in("role", ["owner", "admin"]);
-      const emails = ((invites ?? []) as { email: string }[])
-        .map((r) => r.email)
-        .filter((e) => !!e);
-      if (emails.length > 0) {
-        const fromEmail =
-          process.env.RESEND_FROM_EMAIL ||
-          "GladiusTurf Alerts <founders@gladiusturf.com>";
-        const baseUrl =
-          process.env.NEXT_PUBLIC_SITE_URL || "https://gladiusturf.com";
-        const title = ex.bom?.title ?? "Quote";
-        const safeCustomerName = escapeHtml(customer?.display_name ?? "Customer");
-        const safeTenantName = escapeHtml(tenant?.display_name ?? "your team");
-        const safeTitle = escapeHtml(title);
-        const replyTo = customer?.primary_email ?? undefined;
-        const safeReplyTo = replyTo ? escapeHtml(replyTo) : null;
-        const subject = `[Question] ${customer?.display_name ?? "Customer"} on "${title}"`
-          .replace(/[\r\n]+/g, " ")
-          .slice(0, 200);
-        const html = `
-          <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0a0a0a;color:#f5f5f5;padding:32px 24px;max-width:560px;margin:0 auto;">
-            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:#888;">${safeTenantName}</div>
-            <h1 style="font-family:Georgia,serif;font-size:28px;line-height:1.2;margin:6px 0 24px;">A customer asked a question.</h1>
-            <p style="font-size:14px;line-height:1.6;margin:0 0 8px;color:#bbb;">From</p>
-            <p style="font-size:16px;line-height:1.4;margin:0 0 20px;font-weight:600;">${safeCustomerName}${safeReplyTo ? ` &lt;${safeReplyTo}&gt;` : ""}</p>
-            <p style="font-size:14px;line-height:1.6;margin:0 0 8px;color:#bbb;">On quote</p>
-            <p style="font-size:16px;line-height:1.4;margin:0 0 20px;">${safeTitle}</p>
-            <p style="font-size:14px;line-height:1.6;margin:0 0 8px;color:#bbb;">Message</p>
-            <blockquote style="border-left:3px solid #00d26a;padding:8px 0 8px 14px;margin:0 0 24px;font-size:14px;line-height:1.55;color:#f5f5f5;white-space:pre-wrap;">${escapeHtml(trimmed)}</blockquote>
-            <p style="margin:32px 0;">
-              <a href="${baseUrl}/app/quotes" style="display:inline-block;padding:12px 20px;background:#00d26a;color:#0a0a0a;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Open the quote</a>
-            </p>
-            ${replyTo ? `<p style="font-size:12px;line-height:1.55;color:#888;margin:24px 0 0;">Reply to this email — the customer's address is on Reply-To.</p>` : ""}
-          </div>
-        `;
-        const text = `[Question] ${customer?.display_name ?? "Customer"} on "${title}"\n\n${trimmed}\n\nOpen quote: ${baseUrl}/app/quotes`;
-        const resend = new Resend(apiKey);
-        const result = await resend.emails.send({
-          from: fromEmail,
-          to: emails,
-          replyTo,
-          subject,
-          html,
-          text,
-        });
-        await sb.from("audit_log").insert({
-          tenant_id: ex.tenant_id,
-          user_id: null,
-          action: result.error ? "tenant_alert.failed" : "tenant_alert.sent",
-          entity_type: "proposal",
-          entity_id: proposalId,
-          metadata: {
-            kind: "quote_question",
-            recipients: emails,
-            resend_id: result.data?.id ?? null,
-            error: result.error?.message ?? null,
-          },
-        });
-      }
-    } else {
-      await sb.from("audit_log").insert({
-        tenant_id: ex.tenant_id,
-        user_id: null,
-        action: "tenant_alert.dry_run",
-        entity_type: "proposal",
-        entity_id: proposalId,
-        metadata: {
-          kind: "quote_question",
-          note: "RESEND_API_KEY not set — alert not sent.",
-        },
-      });
-    }
+    const { data: invites } = await sb
+      .from("tenant_invitations")
+      .select("email")
+      .eq("tenant_id", ex.tenant_id)
+      .eq("status", "active")
+      .in("role", ["owner", "admin"]);
+    const recipients = ((invites ?? []) as { email: string }[])
+      .map((r) => r.email)
+      .filter((e) => !!e);
+
+    const baseUrl =
+      process.env.NEXT_PUBLIC_SITE_URL || "https://gladiusturf.com";
+    const title = ex.bom?.title ?? "Quote";
+    const customerName = customer?.display_name ?? "Customer";
+    const tenantName = tenant?.display_name ?? "your team";
+    const replyTo = customer?.primary_email ?? undefined;
+    const safeCustomerName = escapeHtml(customerName);
+    const safeTenantName = escapeHtml(tenantName);
+    const safeTitle = escapeHtml(title);
+    const safeReplyTo = replyTo ? escapeHtml(replyTo) : null;
+    const subject = `[Question] ${customerName} on "${title}"`;
+    const html = `
+      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0a0a0a;color:#f5f5f5;padding:32px 24px;max-width:560px;margin:0 auto;">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:#888;">${safeTenantName}</div>
+        <h1 style="font-family:Georgia,serif;font-size:28px;line-height:1.2;margin:6px 0 24px;">A customer asked a question.</h1>
+        <p style="font-size:14px;line-height:1.6;margin:0 0 8px;color:#bbb;">From</p>
+        <p style="font-size:16px;line-height:1.4;margin:0 0 20px;font-weight:600;">${safeCustomerName}${safeReplyTo ? ` &lt;${safeReplyTo}&gt;` : ""}</p>
+        <p style="font-size:14px;line-height:1.6;margin:0 0 8px;color:#bbb;">On quote</p>
+        <p style="font-size:16px;line-height:1.4;margin:0 0 20px;">${safeTitle}</p>
+        <p style="font-size:14px;line-height:1.6;margin:0 0 8px;color:#bbb;">Message</p>
+        <blockquote style="border-left:3px solid #00d26a;padding:8px 0 8px 14px;margin:0 0 24px;font-size:14px;line-height:1.55;color:#f5f5f5;white-space:pre-wrap;">${escapeHtml(trimmed)}</blockquote>
+        <p style="margin:32px 0;">
+          <a href="${baseUrl}/app/quotes" style="display:inline-block;padding:12px 20px;background:#00d26a;color:#0a0a0a;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Open the quote</a>
+        </p>
+        ${replyTo ? `<p style="font-size:12px;line-height:1.55;color:#888;margin:24px 0 0;">Reply to this email — the customer's address is on Reply-To.</p>` : ""}
+      </div>
+    `;
+    const text = `[Question] ${customerName} on "${title}"\n\n${trimmed}\n\nOpen quote: ${baseUrl}/app/quotes`;
+
+    await sendInternalAlert({
+      tenantId: ex.tenant_id,
+      entityId: proposalId,
+      kind: "quote_question",
+      recipients,
+      subject,
+      html,
+      text,
+      replyTo,
+    });
   } catch (err) {
     console.warn("notifyTenantOfQuestion failed (non-fatal)", err);
   }
@@ -443,28 +420,6 @@ async function notifyTenantOfAcceptance(args: {
   title: string;
   totalCents: number | null;
 }) {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    // Dry-run only — log to audit_log so the operator sees the alert
-    // would have fired. Once RESEND_API_KEY is set, real email goes out.
-    const sb = supabaseAdmin();
-    await sb.from("audit_log").insert({
-      tenant_id: args.tenantId,
-      user_id: null,
-      action: "tenant_alert.dry_run",
-      entity_type: "proposal",
-      entity_id: args.proposalId,
-      metadata: {
-        kind: "quote_accepted",
-        customer_name: args.customerName,
-        title: args.title,
-        total_cents: args.totalCents,
-        note: "RESEND_API_KEY not set — alert not sent.",
-      },
-    });
-    return;
-  }
-
   const sb = supabaseAdmin();
   const { data: invites } = await sb
     .from("tenant_invitations")
@@ -472,14 +427,10 @@ async function notifyTenantOfAcceptance(args: {
     .eq("tenant_id", args.tenantId)
     .eq("status", "active")
     .in("role", ["owner", "admin"]);
-  const emails = ((invites ?? []) as { email: string }[])
+  const recipients = ((invites ?? []) as { email: string }[])
     .map((r) => r.email)
     .filter((e) => !!e);
-  if (emails.length === 0) return;
 
-  const fromEmail =
-    process.env.RESEND_FROM_EMAIL ||
-    "GladiusTurf Alerts <founders@gladiusturf.com>";
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL || "https://gladiusturf.com";
   const dollar =
@@ -489,15 +440,10 @@ async function notifyTenantOfAcceptance(args: {
           maximumFractionDigits: 2,
         })}`
       : "—";
-  // Sanitize every DB-sourced string before HTML interpolation. Subject
-  // also strips CR/LF to prevent header injection (RFC 5322).
   const safeCustomer = escapeHtml(args.customerName);
   const safeTenant = escapeHtml(args.tenantName);
   const safeTitle = escapeHtml(args.title);
-  const safeSubject = `[Sold] ${args.customerName} accepted "${args.title}" — ${dollar}`
-    .replace(/[\r\n]+/g, " ")
-    .slice(0, 200);
-  const subject = safeSubject;
+  const subject = `[Sold] ${args.customerName} accepted "${args.title}" — ${dollar}`;
   const html = `
     <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0a0a0a;color:#f5f5f5;padding:32px 24px;max-width:560px;margin:0 auto;">
       <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:#888;">${safeTenant}</div>
@@ -511,46 +457,19 @@ async function notifyTenantOfAcceptance(args: {
       <p style="margin:32px 0;">
         <a href="${baseUrl}/app/quotes" style="display:inline-block;padding:12px 20px;background:#00d26a;color:#0a0a0a;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Open the deal</a>
       </p>
+      <p style="font-size:12px;line-height:1.55;color:#888;margin:24px 0 0;">A tentative install slot was reserved 7 days out at 9 AM local — confirm or move it before contacting the customer.</p>
       <p style="font-size:11px;line-height:1.55;color:#555;margin:36px 0 0;">Sent from GladiusTurf · proposal <code style="font-family:ui-monospace,Menlo,monospace;">${args.proposalId.slice(0, 8)}</code></p>
     </div>
   `;
-  const text = `[Sold] ${args.customerName} accepted "${args.title}" — ${dollar}\n\nOpen the deal: ${baseUrl}/app/quotes\n\nProposal id: ${args.proposalId}`;
+  const text = `[Sold] ${args.customerName} accepted "${args.title}" — ${dollar}\n\nOpen the deal: ${baseUrl}/app/quotes\n\nA tentative install slot was reserved 7 days out at 9 AM local. Confirm or move it before contacting the customer.\n\nProposal id: ${args.proposalId}`;
 
-  try {
-    const resend = new Resend(apiKey);
-    const result = await resend.emails.send({
-      from: fromEmail,
-      to: emails,
-      subject,
-      html,
-      text,
-    });
-    await sb.from("audit_log").insert({
-      tenant_id: args.tenantId,
-      user_id: null,
-      action: result.error ? "tenant_alert.failed" : "tenant_alert.sent",
-      entity_type: "proposal",
-      entity_id: args.proposalId,
-      metadata: {
-        kind: "quote_accepted",
-        recipients: emails,
-        subject,
-        resend_id: result.data?.id ?? null,
-        error: result.error?.message ?? null,
-      },
-    });
-  } catch (err) {
-    await sb.from("audit_log").insert({
-      tenant_id: args.tenantId,
-      user_id: null,
-      action: "tenant_alert.failed",
-      entity_type: "proposal",
-      entity_id: args.proposalId,
-      metadata: {
-        kind: "quote_accepted",
-        recipients: emails,
-        error: err instanceof Error ? err.message : "unknown",
-      },
-    });
-  }
+  await sendInternalAlert({
+    tenantId: args.tenantId,
+    entityId: args.proposalId,
+    kind: "quote_accepted",
+    recipients,
+    subject,
+    html,
+    text,
+  });
 }

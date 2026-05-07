@@ -11,6 +11,7 @@ import {
 import type { Metadata } from "next";
 import { supabaseAdmin } from "@/lib/supabase";
 import { money } from "@/lib/shared/format";
+import { looksLikeBot, parseUaClass } from "@/lib/messaging/ua";
 import { AcceptButton } from "./_components/AcceptButton";
 import { AskQuestionForm } from "./_components/AskQuestionForm";
 
@@ -118,18 +119,8 @@ export default async function PublicQuotePage({
   if (row.status === "sent") {
     try {
       const hdrs = await headers();
-      const ua = (hdrs.get("user-agent") ?? "").toLowerCase();
-      const looksLikeBot =
-        ua === "" ||
-        ua.includes("bot") ||
-        ua.includes("crawler") ||
-        ua.includes("spider") ||
-        ua.includes("preview") ||
-        ua.includes("slack") ||
-        ua.includes("discord") ||
-        ua.includes("twitter") ||
-        ua.includes("facebookexternalhit");
-      if (!looksLikeBot) {
+      const rawUa = hdrs.get("user-agent");
+      if (!looksLikeBot(rawUa)) {
         // Need tenant_id for the audit row — re-fetch minimally.
         const { data: meta } = await sb
           .from("proposals")
@@ -151,7 +142,7 @@ export default async function PublicQuotePage({
             entity_id: row.id,
             metadata: {
               customer_id: meta.customer_id,
-              user_agent: ua.slice(0, 200),
+              ua_class: parseUaClass(rawUa),
               source: "public_link",
             },
           });

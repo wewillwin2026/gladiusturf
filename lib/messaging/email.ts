@@ -221,3 +221,144 @@ export async function sendEmailToCustomer(
 export function emailDispatcherMode(): "live" | "dry_run" {
   return resendCreds() ? "live" : "dry_run";
 }
+
+/**
+ * Per-credential status for the Settings page. The dispatcher operates
+ * in live mode only when api_key + from are both set; partial config
+ * silently falls through to dry-run, which the operator should be told
+ * about explicitly.
+ */
+export function resendCredStatus(): {
+  api_key: boolean;
+  from: boolean;
+  mode: "live" | "dry_run";
+} {
+  const api_key = !!process.env.RESEND_API_KEY;
+  const from = !!process.env.RESEND_FROM_EMAIL || api_key; // safe default
+  return {
+    api_key,
+    from,
+    mode: api_key && from ? "live" : "dry_run",
+  };
+}
+
+export type InternalAlertRequest = {
+  tenantId: string;
+  /** entity_id for the audit row; usually the proposal id. */
+  entityId?: string;
+  entityType?: string;
+  /** Free-form kind label for the audit metadata (e.g. "quote_accepted"). */
+  kind: string;
+  /** RFC 5322 recipient list. */
+  recipients: string[];
+  subject: string;
+  html: string;
+  text?: string;
+  /** Optional reply-to address (e.g. the customer who triggered the alert). */
+  replyTo?: string;
+  /** Optional from override; falls back to RESEND_FROM_EMAIL or platform default. */
+  fromEmail?: string;
+};
+
+export type InternalAlertResult =
+  | { ok: true; mode: "sent"; emailId: string }
+  | { ok: true; mode: "dry_run" }
+  | { ok: false; reason: string; detail?: string };
+
+/**
+ * Internal-alert dispatcher — used for tenant-team notifications
+ * (owner [Sold] alerts, question-asked alerts, etc.) where the
+ * recipients are the tenant team, NOT customers, so canSend() does
+ * not apply. This still routes through one chokepoint so kill-switch,
+ * From-domain flip, and unified audit shape land in one place.
+ *
+ * Behavior:
+ *   - Subject CRLF-stripped + clamped to 200 chars (header injection).
+ *   - Always writes audit_log: tenant_alert.{sent,dry_run,failed}.
+ *   - Recipient addresses scrubbed to local-part only in audit metadata.
+ */
+export async function sendInternalAlert(
+  req: InternalAlertRequest,
+): Promise<InternalAlertResult> {
+  const sb = supabaseAdmin();
+  const safeSubject = req.subject.replace(/[\r\n]+/g, " ").slice(0, 200);
+  const recipientLocalParts = req.recipients.map((e) => {
+    const at = e.indexOf("@");
+    return at > 0 ? e.slice(0, at) + "@…" : "(invalid)";
+  });
+
+  const writeAudit = async (
+    action: string,
+    extra: Record<string, unknown>,
+  ): Promise<void> => {
+    await sb.from("audit_log").insert({
+      tenant_id: req.tenantId,
+      user_id: null,
+      action,
+      entity_type: req.entityType ?? "proposal",
+      entity_id: req.entityId ?? null,
+      metadata: {
+        kind: req.kind,
+        recipient_count: req.recipients.length,
+        recipients_redacted: recipientLocalParts,
+        subject: safeSubject,
+        ...extra,
+      },
+    });
+  };
+
+  const creds = resendCreds();
+  if (!creds) {
+    await writeAudit("tenant_alert.dry_run", {
+      note: "RESEND_API_KEY not set — alert not sent.",
+    });
+    return { ok: true, mode: "dry_run" };
+  }
+  if (req.recipients.length === 0) {
+    await writeAudit("tenant_alert.failed", {
+      reason: "no_recipients",
+    });
+    return { ok: false, reason: "no_recipients" };
+  }
+
+  try {
+    const resend = new Resend(creds.apiKey);
+    const result = await resend.emails.send({
+      from: req.fromEmail ?? creds.from,
+      to: req.recipients,
+      replyTo: req.replyTo,
+      subject: safeSubject,
+      html: req.html,
+      text: req.text,
+    });
+    if (result.error) {
+      await writeAudit("tenant_alert.failed", {
+        reason: "resend_error",
+        // error.message scrubbed of email-shaped fragments to avoid
+        // leaking recipient PII back into the audit log.
+        detail: scrubEmails(result.error.message).slice(0, 200),
+      });
+      return {
+        ok: false,
+        reason: "resend_error",
+        detail: result.error.message,
+      };
+    }
+    const emailId = result.data?.id ?? "";
+    await writeAudit("tenant_alert.sent", {
+      resend_id: emailId,
+    });
+    return { ok: true, mode: "sent", emailId };
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : "unknown";
+    await writeAudit("tenant_alert.failed", {
+      reason: "resend_exception",
+      detail: scrubEmails(detail).slice(0, 200),
+    });
+    return { ok: false, reason: "resend_exception", detail };
+  }
+}
+
+function scrubEmails(s: string): string {
+  return s.replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, "<email-redacted>");
+}

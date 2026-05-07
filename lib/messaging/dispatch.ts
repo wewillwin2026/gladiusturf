@@ -246,3 +246,21 @@ export async function sendSmsToCustomer(req: SmsRequest): Promise<SmsResult> {
 export function dispatcherMode(): "live" | "dry_run" {
   return twilioCreds() ? "live" : "dry_run";
 }
+
+/**
+ * Per-credential SMS dispatcher status for the Settings page. Three
+ * env vars are required for live mode; partial config silently falls
+ * to dry-run. Surface the per-cred booleans so the operator knows
+ * exactly what's missing.
+ */
+export function twilioCredStatus(): {
+  sid: boolean;
+  token: boolean;
+  from: boolean;
+  mode: "live" | "dry_run";
+} {
+  const sid = !!process.env.TWILIO_ACCOUNT_SID;
+  const token = !!process.env.TWILIO_AUTH_TOKEN;
+  const from = !!process.env.TWILIO_FROM_NUMBER;
+  return { sid, token, from, mode: sid && token && from ? "live" : "dry_run" };
+}
