@@ -85,6 +85,20 @@ export async function acceptQuote(
     console.warn("quote.accepted audit failed (non-fatal)", err);
   }
 
+  // Auto-create an install schedule_item so the deal lands on the
+  // tenant's calendar instantly — the tenant can drag it later.
+  // Default: 7 days out, 9 AM tenant-local, 4-hour block.
+  try {
+    await createInstallSlotForAcceptedQuote({
+      tenantId: ex.tenant_id,
+      customerId: ex.customer_id,
+      proposalId,
+      title: ex.bom?.title ?? "Install",
+    });
+  } catch (err) {
+    console.warn("createInstallSlotForAcceptedQuote failed (non-fatal)", err);
+  }
+
   // Notify the tenant's owner(s) via Resend. This is the single
   // most-important alert in the platform — when a customer accepts,
   // the tenant's phone needs to buzz. Best-effort: a Resend failure
@@ -275,6 +289,55 @@ function escapeHtml(s: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+async function createInstallSlotForAcceptedQuote(args: {
+  tenantId: string;
+  customerId: string;
+  proposalId: string;
+  title: string;
+}) {
+  const sb = supabaseAdmin();
+  // Idempotency: if a schedule_item for this proposal already exists,
+  // skip. We track that via the notes field — search for the proposal
+  // id substring. (Using notes vs a dedicated link column avoids a
+  // schema change.)
+  const { data: existing } = await sb
+    .from("schedule_items")
+    .select("id")
+    .eq("tenant_id", args.tenantId)
+    .ilike("notes", `%proposal:${args.proposalId}%`)
+    .limit(1);
+  if (existing && existing.length > 0) return;
+
+  const startsAt = new Date();
+  startsAt.setUTCDate(startsAt.getUTCDate() + 7);
+  startsAt.setUTCHours(13, 0, 0, 0); // 9 AM ET ≈ 13:00 UTC, good enough default
+  const endsAt = new Date(startsAt.getTime() + 4 * 60 * 60 * 1000);
+
+  await sb.from("schedule_items").insert({
+    tenant_id: args.tenantId,
+    customer_id: args.customerId,
+    type: "install",
+    title: `Install · ${args.title}`,
+    starts_at: startsAt.toISOString(),
+    ends_at: endsAt.toISOString(),
+    status: "scheduled",
+    notes: `Auto-scheduled from accepted quote. proposal:${args.proposalId}`,
+  });
+
+  await sb.from("audit_log").insert({
+    tenant_id: args.tenantId,
+    user_id: null,
+    action: "schedule_item.auto_created",
+    entity_type: "proposal",
+    entity_id: args.proposalId,
+    metadata: {
+      kind: "install_from_accepted_quote",
+      starts_at: startsAt.toISOString(),
+      placeholder: true,
+    },
+  });
 }
 
 async function notifyTenantOfAcceptance(args: {
