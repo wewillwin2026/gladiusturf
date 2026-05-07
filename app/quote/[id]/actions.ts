@@ -109,6 +109,174 @@ export async function acceptQuote(
   return { ok: true };
 }
 
+export type QuoteQuestionResult = { ok: true } | { error: string };
+
+/**
+ * Customer-side "ask a question" form. Records the question on the
+ * proposal (bom.questions array) + audit_log + notifies the tenant
+ * owner(s)/admin(s) via Resend so the tenant can reply directly.
+ *
+ * Length-capped to 2000 chars to prevent abuse. Empty messages
+ * rejected. Like acceptQuote, no auth — UUID is the gate.
+ */
+export async function askQuestionAboutQuote(
+  proposalId: string,
+  message: string,
+): Promise<QuoteQuestionResult> {
+  if (!proposalId) return { error: "missing_id" };
+  const trimmed = (message ?? "").trim();
+  if (!trimmed) return { error: "empty_message" };
+  if (trimmed.length > 2000) return { error: "message_too_long" };
+
+  const sb = supabaseAdmin();
+  const { data: existing, error: lookupErr } = await sb
+    .from("proposals")
+    .select(
+      "id, tenant_id, customer_id, status, bom, customers!inner(display_name, primary_email), tenants!inner(display_name)",
+    )
+    .eq("id", proposalId)
+    .maybeSingle();
+  if (lookupErr || !existing) return { error: "not_found" };
+  type AskRow = {
+    id: string;
+    tenant_id: string;
+    customer_id: string;
+    status: string;
+    bom: { title?: string; questions?: Array<{ at: string; text: string }> } | null;
+    customers:
+      | { display_name: string; primary_email: string | null }
+      | { display_name: string; primary_email: string | null }[];
+    tenants: { display_name: string } | { display_name: string }[];
+  };
+  const ex = existing as unknown as AskRow;
+  if (ex.status === "draft" || ex.status === "lost") {
+    return { error: "not_actionable" };
+  }
+
+  const customer = Array.isArray(ex.customers) ? ex.customers[0] : ex.customers;
+  const tenant = Array.isArray(ex.tenants) ? ex.tenants[0] : ex.tenants;
+  const nowIso = new Date().toISOString();
+  const updatedQuestions = [
+    ...(ex.bom?.questions ?? []),
+    { at: nowIso, text: trimmed },
+  ];
+  const updatedBom = { ...(ex.bom ?? {}), questions: updatedQuestions };
+
+  const { error: updateErr } = await sb
+    .from("proposals")
+    .update({ bom: updatedBom, updated_at: nowIso })
+    .eq("id", proposalId);
+  if (updateErr) return { error: "update_failed" };
+
+  try {
+    await sb.from("audit_log").insert({
+      tenant_id: ex.tenant_id,
+      user_id: null,
+      action: "quote.question_asked",
+      entity_type: "proposal",
+      entity_id: proposalId,
+      metadata: {
+        customer_id: ex.customer_id,
+        message_excerpt: trimmed.slice(0, 200),
+        message_length: trimmed.length,
+      },
+    });
+  } catch (err) {
+    console.warn("quote.question_asked audit failed (non-fatal)", err);
+  }
+
+  // Notify tenant owners/admins via Resend.
+  try {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (apiKey) {
+      const { data: invites } = await sb
+        .from("tenant_invitations")
+        .select("email")
+        .eq("tenant_id", ex.tenant_id)
+        .eq("status", "active")
+        .in("role", ["owner", "admin"]);
+      const emails = ((invites ?? []) as { email: string }[])
+        .map((r) => r.email)
+        .filter((e) => !!e);
+      if (emails.length > 0) {
+        const fromEmail =
+          process.env.RESEND_FROM_EMAIL ||
+          "GladiusTurf Alerts <founders@gladiusturf.com>";
+        const baseUrl =
+          process.env.NEXT_PUBLIC_SITE_URL || "https://gladiusturf.com";
+        const title = ex.bom?.title ?? "Quote";
+        const subject = `[Question] ${customer?.display_name ?? "Customer"} on "${title}"`;
+        const replyTo = customer?.primary_email ?? undefined;
+        const html = `
+          <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0a0a0a;color:#f5f5f5;padding:32px 24px;max-width:560px;margin:0 auto;">
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:#888;">${tenant?.display_name ?? "your team"}</div>
+            <h1 style="font-family:Georgia,serif;font-size:28px;line-height:1.2;margin:6px 0 24px;">A customer asked a question.</h1>
+            <p style="font-size:14px;line-height:1.6;margin:0 0 8px;color:#bbb;">From</p>
+            <p style="font-size:16px;line-height:1.4;margin:0 0 20px;font-weight:600;">${customer?.display_name ?? "Customer"}${replyTo ? ` &lt;${replyTo}&gt;` : ""}</p>
+            <p style="font-size:14px;line-height:1.6;margin:0 0 8px;color:#bbb;">On quote</p>
+            <p style="font-size:16px;line-height:1.4;margin:0 0 20px;">${title}</p>
+            <p style="font-size:14px;line-height:1.6;margin:0 0 8px;color:#bbb;">Message</p>
+            <blockquote style="border-left:3px solid #00d26a;padding:8px 0 8px 14px;margin:0 0 24px;font-size:14px;line-height:1.55;color:#f5f5f5;white-space:pre-wrap;">${escapeHtml(trimmed)}</blockquote>
+            <p style="margin:32px 0;">
+              <a href="${baseUrl}/app/quotes" style="display:inline-block;padding:12px 20px;background:#00d26a;color:#0a0a0a;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Open the quote</a>
+            </p>
+            ${replyTo ? `<p style="font-size:12px;line-height:1.55;color:#888;margin:24px 0 0;">Reply directly to this email — the customer is on the To line.</p>` : ""}
+          </div>
+        `;
+        const text = `[Question] ${customer?.display_name ?? "Customer"} on "${title}"\n\n${trimmed}\n\nOpen quote: ${baseUrl}/app/quotes`;
+        const resend = new Resend(apiKey);
+        const result = await resend.emails.send({
+          from: fromEmail,
+          to: emails,
+          replyTo,
+          subject,
+          html,
+          text,
+        });
+        await sb.from("audit_log").insert({
+          tenant_id: ex.tenant_id,
+          user_id: null,
+          action: result.error ? "tenant_alert.failed" : "tenant_alert.sent",
+          entity_type: "proposal",
+          entity_id: proposalId,
+          metadata: {
+            kind: "quote_question",
+            recipients: emails,
+            resend_id: result.data?.id ?? null,
+            error: result.error?.message ?? null,
+          },
+        });
+      }
+    } else {
+      await sb.from("audit_log").insert({
+        tenant_id: ex.tenant_id,
+        user_id: null,
+        action: "tenant_alert.dry_run",
+        entity_type: "proposal",
+        entity_id: proposalId,
+        metadata: {
+          kind: "quote_question",
+          note: "RESEND_API_KEY not set — alert not sent.",
+        },
+      });
+    }
+  } catch (err) {
+    console.warn("notifyTenantOfQuestion failed (non-fatal)", err);
+  }
+
+  revalidatePath("/app/quotes");
+  return { ok: true };
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 async function notifyTenantOfAcceptance(args: {
   tenantId: string;
   proposalId: string;

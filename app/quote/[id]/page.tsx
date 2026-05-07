@@ -3,7 +3,6 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import {
   Clock,
-  Mail,
   MapPin,
   PenSquare,
   Phone,
@@ -13,6 +12,7 @@ import type { Metadata } from "next";
 import { supabaseAdmin } from "@/lib/supabase";
 import { money } from "@/lib/shared/format";
 import { AcceptButton } from "./_components/AcceptButton";
+import { AskQuestionForm } from "./_components/AskQuestionForm";
 
 export const dynamic = "force-dynamic";
 
@@ -234,13 +234,7 @@ export default async function PublicQuotePage({
               row.status === "sold" || row.status === "installed"
             }
           />
-          <a
-            href={`mailto:${customer.primary_email ?? "founders@gladiusturf.com"}?subject=${encodeURIComponent(`Question: ${title}`)}`}
-            className="group inline-flex items-center justify-center gap-2 rounded-xl border border-bone/20 bg-bone/[0.02] px-6 py-4 text-base font-medium text-bone transition-colors hover:bg-bone/[0.06]"
-          >
-            <Mail className="h-4 w-4" />
-            {t("Ask a question", "Preguntar")}
-          </a>
+          <AskQuestionForm proposalId={row.id} language={lang} />
         </section>
 
         <section className="mt-12 rounded-2xl border border-bone/10 bg-bone/[0.02] p-6">
