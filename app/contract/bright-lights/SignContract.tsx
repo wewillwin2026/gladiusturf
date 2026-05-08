@@ -32,6 +32,7 @@ export function SignContract() {
   const [email, setEmail] = React.useState(CLIENT.signerEmail);
   const [status, setStatus] = React.useState<Status>("idle");
   const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
+  const [signedPdfBase64, setSignedPdfBase64] = React.useState<string | null>(null);
 
   const today = new Date().toLocaleDateString("en-US", {
     year: "numeric",
@@ -144,6 +145,12 @@ export function SignContract() {
         setStatus("error");
         return;
       }
+      const j = (await res.json().catch(() => ({}))) as { signedPdfBase64?: string };
+      if (j.signedPdfBase64) {
+        setSignedPdfBase64(j.signedPdfBase64);
+        // Auto-trigger download so a copy lands in Downloads immediately.
+        downloadPdf(j.signedPdfBase64);
+      }
       setStatus("success");
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Network error");
@@ -162,7 +169,24 @@ export function SignContract() {
             as of <strong>{today}</strong>. A copy of the signed agreement has been emailed to{" "}
             <strong>{email}</strong> and to <strong>Admin@gladiuscrm.com</strong>.
           </p>
-          <p style={{ ...leadStyle, color: "#6B6B6B", fontSize: 14 }}>
+
+          {signedPdfBase64 && (
+            <div style={{ marginTop: 24 }}>
+              <button
+                type="button"
+                onClick={() => downloadPdf(signedPdfBase64)}
+                style={{ ...submitBtn, background: "#0E1628" }}
+              >
+                ⬇ Download signed contract (PDF)
+              </button>
+              <p style={{ ...leadStyle, fontSize: 12, color: "#6B6B6B", marginTop: 8 }}>
+                A copy already started downloading. Tap above if your browser blocked the
+                automatic download. Save it to your records.
+              </p>
+            </div>
+          )}
+
+          <p style={{ ...leadStyle, color: "#6B6B6B", fontSize: 14, marginTop: 24 }}>
             Onboarding kicks off this week. Ricardo will be in touch within one business day to
             schedule the first onboarding session and request the access keys outlined in Section 3.
           </p>
@@ -330,6 +354,26 @@ export function SignContract() {
       </div>
     </main>
   );
+}
+
+function downloadPdf(base64: string) {
+  try {
+    const bin = atob(base64);
+    const len = bin.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) bytes[i] = bin.charCodeAt(i);
+    const blob = new Blob([bytes], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Bright Lights x Gladius - Signed Agreement.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 5_000);
+  } catch (err) {
+    console.error("download failed:", err);
+  }
 }
 
 function Row({ label, value }: { label: string; value: string }) {

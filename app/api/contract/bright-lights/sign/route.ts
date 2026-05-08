@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { supabaseAdmin } from "@/lib/supabase";
+import { ackKeysFromAccepted, stampBrightLightsContract } from "@/lib/contract/stamp";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -72,6 +73,28 @@ export async function POST(req: NextRequest) {
   const signedAt = new Date().toISOString();
 
   const paymentLabel = paymentMethod === "credit_card" ? "Credit Card (Stripe link)" : "ACH / Bank Transfer";
+
+  // ---- Stamp the original PDF with all field values + signature image ----
+  let signedPdfBytes: Uint8Array;
+  try {
+    signedPdfBytes = await stampBrightLightsContract({
+      signerName,
+      signerTitle,
+      signedDate,
+      signatureDataUrl,
+      initials: initials ?? "CE",
+      paymentMethod,
+      ackKeys: ackKeysFromAccepted(acknowledgments),
+    });
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : "unknown";
+    console.error("[contract.signed] PDF stamp failed:", detail);
+    return NextResponse.json(
+      { error: `Could not stamp signed PDF: ${detail}` },
+      { status: 500 },
+    );
+  }
+  const signedPdfBase64 = Buffer.from(signedPdfBytes).toString("base64");
 
   // ---- Audit log ----
   try {
@@ -156,6 +179,7 @@ export async function POST(req: NextRequest) {
       ok: true,
       mode: "dry_run",
       message: "Signed contract recorded (email dry-run — RESEND_API_KEY not set).",
+      signedPdfBase64,
     });
   }
 
@@ -169,6 +193,10 @@ export async function POST(req: NextRequest) {
       html,
       attachments: [
         {
+          filename: `Bright Lights x Gladius - Signed Agreement - ${signedDate}.pdf`,
+          content: signedPdfBase64,
+        },
+        {
           filename: "signature.png",
           content: sigBase64,
         },
@@ -181,7 +209,12 @@ export async function POST(req: NextRequest) {
         { status: 500 },
       );
     }
-    return NextResponse.json({ ok: true, mode: "sent", emailId: result.data?.id ?? null });
+    return NextResponse.json({
+      ok: true,
+      mode: "sent",
+      emailId: result.data?.id ?? null,
+      signedPdfBase64,
+    });
   } catch (err) {
     const detail = err instanceof Error ? err.message : "unknown";
     console.error("[contract.signed] exception:", detail);

@@ -6,6 +6,11 @@ const config: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
   },
+  outputFileTracingIncludes: {
+    "/api/contract/bright-lights/sign": [
+      "./public/contracts/bright-lights-proposal-agreement.pdf",
+    ],
+  },
 };
 
 export default config;
