@@ -57,7 +57,7 @@ const ATTESTATION_TEXT_V1 =
  * to "es"; anything English-ish or empty maps to "en". This lives server
  * side too because we never trust the client to honor the contract.
  */
-export function normalizeLanguage(raw: unknown): ImportLanguage {
+function normalizeLanguage(raw: unknown): ImportLanguage {
   if (raw == null) return "en";
   const s = String(raw).trim().toLowerCase();
   if (s.length === 0) return "en";
