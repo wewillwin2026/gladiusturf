@@ -5,6 +5,8 @@ import { readAppSession } from "@/lib/app/session";
 import { supabaseAdmin } from "@/lib/supabase";
 import { recordAttestation } from "@/lib/messaging/consent";
 
+export type ImportLanguage = "en" | "es";
+
 export type ImportRow = {
   display_name: string;
   primary_email: string | null;
@@ -14,6 +16,12 @@ export type ImportRow = {
   state: string | null;
   zip: string | null;
   notes: string | null;
+  /**
+   * Per-row language preference. Drives bilingual SMS/email selection in
+   * Storm Mode and other downstream messaging flows. Null means the
+   * tenant didn't map a language column — server defaults to "en".
+   */
+  preferred_language: ImportLanguage | null;
 };
 
 export type ImportInput = {
@@ -22,12 +30,45 @@ export type ImportInput = {
   messagingAttestation: boolean;
 };
 
+export type ImportedCustomerSummary = {
+  id: string;
+  display_name: string;
+  preferred_language: ImportLanguage;
+};
+
 export type ImportResult =
-  | { ok: true; inserted: number; skipped: number; consentsRecorded: number }
+  | {
+      ok: true;
+      inserted: number;
+      skipped: number;
+      consentsRecorded: number;
+      languageMapped: boolean;
+      customers: ImportedCustomerSummary[];
+    }
   | { error: string };
 
 const ATTESTATION_TEXT_V1 =
   "Tenant attested at import time: 'I have lawful basis (consent, contract, or legitimate interest) to message these contacts on behalf of my business.'";
+
+/**
+ * Coerce arbitrary CSV cell values into the constrained ('en','es') domain
+ * the customers.preferred_language check constraint enforces. Anything
+ * Spanish-ish ("es", "spanish", "español", even with stray accents) maps
+ * to "es"; anything English-ish or empty maps to "en". This lives server
+ * side too because we never trust the client to honor the contract.
+ */
+export function normalizeLanguage(raw: unknown): ImportLanguage {
+  if (raw == null) return "en";
+  const s = String(raw).trim().toLowerCase();
+  if (s.length === 0) return "en";
+  if (s === "es" || s.startsWith("es") || s.startsWith("sp") || s.includes("español") || s.includes("espanol") || s.includes("spanish")) {
+    return "es";
+  }
+  if (s === "en" || s.startsWith("en") || s.startsWith("ing")) {
+    return "en";
+  }
+  return "en";
+}
 
 /**
  * Bulk-insert customer rows from a CSV-import client component. The shape
@@ -74,8 +115,20 @@ export async function importCustomers(input: ImportInput): Promise<ImportResult>
   const fresh = cleaned.filter(
     (r) => !existingNames.has(r.display_name.toLowerCase()),
   );
+
+  // Did the tenant map a language column at all? Used to decide whether
+  // the success screen should nudge them to bulk-set after import.
+  const languageMapped = cleaned.some((r) => r.preferred_language != null);
+
   if (fresh.length === 0) {
-    return { ok: true, inserted: 0, skipped: cleaned.length, consentsRecorded: 0 };
+    return {
+      ok: true,
+      inserted: 0,
+      skipped: cleaned.length,
+      consentsRecorded: 0,
+      languageMapped,
+      customers: [],
+    };
   }
 
   const now = new Date().toISOString();
@@ -84,7 +137,7 @@ export async function importCustomers(input: ImportInput): Promise<ImportResult>
     display_name: r.display_name,
     primary_email: r.primary_email?.trim() || null,
     primary_phone: r.primary_phone?.trim() || null,
-    preferred_language: "en",
+    preferred_language: normalizeLanguage(r.preferred_language),
     service_address:
       r.street || r.city || r.state || r.zip
         ? {
@@ -104,7 +157,7 @@ export async function importCustomers(input: ImportInput): Promise<ImportResult>
   const { data: inserted, error } = await sb
     .from("customers")
     .insert(insertRows)
-    .select("id, primary_email, primary_phone");
+    .select("id, display_name, primary_email, primary_phone, preferred_language");
   if (error) {
     console.warn("importCustomers insert error", error);
     return { error: "insert_failed" };
@@ -141,10 +194,69 @@ export async function importCustomers(input: ImportInput): Promise<ImportResult>
 
   revalidatePath("/app");
   revalidatePath("/app/customers");
+  const customers: ImportedCustomerSummary[] = (inserted ?? []).map((row) => ({
+    id: row.id as string,
+    display_name: (row.display_name as string) ?? "",
+    preferred_language: ((row.preferred_language as ImportLanguage) ?? "en"),
+  }));
   return {
     ok: true,
     inserted: fresh.length,
     skipped: cleaned.length - fresh.length,
     consentsRecorded,
+    languageMapped,
+    customers,
   };
+}
+
+export type BulkSetLanguageInput = {
+  customerIds: string[];
+  language: ImportLanguage;
+};
+
+export type BulkSetLanguageResult =
+  | { ok: true; updated: number }
+  | { error: string };
+
+/**
+ * Fallback path for tenants who imported without mapping a language
+ * column. The success screen surfaces a checklist of just-imported
+ * customers; this action takes the selected ids + a target language and
+ * writes preferred_language for the batch. Always tenant-scoped — the
+ * .eq("tenant_id", …) filter is non-negotiable so a malicious client
+ * can't flip a competitor's customers.
+ */
+export async function bulkSetCustomerLanguage(
+  input: BulkSetLanguageInput,
+): Promise<BulkSetLanguageResult> {
+  const session = await readAppSession();
+  if (session.kind !== "tenant") {
+    return { error: "unauthenticated" };
+  }
+  const ids = (input?.customerIds ?? [])
+    .map((id) => String(id ?? "").trim())
+    .filter((id) => id.length > 0);
+  if (ids.length === 0) return { error: "no_ids" };
+  if (ids.length > 5000) return { error: "too_many" };
+  const language = normalizeLanguage(input?.language);
+
+  const sb = supabaseAdmin();
+  const { data, error } = await sb
+    .from("customers")
+    .update({
+      preferred_language: language,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("tenant_id", session.tenant.id)
+    .in("id", ids)
+    .select("id");
+
+  if (error) {
+    console.warn("bulkSetCustomerLanguage error", error);
+    return { error: "update_failed" };
+  }
+
+  revalidatePath("/app");
+  revalidatePath("/app/customers");
+  return { ok: true, updated: (data ?? []).length };
 }
