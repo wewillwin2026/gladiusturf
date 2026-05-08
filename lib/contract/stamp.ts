@@ -19,10 +19,65 @@ export type StampInput = {
   ackKeys: string[];
 };
 
+// Today's contract date — used to overwrite the May 4 / May 5 references
+// baked into the source PDF body text. Update if signing on a different
+// calendar day.
+const CONTRACT_DATE = "May 8, 2026";
+
+const DATE_PATCHES: ReadonlyArray<{
+  page: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  fontSize: number;
+  replacement: string;
+}> = [
+  ...Array.from({ length: 15 }, (_, i) => ({
+    page: i,
+    x: 43.2,
+    y: 32.4,
+    width: 100,
+    height: 9,
+    fontSize: 7.5,
+    replacement: `Document Date: ${CONTRACT_DATE}`,
+  })),
+  { page: 0, x: 133.4, y: 565.2, width: 60, height: 12, fontSize: 10, replacement: CONTRACT_DATE },
+  { page: 0, x: 269.1, y: 565.2, width: 60, height: 12, fontSize: 10, replacement: CONTRACT_DATE },
+  { page: 0, x: 206.4, y: 248.0, width: 60, height: 12, fontSize: 10, replacement: CONTRACT_DATE },
+  { page: 5, x: 380.9, y: 547.8, width: 60, height: 11, fontSize: 9, replacement: CONTRACT_DATE },
+  { page: 14, x: 310.0, y: 582.2, width: 70, height: 13, fontSize: 11, replacement: CONTRACT_DATE },
+];
+
 export async function stampBrightLightsContract(input: StampInput): Promise<Uint8Array> {
   const bytes = readFileSync(PDF_PATH);
   const pdf = await PDFDocument.load(bytes);
   const form = pdf.getForm();
+  const helv = await pdf.embedFont(StandardFonts.Helvetica);
+
+  // Re-date every May 4 / May 5 reference in the source PDF.
+  const allPages = pdf.getPages();
+  for (const patch of DATE_PATCHES) {
+    const p = allPages[patch.page];
+    p.drawRectangle({
+      x: patch.x - 1,
+      y: patch.y - 2,
+      width: patch.width,
+      height: patch.height + 3,
+      color: rgb(1, 1, 1),
+    });
+    p.drawText(patch.replacement, {
+      x: patch.x,
+      y: patch.y,
+      size: patch.fontSize,
+      font: helv,
+      color: rgb(0, 0, 0),
+    });
+  }
+
+  // Whiteout "Felipe Encina, Operator" on cover (p1) + Section 15.1 (p11).
+  allPages[0].drawRectangle({ x: 48, y: 622, width: 270, height: 16, color: rgb(1, 1, 1) });
+  allPages[10].drawRectangle({ x: 48, y: 706, width: 270, height: 16, color: rgb(1, 1, 1) });
 
   // Initials on every page footer.
   for (let i = 1; i <= 15; i++) {
@@ -69,7 +124,7 @@ export async function stampBrightLightsContract(input: StampInput): Promise<Uint
   const sigBytes = Buffer.from(sigB64, "base64");
   const sigImage = await pdf.embedPng(sigBytes);
 
-  const page15 = pdf.getPages()[14];
+  const page15 = allPages[14];
   const sigBoxX = 61.2;
   const sigBoxY = 662.9;
   const sigBoxW = 208.8;
@@ -89,7 +144,6 @@ export async function stampBrightLightsContract(input: StampInput): Promise<Uint
   page15.drawImage(sigImage, { x: drawX, y: drawY, width: drawW, height: drawH });
 
   // Audit timestamp + "SIGNED ELECTRONICALLY" annotation just below the signature.
-  const helv = await pdf.embedFont(StandardFonts.Helvetica);
   page15.drawText(
     `Signed electronically · ${new Date().toISOString().replace("T", " ").slice(0, 16)} UTC`,
     {

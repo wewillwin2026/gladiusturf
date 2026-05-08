@@ -242,7 +242,7 @@ export function SignContract() {
 
         <h2 style={h2Style}>At a glance</h2>
         <div style={tableWrap}>
-          <Row label="Effective Date" value="May 4, 2026" />
+          <Row label="Effective Date" value="May 8, 2026" />
           <Row label="Initial Term" value="Ninety (90) days — the Pilot Period" />
           <Row label="Transition" value="Auto-converts to a 12-month term on Day 91 unless terminated" />
           <Row label="Software & Website" value="Growth Package — $229/mo, discounted to $199/mo for the Pilot" />
