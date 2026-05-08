@@ -33,6 +33,7 @@ export function SignContract() {
   const [status, setStatus] = React.useState<Status>("idle");
   const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
   const [signedPdfBase64, setSignedPdfBase64] = React.useState<string | null>(null);
+  const [emailMode, setEmailMode] = React.useState<"sent" | "failed" | "dry_run" | null>(null);
 
   const today = new Date().toLocaleDateString("en-US", {
     year: "numeric",
@@ -145,12 +146,16 @@ export function SignContract() {
         setStatus("error");
         return;
       }
-      const j = (await res.json().catch(() => ({}))) as { signedPdfBase64?: string };
+      const j = (await res.json().catch(() => ({}))) as {
+        signedPdfBase64?: string;
+        mode?: "sent" | "failed" | "dry_run";
+      };
       if (j.signedPdfBase64) {
         setSignedPdfBase64(j.signedPdfBase64);
         // Auto-trigger download so a copy lands in Downloads immediately.
         downloadPdf(j.signedPdfBase64);
       }
+      setEmailMode(j.mode ?? null);
       setStatus("success");
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Network error");
@@ -166,9 +171,33 @@ export function SignContract() {
           <h1 style={h1Style}>Signed.</h1>
           <p style={leadStyle}>
             Thank you, Cristian. Your service agreement with Gladius CRM LLC is signed and recorded
-            as of <strong>{today}</strong>. A copy of the signed agreement has been emailed to{" "}
-            <strong>{email}</strong> and to <strong>Admin@gladiuscrm.com</strong>.
+            as of <strong>{today}</strong>. The signed PDF has been downloaded to this device.
           </p>
+
+          {emailMode === "sent" && (
+            <p style={{ ...leadStyle, fontSize: 14, color: "#3A3A3A" }}>
+              A copy was also emailed to <strong>{email}</strong> and{" "}
+              <strong>Admin@gladiuscrm.com</strong>.
+            </p>
+          )}
+          {(emailMode === "failed" || emailMode === "dry_run") && (
+            <div
+              style={{
+                marginTop: 16,
+                padding: 12,
+                background: "#FFF8E5",
+                border: "1px solid #F4B860",
+                borderRadius: 8,
+                fontSize: 13,
+                lineHeight: 1.5,
+                color: "#3A3A3A",
+              }}
+            >
+              <strong>Note:</strong> the email delivery is still being configured. Please save
+              the downloaded PDF and email a copy to <strong>Admin@gladiuscrm.com</strong> when
+              convenient. The signature is already legally captured and recorded.
+            </div>
+          )}
 
           {signedPdfBase64 && (
             <div style={{ marginTop: 24 }}>

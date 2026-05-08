@@ -183,6 +183,12 @@ export async function POST(req: NextRequest) {
     });
   }
 
+  // Email is best-effort — the legal record is the downloaded PDF + audit_log
+  // row. If the from-domain isn't verified or Resend hiccups, we still return
+  // success with the PDF in the response so Cristian's submit doesn't fail.
+  let emailMode: "sent" | "failed" = "failed";
+  let emailDetail: string | null = null;
+  let emailId: string | null = null;
   try {
     const resend = new Resend(apiKey);
     const result = await resend.emails.send({
@@ -204,22 +210,23 @@ export async function POST(req: NextRequest) {
     });
     if (result.error) {
       console.error("[contract.signed] Resend error:", result.error);
-      return NextResponse.json(
-        { error: `Email send failed: ${result.error.message}` },
-        { status: 500 },
-      );
+      emailDetail = result.error.message;
+    } else {
+      emailMode = "sent";
+      emailId = result.data?.id ?? null;
     }
-    return NextResponse.json({
-      ok: true,
-      mode: "sent",
-      emailId: result.data?.id ?? null,
-      signedPdfBase64,
-    });
   } catch (err) {
-    const detail = err instanceof Error ? err.message : "unknown";
-    console.error("[contract.signed] exception:", detail);
-    return NextResponse.json({ error: `Email exception: ${detail}` }, { status: 500 });
+    emailDetail = err instanceof Error ? err.message : "unknown";
+    console.error("[contract.signed] email exception:", emailDetail);
   }
+
+  return NextResponse.json({
+    ok: true,
+    mode: emailMode,
+    emailId,
+    emailDetail,
+    signedPdfBase64,
+  });
 }
 
 function escapeHtml(s: string): string {
