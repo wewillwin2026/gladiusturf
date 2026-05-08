@@ -30,6 +30,7 @@ import { cn } from "@/lib/cn";
 import { CustomerHeartbeat } from "@/components/app/CustomerHeartbeat";
 import { PlanPicker } from "./PlanPicker";
 import { LogVisitButton } from "./LogVisitButton";
+import { LightingAssets } from "./LightingAssets";
 
 export const dynamic = "force-dynamic";
 
@@ -113,10 +114,39 @@ export default async function CustomerDetailPage({
           .eq("customer_id", id)
           .order("external_id", { ascending: true })
       : Promise.resolve({ data: [], error: null });
+    const transformersQuery = isLighting
+      ? sb
+          .from("lighting_transformers")
+          .select(
+            "id, external_id, brand, model, watts_capacity, watts_loaded, zones, install_date, location_note",
+          )
+          .eq("tenant_id", session.tenant.id)
+          .eq("customer_id", id)
+          .order("external_id", { ascending: true })
+      : Promise.resolve({ data: [], error: null });
+    const claimsQuery = isLighting
+      ? sb
+          .from("lighting_warranty_claims")
+          .select(
+            "id, fixture_id, external_id, claim_date, status, manufacturer, rma_number, resolution, notes",
+          )
+          .eq("tenant_id", session.tenant.id)
+          .eq("customer_id", id)
+          .order("claim_date", { ascending: false })
+      : Promise.resolve({ data: [], error: null });
 
-    const [fixturesRes, plansRes, subRes, scheduleRes, proposalsRes] =
-      await Promise.all([
-        fixturesQuery,
+    const [
+      fixturesRes,
+      transformersRes,
+      claimsRes,
+      plansRes,
+      subRes,
+      scheduleRes,
+      proposalsRes,
+    ] = await Promise.all([
+      fixturesQuery,
+      transformersQuery,
+      claimsQuery,
         sb
           .from("plans")
           .select("id, display_name, annual_price_cents, badge, most_popular")
@@ -145,6 +175,28 @@ export default async function CustomerDetailPage({
       ]);
 
     const fixtures = (fixturesRes.data ?? []) as DbFixture[];
+    const transformers = (transformersRes.data ?? []) as Array<{
+      id: string;
+      external_id: string | null;
+      brand: string | null;
+      model: string | null;
+      watts_capacity: number | null;
+      watts_loaded: number | null;
+      zones: number | null;
+      install_date: string | null;
+      location_note: string | null;
+    }>;
+    const claims = (claimsRes.data ?? []) as Array<{
+      id: string;
+      fixture_id: string | null;
+      external_id: string | null;
+      claim_date: string;
+      status: string;
+      manufacturer: string | null;
+      rma_number: string | null;
+      resolution: string | null;
+      notes: string | null;
+    }>;
     const planOptions = (plansRes.data ?? []) as Array<{
       id: string;
       display_name: string;
@@ -288,9 +340,9 @@ export default async function CustomerDetailPage({
           {/* Asset rollup — lighting tenants see fixtures; other verticals
               see a placeholder until the registry's per-vertical AssetSection
               ships. */}
-          <div className="lg:col-span-3 g-card p-5">
+          <div className="lg:col-span-3">
             {!isLighting ? (
-              <div className="text-center py-8">
+              <div className="g-card p-5 text-center py-8">
                 <Lightbulb className="mx-auto h-5 w-5 text-g-text-faint" />
                 <p className="mt-3 text-[13px] text-g-text-muted">
                   Per-asset detail for the {session.tenant.vertical} vertical
@@ -301,126 +353,12 @@ export default async function CustomerDetailPage({
                 </p>
               </div>
             ) : (
-              <>
-            <div className="flex items-baseline justify-between">
-              <h2 className="inline-flex items-center gap-2">
-                <Lightbulb className="h-4 w-4 text-g-accent" />
-                Fixtures
-              </h2>
-              <span className="text-[11px] uppercase tracking-[0.14em] text-g-text-faint">
-                {fixtures.length} on this property
-              </span>
-            </div>
-
-            {fixtures.length === 0 ? (
-              <div className="mt-5 rounded-md border border-dashed border-g-border-subtle bg-g-surface-2 p-6 text-center">
-                <p className="text-[13px] text-g-text-muted">
-                  No fixtures logged for this property yet.
-                </p>
-                <p className="mt-2 text-[12px] text-g-text-faint">
-                  Add inventory next time you&apos;re on site to start
-                  per-fixture warranty tracking.
-                </p>
-              </div>
-            ) : (
-              <div className="mt-4 overflow-x-auto">
-                <table className="w-full text-[12px] min-w-[600px]">
-                  <thead>
-                    <tr className="text-left border-b border-g-border-subtle text-g-text-faint">
-                      <th className="py-2 font-medium uppercase tracking-[0.14em] text-[10px]">ID</th>
-                      <th className="py-2 font-medium uppercase tracking-[0.14em] text-[10px]">Type</th>
-                      <th className="py-2 font-medium uppercase tracking-[0.14em] text-[10px]">Brand · Model</th>
-                      <th className="py-2 font-medium uppercase tracking-[0.14em] text-[10px] text-right">Watt</th>
-                      <th className="py-2 font-medium uppercase tracking-[0.14em] text-[10px]">Installed</th>
-                      <th className="py-2 font-medium uppercase tracking-[0.14em] text-[10px]">Warranty</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {fixtures.map((f) => (
-                      <tr
-                        key={f.id}
-                        className="border-b border-g-border-subtle/50 last:border-b-0"
-                      >
-                        <td className="py-2 pr-3 font-geist-mono text-g-text-faint">
-                          {f.external_id ?? f.id.slice(0, 8)}
-                        </td>
-                        <td className="py-2 pr-3 text-g-text">{f.fixture_type}</td>
-                        <td className="py-2 pr-3 text-g-text-muted">
-                          <span className="text-g-text">{f.brand}</span>
-                          {f.model && (
-                            <span className="text-g-text-faint"> · {f.model}</span>
-                          )}
-                        </td>
-                        <td className="py-2 pr-3 font-geist-mono text-right text-g-text-muted">
-                          {f.wattage_text ?? "—"}
-                        </td>
-                        <td className="py-2 pr-3 font-geist-mono text-g-text-muted">
-                          {f.install_date ? shortDate(f.install_date) : "—"}
-                        </td>
-                        <td className="py-2 pr-3">
-                          {f.warranty_status ? (
-                            <StatusPill
-                              tone={WARRANTY_TONE[f.warranty_status] ?? "neutral"}
-                              title={
-                                f.warranty_end
-                                  ? `Through ${shortDate(f.warranty_end)}`
-                                  : f.warranty_status === "lifetime"
-                                    ? "Lifetime fixture"
-                                    : undefined
-                              }
-                            >
-                              {f.warranty_status === "lifetime" ? (
-                                <span className="inline-flex items-center gap-1">
-                                  <ShieldCheck className="h-3 w-3" />
-                                  Lifetime
-                                </span>
-                              ) : f.warranty_status === "active" ? (
-                                <span className="inline-flex items-center gap-1">
-                                  <ShieldCheck className="h-3 w-3" />
-                                  Active
-                                </span>
-                              ) : f.warranty_status === "expired" ? (
-                                <span className="inline-flex items-center gap-1">
-                                  <ShieldAlert className="h-3 w-3" />
-                                  Expired
-                                </span>
-                              ) : (
-                                f.warranty_status
-                              )}
-                            </StatusPill>
-                          ) : (
-                            <span className="text-g-text-faint">—</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {fixtures.some((f) => f.notes) && (
-                  <ul className="mt-4 flex flex-col gap-2 text-[12px] text-g-text-muted">
-                    {fixtures
-                      .filter((f) => f.notes)
-                      .map((f) => (
-                        <li key={`n-${f.id}`} className="flex items-start gap-2">
-                          <Zap
-                            className={cn(
-                              "mt-0.5 h-3 w-3 shrink-0 text-g-accent",
-                            )}
-                          />
-                          <span>
-                            <span className="font-geist-mono text-g-text-faint">
-                              {f.external_id ?? f.id.slice(0, 8)}
-                            </span>
-                            {": "}
-                            {f.notes}
-                          </span>
-                        </li>
-                      ))}
-                  </ul>
-                )}
-              </div>
-            )}
-              </>
+              <LightingAssets
+                customerId={c.id}
+                fixtures={fixtures}
+                transformers={transformers}
+                claims={claims}
+              />
             )}
           </div>
 
