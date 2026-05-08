@@ -8,12 +8,17 @@ import { TenantEmptyState } from "@/components/app/TenantEmptyState";
 import { readAppSession } from "@/lib/app/session";
 import { supabaseAdmin } from "@/lib/supabase";
 import { cn } from "@/lib/cn";
+import {
+  AddCustomTierButton,
+  EditPlanButton,
+  type EditablePlan,
+} from "./PlanEditor";
 
 export const dynamic = "force-dynamic";
 
 type DbPlan = {
   id: string;
-  tier: string;
+  tier: "basics" | "care" | "guardian" | "custom";
   display_name: string;
   annual_price_cents: number;
   visits_per_year: number | null;
@@ -22,6 +27,7 @@ type DbPlan = {
   badge: string | null;
   most_popular: boolean;
   recommended_for: string | null;
+  active: boolean;
 };
 
 function dollar(cents: number): string {
@@ -65,10 +71,10 @@ export default async function PlansPage() {
     sb
       .from("plans")
       .select(
-        "id, tier, display_name, annual_price_cents, visits_per_year, cadence, features, badge, most_popular, recommended_for",
+        "id, tier, display_name, annual_price_cents, visits_per_year, cadence, features, badge, most_popular, recommended_for, active",
       )
       .eq("tenant_id", session.tenant.id)
-      .eq("active", true)
+      .order("active", { ascending: false })
       .order("annual_price_cents", { ascending: true }),
     sb
       .from("plan_subscriptions")
@@ -81,7 +87,11 @@ export default async function PlansPage() {
       .eq("tenant_id", session.tenant.id),
   ]);
 
-  const plans = (plansRes.data ?? []) as DbPlan[];
+  const allPlans = (plansRes.data ?? []) as DbPlan[];
+  // Active set drives the public-facing metrics + upsell math; archived
+  // tiers still render so tenants can re-activate them, but contribute
+  // nothing to ARR / "most popular" / upsell potential.
+  const plans = allPlans.filter((p) => p.active);
   const subs = subsRes.data ?? [];
   const totalCustomers = customersRes.count ?? 0;
   const subscribersByPlan = new Map<string, number>();
@@ -92,7 +102,7 @@ export default async function PlansPage() {
     );
   }
 
-  if (plans.length === 0) {
+  if (allPlans.length === 0) {
     return (
       <TenantEmptyState
         engine="Plans"
@@ -112,18 +122,23 @@ export default async function PlansPage() {
   // Plan-upsell potential: assume customers convert at the most-popular tier
   // price (Bright Care = $349). Conservative — Guardian at $589 would upsell
   // higher revenue but lower attach rate.
-  const popular = plans.find((p) => p.most_popular) ?? plans[1] ?? plans[0]!;
-  const upsellPotentialCents = customersWithoutPlan * popular.annual_price_cents;
+  // `popular` is null only when every tier has been archived — UI handles
+  // that branch separately so the math doesn't divide by an undefined.
+  const popular: DbPlan | null =
+    plans.find((p) => p.most_popular) ?? plans[1] ?? plans[0] ?? null;
+  const upsellPotentialCents = popular
+    ? customersWithoutPlan * popular.annual_price_cents
+    : 0;
 
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
         eyebrow={`${session.tenant.display_name} · Sales`}
         title="Plans"
-        subtitle={`${plans.length} tiers · ${totalSubscribers} active subscribers · ${dollar(totalArrCents)} ARR booked.`}
+        subtitle={`${plans.length} tier${plans.length === 1 ? "" : "s"} · ${totalSubscribers} active subscribers · ${dollar(totalArrCents)} ARR booked.`}
         actions={
           <>
-            <Button variant="secondary">Edit tiers</Button>
+            <AddCustomTierButton />
             <Button variant="primary">
               <Sparkles className="h-3.5 w-3.5" />
               Run plan-conversion campaign
@@ -153,30 +168,44 @@ export default async function PlansPage() {
         <KPICard
           label="Upsell potential"
           value={dollar(upsellPotentialCents)}
-          delta={`@ ${popular.display_name}`}
+          delta={popular ? `@ ${popular.display_name}` : "—"}
           trend={upsellPotentialCents > 0 ? "up" : "flat"}
         />
         <KPICard
           label="Most popular tier"
-          value={popular.badge ?? popular.display_name}
-          delta={popular.recommended_for ?? "—"}
+          value={popular ? (popular.badge ?? popular.display_name) : "—"}
+          delta={popular?.recommended_for ?? "—"}
           trend="flat"
         />
       </section>
 
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {plans.map((p) => {
+        {allPlans.map((p) => {
           const subscriberCount = subscribersByPlan.get(p.id) ?? 0;
-          const isPopular = p.most_popular;
+          const isPopular = p.most_popular && p.active;
+          const editable: EditablePlan = {
+            id: p.id,
+            tier: p.tier,
+            display_name: p.display_name,
+            annual_price_cents: p.annual_price_cents,
+            visits_per_year: p.visits_per_year,
+            cadence: p.cadence,
+            features: p.features,
+            badge: p.badge,
+            most_popular: p.most_popular,
+            recommended_for: p.recommended_for,
+            active: p.active,
+          };
           return (
             <article
               key={p.id}
               className={cn(
                 "g-card p-6 flex flex-col",
                 isPopular && "ring-1 ring-g-accent",
+                !p.active && "opacity-60",
               )}
             >
-              <div className="flex items-center justify-between">
+              <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-[11px] uppercase tracking-[0.16em] text-g-text-faint">
                     {p.badge ?? p.tier}
@@ -185,14 +214,20 @@ export default async function PlansPage() {
                     {p.display_name}
                   </h2>
                 </div>
-                {isPopular && (
-                  <StatusPill tone="accent">
-                    <span className="inline-flex items-center gap-1">
-                      <Star className="h-3 w-3" />
-                      Most popular
-                    </span>
-                  </StatusPill>
-                )}
+                <div className="flex items-center gap-2 shrink-0">
+                  {isPopular && (
+                    <StatusPill tone="accent">
+                      <span className="inline-flex items-center gap-1">
+                        <Star className="h-3 w-3" />
+                        Most popular
+                      </span>
+                    </StatusPill>
+                  )}
+                  {!p.active && (
+                    <StatusPill tone="neutral">Archived</StatusPill>
+                  )}
+                  <EditPlanButton plan={editable} />
+                </div>
               </div>
 
               <div className="mt-5 flex items-baseline gap-2">
@@ -238,7 +273,7 @@ export default async function PlansPage() {
         })}
       </section>
 
-      {customersWithoutPlan > 0 && (
+      {customersWithoutPlan > 0 && popular && (
         <section className="g-card p-6 bg-g-accent-faint border-g-accent/40">
           <div className="flex items-baseline justify-between">
             <h2 className="inline-flex items-center gap-2 text-g-accent">
