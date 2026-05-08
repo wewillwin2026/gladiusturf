@@ -205,7 +205,7 @@ export default function DashboardPage() {
           >
             <span className="bl-mono">Auto-batched · saves 47 min today</span>
             <Link
-              href="/demo/sample-lighting-co/routes"
+              href="/demo/bright-lights-encina/routes"
               className="inline-flex items-center gap-1"
               style={{ color: "var(--bl-accent)" }}
             >
@@ -272,7 +272,7 @@ export default function DashboardPage() {
             <Stat label="At 30% conversion" value="$25,873/yr ARR" highlight />
           </div>
           <Link
-            href="/demo/sample-lighting-co/plans"
+            href="/demo/bright-lights-encina/plans"
             className="bl-btn-primary mt-5"
           >
             <TrendingUp className="h-4 w-4" /> Build the launch campaign

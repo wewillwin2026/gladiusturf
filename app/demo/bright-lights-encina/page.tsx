@@ -10,7 +10,7 @@ export default async function BrightLightsGatePage() {
   const jar = await cookies();
   const token = jar.get(BL_COOKIE_NAME)?.value;
   if (verifyToken(token)) {
-    redirect("/demo/sample-lighting-co/dashboard");
+    redirect("/demo/bright-lights-encina/dashboard");
   }
 
   return (

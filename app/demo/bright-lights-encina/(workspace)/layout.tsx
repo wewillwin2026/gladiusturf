@@ -13,7 +13,7 @@ export default async function WorkspaceLayout({
   const jar = await cookies();
   const token = jar.get(BL_COOKIE_NAME)?.value;
   if (!verifyToken(token)) {
-    redirect("/demo/sample-lighting-co");
+    redirect("/demo/bright-lights-encina");
   }
   return <WorkspaceShell>{children}</WorkspaceShell>;
 }

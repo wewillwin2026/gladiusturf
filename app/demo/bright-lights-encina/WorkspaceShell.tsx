@@ -47,36 +47,36 @@ const SECTIONS: NavSection[] = [
     items: [
       {
         label: "Today",
-        href: "/demo/sample-lighting-co/dashboard",
+        href: "/demo/bright-lights-encina/dashboard",
         icon: LayoutDashboard,
       },
       {
         label: "Customers",
-        href: "/demo/sample-lighting-co/customers",
+        href: "/demo/bright-lights-encina/customers",
         icon: Users,
-        match: (p) => p.startsWith("/demo/sample-lighting-co/customers"),
+        match: (p) => p.startsWith("/demo/bright-lights-encina/customers"),
       },
       {
         label: "Quotes",
-        href: "/demo/sample-lighting-co/quotes",
+        href: "/demo/bright-lights-encina/quotes",
         icon: FileText,
-        match: (p) => p.startsWith("/demo/sample-lighting-co/quotes"),
+        match: (p) => p.startsWith("/demo/bright-lights-encina/quotes"),
       },
       {
         label: "Routes",
-        href: "/demo/sample-lighting-co/routes",
+        href: "/demo/bright-lights-encina/routes",
         icon: Compass,
       },
       {
         label: "Storm Mode",
-        href: "/demo/sample-lighting-co/storm",
+        href: "/demo/bright-lights-encina/storm",
         icon: CloudLightning,
       },
       {
         label: "Inventory",
-        href: "/demo/sample-lighting-co/inventory",
+        href: "/demo/bright-lights-encina/inventory",
         icon: Boxes,
-        match: (p) => p.startsWith("/demo/sample-lighting-co/inventory"),
+        match: (p) => p.startsWith("/demo/bright-lights-encina/inventory"),
       },
     ],
   },
@@ -85,22 +85,22 @@ const SECTIONS: NavSection[] = [
     items: [
       {
         label: "Maintenance Plans",
-        href: "/demo/sample-lighting-co/plans",
+        href: "/demo/bright-lights-encina/plans",
         icon: Sparkles,
       },
       {
         label: "Reviews",
-        href: "/demo/sample-lighting-co/reviews",
+        href: "/demo/bright-lights-encina/reviews",
         icon: Star,
       },
       {
         label: "Campaigns",
-        href: "/demo/sample-lighting-co/campaigns",
+        href: "/demo/bright-lights-encina/campaigns",
         icon: Megaphone,
       },
       {
         label: "Referrals",
-        href: "/demo/sample-lighting-co/referrals",
+        href: "/demo/bright-lights-encina/referrals",
         icon: ReferralsIcon,
       },
     ],
@@ -110,29 +110,29 @@ const SECTIONS: NavSection[] = [
     items: [
       {
         label: "Plans & Pricing",
-        href: "/demo/sample-lighting-co/pricing",
+        href: "/demo/bright-lights-encina/pricing",
         icon: CreditCard,
       },
       {
         label: "Payroll",
-        href: "/demo/sample-lighting-co/payroll",
+        href: "/demo/bright-lights-encina/payroll",
         icon: Wallet,
       },
       {
         label: "QuickBooks Sync",
-        href: "/demo/sample-lighting-co/quickbooks",
+        href: "/demo/bright-lights-encina/quickbooks",
         icon: QbIcon,
       },
       {
         label: "Settings",
-        href: "/demo/sample-lighting-co/settings",
+        href: "/demo/bright-lights-encina/settings",
         icon: SettingsIcon,
       },
     ],
   },
 ];
 
-const HELP_HREF = "/demo/sample-lighting-co/help";
+const HELP_HREF = "/demo/bright-lights-encina/help";
 
 export function WorkspaceShell({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -146,7 +146,7 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
     try {
       await fetch("/api/bright-lights/lock", { method: "POST" });
     } catch {}
-    router.replace("/demo/sample-lighting-co");
+    router.replace("/demo/bright-lights-encina");
     router.refresh();
   }
 
