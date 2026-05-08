@@ -26,7 +26,9 @@ export async function subscribeCustomerToPlan(formData: FormData) {
   const sb = supabaseAdmin();
 
   // Sanity check both rows are scoped to this tenant — never trust the
-  // FormData ids alone.
+  // FormData ids alone. Pull plan.tier so we can mirror it onto the
+  // customer record (Storm Mode reads customers.customer_tier for
+  // top-tier-priority routing — see automations/storm/actions.ts).
   const [{ data: customer }, { data: plan }] = await Promise.all([
     sb
       .from("customers")
@@ -36,7 +38,7 @@ export async function subscribeCustomerToPlan(formData: FormData) {
       .maybeSingle(),
     sb
       .from("plans")
-      .select("id")
+      .select("id, tier")
       .eq("id", planId)
       .eq("tenant_id", session.tenant.id)
       .maybeSingle(),
@@ -64,6 +66,38 @@ export async function subscribeCustomerToPlan(formData: FormData) {
     return { error: "insert_failed" } as const;
   }
 
+  // Mirror plan.tier onto customers.customer_tier so Storm Mode (and
+  // any other tier-aware automation) routes this customer correctly.
+  // Defensive: subscription is the primary effect — if the tier sync
+  // fails we audit-log and move on rather than reverse the insert.
+  const planTier = (plan as { tier: string | null }).tier;
+  if (planTier) {
+    const { error: tierError } = await sb
+      .from("customers")
+      .update({ customer_tier: planTier })
+      .eq("id", customerId)
+      .eq("tenant_id", session.tenant.id);
+    if (tierError) {
+      console.warn("subscribeCustomerToPlan tier-sync failed", tierError);
+      try {
+        await sb.from("audit_log").insert({
+          tenant_id: session.tenant.id,
+          user_id: null,
+          action: "plan_subscribed.tier_sync_failed",
+          entity_type: "customer",
+          entity_id: customerId,
+          metadata: {
+            plan_id: planId,
+            attempted_tier: planTier,
+            error: tierError.message,
+          },
+        });
+      } catch (err) {
+        console.warn("audit insert failed (non-fatal)", err);
+      }
+    }
+  }
+
   // Best-effort audit
   try {
     await sb.from("audit_log").insert({
@@ -72,7 +106,93 @@ export async function subscribeCustomerToPlan(formData: FormData) {
       action: "plan_subscribed",
       entity_type: "plan_subscription",
       entity_id: customerId,
-      metadata: { plan_id: planId, customer_id: customerId },
+      metadata: {
+        plan_id: planId,
+        customer_id: customerId,
+        synced_tier: planTier ?? null,
+      },
+    });
+  } catch (err) {
+    console.warn("audit insert failed (non-fatal)", err);
+  }
+
+  revalidatePath(`/app/customers/${customerId}`);
+  revalidatePath("/app/plans");
+  return { ok: true } as const;
+}
+
+/**
+ * Cancel a customer's active plan subscription(s) and clear their
+ * customers.customer_tier so Storm Mode + tier-aware automations
+ * stop treating them as a paying-tier member.
+ *
+ * Defensive: if the tier clear fails we still report success on the
+ * cancel itself (audit-logged), since the subscription state change
+ * is the primary effect.
+ */
+export async function unsubscribeCustomerFromPlan(formData: FormData) {
+  const session = await readAppSession();
+  if (session.kind !== "tenant") {
+    return { error: "unauthenticated" } as const;
+  }
+
+  const customerId = String(formData.get("customer_id") ?? "");
+  if (!customerId) {
+    return { error: "missing_field" } as const;
+  }
+
+  const sb = supabaseAdmin();
+  const { data: customer } = await sb
+    .from("customers")
+    .select("id")
+    .eq("id", customerId)
+    .eq("tenant_id", session.tenant.id)
+    .maybeSingle();
+  if (!customer) {
+    return { error: "not_found_in_tenant" } as const;
+  }
+
+  const { error } = await sb
+    .from("plan_subscriptions")
+    .update({ status: "canceled" })
+    .eq("tenant_id", session.tenant.id)
+    .eq("customer_id", customerId)
+    .eq("status", "active");
+  if (error) {
+    console.warn("unsubscribeCustomerFromPlan error", error);
+    return { error: "update_failed" } as const;
+  }
+
+  // Clear the mirrored tier — defensive (audit-only on failure).
+  const { error: tierError } = await sb
+    .from("customers")
+    .update({ customer_tier: null })
+    .eq("id", customerId)
+    .eq("tenant_id", session.tenant.id);
+  if (tierError) {
+    console.warn("unsubscribeCustomerFromPlan tier-clear failed", tierError);
+    try {
+      await sb.from("audit_log").insert({
+        tenant_id: session.tenant.id,
+        user_id: null,
+        action: "plan_unsubscribed.tier_clear_failed",
+        entity_type: "customer",
+        entity_id: customerId,
+        metadata: { error: tierError.message },
+      });
+    } catch (err) {
+      console.warn("audit insert failed (non-fatal)", err);
+    }
+  }
+
+  try {
+    await sb.from("audit_log").insert({
+      tenant_id: session.tenant.id,
+      user_id: null,
+      action: "plan_unsubscribed",
+      entity_type: "plan_subscription",
+      entity_id: customerId,
+      metadata: { customer_id: customerId },
     });
   } catch (err) {
     console.warn("audit insert failed (non-fatal)", err);
