@@ -233,7 +233,7 @@ export function SignContract() {
         <p style={leadStyle}>
           Touch-friendly signing for {CLIENT.legalName}. Your initials{" "}
           <strong style={initialsBadge}>{CLIENT.initials}</strong> will be applied to all 15 pages on
-          submit. Gladius is already counter-signed (Ricardo Gamon, May 4, 2026).
+          submit. Gladius is already counter-signed (Ricardo Gamon, May 8, 2026).
         </p>
 
         <a href={CLIENT.pdfHref} target="_blank" rel="noopener noreferrer" style={pdfLink}>

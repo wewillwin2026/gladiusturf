@@ -160,7 +160,7 @@ export async function POST(req: NextRequest) {
 <img src="${signatureDataUrl}" alt="Signature of ${escapeHtml(signerName)}" style="max-width:480px;border:1px solid #E5DFD2;border-radius:8px;background:#fff;padding:8px;" />
 
 <div style="margin-top:32px;padding:16px;background:#FAFAF7;border:1px solid #E5DFD2;border-radius:8px;font-size:13px;line-height:1.55;color:#3A3A3A;">
-<strong>Section 12.8 — Counterparts; Electronic Signatures.</strong> Electronic signatures (including signed-and-scanned PDFs) have the same legal effect as original ink signatures. The countersigned PDF (Ricardo Gamon, Gladius CRM LLC, May 4, 2026) plus this signed receipt together constitute the executed Agreement.
+<strong>Section 12.8 — Counterparts; Electronic Signatures.</strong> Electronic signatures (including signed-and-scanned PDFs) have the same legal effect as original ink signatures. The countersigned PDF (Ricardo Gamon, Gladius CRM LLC, May 8, 2026) plus this signed receipt together constitute the executed Agreement.
 </div>
 
 <p style="margin-top:32px;font-size:12px;color:#6B6B6B;">Gladius CRM LLC · 635 Florenz Circle, Saint Petersburg, FL 33703 · Admin@gladiuscrm.com</p>
