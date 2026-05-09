@@ -39,7 +39,7 @@ export const HERO_STATS = [
 
 export const PROBLEMS = [
   {
-    title: "Cristian-as-bottleneck",
+    title: "Owner-as-bottleneck",
     body: "Every warranty, every customer, every install date lives in one operator's head. The day he takes a vacation, the business stops.",
   },
   {
@@ -165,7 +165,7 @@ export const FAQ = [
     a: "Yes. Holiday lighting is a separate service type with its own seasonal route batching, install/take-down windows, and customer reactivation flow each October.",
   },
   {
-    q: "What about my Cristian — the operator who knows everything?",
+    q: "What about my senior operator — the one who knows everything?",
     a: "That's exactly the problem we solve. Site Memory captures install history, fixture locations, and customer preferences in structured records. New hires reach competence in 6 weeks instead of 6 months.",
   },
   {
