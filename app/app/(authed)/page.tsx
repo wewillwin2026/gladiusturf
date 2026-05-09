@@ -1,5 +1,6 @@
 import { TodayDashboard } from "@/components/app/TodayDashboard";
 import { TenantOnboardingHero } from "@/components/app/TenantOnboardingHero";
+import { OnboardingChecklist } from "@/components/app/OnboardingChecklist";
 import { StormRadarTile } from "@/components/app/StormRadarTile";
 import {
   OwnersDailyOneLiner,
@@ -290,6 +291,7 @@ export default async function AppHomePage() {
           briefing={briefingInputs}
           move={move}
         />
+        <OnboardingChecklist tenantId={session.tenant.id} />
         <StormRadarTile
           inStormZipCount={inStormZipCount}
           totalCustomerCount={customerCount}
