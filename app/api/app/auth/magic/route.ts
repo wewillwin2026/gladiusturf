@@ -106,10 +106,20 @@ export async function POST(req: Request) {
   // domain — never the attacker-controlled `Origin` header.
   const link = `${SITE_URL}/api/app/auth/verify?token=${encodeURIComponent(token)}`;
 
+  // Use the same RESEND_FROM_EMAIL env the rest of the platform reads
+  // (lib/messaging/email.ts) so we send from a verified Resend domain.
+  // Hardcoding `app@gladiusturf.com` here was a silent-fail bug — if the
+  // subdomain wasn't verified, Resend rejected the send and the whole
+  // request just returned ok:true with nothing in the inbox. Falls back
+  // to founders@ which has been verified since Phase 2.
+  const fromAddress =
+    process.env.RESEND_FROM_EMAIL ||
+    "GladiusTurf <founders@gladiusturf.com>";
+
   try {
     const resend = new Resend(apiKey);
-    await resend.emails.send({
-      from: "GladiusTurf <app@gladiusturf.com>",
+    const sendRes = await resend.emails.send({
+      from: fromAddress,
       to: email,
       subject: `Sign in to ${tenant.display_name}`,
       text: [
@@ -123,6 +133,12 @@ export async function POST(req: Request) {
         `— Gladius`,
       ].join("\n"),
     });
+    if (sendRes.error) {
+      // Resend's SDK swallows non-2xx into the result object instead of
+      // throwing — log it explicitly so we can see "from address not
+      // verified" errors instead of silently returning ok:true.
+      console.warn("[app/auth/magic] Resend rejected send", sendRes.error);
+    }
   } catch (err) {
     console.warn("[app/auth/magic] Resend send failed", err);
   }
