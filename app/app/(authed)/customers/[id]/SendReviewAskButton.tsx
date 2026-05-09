@@ -133,7 +133,7 @@ export function SendReviewAskButton({
             <span className="rounded-md bg-g-surface-2 px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.12em] text-g-text">
               {langLabel}
             </span>
-            <span>{customerName}'s preferred language</span>
+            <span>{customerName}&apos;s preferred language</span>
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">

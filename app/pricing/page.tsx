@@ -232,7 +232,11 @@ export default function PricingPage() {
         {/* Hero + scarcity band + tier grid */}
         <section className="py-28">
           <div className="mx-auto max-w-7xl px-6">
-            {/* Scarcity band — heritage champagne */}
+            {/* Trust band — replaces the prior "8 of 20 founding crew slots"
+                scarcity copy (board-killed 2026-05-08; this slot escaped the
+                first sweep and was deleted 2026-05-09 with the CFO packet
+                ship). The 5% annual cap promise is what we lead with now —
+                the foil is Aspire's documented 102% YoY hike. */}
             <div className="mx-auto mb-12 flex max-w-3xl flex-col items-center justify-center gap-3 rounded-2xl border border-champagne/25 bg-champagne/[0.03] px-6 py-4 text-center sm:flex-row sm:gap-6 sm:text-left">
               <div className="flex items-center gap-3">
                 <span className="relative flex h-2 w-2 flex-none">
@@ -241,19 +245,19 @@ export default function PricingPage() {
                 </span>
                 <div>
                   <div className="text-sm font-semibold text-bone">
-                    Q2 2026 onboarding · 8 of 20 founding crew slots remaining
+                    Annual increase capped at 5% — in writing.
                   </div>
                   <div className="text-xs text-bone/40">
-                    Founder-led white-glove setup.
+                    Aspire&apos;s 102% YoY hike is the foil. We won&apos;t.
                   </div>
                 </div>
               </div>
               <div className="hidden h-8 w-px bg-bone/10 sm:block" />
               <div className="text-xs text-bone/60">
                 <span className="font-semibold text-bone">
-                  No 3-year contract.
+                  Month-to-month.
                 </span>{" "}
-                Cancel anytime after month 3.
+                $0 ETF, full CSV export inside 24 hours.
               </div>
             </div>
 
@@ -393,6 +397,19 @@ export default function PricingPage() {
                 </p>
               </div>
             </div>
+
+            {/* Grandfather note — Strategy Director's "never raise mid-pen"
+                principle. Bright Lights signed at the $397 anchor and stays
+                there for the life of the contract. Tells future tenants
+                what the floor was, and tells current/past tenants we mean
+                the 5% cap. */}
+            <p className="mx-auto mt-12 max-w-3xl text-center text-xs italic leading-[1.65] text-bone/45">
+              Tenants who signed at the previous $397 floor (Bright Lights
+              Landscape Lighting and earlier pilots) stay at $397 for the
+              life of their contract. We don&apos;t raise mid-relationship.
+              The 5% annual cap means everyone — including the people who
+              signed early.
+            </p>
           </div>
         </section>
 
@@ -510,12 +527,23 @@ export default function PricingPage() {
         </section>
 
         {/* CFO one-pager — Strategy Director's pricing-justification
-            packet (board-mandated 2026-05-08 follow-up). */}
+            packet (board-mandated 2026-05-08 follow-up). The full
+            standalone packet (printable, 7-director defenses, real
+            competitor numbers) is at /pricing/cfo. */}
         <section className="border-t border-bone/5 bg-slate-deep py-28">
           <div className="mx-auto max-w-5xl px-6">
-            <Pill tone="champagne" className="mb-4">
-              For the CFO meeting
-            </Pill>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <Pill tone="champagne" className="mb-4">
+                For the CFO meeting
+              </Pill>
+              <a
+                href="/pricing/cfo"
+                className="mb-4 inline-flex items-center gap-1.5 rounded-lg border border-champagne/40 bg-champagne/5 px-4 py-2 text-xs font-semibold text-champagne-bright transition-colors hover:bg-champagne/10"
+              >
+                Send to your CFO — full packet
+                <ArrowRightIcon className="h-3 w-3" />
+              </a>
+            </div>
             <h2 className="font-serif text-3xl tracking-[-0.01em] text-bone md:text-4xl">
               Per-user pricing punishes growth.
               <br />
