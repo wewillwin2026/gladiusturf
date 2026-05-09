@@ -10,14 +10,23 @@ import {
   Trash2,
   Zap,
   AlertCircle,
+  Archive,
+  ChevronDown,
+  ChevronRight,
+  RotateCcw,
+  MoreHorizontal,
 } from "lucide-react";
 import {
   createFixture,
   updateFixture,
   deleteFixture,
+  restoreFixture,
+  purgeFixture,
   createTransformer,
   updateTransformer,
   deleteTransformer,
+  restoreTransformer,
+  purgeTransformer,
   createWarrantyClaim,
   updateWarrantyClaim,
   deleteWarrantyClaim,
@@ -80,6 +89,8 @@ type Props = {
   fixtures: FixtureRow[];
   transformers: TransformerRow[];
   claims: WarrantyClaimRow[];
+  archivedFixtures: FixtureRow[];
+  archivedTransformers: TransformerRow[];
 };
 
 type DialogState =
@@ -88,10 +99,19 @@ type DialogState =
   | { kind: "transformer"; row: TransformerRow | null }
   | { kind: "claim"; row: WarrantyClaimRow | null };
 
-export function LightingAssets({ customerId, fixtures, transformers, claims }: Props) {
+export function LightingAssets({
+  customerId,
+  fixtures,
+  transformers,
+  claims,
+  archivedFixtures,
+  archivedTransformers,
+}: Props) {
   const [dialog, setDialog] = React.useState<DialogState>({ kind: "none" });
   const [busy, setBusy] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
+  const [archivedFixturesOpen, setArchivedFixturesOpen] = React.useState(false);
+  const [archivedTransformersOpen, setArchivedTransformersOpen] = React.useState(false);
 
   function close() {
     setDialog({ kind: "none" });
@@ -111,8 +131,27 @@ export function LightingAssets({ customerId, fixtures, transformers, claims }: P
     return true;
   }
 
+  // Inline banner for non-dialog errors (archive / restore / purge).
+  // Dialog errors stay inside DialogShell; row-level action errors land
+  // here so the user sees them after a confirm() rejection or RPC fault.
+  const showBannerError = error && dialog.kind === "none";
+
   return (
     <div className="space-y-6">
+      {showBannerError && (
+        <div className="flex items-start gap-2 rounded-md border border-g-warn/40 bg-g-warn/10 p-2 text-[12px] text-g-warn">
+          <AlertCircle className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" />
+          <span>{error}</span>
+          <button
+            type="button"
+            onClick={() => setError(null)}
+            className="ml-auto text-g-warn/70 hover:text-g-warn"
+            aria-label="Dismiss"
+          >
+            ✕
+          </button>
+        </div>
+      )}
       {/* Fixtures */}
       <section className="g-card p-5">
         <SectionHeader
@@ -166,7 +205,7 @@ export function LightingAssets({ customerId, fixtures, transformers, claims }: P
                       <RowActions
                         onEdit={() => setDialog({ kind: "fixture", row: f })}
                         onDelete={async () => {
-                          if (!confirm("Delete this fixture?")) return;
+                          if (!confirm("Archive this fixture? Warranty claims that reference it will retain their link.")) return;
                           await runAction(`del-fix-${f.id}`, () =>
                             wrapForm({ id: f.id, customer_id: customerId }, deleteFixture),
                           );
@@ -180,6 +219,51 @@ export function LightingAssets({ customerId, fixtures, transformers, claims }: P
               </tbody>
             </table>
           </div>
+        )}
+
+        {/* Archived fixtures */}
+        {archivedFixtures.length > 0 && (
+          <ArchivedSection
+            label={`Archived fixtures (${archivedFixtures.length})`}
+            open={archivedFixturesOpen}
+            onToggle={() => setArchivedFixturesOpen((v) => !v)}
+          >
+            <ul className="mt-3 divide-y divide-g-border-subtle/50">
+              {archivedFixtures.map((f) => (
+                <li
+                  key={f.id}
+                  className="flex items-center justify-between gap-3 py-2 text-[12px]"
+                >
+                  <div className="min-w-0">
+                    <span className="font-geist-mono text-g-text-faint">
+                      {f.external_id ?? f.id.slice(0, 8)}
+                    </span>
+                    <span className="ml-2 text-g-text">{f.fixture_type}</span>
+                    <span className="ml-2 text-g-text-muted">
+                      {f.brand}
+                      {f.model && <span className="text-g-text-faint"> · {f.model}</span>}
+                    </span>
+                  </div>
+                  <ArchivedRowActions
+                    onRestore={async () => {
+                      await runAction(`restore-fix-${f.id}`, () =>
+                        wrapForm({ id: f.id, customer_id: customerId }, restoreFixture),
+                      );
+                    }}
+                    onPurge={async () => {
+                      if (!confirm("Permanently delete this fixture? This cannot be undone.")) return;
+                      await runAction(`purge-fix-${f.id}`, () =>
+                        wrapForm({ id: f.id, customer_id: customerId }, purgeFixture),
+                      );
+                    }}
+                    restoreBusyKey={`restore-fix-${f.id}`}
+                    purgeBusyKey={`purge-fix-${f.id}`}
+                    currentBusy={busy}
+                  />
+                </li>
+              ))}
+            </ul>
+          </ArchivedSection>
         )}
       </section>
 
@@ -236,7 +320,7 @@ export function LightingAssets({ customerId, fixtures, transformers, claims }: P
                       <RowActions
                         onEdit={() => setDialog({ kind: "transformer", row: t })}
                         onDelete={async () => {
-                          if (!confirm("Delete this transformer?")) return;
+                          if (!confirm("Archive this transformer?")) return;
                           await runAction(`del-tx-${t.id}`, () =>
                             wrapForm({ id: t.id, customer_id: customerId }, deleteTransformer),
                           );
@@ -250,6 +334,55 @@ export function LightingAssets({ customerId, fixtures, transformers, claims }: P
               </tbody>
             </table>
           </div>
+        )}
+
+        {/* Archived transformers */}
+        {archivedTransformers.length > 0 && (
+          <ArchivedSection
+            label={`Archived transformers (${archivedTransformers.length})`}
+            open={archivedTransformersOpen}
+            onToggle={() => setArchivedTransformersOpen((v) => !v)}
+          >
+            <ul className="mt-3 divide-y divide-g-border-subtle/50">
+              {archivedTransformers.map((t) => (
+                <li
+                  key={t.id}
+                  className="flex items-center justify-between gap-3 py-2 text-[12px]"
+                >
+                  <div className="min-w-0">
+                    <span className="font-geist-mono text-g-text-faint">
+                      {t.external_id ?? t.id.slice(0, 8)}
+                    </span>
+                    <span className="ml-2 text-g-text-muted">
+                      {t.brand ?? "—"}
+                      {t.model && <span className="text-g-text-faint"> · {t.model}</span>}
+                    </span>
+                    {t.watts_capacity != null && (
+                      <span className="ml-2 font-geist-mono text-g-text-faint">
+                        {t.watts_capacity}W
+                      </span>
+                    )}
+                  </div>
+                  <ArchivedRowActions
+                    onRestore={async () => {
+                      await runAction(`restore-tx-${t.id}`, () =>
+                        wrapForm({ id: t.id, customer_id: customerId }, restoreTransformer),
+                      );
+                    }}
+                    onPurge={async () => {
+                      if (!confirm("Permanently delete this transformer? This cannot be undone.")) return;
+                      await runAction(`purge-tx-${t.id}`, () =>
+                        wrapForm({ id: t.id, customer_id: customerId }, purgeTransformer),
+                      );
+                    }}
+                    restoreBusyKey={`restore-tx-${t.id}`}
+                    purgeBusyKey={`purge-tx-${t.id}`}
+                    currentBusy={busy}
+                  />
+                </li>
+              ))}
+            </ul>
+          </ArchivedSection>
         )}
       </section>
 
@@ -455,6 +588,98 @@ function RowActions({
       >
         <Trash2 className="h-3 w-3" />
       </button>
+    </span>
+  );
+}
+
+function ArchivedSection({
+  label,
+  open,
+  onToggle,
+  children,
+}: {
+  label: string;
+  open: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="mt-5 border-t border-g-border-subtle/60 pt-3">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.14em] text-g-text-faint hover:text-g-text-muted"
+      >
+        {open ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+        <Archive className="h-3 w-3" />
+        {label}
+      </button>
+      {open && children}
+    </div>
+  );
+}
+
+function ArchivedRowActions({
+  onRestore,
+  onPurge,
+  restoreBusyKey,
+  purgeBusyKey,
+  currentBusy,
+}: {
+  onRestore: () => void;
+  onPurge: () => void;
+  restoreBusyKey: string;
+  purgeBusyKey: string;
+  currentBusy: string | null;
+}) {
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  const restoring = currentBusy === restoreBusyKey;
+  const purging = currentBusy === purgeBusyKey;
+  const anyBusy = restoring || purging;
+  return (
+    <span className="inline-flex items-center gap-1 shrink-0">
+      <button
+        type="button"
+        onClick={onRestore}
+        disabled={anyBusy}
+        title="Restore"
+        className="inline-flex items-center gap-1 rounded-md border border-g-border bg-g-surface-2 px-2 py-1 text-[11px] text-g-text-muted hover:bg-g-surface-3 hover:text-g-text disabled:opacity-50"
+      >
+        <RotateCcw className="h-3 w-3" />
+        {restoring ? "Restoring…" : "Restore"}
+      </button>
+      <span className="relative">
+        <button
+          type="button"
+          onClick={() => setMenuOpen((v) => !v)}
+          disabled={anyBusy}
+          title="More"
+          aria-haspopup="menu"
+          aria-expanded={menuOpen}
+          className="inline-flex h-6 w-6 items-center justify-center rounded-md text-g-text-muted hover:bg-g-surface-3 hover:text-g-text disabled:opacity-50"
+        >
+          <MoreHorizontal className="h-3 w-3" />
+        </button>
+        {menuOpen && (
+          <span
+            role="menu"
+            className="absolute right-0 top-full z-10 mt-1 w-44 rounded-md border border-g-border bg-g-surface-1 py-1 shadow-lg"
+          >
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setMenuOpen(false);
+                onPurge();
+              }}
+              disabled={purging}
+              className="block w-full px-3 py-1.5 text-left text-[12px] text-g-warn hover:bg-g-surface-2 disabled:opacity-50"
+            >
+              {purging ? "Purging…" : "Purge permanently"}
+            </button>
+          </span>
+        )}
+      </span>
     </span>
   );
 }

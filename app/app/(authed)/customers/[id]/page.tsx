@@ -104,6 +104,9 @@ export default async function CustomerDetailPage({
     // per-vertical AssetSection component ships — until then the lighting
     // block hides for non-lighting tenants and a placeholder appears.
     const isLighting = session.tenant.vertical === "lighting";
+    // Active list — `deleted_at is null`. Archived rows feed a separate
+    // expandable section in LightingAssets so customers can restore or
+    // (owner-only) purge them.
     const fixturesQuery = isLighting
       ? sb
           .from("lighting_fixtures")
@@ -112,6 +115,7 @@ export default async function CustomerDetailPage({
           )
           .eq("tenant_id", session.tenant.id)
           .eq("customer_id", id)
+          .is("deleted_at", null)
           .order("external_id", { ascending: true })
       : Promise.resolve({ data: [], error: null });
     const transformersQuery = isLighting
@@ -122,6 +126,7 @@ export default async function CustomerDetailPage({
           )
           .eq("tenant_id", session.tenant.id)
           .eq("customer_id", id)
+          .is("deleted_at", null)
           .order("external_id", { ascending: true })
       : Promise.resolve({ data: [], error: null });
     const claimsQuery = isLighting
@@ -134,11 +139,35 @@ export default async function CustomerDetailPage({
           .eq("customer_id", id)
           .order("claim_date", { ascending: false })
       : Promise.resolve({ data: [], error: null });
+    const archivedFixturesQuery = isLighting
+      ? sb
+          .from("lighting_fixtures")
+          .select(
+            "id, external_id, fixture_type, brand, model, wattage_text, install_date, warranty_status, warranty_end, notes, deleted_at",
+          )
+          .eq("tenant_id", session.tenant.id)
+          .eq("customer_id", id)
+          .not("deleted_at", "is", null)
+          .order("deleted_at", { ascending: false })
+      : Promise.resolve({ data: [], error: null });
+    const archivedTransformersQuery = isLighting
+      ? sb
+          .from("lighting_transformers")
+          .select(
+            "id, external_id, brand, model, watts_capacity, watts_loaded, zones, install_date, location_note, deleted_at",
+          )
+          .eq("tenant_id", session.tenant.id)
+          .eq("customer_id", id)
+          .not("deleted_at", "is", null)
+          .order("deleted_at", { ascending: false })
+      : Promise.resolve({ data: [], error: null });
 
     const [
       fixturesRes,
       transformersRes,
       claimsRes,
+      archivedFixturesRes,
+      archivedTransformersRes,
       plansRes,
       subRes,
       scheduleRes,
@@ -147,6 +176,8 @@ export default async function CustomerDetailPage({
       fixturesQuery,
       transformersQuery,
       claimsQuery,
+      archivedFixturesQuery,
+      archivedTransformersQuery,
         sb
           .from("plans")
           .select("id, display_name, annual_price_cents, badge, most_popular")
@@ -175,7 +206,7 @@ export default async function CustomerDetailPage({
       ]);
 
     const fixtures = (fixturesRes.data ?? []) as DbFixture[];
-    const transformers = (transformersRes.data ?? []) as Array<{
+    type DbTransformer = {
       id: string;
       external_id: string | null;
       brand: string | null;
@@ -185,7 +216,24 @@ export default async function CustomerDetailPage({
       zones: number | null;
       install_date: string | null;
       location_note: string | null;
-    }>;
+    };
+    const transformers = (transformersRes.data ?? []) as DbTransformer[];
+    // Archived rows carry the same shape as their active counterparts —
+    // LightingAssets's FixtureRow / TransformerRow types accept the
+    // superset; the extra `deleted_at` field is dropped at the boundary
+    // since the component doesn't need it.
+    const archivedFixtures = ((archivedFixturesRes.data ?? []) as Array<
+      DbFixture & { deleted_at: string }
+    >).map(({ deleted_at, ...rest }) => {
+      void deleted_at;
+      return rest;
+    }) as DbFixture[];
+    const archivedTransformers = ((archivedTransformersRes.data ?? []) as Array<
+      DbTransformer & { deleted_at: string }
+    >).map(({ deleted_at, ...rest }) => {
+      void deleted_at;
+      return rest;
+    }) as DbTransformer[];
     const claims = (claimsRes.data ?? []) as Array<{
       id: string;
       fixture_id: string | null;
@@ -358,6 +406,8 @@ export default async function CustomerDetailPage({
                 fixtures={fixtures}
                 transformers={transformers}
                 claims={claims}
+                archivedFixtures={archivedFixtures}
+                archivedTransformers={archivedTransformers}
               />
             )}
           </div>

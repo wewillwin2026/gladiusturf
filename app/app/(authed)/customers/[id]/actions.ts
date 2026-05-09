@@ -413,6 +413,13 @@ export async function updateFixture(formData: FormData): Promise<CrudResult> {
   return { ok: true };
 }
 
+/**
+ * Archive a fixture (soft-delete). Sets deleted_at = now() so the row
+ * disappears from the active list but warranty_claims.fixture_id keeps
+ * its referent — the FK is ON DELETE SET NULL, so a hard delete would
+ * orphan every claim that pointed at this fixture. The Archived section
+ * in LightingAssets surfaces these for restore + audit.
+ */
 export async function deleteFixture(formData: FormData): Promise<CrudResult> {
   const session = await readAppSession();
   if (session.kind !== "tenant") return { error: "unauthenticated" };
@@ -424,12 +431,134 @@ export async function deleteFixture(formData: FormData): Promise<CrudResult> {
   const sb = supabaseAdmin();
   const { error } = await sb
     .from("lighting_fixtures")
-    .delete()
+    .update({ deleted_at: new Date().toISOString() })
     .eq("id", id)
-    .eq("tenant_id", session.tenant.id);
+    .eq("tenant_id", session.tenant.id)
+    .is("deleted_at", null);
   if (error) {
     console.warn("deleteFixture error", error);
     return { error: "delete_failed" };
+  }
+
+  try {
+    await sb.from("audit_log").insert({
+      tenant_id: session.tenant.id,
+      user_id: null,
+      action: "fixture_archived",
+      entity_type: "lighting_fixture",
+      entity_id: id,
+      metadata: { customer_id: customerId },
+    });
+  } catch (err) {
+    console.warn("audit insert failed (non-fatal)", err);
+  }
+
+  revalidatePath(`/app/customers/${customerId}`);
+  return { ok: true };
+}
+
+/**
+ * Restore an archived fixture (clear deleted_at). Tenant-scoped and
+ * idempotent — restoring a non-archived row is a no-op via the
+ * `not.is("deleted_at", null)` guard.
+ */
+export async function restoreFixture(formData: FormData): Promise<CrudResult> {
+  const session = await readAppSession();
+  if (session.kind !== "tenant") return { error: "unauthenticated" };
+
+  const id = String(formData.get("id") ?? "");
+  const customerId = String(formData.get("customer_id") ?? "");
+  if (!id || !customerId) return { error: "missing_field" };
+
+  const sb = supabaseAdmin();
+  const { error } = await sb
+    .from("lighting_fixtures")
+    .update({ deleted_at: null })
+    .eq("id", id)
+    .eq("tenant_id", session.tenant.id)
+    .not("deleted_at", "is", null);
+  if (error) {
+    console.warn("restoreFixture error", error);
+    return { error: "restore_failed" };
+  }
+
+  try {
+    await sb.from("audit_log").insert({
+      tenant_id: session.tenant.id,
+      user_id: null,
+      action: "fixture_restored",
+      entity_type: "lighting_fixture",
+      entity_id: id,
+      metadata: { customer_id: customerId },
+    });
+  } catch (err) {
+    console.warn("audit insert failed (non-fatal)", err);
+  }
+
+  revalidatePath(`/app/customers/${customerId}`);
+  return { ok: true };
+}
+
+/**
+ * Resolve the caller's role inside the current tenant. The session
+ * cookie only carries email + slug; role lives on tenant_invitations
+ * (mirrored to tenant_members on first login). Cheap single-row lookup.
+ */
+async function callerRole(
+  sb: ReturnType<typeof supabaseAdmin>,
+  tenantId: string,
+  email: string,
+): Promise<string | null> {
+  const { data } = await sb
+    .from("tenant_invitations")
+    .select("role")
+    .eq("tenant_id", tenantId)
+    .eq("email", email.toLowerCase().trim())
+    .eq("status", "active")
+    .maybeSingle();
+  return (data as { role: string } | null)?.role ?? null;
+}
+
+/**
+ * Permanently delete an archived fixture. Owners-only, archived-only —
+ * the `deleted_at is not null` guard prevents accidentally nuking an
+ * active fixture. Warranty claims pointing at this fixture get their
+ * fixture_id NULLed via the existing ON DELETE SET NULL FK.
+ */
+export async function purgeFixture(formData: FormData): Promise<CrudResult> {
+  const session = await readAppSession();
+  if (session.kind !== "tenant") return { error: "unauthenticated" };
+
+  const id = String(formData.get("id") ?? "");
+  const customerId = String(formData.get("customer_id") ?? "");
+  if (!id || !customerId) return { error: "missing_field" };
+
+  const sb = supabaseAdmin();
+  const role = await callerRole(sb, session.tenant.id, session.email);
+  if (role !== "owner") return { error: "forbidden" };
+
+  const { error } = await sb
+    .from("lighting_fixtures")
+    .delete()
+    .eq("id", id)
+    .eq("tenant_id", session.tenant.id)
+    .not("deleted_at", "is", null);
+  if (error) {
+    console.warn("purgeFixture error", error);
+    return { error: "purge_failed" };
+  }
+
+  try {
+    await sb.from("audit_log").insert({
+      tenant_id: session.tenant.id,
+      user_id: null,
+      action: "fixture_purged",
+      entity_type: "lighting_fixture",
+      entity_id: id,
+      metadata: { customer_id: customerId },
+    });
+  } catch (err) {
+    console.warn("audit insert failed (non-fatal)", err);
   }
 
   revalidatePath(`/app/customers/${customerId}`);
@@ -522,6 +651,13 @@ export async function updateTransformer(formData: FormData): Promise<CrudResult>
   return { ok: true };
 }
 
+/**
+ * Archive a transformer (soft-delete). Same pattern as deleteFixture —
+ * we keep the row so historical context survives even though the
+ * lighting_warranty_claims table doesn't FK transformers today (Bright
+ * Lights might add transformer-fault claims later, and audit reads
+ * benefit from the persisted row regardless).
+ */
 export async function deleteTransformer(formData: FormData): Promise<CrudResult> {
   const session = await readAppSession();
   if (session.kind !== "tenant") return { error: "unauthenticated" };
@@ -533,12 +669,109 @@ export async function deleteTransformer(formData: FormData): Promise<CrudResult>
   const sb = supabaseAdmin();
   const { error } = await sb
     .from("lighting_transformers")
-    .delete()
+    .update({ deleted_at: new Date().toISOString() })
     .eq("id", id)
-    .eq("tenant_id", session.tenant.id);
+    .eq("tenant_id", session.tenant.id)
+    .is("deleted_at", null);
   if (error) {
     console.warn("deleteTransformer error", error);
     return { error: "delete_failed" };
+  }
+
+  try {
+    await sb.from("audit_log").insert({
+      tenant_id: session.tenant.id,
+      user_id: null,
+      action: "transformer_archived",
+      entity_type: "lighting_transformer",
+      entity_id: id,
+      metadata: { customer_id: customerId },
+    });
+  } catch (err) {
+    console.warn("audit insert failed (non-fatal)", err);
+  }
+
+  revalidatePath(`/app/customers/${customerId}`);
+  return { ok: true };
+}
+
+/**
+ * Restore an archived transformer (clear deleted_at).
+ */
+export async function restoreTransformer(formData: FormData): Promise<CrudResult> {
+  const session = await readAppSession();
+  if (session.kind !== "tenant") return { error: "unauthenticated" };
+
+  const id = String(formData.get("id") ?? "");
+  const customerId = String(formData.get("customer_id") ?? "");
+  if (!id || !customerId) return { error: "missing_field" };
+
+  const sb = supabaseAdmin();
+  const { error } = await sb
+    .from("lighting_transformers")
+    .update({ deleted_at: null })
+    .eq("id", id)
+    .eq("tenant_id", session.tenant.id)
+    .not("deleted_at", "is", null);
+  if (error) {
+    console.warn("restoreTransformer error", error);
+    return { error: "restore_failed" };
+  }
+
+  try {
+    await sb.from("audit_log").insert({
+      tenant_id: session.tenant.id,
+      user_id: null,
+      action: "transformer_restored",
+      entity_type: "lighting_transformer",
+      entity_id: id,
+      metadata: { customer_id: customerId },
+    });
+  } catch (err) {
+    console.warn("audit insert failed (non-fatal)", err);
+  }
+
+  revalidatePath(`/app/customers/${customerId}`);
+  return { ok: true };
+}
+
+/**
+ * Permanently delete an archived transformer. Owners-only, archived-only.
+ */
+export async function purgeTransformer(formData: FormData): Promise<CrudResult> {
+  const session = await readAppSession();
+  if (session.kind !== "tenant") return { error: "unauthenticated" };
+
+  const id = String(formData.get("id") ?? "");
+  const customerId = String(formData.get("customer_id") ?? "");
+  if (!id || !customerId) return { error: "missing_field" };
+
+  const sb = supabaseAdmin();
+  const role = await callerRole(sb, session.tenant.id, session.email);
+  if (role !== "owner") return { error: "forbidden" };
+
+  const { error } = await sb
+    .from("lighting_transformers")
+    .delete()
+    .eq("id", id)
+    .eq("tenant_id", session.tenant.id)
+    .not("deleted_at", "is", null);
+  if (error) {
+    console.warn("purgeTransformer error", error);
+    return { error: "purge_failed" };
+  }
+
+  try {
+    await sb.from("audit_log").insert({
+      tenant_id: session.tenant.id,
+      user_id: null,
+      action: "transformer_purged",
+      entity_type: "lighting_transformer",
+      entity_id: id,
+      metadata: { customer_id: customerId },
+    });
+  } catch (err) {
+    console.warn("audit insert failed (non-fatal)", err);
   }
 
   revalidatePath(`/app/customers/${customerId}`);
