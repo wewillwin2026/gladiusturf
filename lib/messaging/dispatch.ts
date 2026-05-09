@@ -247,6 +247,132 @@ export function dispatcherMode(): "live" | "dry_run" {
   return twilioCreds() ? "live" : "dry_run";
 }
 
+export type OwnerSmsRequest = {
+  tenantId: string;
+  /** E.164 phone number for the tenant owner. */
+  toPhone: string;
+  body: string;
+  /** Free-form context for the audit log. */
+  source?: string;
+  /** When set, used as the audit_log.action key (defaults to message.sent). */
+  auditAction?: string;
+};
+
+/**
+ * Tenant-internal SMS — owner sends to their own number (e.g. the
+ * Owner's Daily One-Liner cron). Skips canSend() because the consent
+ * regime is for consumer-facing messages; the owner is the sender,
+ * not a third party. Audit-logged with entity_type='tenant'.
+ */
+export async function sendSmsToOwner(req: OwnerSmsRequest): Promise<SmsResult> {
+  const source = req.source ?? "owner_sms";
+  const action = req.auditAction ?? "owner_briefing";
+  const sb = supabaseAdmin();
+
+  const baseAudit = {
+    tenant_id: req.tenantId,
+    user_id: null as string | null,
+    entity_type: "tenant" as const,
+    entity_id: req.tenantId,
+  };
+
+  // E.164 sanity check — block obviously-wrong inputs before paying
+  // a Twilio round-trip.
+  if (!/^\+[1-9][0-9]{6,14}$/.test(req.toPhone)) {
+    await sb.from("audit_log").insert({
+      ...baseAudit,
+      action: `${action}.failed`,
+      metadata: {
+        channel: "sms",
+        source,
+        reason: "invalid_phone_format",
+      },
+    });
+    return { ok: false, reason: "invalid_phone_format" };
+  }
+
+  const creds = twilioCreds();
+  if (!creds) {
+    await sb.from("audit_log").insert({
+      ...baseAudit,
+      action: `${action}.dry_run`,
+      metadata: {
+        channel: "sms",
+        source,
+        to: req.toPhone,
+        body_excerpt: bodyExcerpt(req.body),
+        note: "TWILIO creds not set — preview only.",
+      },
+    });
+    return { ok: true, mode: "dry_run", preview: bodyExcerpt(req.body) };
+  }
+
+  try {
+    const url = `${TWILIO_BASE}/Accounts/${creds.sid}/Messages.json`;
+    const auth = Buffer.from(`${creds.sid}:${creds.token}`).toString("base64");
+    const params = new URLSearchParams({
+      From: creds.from,
+      To: req.toPhone,
+      Body: req.body,
+    });
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Basic ${auth}`,
+      },
+      body: params.toString(),
+    });
+    if (!res.ok) {
+      const detail = await res.text();
+      await sb.from("audit_log").insert({
+        ...baseAudit,
+        action: `${action}.failed`,
+        metadata: {
+          channel: "sms",
+          source,
+          reason: "twilio_http_error",
+          status: res.status,
+          detail: detail.slice(0, 500),
+        },
+      });
+      return {
+        ok: false,
+        reason: "twilio_http_error",
+        detail: `${res.status}: ${detail.slice(0, 200)}`,
+      };
+    }
+    const json = (await res.json()) as { sid?: string };
+    const sid = json.sid ?? "";
+    await sb.from("audit_log").insert({
+      ...baseAudit,
+      action: `${action}.sent`,
+      metadata: {
+        channel: "sms",
+        source,
+        to: req.toPhone,
+        from: creds.from,
+        twilio_sid: sid,
+        body_excerpt: bodyExcerpt(req.body),
+      },
+    });
+    return { ok: true, mode: "sent", sid };
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : "unknown";
+    await sb.from("audit_log").insert({
+      ...baseAudit,
+      action: `${action}.failed`,
+      metadata: {
+        channel: "sms",
+        source,
+        reason: "twilio_exception",
+        detail,
+      },
+    });
+    return { ok: false, reason: "twilio_exception", detail };
+  }
+}
+
 /**
  * Per-credential SMS dispatcher status for the Settings page. Three
  * env vars are required for live mode; partial config silently falls

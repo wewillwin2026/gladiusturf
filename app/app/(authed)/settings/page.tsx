@@ -17,6 +17,7 @@ import { supabaseAdmin } from "@/lib/supabase";
 import { dispatcherMode, twilioCredStatus } from "@/lib/messaging/dispatch";
 import { emailDispatcherMode, resendCredStatus } from "@/lib/messaging/email";
 import { ReviewUrlForm } from "./_components/ReviewUrlForm";
+import { OwnerSmsForm } from "./_components/OwnerSmsForm";
 
 export const dynamic = "force-dynamic";
 
@@ -56,20 +57,30 @@ export default async function Page() {
       .order("created_at", { ascending: true }),
   ]);
 
-  // tenants.review_url — defensive read: column may not be deployed yet,
-  // in which case the select fails silently and the form renders empty.
+  // tenants.review_url + owner_phone + daily_briefing_sms_enabled —
+  // defensive read: columns may not be deployed yet, in which case the
+  // select returns null/false and the forms render with empty defaults.
   let reviewUrl: string | null = null;
+  let ownerPhone: string | null = null;
+  let dailyBriefingEnabled = false;
   try {
     const { data: tenantRow } = await sb
       .from("tenants")
-      .select("review_url")
+      .select("review_url, owner_phone, daily_briefing_sms_enabled")
       .eq("id", session.tenant.id)
       .maybeSingle();
-    const candidate =
-      (tenantRow as { review_url?: string | null } | null)?.review_url ?? null;
-    reviewUrl = candidate ?? null;
+    const row = tenantRow as
+      | {
+          review_url?: string | null;
+          owner_phone?: string | null;
+          daily_briefing_sms_enabled?: boolean | null;
+        }
+      | null;
+    reviewUrl = row?.review_url ?? null;
+    ownerPhone = row?.owner_phone ?? null;
+    dailyBriefingEnabled = row?.daily_briefing_sms_enabled === true;
   } catch {
-    // column missing — form will save once migration is applied
+    // columns missing — forms will save once migrations are applied
   }
 
   const settings = settingsRes.data ?? {
@@ -177,8 +188,16 @@ export default async function Page() {
         </div>
       </section>
 
-      <section className="g-card p-5">
-        <ReviewUrlForm initial={reviewUrl} />
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="g-card p-5">
+          <ReviewUrlForm initial={reviewUrl} />
+        </div>
+        <div className="g-card p-5">
+          <OwnerSmsForm
+            initialPhone={ownerPhone}
+            initialEnabled={dailyBriefingEnabled}
+          />
+        </div>
       </section>
 
       <section className="g-card overflow-hidden">
