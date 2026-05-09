@@ -6,23 +6,12 @@ import { supabaseAdmin } from "@/lib/supabase";
 import { sendSmsToOwner } from "@/lib/messaging/dispatch";
 import { buildBriefingForTenant } from "@/lib/briefing/build";
 import { pickNextMove } from "@/components/app/OwnersDailyOneLiner";
+import { normalizeE164 } from "@/lib/messaging/phone";
 
 type Result = { ok: true } | { error: string };
 type PreviewResult =
   | { ok: true; mode: "sent" | "dry_run"; body: string; preview?: string }
   | { error: string };
-
-function normalizeE164(raw: string): string | null {
-  const trimmed = raw.trim();
-  if (trimmed.length === 0) return null;
-  // Accept "(941) 205-1000" and friends — strip everything but digits +
-  // a leading +. If no leading + and 10 digits, assume US (+1).
-  const stripped = trimmed.replace(/[^\d+]/g, "");
-  if (/^\+[1-9][0-9]{6,14}$/.test(stripped)) return stripped;
-  if (/^[0-9]{10}$/.test(stripped)) return `+1${stripped}`;
-  if (/^1[0-9]{10}$/.test(stripped)) return `+${stripped}`;
-  return null;
-}
 
 /**
  * Tenant settings mutations. v1 ships review_url editing only — the

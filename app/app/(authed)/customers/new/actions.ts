@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { readAppSession } from "@/lib/app/session";
 import { supabaseAdmin } from "@/lib/supabase";
+import { normalizeE164 } from "@/lib/messaging/phone";
 
 export type CreateCustomerInput = {
   display_name: string;
@@ -53,7 +54,7 @@ export async function createCustomer(
       tenant_id: session.tenant.id,
       display_name: name,
       primary_email: input.primary_email?.trim() || null,
-      primary_phone: input.primary_phone?.trim() || null,
+      primary_phone: normalizeE164(input.primary_phone),
       preferred_language: input.preferred_language,
       service_address: addr,
       notes: input.notes?.trim() || null,

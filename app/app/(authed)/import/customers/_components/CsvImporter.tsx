@@ -141,6 +141,7 @@ type SuccessState = {
   skipped: number;
   consentsRecorded: number;
   languageMapped: boolean;
+  phonesDropped: number;
   customers: ImportedCustomerSummary[];
 };
 
@@ -281,6 +282,7 @@ export function CsvImporter() {
         skipped: res.skipped,
         consentsRecorded: res.consentsRecorded,
         languageMapped: res.languageMapped,
+        phonesDropped: res.phonesDropped,
         customers: res.customers,
       });
       router.refresh();
@@ -572,6 +574,18 @@ function BulkLanguageStep({ success, onDone, onAnother }: BulkLanguageStepProps)
               bilingual, tick the Spanish-speaking customers below and tap{" "}
               <em>Set Español</em>. Storm Mode and other automated messages
               honor this per-customer.
+            </p>
+          )}
+          {success.phonesDropped > 0 && (
+            <p className="mt-1 text-[12px] text-g-text-muted leading-relaxed">
+              <strong className="text-g-text">
+                {success.phonesDropped} phone
+                {success.phonesDropped === 1 ? "" : "s"} dropped
+              </strong>{" "}
+              — couldn&apos;t normalize to E.164 (Twilio&apos;s required
+              format). Those rows imported with no phone. Open each
+              customer to fix manually, or re-upload after running the
+              numbers through a quick Find-and-Replace.
             </p>
           )}
         </div>

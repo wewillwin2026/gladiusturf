@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { readAppSession } from "@/lib/app/session";
 import { supabaseAdmin } from "@/lib/supabase";
 import { recordAttestation } from "@/lib/messaging/consent";
+import { normalizeE164 } from "@/lib/messaging/phone";
 
 export type ImportLanguage = "en" | "es";
 
@@ -43,6 +44,12 @@ export type ImportResult =
       skipped: number;
       consentsRecorded: number;
       languageMapped: boolean;
+      /** Phones the operator gave us that couldn't be normalized to E.164.
+       *  Stored as null on the row (not the original string) so canSend()
+       *  and the dispatcher don't try to call Twilio with malformed input.
+       *  Surfaced in the success UI so the operator knows to fix them
+       *  manually after import. */
+      phonesDropped: number;
       customers: ImportedCustomerSummary[];
     }
   | { error: string };
@@ -127,16 +134,25 @@ export async function importCustomers(input: ImportInput): Promise<ImportResult>
       skipped: cleaned.length,
       consentsRecorded: 0,
       languageMapped,
+      phonesDropped: 0,
       customers: [],
     };
   }
 
+  // Track how many phones we had to drop because they couldn't be
+  // normalized — surfaced in the success UI so the operator knows.
+  let phonesDropped = 0;
   const now = new Date().toISOString();
-  const insertRows = fresh.map((r) => ({
+  const insertRows = fresh.map((r) => {
+    const normalized = normalizeE164(r.primary_phone);
+    if (r.primary_phone && r.primary_phone.trim().length > 0 && !normalized) {
+      phonesDropped += 1;
+    }
+    return {
     tenant_id: session.tenant.id,
     display_name: r.display_name,
     primary_email: r.primary_email?.trim() || null,
-    primary_phone: r.primary_phone?.trim() || null,
+    primary_phone: normalized,
     preferred_language: normalizeLanguage(r.preferred_language),
     service_address:
       r.street || r.city || r.state || r.zip
@@ -152,7 +168,8 @@ export async function importCustomers(input: ImportInput): Promise<ImportResult>
     source: "csv-import",
     created_at: now,
     updated_at: now,
-  }));
+    };
+  });
 
   const { data: inserted, error } = await sb
     .from("customers")
@@ -205,6 +222,7 @@ export async function importCustomers(input: ImportInput): Promise<ImportResult>
     skipped: cleaned.length - fresh.length,
     consentsRecorded,
     languageMapped,
+    phonesDropped,
     customers,
   };
 }
