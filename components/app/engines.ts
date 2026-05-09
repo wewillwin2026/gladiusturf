@@ -167,10 +167,13 @@ export const SECRET_TABS = [
   { slug: "vertical-leads", name: "Vertical Leads", icon: Lightbulb },
 ] as const;
 
-export type ProductKind = "demo" | "founders";
+export type ProductKind = "demo" | "tenant" | "founders";
 
 export function basePathFor(product: ProductKind): string {
-  return product === "demo" ? "/app" : "/founders/war-room";
+  if (product === "founders") return "/founders/war-room";
+  // Both "demo" and "tenant" share /app — they differ only in data
+  // source (seeded fictional vs real tenant tables) and badge label.
+  return "/app";
 }
 
 export function hrefForEngine(product: ProductKind, slug: string): string {

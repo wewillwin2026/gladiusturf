@@ -53,7 +53,7 @@ export function Topbar({
           <Avatar
             name={user.name}
             size="sm"
-            tone={product === "founders" ? "accent" : "muted"}
+            tone={product === "demo" ? "muted" : "accent"}
           />
           <div className="hidden sm:flex flex-col leading-tight">
             <span className="text-[12px] text-g-text">{user.name}</span>

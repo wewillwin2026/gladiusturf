@@ -66,7 +66,8 @@ export function CommandPalette({ product }: { product: ProductKind }) {
 
   if (!isOpen) return null;
 
-  const base = product === "demo" ? "/app" : "/founders/war-room";
+  const base =
+    product === "founders" ? "/founders/war-room" : "/app";
   const hereEngine = ENGINES.find(
     (e) => pathname === hrefForEngine(product, e.slug),
   );

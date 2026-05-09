@@ -23,7 +23,7 @@ export default async function AppAuthedLayout({
   if (session.kind === "tenant") {
     return (
       <AppShell
-        product="founders"
+        product="tenant"
         user={{
           name: session.email,
           subtitle: `${session.tenant.display_name} · ${session.tenant.plan_tier}`,

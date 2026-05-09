@@ -44,7 +44,8 @@ export function TodayDashboard({
   product,
   eyebrowOverride,
 }: TodayProps) {
-  const base = product === "demo" ? "/app" : "/founders/war-room";
+  const base =
+    product === "founders" ? "/founders/war-room" : "/app";
 
   return (
     <div className="flex flex-col gap-6">

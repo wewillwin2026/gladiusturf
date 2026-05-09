@@ -25,7 +25,8 @@ interface SidebarProps {
 
 export function Sidebar({ product, variant = "desktop", onNavigate }: SidebarProps) {
   const pathname = usePathname() ?? "/";
-  const base = product === "demo" ? "/app" : "/founders/war-room";
+  const base =
+    product === "founders" ? "/founders/war-room" : "/app";
 
   return (
     <nav
@@ -46,7 +47,7 @@ export function Sidebar({ product, variant = "desktop", onNavigate }: SidebarPro
           G
         </span>
         <span className="font-medium text-g-text text-[14px]">
-          {product === "demo" ? "GladiusTurf" : "War Room"}
+          {product === "founders" ? "War Room" : "GladiusTurf"}
         </span>
         <span
           className={cn(

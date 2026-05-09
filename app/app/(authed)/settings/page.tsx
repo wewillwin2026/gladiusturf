@@ -2,6 +2,7 @@ import {
   Bell,
   Building2,
   Cog,
+  KeyRound,
   Languages,
   Mail,
   MessageSquare,
@@ -186,6 +187,29 @@ export default async function Page() {
             primary if the customer&apos;s language isn&apos;t set.
           </p>
         </div>
+      </section>
+
+      <section className="g-card flex items-center justify-between gap-3 p-4">
+        <div className="flex items-center gap-3">
+          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-g-accent-faint text-g-accent">
+            <KeyRound className="h-4 w-4" />
+          </span>
+          <div className="min-w-0">
+            <div className="text-[13px] font-medium text-g-text">
+              Account security
+            </div>
+            <p className="text-[12px] text-g-text-muted">
+              Set a password, enable two-factor, manage recovery codes.
+            </p>
+          </div>
+        </div>
+        <Link
+          href="/app/account/security"
+          prefetch
+          className="rounded-md bg-g-accent px-4 py-2 text-[12px] font-medium text-black hover:bg-g-accent-hover"
+        >
+          Open security
+        </Link>
       </section>
 
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
