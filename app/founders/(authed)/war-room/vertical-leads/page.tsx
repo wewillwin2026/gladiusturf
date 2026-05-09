@@ -8,8 +8,19 @@ import { supabaseAdmin } from "@/lib/supabase";
 import { relTime } from "@/lib/shared/format";
 import { cn } from "@/lib/cn";
 import { VERTICALS, type VerticalSlug } from "@/lib/vertical/types";
+import { SearchBar } from "./_components/SearchBar";
+import { StatusBadge } from "./_components/StatusBadge";
+import { ExportButton } from "./_components/ExportButton";
 
 export const dynamic = "force-dynamic";
+
+const STATUS_FILTERS = [
+  { slug: "all", label: "All statuses" },
+  { slug: "new", label: "New" },
+  { slug: "contacted", label: "Contacted" },
+  { slug: "converted", label: "Converted" },
+  { slug: "disqualified", label: "DQ" },
+] as const;
 
 type VerticalLead = {
   id: string;
@@ -29,7 +40,7 @@ type VerticalLead = {
   created_at: string;
 };
 
-type SearchParams = { vertical?: string };
+type SearchParams = { vertical?: string; status?: string; q?: string };
 
 export default async function VerticalLeadsPage({
   searchParams,
@@ -42,6 +53,10 @@ export default async function VerticalLeadsPage({
     filter === "all" || VERTICALS.some((v) => v.slug === filter)
       ? filter
       : "all";
+  const statusFilter = params?.status ?? "all";
+  const validStatus =
+    STATUS_FILTERS.some((s) => s.slug === statusFilter) ? statusFilter : "all";
+  const q = (params?.q ?? "").trim();
 
   let leads: VerticalLead[] = [];
   let error: string | null = null;
@@ -56,6 +71,15 @@ export default async function VerticalLeadsPage({
       .limit(150);
     if (validFilter !== "all") {
       query = query.eq("vertical", validFilter);
+    }
+    if (validStatus !== "all") {
+      query = query.eq("status", validStatus);
+    }
+    if (q) {
+      const safe = q.replace(/[\\,()]/g, "");
+      query = query.or(
+        `email.ilike.%${safe}%,company.ilike.%${safe}%,name.ilike.%${safe}%`,
+      );
     }
     const { data, error: e } = await query;
     if (e) throw e;
@@ -136,6 +160,12 @@ export default async function VerticalLeadsPage({
       align: "center",
     },
     {
+      key: "status",
+      header: "Status",
+      cell: (r) => <StatusBadge id={r.id} initial={r.status ?? "new"} />,
+      align: "center",
+    },
+    {
       key: "ts",
       header: "Submitted",
       cell: (r) => relTime(r.created_at),
@@ -143,6 +173,20 @@ export default async function VerticalLeadsPage({
       align: "right",
     },
   ];
+
+  // Build href helpers that preserve other query params when changing one.
+  function pillHref(updates: Record<string, string | null>): string {
+    const next = new URLSearchParams();
+    if (validFilter !== "all") next.set("vertical", validFilter);
+    if (validStatus !== "all") next.set("status", validStatus);
+    if (q) next.set("q", q);
+    for (const [k, v] of Object.entries(updates)) {
+      if (v === null) next.delete(k);
+      else next.set(k, v);
+    }
+    const qs = next.toString();
+    return `/founders/war-room/vertical-leads${qs ? `?${qs}` : ""}`;
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -152,10 +196,20 @@ export default async function VerticalLeadsPage({
         subtitle="All inbound waitlist + lighting submissions, grouped by vertical. Reply within 24h with three slots and (for lighting) the workspace passcode."
       />
 
+      {/* Search + export bar */}
+      <section className="flex flex-col gap-3 md:flex-row md:items-center">
+        <div className="flex-1 md:max-w-md">
+          <SearchBar />
+        </div>
+        <div className="flex items-center gap-2">
+          <ExportButton />
+        </div>
+      </section>
+
       {/* Per-vertical filter pills */}
       <section className="flex flex-wrap gap-2">
         <FilterPill
-          href="/founders/war-room/vertical-leads"
+          href={pillHref({ vertical: null })}
           label="All"
           count={countsByVertical.get("all") ?? 0}
           active={validFilter === "all"}
@@ -163,12 +217,31 @@ export default async function VerticalLeadsPage({
         {VERTICALS.map((v) => (
           <FilterPill
             key={v.slug}
-            href={`/founders/war-room/vertical-leads?vertical=${v.slug}`}
+            href={pillHref({ vertical: v.slug })}
             label={v.name}
             count={countsByVertical.get(v.slug) ?? 0}
             active={validFilter === v.slug}
             live={v.status === "live"}
           />
+        ))}
+      </section>
+
+      {/* Status filter pills */}
+      <section className="flex flex-wrap gap-2">
+        {STATUS_FILTERS.map((s) => (
+          <Link
+            key={s.slug}
+            href={pillHref({ status: s.slug === "all" ? null : s.slug })}
+            prefetch
+            className={cn(
+              "inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.12em] transition-colors",
+              validStatus === s.slug
+                ? "border-g-accent/60 bg-g-accent-faint text-g-accent"
+                : "border-g-border bg-g-surface text-g-text-muted hover:text-g-text",
+            )}
+          >
+            {s.label}
+          </Link>
         ))}
       </section>
 
