@@ -166,6 +166,7 @@ export const SECRET_TABS = [
   { slug: "tenants", name: "Tenants", icon: Building2 },
   { slug: "vertical-leads", name: "Vertical Leads", icon: Lightbulb },
   { slug: "landing-previews", name: "Landing Previews", icon: Eye },
+  { slug: "launch-checklist", name: "Launch Checklist", icon: Activity },
 ] as const;
 
 export type ProductKind = "demo" | "tenant" | "founders";
