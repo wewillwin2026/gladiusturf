@@ -22,11 +22,16 @@ export const dynamic = "force-dynamic";
  */
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://gladiusturf.com";
-// `radar@gladiusturf.com` so the email reads as a person, not a no-reply
-// system address. Verify the alias on Resend / DNS before the first send to a
-// real tenant — gracefully falls back to the configured RESEND_FROM if set.
+// Reads RESEND_FROM_EMAIL — same env var as the canonical dispatcher in
+// lib/messaging/email.ts. Falls back to founders@gladiusturf.com which is
+// verified. The legacy `radar@` fallback shipped before that subdomain
+// was verified, which silently failed every send. Empty-string env values
+// are treated as unset (defensive `.trim()` check).
+const RESEND_FROM_TRIMMED = (process.env.RESEND_FROM_EMAIL ?? "").trim();
 const FROM_ADDRESS =
-  process.env.RESEND_FROM || "Gladius Radar <radar@gladiusturf.com>";
+  RESEND_FROM_TRIMMED.length > 0
+    ? RESEND_FROM_TRIMMED
+    : "Gladius Radar <founders@gladiusturf.com>";
 const STALE_THRESHOLD_DAYS = 90;
 const TOP_N = 5;
 

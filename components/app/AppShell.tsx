@@ -16,6 +16,7 @@ export function AppShell({
   user,
   logoutHref,
   hideAskGladius = false,
+  vertical = null,
   children,
 }: {
   product: ProductKind;
@@ -28,6 +29,12 @@ export function AppShell({
    * hallucinate the tenant's customers as Cypress Lawn's.
    */
   hideAskGladius?: boolean;
+  /**
+   * Tenant vertical (e.g. "lighting", "irrigation"). When set, the sidebar
+   * filters to engines applicable to this vertical (hides Backflow Compliance
+   * Radar from lighting tenants, etc.). null = render all engines.
+   */
+  vertical?: string | null;
   children: React.ReactNode;
 }) {
   return (
@@ -35,9 +42,9 @@ export function AppShell({
       <ThemeProvider>
         <CommandPaletteProvider>
           <TooltipProvider>
-            <Sidebar product={product} />
+            <Sidebar product={product} vertical={vertical} />
             <div className="flex-1 flex flex-col min-w-0">
-              <Topbar product={product} user={user} logoutHref={logoutHref} />
+              <Topbar product={product} user={user} logoutHref={logoutHref} vertical={vertical} />
               <main className="flex-1 px-6 py-6 max-w-[1480px] w-full mx-auto">
                 {children}
               </main>

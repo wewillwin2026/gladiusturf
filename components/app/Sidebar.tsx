@@ -7,6 +7,7 @@ import {
   ENGINES,
   ENGINE_GROUPS,
   SECRET_TABS,
+  enginesForVertical,
   hrefForEngine,
   type ProductKind,
 } from "./engines";
@@ -21,12 +22,26 @@ interface SidebarProps {
   variant?: SidebarVariant;
   /** Called when a nav link is clicked. Used by the mobile Sheet to close itself. */
   onNavigate?: () => void;
+  /** Tenant vertical — filters the engine list (lighting tenants don't see
+   *  Backflow Compliance Radar, etc). null = render all engines. */
+  vertical?: string | null;
 }
 
-export function Sidebar({ product, variant = "desktop", onNavigate }: SidebarProps) {
+export function Sidebar({
+  product,
+  variant = "desktop",
+  onNavigate,
+  vertical = null,
+}: SidebarProps) {
   const pathname = usePathname() ?? "/";
   const base =
     product === "founders" ? "/founders/war-room" : "/app";
+  // Tenant sessions filter to engines applicable to their vertical. Demo +
+  // founders see the full list — they're tour/internal surfaces.
+  const visibleEngines =
+    product === "tenant" && vertical
+      ? enginesForVertical(vertical)
+      : ENGINES;
 
   return (
     <nav
@@ -63,7 +78,7 @@ export function Sidebar({ product, variant = "desktop", onNavigate }: SidebarPro
 
       <div className="flex flex-col gap-3 flex-1">
         {ENGINE_GROUPS.map((g) => {
-          const items = ENGINES.filter((e) => e.group === g.id);
+          const items = visibleEngines.filter((e) => e.group === g.id);
           if (!items.length) return null;
           return (
             <div key={g.id} className="flex flex-col gap-0.5">

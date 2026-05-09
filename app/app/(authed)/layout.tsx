@@ -30,6 +30,7 @@ export default async function AppAuthedLayout({
         }}
         logoutHref="/api/app/logout"
         hideAskGladius
+        vertical={session.tenant.vertical}
       >
         {children}
       </AppShell>

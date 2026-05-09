@@ -111,10 +111,13 @@ export async function POST(req: Request) {
   // Hardcoding `app@gladiusturf.com` here was a silent-fail bug — if the
   // subdomain wasn't verified, Resend rejected the send and the whole
   // request just returned ok:true with nothing in the inbox. Falls back
-  // to founders@ which has been verified since Phase 2.
+  // to founders@ which has been verified since Phase 2. Empty-string
+  // env values are treated as unset (defensive trim).
+  const fromTrimmed = (process.env.RESEND_FROM_EMAIL ?? "").trim();
   const fromAddress =
-    process.env.RESEND_FROM_EMAIL ||
-    "GladiusTurf <founders@gladiusturf.com>";
+    fromTrimmed.length > 0
+      ? fromTrimmed
+      : "GladiusTurf <founders@gladiusturf.com>";
 
   try {
     const resend = new Resend(apiKey);

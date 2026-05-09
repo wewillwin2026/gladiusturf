@@ -127,6 +127,19 @@ export async function importCustomers(input: ImportInput): Promise<ImportResult>
   // the success screen should nudge them to bulk-set after import.
   const languageMapped = cleaned.some((r) => r.preferred_language != null);
 
+  // Count phones-that-couldn't-be-normalized across the FULL cleaned set
+  // (not just `fresh`). Counting only fresh rows undercounts when a
+  // tenant re-uploads with corrections — they'd see "0 phones dropped"
+  // but actually lost data on the duplicate-named rows. Accurate count
+  // matters because the operator uses it to decide whether to re-fix
+  // their CSV before signing off the import.
+  const phonesDropped = cleaned.reduce((acc, r) => {
+    if (r.primary_phone && r.primary_phone.trim().length > 0) {
+      if (!normalizeE164(r.primary_phone)) return acc + 1;
+    }
+    return acc;
+  }, 0);
+
   if (fresh.length === 0) {
     return {
       ok: true,
@@ -134,25 +147,18 @@ export async function importCustomers(input: ImportInput): Promise<ImportResult>
       skipped: cleaned.length,
       consentsRecorded: 0,
       languageMapped,
-      phonesDropped: 0,
+      phonesDropped,
       customers: [],
     };
   }
 
-  // Track how many phones we had to drop because they couldn't be
-  // normalized — surfaced in the success UI so the operator knows.
-  let phonesDropped = 0;
   const now = new Date().toISOString();
   const insertRows = fresh.map((r) => {
-    const normalized = normalizeE164(r.primary_phone);
-    if (r.primary_phone && r.primary_phone.trim().length > 0 && !normalized) {
-      phonesDropped += 1;
-    }
     return {
     tenant_id: session.tenant.id,
     display_name: r.display_name,
     primary_email: r.primary_email?.trim() || null,
-    primary_phone: normalized,
+    primary_phone: normalizeE164(r.primary_phone),
     preferred_language: normalizeLanguage(r.preferred_language),
     service_address:
       r.street || r.city || r.state || r.zip

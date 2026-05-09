@@ -11,7 +11,13 @@ import type { ProductKind } from "./engines";
  * opens a left-side drawer containing the same Sidebar engine list a desktop
  * user sees. The drawer auto-closes when a nav link is clicked.
  */
-export function MobileNavTrigger({ product }: { product: ProductKind }) {
+export function MobileNavTrigger({
+  product,
+  vertical = null,
+}: {
+  product: ProductKind;
+  vertical?: string | null;
+}) {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -41,6 +47,7 @@ export function MobileNavTrigger({ product }: { product: ProductKind }) {
           <Sidebar
             product={product}
             variant="mobile"
+            vertical={vertical}
             onNavigate={() => setOpen(false)}
           />
         </RD.Content>
