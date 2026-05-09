@@ -3,8 +3,14 @@
 import { revalidatePath } from "next/cache";
 import { readAppSession } from "@/lib/app/session";
 import { supabaseAdmin } from "@/lib/supabase";
+import { sendSmsToOwner } from "@/lib/messaging/dispatch";
+import { buildBriefingForTenant } from "@/lib/briefing/build";
+import { pickNextMove } from "@/components/app/OwnersDailyOneLiner";
 
 type Result = { ok: true } | { error: string };
+type PreviewResult =
+  | { ok: true; mode: "sent" | "dry_run"; body: string; preview?: string }
+  | { error: string };
 
 function normalizeE164(raw: string): string | null {
   const trimmed = raw.trim();
@@ -71,6 +77,73 @@ export async function updateReviewUrl(formData: FormData): Promise<Result> {
 
   revalidatePath("/app/settings");
   return { ok: true };
+}
+
+/**
+ * Build the same SMS body the daily-briefing cron would send today
+ * and dispatch one immediately to the tenant's `owner_phone`. Used
+ * from the "Send a test briefing now" button on /app/settings so the
+ * owner can confirm the message looks right without waiting for the
+ * 7 AM ET cron.
+ *
+ * Behavior matches the cron exactly: same buildBriefingForTenant,
+ * same pickNextMove, same SMS body shape, same sendSmsToOwner path
+ * (which dry-runs when TWILIO_* env unset). Audit-logged with
+ * source='owner_test_briefing' so test sends are distinguishable
+ * from the daily-cron sends in the audit feed.
+ */
+export async function sendTestBriefingNow(): Promise<PreviewResult> {
+  const session = await readAppSession();
+  if (session.kind !== "tenant") return { error: "unauthenticated" };
+
+  const sb = supabaseAdmin();
+  let phone: string | null = null;
+  try {
+    const { data: row } = await sb
+      .from("tenants")
+      .select("owner_phone")
+      .eq("id", session.tenant.id)
+      .maybeSingle();
+    phone = (row as { owner_phone?: string | null } | null)?.owner_phone ?? null;
+  } catch {
+    return { error: "column_not_ready" };
+  }
+  if (!phone) return { error: "no_phone_set" };
+
+  const briefing = await buildBriefingForTenant({
+    tenantId: session.tenant.id,
+    tenantName: session.tenant.display_name,
+  });
+  if (!briefing) return { error: "no_briefing_pre_onboarding" };
+
+  const move = pickNextMove(briefing);
+  const stats: string[] = [`${briefing.customerCount} cust`];
+  if ((briefing.scheduledTodayCount ?? 0) > 0) {
+    stats.push(`${briefing.scheduledTodayCount} on route`);
+  }
+  if (briefing.draftQuotesCount > 0) {
+    stats.push(
+      `${briefing.draftQuotesCount} draft${briefing.draftQuotesCount === 1 ? "" : "s"}`,
+    );
+  }
+  const trimmedMove =
+    move.text.length > 110 ? `${move.text.slice(0, 107)}…` : move.text;
+  const body = `Good morning, ${briefing.tenantName}. ${stats.join(" · ")}.\n\nYour one move: ${trimmedMove}\n\nReply STOP to disable.`;
+
+  const result = await sendSmsToOwner({
+    tenantId: session.tenant.id,
+    toPhone: phone,
+    body,
+    source: "owner_test_briefing",
+    auditAction: "owner_briefing",
+  });
+
+  if (!result.ok) {
+    return { error: result.reason };
+  }
+  return result.mode === "sent"
+    ? { ok: true, mode: "sent", body }
+    : { ok: true, mode: "dry_run", body, preview: result.preview };
 }
 
 /**
