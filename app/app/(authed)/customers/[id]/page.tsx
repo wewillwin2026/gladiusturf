@@ -30,6 +30,7 @@ import { cn } from "@/lib/cn";
 import { CustomerHeartbeat } from "@/components/app/CustomerHeartbeat";
 import { PlanPicker } from "./PlanPicker";
 import { LogVisitButton } from "./LogVisitButton";
+import { SendReviewAskButton } from "./SendReviewAskButton";
 import { LightingAssets } from "./LightingAssets";
 
 export const dynamic = "force-dynamic";
@@ -345,6 +346,12 @@ export default async function CustomerDetailPage({
               <LogVisitButton
                 customerId={c.id}
                 customerName={c.display_name}
+              />
+              <SendReviewAskButton
+                customerId={c.id}
+                customerName={c.display_name}
+                preferredLanguage={c.preferred_language}
+                tenantDisplayName={session.tenant.display_name}
               />
             </div>
           }

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { readAppSession } from "@/lib/app/session";
 import { supabaseAdmin } from "@/lib/supabase";
+import { sendSmsToCustomer } from "@/lib/messaging/dispatch";
 
 /**
  * Subscribe a customer to a plan tier. Idempotent on (tenant, customer,
@@ -877,4 +878,139 @@ export async function deleteWarrantyClaim(formData: FormData): Promise<CrudResul
 
   revalidatePath(`/app/customers/${customerId}`);
   return { ok: true };
+}
+
+// ---------------------------------------------------------------
+// Manual review-ask SMS — Bright Lights pilot, 2026-05-08.
+// The Auto-ask cadence on /app/reviews handles the post-visit "send
+// 3 days later" flavour. This server action backs the SendReviewAsk
+// button on the customer detail page so the operator can fire a
+// one-tap ask on demand. Routed through lib/messaging/dispatch so
+// canSend() (consent + quiet hours) is enforced like every other
+// outbound SMS — the dispatcher is the single choke-point.
+// ---------------------------------------------------------------
+
+export type SendReviewAskInput = {
+  customerId: string;
+  body: string;
+};
+
+export type SendReviewAskResult =
+  | { ok: true; mode: "sent" | "dry_run" }
+  | { error: string };
+
+/**
+ * Substitute {first_name} and {review_url} into the operator-supplied
+ * body. {tenant_display_name} is also supported in case a future template
+ * uses it server-side. We do the substitution server-side so the operator
+ * never has to know the tenant's review URL — it's pulled from the
+ * tenants row (or a placeholder if not yet configured).
+ */
+function fillBody(args: {
+  body: string;
+  firstName: string;
+  reviewUrl: string;
+  tenantDisplayName: string;
+}): string {
+  return args.body
+    .replaceAll("{first_name}", args.firstName)
+    .replaceAll("{review_url}", args.reviewUrl)
+    .replaceAll("{tenant_display_name}", args.tenantDisplayName);
+}
+
+function firstWord(name: string): string {
+  const trimmed = name.trim();
+  if (!trimmed) return "";
+  const idx = trimmed.indexOf(" ");
+  return idx === -1 ? trimmed : trimmed.slice(0, idx);
+}
+
+export async function sendReviewAsk(
+  input: SendReviewAskInput,
+): Promise<SendReviewAskResult> {
+  const session = await readAppSession();
+  if (session.kind !== "tenant") return { error: "unauthenticated" };
+  if (!input.customerId || !input.body?.trim()) {
+    return { error: "missing_field" };
+  }
+
+  const sb = supabaseAdmin();
+  const { data: customer, error: cErr } = await sb
+    .from("customers")
+    .select("id, display_name")
+    .eq("id", input.customerId)
+    .eq("tenant_id", session.tenant.id)
+    .maybeSingle();
+  if (cErr || !customer) return { error: "not_found_in_tenant" };
+
+  // Try to read tenants.review_url if the column has been added later.
+  // Today (2026-05-08) the column doesn't exist on the tenants table —
+  // the select() will fail and we fall through to the placeholder. When
+  // a future migration adds review_url, this lookup just starts working
+  // with no further code change.
+  // TODO(cristian): once the tenant settings page exposes a "Google
+  // review URL" field + migration adds tenants.review_url, this branch
+  // returns the real URL. Until then every tenant gets the placeholder.
+  let reviewUrl = "https://g.page/r/<placeholder>";
+  try {
+    const { data: tenantRow } = await sb
+      .from("tenants")
+      .select("review_url")
+      .eq("id", session.tenant.id)
+      .maybeSingle();
+    const candidate = (tenantRow as { review_url?: string | null } | null)?.review_url;
+    if (candidate && candidate.trim().length > 0) {
+      reviewUrl = candidate.trim();
+    }
+  } catch {
+    // column missing — use placeholder
+  }
+
+  const firstName = firstWord((customer as { display_name: string }).display_name);
+  const filled = fillBody({
+    body: input.body,
+    firstName,
+    reviewUrl,
+    tenantDisplayName: session.tenant.display_name,
+  });
+
+  if (filled.length < 20) return { error: "body_too_short" };
+  if (filled.length > 1600) return { error: "body_too_long" };
+
+  const result = await sendSmsToCustomer({
+    tenantId: session.tenant.id,
+    customerId: input.customerId,
+    body: filled,
+    source: "review_ask",
+  });
+
+  // The dispatcher already audit-logs message.sent / blocked / dry_run /
+  // failed. We add a source-specific row so the /app/reviews ask-volume
+  // metric can count review_ask attempts without having to filter on
+  // metadata.source — and so a tenant audit page sees a clean
+  // "review_ask.sent" entry.
+  try {
+    await sb.from("audit_log").insert({
+      tenant_id: session.tenant.id,
+      user_id: null,
+      action: result.ok ? "review_ask.sent" : "review_ask.failed",
+      entity_type: "customer",
+      entity_id: input.customerId,
+      metadata: {
+        source: "manual_button",
+        mode: result.ok ? result.mode : null,
+        reason: result.ok ? null : result.reason,
+        body_excerpt: filled.length > 160 ? `${filled.slice(0, 157)}…` : filled,
+      },
+    });
+  } catch (err) {
+    console.warn("review_ask audit insert failed (non-fatal)", err);
+  }
+
+  if (!result.ok) {
+    return { error: result.reason };
+  }
+
+  revalidatePath(`/app/customers/${input.customerId}`);
+  return { ok: true, mode: result.mode };
 }
