@@ -71,7 +71,7 @@ Sources: [Attentive.ai LMN partnership](https://attentive.ai/blog/lmn-and-attent
 - **Objection:** "LMN just partnered with Attentive.ai for AI measurement."
   - **Response:** "That's a vendor relationship — they OEM their AI from someone else. We own the model layer. When you ask 'why did this estimate lose,' Attentive can't answer because it doesn't have the data. Quote Intercept does, because we never let it leave our graph. The competitor who outsources AI loses to the one who owns it."
 - **Objection:** "We pay $199 for LMN Pro — you'll cost more."
-  - **Response:** "Check your invoice — LMN list moved to $297 Starter / $598 Pro in 2026, plus per-user. We're $397/crew (not user) for all 27 engines. At three crews you've passed the LMN Pro list. And LMN's 30-day cancellation usage fee is in your contract today — leaving us is free."
+  - **Response:** "Check your invoice — LMN list moved to $297 Starter / $598 Pro in 2026, plus per-user. We're $597/crew (not user) for all 33 engines. At three crews you've passed the LMN Pro list. And LMN's 30-day cancellation usage fee is in your contract today — leaving us is free."
 
 ---
 
@@ -96,7 +96,7 @@ Sources: [V3 Roadmap](https://www.serviceautopilot.com/v3-release-roadmap/), [Au
 - **Objection:** "V3 is fixing the workflow problems."
   - **Response:** "V3 renames Recurring Jobs to Repeat Jobs and adds a wizard. That's chrome. The structural problem is per-user pricing tied to a 10% annual hike — V3 doesn't change the math. We're per-crew. Add seasonal hires for free. Every spring you save more than you used to lose."
 - **Objection:** "Service Autopilot has Genius AI."
-  - **Response:** "Pull up their 2025 release notes — Genius AI isn't in any of them. The release shipped Tickets, Wizards, and renames. We shipped 27 AI-native engines. Quote Intercept alone recovers more revenue per quarter than Service Autopilot's AI does in 12 months because it actually exists."
+  - **Response:** "Pull up their 2025 release notes — Genius AI isn't in any of them. The release shipped Tickets, Wizards, and renames. We shipped 33 AI-native engines. Quote Intercept alone recovers more revenue per quarter than Service Autopilot's AI does in 12 months because it actually exists."
 
 ---
 
@@ -117,9 +117,9 @@ Sources: [Jobber AI Receptionist GA press](https://www.prnewswire.com/news-relea
 
 **Sales objection battle card.**
 - **Objection:** "Jobber just shipped AI Receptionist. They're ahead on AI."
-  - **Response:** "AI Receptionist is a $99/mo add-on inbound call deflector. It answers the phone. Quote Intercept catches the $14,200/mo your team already quoted and forgot to chase. Different surface, different math. The receptionist saves a few minutes; Quote Intercept compounds revenue. And our voice agents are included in $397/crew — not gated behind a Plus plan you're paying $599 for."
+  - **Response:** "AI Receptionist is a $99/mo add-on inbound call deflector. It answers the phone. Quote Intercept catches the $14,200/mo your team already quoted and forgot to chase. Different surface, different math. The receptionist saves a few minutes; Quote Intercept compounds revenue. And our voice agents are included in $597/crew — not gated behind a Plus plan you're paying $599 for."
 - **Objection:** "Jobber works for everyone in home services. We've used it for years."
-  - **Response:** "Generic is the bug. Jobber doesn't know that mowing-day scheduling is weather-bound, that your applicators need state license tracking, or that the riding mower is on truck 3. Safety Shield, Weather Pivot, and Equipment-Aware Routing all assume your business is landscape, not 'home services.' That's why the per-crew price beats your $589 Connect Team bill before our 27 engines kick in."
+  - **Response:** "Generic is the bug. Jobber doesn't know that mowing-day scheduling is weather-bound, that your applicators need state license tracking, or that the riding mower is on truck 3. Safety Shield, Weather Pivot, and Equipment-Aware Routing all assume your business is landscape, not 'home services.' That's why the per-crew price beats your $589 Connect Team bill before our 33 engines kick in."
 - **Objection:** "Jobber is monthly, no lock-in. We can leave anytime."
   - **Response:** "Same with us. The difference is the destination, not the door. Jobber's 2.9% + $0.30 card processing is its real moat — they make money when you make money, but you don't. Stripe Connect on GladiusTurf puts payouts in YOUR name in 2 days. Same flexibility, less surcharge."
 
@@ -192,9 +192,9 @@ Sources: [SingleOps Release Notes](https://singleops.com/release-notes/), [Singl
 
 **Sales objection battle card.**
 - **Objection:** "SingleOps just merged with LMN — they're the category."
-  - **Response:** "Mergers under PE create roadmap chaos for 18 months. Granum has to merge two product roadmaps, two sales teams, and two pricing pages — meanwhile we ship 27 engines on a single codebase weekly. The category isn't who consolidates — it's who compounds revenue. Quote Intercept doesn't get faster because two competitors merged."
+  - **Response:** "Mergers under PE create roadmap chaos for 18 months. Granum has to merge two product roadmaps, two sales teams, and two pricing pages — meanwhile we ship 33 engines on a single codebase weekly. The category isn't who consolidates — it's who compounds revenue. Quote Intercept doesn't get faster because two competitors merged."
 - **Objection:** "We need route optimization — only on Premier ($550)."
-  - **Response:** "On us, every tier ships with weather-aware route optimization — and equipment-aware routing on top, so the truck with the riding mower goes to the right job. Premier-tier feature, $397/crew price. Net savings before we count the per-user surcharge."
+  - **Response:** "On us, every tier ships with weather-aware route optimization — and equipment-aware routing on top, so the truck with the riding mower goes to the right job. Premier-tier feature, $597/crew price. Net savings before we count the per-user surcharge."
 - **Objection:** "We just renewed annually."
   - **Response:** "That's the worst place to be. Their auto-renew language locked another customer in until 2026. Use the renewal year to parallel-run us — first 60 days free pilot, your data ports out via CSV. When SingleOps' renewal hits next, you've already moved the actual work."
 
@@ -218,8 +218,8 @@ Sources: [HindSite Heritage partnership](https://success.hindsitesoftware.com/fi
 **Sales objection battle card.**
 - **Objection:** "HindSite is built for irrigation. We're an irrigation shop."
   - **Response:** "Site Memory was built irrigation-first — sprinkler zones, valve maps, controller history, pressure log per property. Plus we ship Safety Shield with backflow-prevention compliance and Weather Pivot for freeze events. You get the irrigation depth without the 1-in-10 support competence and without paying $20/user/mo."
-- **Objection:** "We have a great deal at $50/mo + $20/user — switching to $397/crew costs more."
-  - **Response:** "$50 + $20×7 users = $190/mo for what reviewers call 'missing key features.' Our $397/crew = unlimited users on that crew + 27 revenue engines. At 7 users you've effectively halved your per-feature cost while gaining tap-to-pay, offline PWA, and Quote Intercept. The cheaper bill becomes the more expensive operation."
+- **Objection:** "We have a great deal at $50/mo + $20/user — switching to $597/crew costs more."
+  - **Response:** "$50 + $20×7 users = $190/mo for what reviewers call 'missing key features.' Our $597/crew = unlimited users on that crew + 27 revenue engines. At 7 users you've effectively halved your per-feature cost while gaining tap-to-pay, offline PWA, and Quote Intercept. The cheaper bill becomes the more expensive operation."
 - **Objection:** "HindSite's Heritage integration will let us order materials inline."
   - **Response:** "That roadmap is announced, not shipped. We integrate with Heritage already through our open-API material catalog — and we add weather-aware purchase planning so you don't buy fertilizer the week before a freeze. Their roadmap is 2026; ours is November 2025."
 
@@ -246,7 +246,7 @@ Sources: [LawnSite CLIP thread](https://www.lawnsite.com/threads/clip-software.5
 - **Objection:** "We just survived the cloud migration. No appetite for another switch."
   - **Response:** "That's exactly why we built a 14-day parallel run. You don't 'switch' on day 1 — you import on day 1, parallel from day 2, and only cut over when your office manager personally signs off. We absorbed the migration pain so you don't have to repeat the $530-penalty experience."
 - **Objection:** "CLIPitc is cheap — $40/mo entry."
-  - **Response:** "$40 entry in a tool with no AI, no offline mode, and a public review history of 'thrown into production without testing' is the most expensive tool you can buy — measured in lost office-manager hours and ghosted quotes. $397/crew with 27 revenue engines pays for itself the first week Quote Intercept fires."
+  - **Response:** "$40 entry in a tool with no AI, no offline mode, and a public review history of 'thrown into production without testing' is the most expensive tool you can buy — measured in lost office-manager hours and ghosted quotes. $597/crew with 27 revenue engines pays for itself the first week Quote Intercept fires."
 
 ---
 

@@ -219,7 +219,7 @@ export async function askQuestionAboutQuote(
   const { data: existing, error: lookupErr } = await sb
     .from("proposals")
     .select(
-      "id, tenant_id, customer_id, status, bom, customers!inner(display_name, primary_email), tenants!inner(display_name)",
+      "id, tenant_id, customer_id, status, bom, customers!inner(display_name, primary_email, preferred_language), tenants!inner(display_name)",
     )
     .eq("id", proposalId)
     .maybeSingle();
@@ -231,8 +231,8 @@ export async function askQuestionAboutQuote(
     status: string;
     bom: { title?: string; questions?: Array<{ at: string; text: string }> } | null;
     customers:
-      | { display_name: string; primary_email: string | null }
-      | { display_name: string; primary_email: string | null }[];
+      | { display_name: string; primary_email: string | null; preferred_language: string | null }
+      | { display_name: string; primary_email: string | null; preferred_language: string | null }[];
     tenants: { display_name: string } | { display_name: string }[];
   };
   const ex = existing as unknown as AskRow;
@@ -303,7 +303,8 @@ export async function askQuestionAboutQuote(
     const customerName = customer?.display_name ?? "Customer";
     const tenantName = tenant?.display_name ?? "your team";
     const replyTo = customer?.primary_email ?? undefined;
-    const customerLanguage: "en" | "es" = "en"; // TODO: derive from customer.language when populated
+    const customerLanguage: "en" | "es" =
+      customer?.preferred_language === "es" ? "es" : "en";
     const safeCustomerName = escapeHtml(customerName);
     const safeTenantName = escapeHtml(tenantName);
     const safeTitle = escapeHtml(title);

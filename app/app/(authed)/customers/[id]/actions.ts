@@ -943,14 +943,10 @@ export async function sendReviewAsk(
     .maybeSingle();
   if (cErr || !customer) return { error: "not_found_in_tenant" };
 
-  // Try to read tenants.review_url if the column has been added later.
-  // Today (2026-05-08) the column doesn't exist on the tenants table —
-  // the select() will fail and we fall through to the placeholder. When
-  // a future migration adds review_url, this lookup just starts working
-  // with no further code change.
-  // TODO(cristian): once the tenant settings page exposes a "Google
-  // review URL" field + migration adds tenants.review_url, this branch
-  // returns the real URL. Until then every tenant gets the placeholder.
+  // tenants.review_url is editable on /app/settings (commit ships
+  // 2026-05-09 with migration `20260509_a_tenants_review_url.sql`).
+  // Defensive read in case the migration hasn't been applied — falls
+  // through to placeholder so dispatcher dry-run still functions.
   let reviewUrl = "https://g.page/r/<placeholder>";
   try {
     const { data: tenantRow } = await sb

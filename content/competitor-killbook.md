@@ -15,7 +15,7 @@ The landscape software market is **structurally weak in three identical places**
 
 **The shared blindspot every competitor has:** **They are systems of record, not systems of revenue.** Nobody ships "what's the next dollar" — they ship "where's the data." None of them have Quote Intercept, Ghost Recovery, Upsell Whisperer, Referral Radar, or Operator Score. They digitize landscape work. **GladiusTurf compounds landscape revenue.** That is the category we are creating.
 
-**Attack order:** P0 = LMN (largest landscape-native install base, mid-market $397–$997 sweet spot); P0 = Jobber (widest install base, weakest moat, switching cost ~$0); P1 = Aspire (positioning, not migration — write the manifesto that kills it); P1 = Service Autopilot (per-user pricing creates natural defectors); P2 = the rest.
+**Attack order:** P0 = LMN (largest landscape-native install base, mid-market $597–$1,497 sweet spot); P0 = Jobber (widest install base, weakest moat, switching cost ~$0); P1 = Aspire (positioning, not migration — write the manifesto that kills it); P1 = Service Autopilot (per-user pricing creates natural defectors); P2 = the rest.
 
 ---
 
@@ -39,7 +39,7 @@ The landscape software market is **structurally weak in three identical places**
 
 **The KILL PLAY**
 - **Their weakness:** 6-month implementation, $4-figure floor, opaque revenue-tied pricing, mobile UI rated "dense"
-- **Our advantage:** GladiusTurf ships **27 engines on day one**, $397–$2,997 per-crew (not per-user, not per-revenue), offline-first PWA, all 7 revenue engines (Quote Intercept, QuickHook, Upsell Whisperer, Referral Radar, VoiceQuote, Property Hunter, Ghost Recovery) live in week 1
+- **Our advantage:** GladiusTurf ships **33 engines on day one**, $597–$3,997 per-crew (not per-user, not per-revenue), offline-first PWA, all 7 revenue engines (Quote Intercept, QuickHook, Upsell Whisperer, Referral Radar, VoiceQuote, Property Hunter, Ghost Recovery) live in week 1
 - **Migration story (14–30 days):** Day 1 — export Aspire jobs/customers via CSV (they allow it). Day 2 — Site Memory ingests every property note. Day 7 — Cadence migrates active follow-ups. Day 14 — first crew running fully on GladiusTurf. Day 30 — Aspire contract ends, no early termination if month-to-month or end-of-term.
 - **ICP overlap:** $2–5M shops who joined Aspire because "it was the only enterprise option" but resent the dense UI, the 102% price hikes, and the 6-month onboarding — they want operational control without the ServiceTitan tax.
 
@@ -52,8 +52,8 @@ The landscape software market is **structurally weak in three identical places**
 **/vs/aspire page treatment**
 - Headline: **"Aspire takes 6 months to deploy. GladiusTurf compounds revenue in 14 days."**
 - Why crews switch:
-  - 27 engines live day one vs. modules that unlock over 6 months
-  - Per-crew pricing ($397–$2,997) replaces per-revenue extortion
+  - 33 engines live day one vs. modules that unlock over 6 months
+  - Per-crew pricing ($597–$3,997) replaces per-revenue extortion
   - Native AI (Quote Intercept, Ghost Recovery, Upsell Whisperer) — not 2027 roadmap
 - Migration plan: 30-day parallel run. Week 1 import. Week 2 Site Memory + Cadence. Week 3 Field Crew App rollout. Week 4 sunset Aspire.
 
@@ -81,7 +81,7 @@ Sources: [Capterra Aspire reviews](https://www.capterra.com/p/161544/Aspire/revi
 - **Their weakness:** A great budgeting/estimating tool grafted onto a weak CRM and a 2.7-star mobile app. No AI. Customer-facing experience is an afterthought.
 - **Our advantage:** GladiusTurf is the inverse — we lead with *revenue intelligence* and customer-facing AI (Client Portal, Cadence, ShowRate Max, ToneRadar, Ghost Recovery), and ship a Field Crew App that's offline-first and PWA-installable on a flip phone.
 - **Migration story (7–14 days):** LMN exports estimates/budgets to CSV. GladiusTurf imports + maps line items. WinMemory immediately starts learning from past wins. Crews keep their mobile workflow but on a native PWA. Day 7: parallel run. Day 14: cut over.
-- **ICP overlap:** Anyone on LMN Pro ($199) who is paying per-user add-ons and complaining about the crew app. Mid-market landscape ($500K–$3M) — our $397–$997 sweet spot exactly.
+- **ICP overlap:** Anyone on LMN Pro ($199) who is paying per-user add-ons and complaining about the crew app. Mid-market landscape ($500K–$3M) — our $597–$1,497 sweet spot exactly.
 
 **Switching friction**
 - Time: 7–14 days
@@ -93,7 +93,7 @@ Sources: [Capterra Aspire reviews](https://www.capterra.com/p/161544/Aspire/revi
 - Headline: **"LMN built the budgeting tool. GladiusTurf builds the revenue."**
 - Why crews switch:
   - Crew app that doesn't delete job cards (offline-first PWA, real)
-  - 27 engines vs. estimating + a basic CRM
+  - 33 engines vs. estimating + a basic CRM
   - Native AI (Cadence, Ghost Recovery, Upsell Whisperer) where LMN has none
 - Migration plan: 14-day import + parallel run. Keep your line-item budgets, add 27 revenue engines on top.
 
@@ -119,7 +119,7 @@ Sources: [G2 LMN reviews](https://www.g2.com/products/lmn/reviews), [TrustRadius
 
 **The KILL PLAY**
 - **Their weakness:** Per-user pricing scales against the customer; "Genius" AI is roadmap-level; PE ownership means feature velocity is slow and pricing pressure is high.
-- **Our advantage:** Per-crew (not per-user) pricing — add seasonal hires for free. 27 engines live, native Claude AI everywhere, no PE-driven price hikes baked in.
+- **Our advantage:** Per-crew (not per-user) pricing — add seasonal hires for free. 33 engines live, native Claude AI everywhere, no PE-driven price hikes baked in.
 - **Migration story (10 days):** Export customer + job CSV. Day 1–3 Site Memory ingest. Day 4–7 Cadence migrates active sequences. Day 8–10 crew rollout. ServiceMagnet immediately reactivates 6-month-old leads.
 - **ICP overlap:** Lawn care shops 5–25 crews currently paying $300–$800/mo on Service Autopilot per-user math, watching it climb each spring as they add seasonal crew.
 
@@ -133,7 +133,7 @@ Sources: [G2 LMN reviews](https://www.g2.com/products/lmn/reviews), [TrustRadius
 - Headline: **"Service Autopilot punishes growth. GladiusTurf rewards it."**
 - Why crews switch:
   - Per-crew pricing — your seasonal hires are free
-  - Native AI in 19 of 27 engines (not "Genius" marketing copy)
+  - Native AI in 19 of 33 engines (not "Genius" marketing copy)
   - Real customer support — direct founder line on Enterprise tier
 - Migration plan: 10-day import. Same dispatch power, plus 27 revenue engines.
 
@@ -324,7 +324,7 @@ Sources: [LawnSite CLIP thread](https://www.lawnsite.com/threads/clip-software.5
 - **Pricing**: $245–$398/tech/month + $5K–$50K implementation; ETFs of $46,170, $39,375, $24,000, $18,000 documented in BBB filings
 - **Customer self-defeat**: ServiceTitan publicly says "not optimized for companies with 3 or fewer technicians"
 - **Top complaints**: 6–12 month onboarding, slow support, hidden add-on costs (Marketing Pro $2,000+/mo separate), data export requires legal help
-- **Kill play**: ServiceTitan is the boogeyman, not the competitor. Use it as the negative anchor in /vs pages — "don't pay $46,170 to leave when you can join us in 14 days for $397/crew." Their existence makes Aspire look reasonable; we make Aspire look insane.
+- **Kill play**: ServiceTitan is the boogeyman, not the competitor. Use it as the negative anchor in /vs pages — "don't pay $46,170 to leave when you can join us in 14 days for $597/crew." Their existence makes Aspire look reasonable; we make Aspire look insane.
 
 Sources: [FieldCamp ServiceTitan](https://fieldcamp.ai/reviews/servicetitan/), [GetOneCrew ServiceTitan](https://www.getonecrew.com/post/servicetitan-reviews)
 
@@ -348,7 +348,7 @@ Sources: [TrustRadius PestPac](https://www.trustradius.com/products/workwave-pes
 
 - **Pricing**: Basic $59/mo (1 user), Essentials $149/mo, MAX $299/mo + $35/user; Trustpilot 3.2/5
 - **Top complaint**: "Cost creep from paid add-ons is the #1 reason businesses stop using Housecall Pro" — feature-gating creates resentment
-- **Kill play**: Same play as Jobber but harder — Housecall Pro is also a generalist. Same migration: 7-day CSV import. Pitch: "no add-on creep, all 27 engines included from day one."
+- **Kill play**: Same play as Jobber but harder — Housecall Pro is also a generalist. Same migration: 7-day CSV import. Pitch: "no add-on creep, all 33 engines included from day one."
 
 Sources: [FieldCamp Housecall Pro](https://fieldcamp.ai/reviews/housecall-pro/), [Capterra Housecall Pro](https://www.capterra.com/p/140363/HouseCall-Pro/reviews/)
 
@@ -357,12 +357,12 @@ Sources: [FieldCamp Housecall Pro](https://fieldcamp.ai/reviews/housecall-pro/),
 ## Tier 3: Point solutions
 
 ### 14. Method:CRM
-QuickBooks-bolted CRM. **$28/user/mo**. Best for QuickBooks-heavy general contractors, not landscape rhythms (no weather, no chemical, no seasonal cadence). Steep learning curve. Won't survive a side-by-side demo with our 27 engines. Position: "Method:CRM stores customers. GladiusTurf compounds them." 100-word /vs page is enough.
+QuickBooks-bolted CRM. **$28/user/mo**. Best for QuickBooks-heavy general contractors, not landscape rhythms (no weather, no chemical, no seasonal cadence). Steep learning curve. Won't survive a side-by-side demo with our 33 engines. Position: "Method:CRM stores customers. GladiusTurf compounds them." 100-word /vs page is enough.
 
 Sources: [G2 Method CRM](https://www.g2.com/products/method-crm/reviews)
 
 ### 15. QuickBooks Online + manual everything (the real "competitor" — 60% of small shops)
-This is the largest competitor by install base. Pricing: $35–$235/mo (QBO) + spreadsheets + group texts + paper. Doesn't lose features — it has none. The migration story isn't "switch from X to GladiusTurf" — it's "stop running your $1.2M business on a spreadsheet." The 27 engines pay for themselves in week 1 by recovering one ghosted quote (Ghost Recovery: +51% on dead leads). This is the **outbound campaign** target — 500-GM Apollo list with QBO as the only "system."
+This is the largest competitor by install base. Pricing: $35–$235/mo (QBO) + spreadsheets + group texts + paper. Doesn't lose features — it has none. The migration story isn't "switch from X to GladiusTurf" — it's "stop running your $1.2M business on a spreadsheet." The 33 engines pay for themselves in week 1 by recovering one ghosted quote (Ghost Recovery: +51% on dead leads). This is the **outbound campaign** target — 500-GM Apollo list with QBO as the only "system."
 
 ---
 
@@ -379,9 +379,9 @@ The proof points are baked into the product (LRI Score, Operator Score, Outcome 
 
 **Tactics, in order:**
 
-1. **Manifesto post (Day 7):** "Landscape software is a system of record. Landscape revenue intelligence is a system of revenue. Here's the difference, in 27 engines." Publish on the landing page. Cross-post LinkedIn, LawnSite, r/lawncare, r/landscaping, GIE+EXPO Slack groups.
+1. **Manifesto post (Day 7):** "Landscape software is a system of record. Landscape revenue intelligence is a system of revenue. Here's the difference, in 33 engines." Publish on the landing page. Cross-post LinkedIn, LawnSite, r/lawncare, r/landscaping, GIE+EXPO Slack groups.
 
-2. **The 500-GM outbound (Day 14):** Apollo query: "GM/Owner, $500K–$5M revenue, lawn care/landscape, US." 8-touch sequence borrowed from Gladius CRM's Outbound Pack. First touch: "27 engines vs. your 7 tools — show me your stack and I'll show you the leakage." Reply triggers Calendly + 14-day pilot.
+2. **The 500-GM outbound (Day 14):** Apollo query: "GM/Owner, $500K–$5M revenue, lawn care/landscape, US." 8-touch sequence borrowed from Gladius CRM's Outbound Pack. First touch: "33 engines vs. your 7 tools — show me your stack and I'll show you the leakage." Reply triggers Calendly + 14-day pilot.
 
 3. **/vs page roadmap (Day 21):** 9 dynamic pages auto-generated from `competitors.ts`. Each page: kill headline, 3 reasons to switch, migration story, CTA to 14-day pilot.
 
@@ -406,11 +406,11 @@ The category lock: when buyers shopping "landscape software" Google "landscape r
 | RealGreen | /vs/realgreen | RealGreen got bought. GladiusTurf got built. | P1 |
 | ServiceTitan | /vs/servicetitan | ServiceTitan charges $46,170 to leave. We charge $0 to start. | P1 |
 | Arborgold | /vs/arborgold | Arborgold loses your invoices to spam. We don't. | P2 |
-| SingleOps | /vs/singleops | SingleOps charges $200/user. We charge $0/user, $397/crew. | P2 |
+| SingleOps | /vs/singleops | SingleOps charges $200/user. We charge $0/user, $597/crew. | P2 |
 | HindSite | /vs/hindsite | HindSite can't take payment in the field. We do — tap to pay. | P2 |
 | FieldRoutes | /vs/fieldroutes | FieldRoutes does pest. GladiusTurf does turf + pest in one. | P2 |
 | Workwave | /vs/workwave | Workwave got rolled up. We answer the phone. | P2 |
-| Housecall Pro | /vs/housecall-pro | Housecall Pro nickel-and-dimes you. We give you all 27 engines. | P2 |
+| Housecall Pro | /vs/housecall-pro | Housecall Pro nickel-and-dimes you. We give you all 33 engines. | P2 |
 | CLIPitc | /vs/clipitc | CLIP forced you into the cloud. We give you a real one. | P2 |
 | Method:CRM | /vs/method-crm | Method:CRM stores customers. GladiusTurf compounds them. | P2 |
 | QuickBooks + spreadsheets | /vs/quickbooks | Stop running your $1.2M shop on a spreadsheet. | P0 (outbound) |

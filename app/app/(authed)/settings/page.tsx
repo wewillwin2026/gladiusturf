@@ -16,6 +16,7 @@ import { readAppSession } from "@/lib/app/session";
 import { supabaseAdmin } from "@/lib/supabase";
 import { dispatcherMode, twilioCredStatus } from "@/lib/messaging/dispatch";
 import { emailDispatcherMode, resendCredStatus } from "@/lib/messaging/email";
+import { ReviewUrlForm } from "./_components/ReviewUrlForm";
 
 export const dynamic = "force-dynamic";
 
@@ -54,6 +55,22 @@ export default async function Page() {
       .eq("status", "active")
       .order("created_at", { ascending: true }),
   ]);
+
+  // tenants.review_url — defensive read: column may not be deployed yet,
+  // in which case the select fails silently and the form renders empty.
+  let reviewUrl: string | null = null;
+  try {
+    const { data: tenantRow } = await sb
+      .from("tenants")
+      .select("review_url")
+      .eq("id", session.tenant.id)
+      .maybeSingle();
+    const candidate =
+      (tenantRow as { review_url?: string | null } | null)?.review_url ?? null;
+    reviewUrl = candidate ?? null;
+  } catch {
+    // column missing — form will save once migration is applied
+  }
 
   const settings = settingsRes.data ?? {
     quiet_hours_start: 20,
@@ -158,6 +175,10 @@ export default async function Page() {
             primary if the customer&apos;s language isn&apos;t set.
           </p>
         </div>
+      </section>
+
+      <section className="g-card p-5">
+        <ReviewUrlForm initial={reviewUrl} />
       </section>
 
       <section className="g-card overflow-hidden">

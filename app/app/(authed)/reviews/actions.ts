@@ -17,9 +17,9 @@ import { isSpamSuspect, spamReason } from "./spam";
  * Tenant scoping: every query filters by session.tenant.id — never
  * trust the FormData id alone. Audit-logged on every mutation.
  *
- * Manual review-ask SMS button on /app/customers/[id] is intentionally
- * deferred — TODO: wire send-now action once the messaging consent
- * gate is finalized.
+ * Manual review-ask SMS button on /app/customers/[id] shipped in
+ * commit 28e12a8 (bilingual, consent-gated via canSend). The auto-ask
+ * cron lives in app/api/cron/auto-review-ask.
  */
 
 const ALLOWED_SOURCES = [
