@@ -11,6 +11,8 @@
 
 import type { VerticalSlug } from "./types";
 
+export type WaitlistFAQ = { q: string; a: string };
+
 export type WaitlistCopy = {
   /** SEO title — used as <title> and og:title. */
   title: string;
@@ -26,10 +28,32 @@ export type WaitlistCopy = {
   primaryPain: string;
   /** e.g. "Q3 2026 early access". */
   estimatedAvailability: string;
+  /** Optional industry-specific FAQ. When present, renders an accordion +
+   *  emits FAQPage JSON-LD on the page (free SEO win — Google snippets
+   *  pull from this). 4-5 entries per vertical recommended. */
+  faq?: WaitlistFAQ[];
 };
 
 export const WAITLIST_COPY: Record<Exclude<VerticalSlug, "lighting">, WaitlistCopy> = {
   pool: {
+    faq: [
+      {
+        q: "What about Skimmer? Isn't that the standard for pool service?",
+        a: "Skimmer is the standard for pure-play pool routes. If pool is the only thing you do, Skimmer works — and we're not asking you to switch. We're built for the multi-trade FL shop that does pools AND landscape AND lighting on the same property. Skimmer doesn't follow you off the pool deck. We do.",
+      },
+      {
+        q: "You haven't shipped Pool yet — why should I trust the waitlist?",
+        a: "Because the platform underneath ships every week, and you can see it. Lighting is live with a real Sarasota operator running it daily. The pool engines bolt onto the same workspace, customer table, billing layer, and AI primitives — we're adding pool-specific records (chemistry, equipment serials, CPO licensing), not building a CRM from scratch.",
+      },
+      {
+        q: "How does FL 5B-9 chemical applicator licensing work in your tool?",
+        a: "Every chemical application logs the operator's 5B-9 number, the EPA reg number of the product, the rate, the square footage treated, the time, and the weather. That's what FL Department of Agriculture audits. CPO and 5B-9 renewals get 90/60/30-day alerts before the state fines you.",
+      },
+      {
+        q: "Will it talk to Pentair IntelliChem and Hayward AquaRite?",
+        a: "Equipment serial linkage ships in the v1 pool surface. Photo-attached scans for service history, replacement reminders pulled off the manufacturer's expected lifespan curves. Direct API integrations with Pentair / Hayward come in v1.5 once we're live with 3+ FL pool ops.",
+      },
+    ],
     title: "Gladius Pool — LSI math, route density, and Skimmer's gap",
     description:
       "For pool pros who also do landscape, irrigation, or lighting. We track LSI, Pentair/Hayward serials, and CPO renewals — the parts Skimmer skips.",
@@ -51,6 +75,24 @@ export const WAITLIST_COPY: Record<Exclude<VerticalSlug, "lighting">, WaitlistCo
   },
 
   irrigation: {
+    faq: [
+      {
+        q: "BSI Online already exists — what's different?",
+        a: "BSI Online is a portal — a website to log into and submit one assembly at a time. We're a workflow. Auto-generate annual filings for every assembly under contract, batch-submit to the right county portal (BSI / Aqua / JEA / Sarasota / Pinellas / Hillsborough / OUC / Miami-Dade WASD / GRU / Tampa Bay Water), photo-attach test results, and route the test tag back to the customer's record. The portal isn't the gap. The 80 hours of admin between portals is the gap.",
+      },
+      {
+        q: "How is this different from ServiceTitan or Aspire?",
+        a: "ServiceTitan starts at $250-500/tech/month with a 6-12 month onboarding — built for $5M+ HVAC enterprises. Aspire publicly disqualifies you under $1M revenue. The 1-10 truck FL irrigation contractor is structurally underserved — and per-utility backflow is the workflow neither will build because it's a Florida-specific moat.",
+      },
+      {
+        q: "You haven't built it. Why should I sign up?",
+        a: "Because the platform underneath ships every week, and you can see it. Lighting is live with a real operator. Irrigation tables (assemblies, controllers, schedules) are already in the schema. Onboarding your first 50 customers is the same CSV importer + customer detail pages we're using on lighting today.",
+      },
+      {
+        q: "Does it talk to Hunter Hydrawise, Rain Bird LNK/IQ4, and Rachio?",
+        a: "Cross-brand controller fleet view ships in the v1 irrigation surface — read access first (signal status, last-run history, faults), schedule push in v1.5 once we have a paying op willing to test. Manufacturer APIs are documented; the wire-up is real engineering, not vapor.",
+      },
+    ],
     title: "Gladius Irrigation — Backflow, BSI Online, and 600 spring startups",
     description:
       "For 1-10 truck FL irrigation shops. Per-utility backflow filing for 67 counties, Hunter/Rain Bird/Hydrawise in one map, spring startup mass-route mode.",
@@ -72,6 +114,24 @@ export const WAITLIST_COPY: Record<Exclude<VerticalSlug, "lighting">, WaitlistCo
   },
 
   landscape: {
+    faq: [
+      {
+        q: "What about LMN? Isn't that built for design-build?",
+        a: "LMN is built around budgeting and a buggy crew app (2.7 stars on Google Play). Estimating is its strength. The 6 things you're doing AROUND the LMN estimate — phase scheduling, subcontractor handoff, lien-waiver tracking, design-to-install pull sheets, AIA draw billing, real job costing across burdens — that's where we live. You can keep LMN for budgeting and bolt us on top, or migrate fully when you're ready.",
+      },
+      {
+        q: "You haven't shipped Landscape — why now?",
+        a: "We're not shipping it now — Q1 2027 is the target. The waitlist is for design-build firms who want founder-direct setup and locked pilot pricing when it's ready. Lighting is the proof the platform works; landscape is the next vertical to graduate off the lighting foundation.",
+      },
+      {
+        q: "How does the bilingual EN/ES handoff work?",
+        a: "Customer-facing copy renders in the customer's preferred language. Crew-facing copy renders in the foreman's. Voice-note translation runs Spanish-to-English on the install crew's morning briefing so the homeowner's English notes from the designer arrive translated for the foreman, and the foreman's Spanish field notes arrive translated for the office.",
+      },
+      {
+        q: "Will it handle AIA-style draw billing for high-end residential?",
+        a: "Yes — deposit / mid-phase / final with G702/G703-style schedules. Lien waivers tracked alongside subcontractor payments. Build-it-and-bill-it shops doing $500K+ projects need this; the smaller landscape CRMs don't ship it because their customer doesn't ask.",
+      },
+    ],
     title: "Gladius Landscape — Design, build, bill, without the 7-tool tax",
     description:
       "For $1M-$10M design-build firms stuck between Jobber and Aspire. Blueprint markup, phase scheduling, real job costing on hardscape and softscape.",
@@ -92,6 +152,24 @@ export const WAITLIST_COPY: Record<Exclude<VerticalSlug, "lighting">, WaitlistCo
   },
 
   "lawn-care": {
+    faq: [
+      {
+        q: "What about RealGreen? It's the lawn-care standard.",
+        a: "RealGreen is the standard if you're OK with 1998-era UI at 2026-era pricing. The product was acquired by WorkWave in 2018 — pricing has gone up, the UI hasn't moved. Operators in the 1-10 truck residential segment are paying $400/month for software their techs can barely use on a phone. That's the gap.",
+      },
+      {
+        q: "Are you replacing FieldRoutes too?",
+        a: "FieldRoutes belongs to ServiceTitan / Roper Technologies / private equity now. Their pricing trajectory mirrors what happened to Aspire — predictable PE-driven hikes between renewals. We're per-crew not per-tech, capped 5% YoY in writing. Different math, different incentive.",
+      },
+      {
+        q: "Why log every chemical application by EPA reg number?",
+        a: "Because the FL Department of Agriculture audits commercial pesticide applicators. They want product, EPA reg number, rate per 1000 sq ft, area treated, applicator's 5B-9 license, weather at time of application, and the customer signature. Generic 'lawn treatment' notes won't survive an audit. We built the log to match the audit form, not the marketing brief.",
+      },
+      {
+        q: "Lawn-care isn't shipped yet. What do I get on the waitlist?",
+        a: "Founder-direct setup when it's ready (Q1 2027), locked pilot pricing for the first 5 ops in each metro, and the option to be a design partner — your real applications, your real routes, your real billing patterns drive what gets built first. Bright Lights got founder-direct setup for lighting in May 2026; you'd get the same for lawn-care.",
+      },
+    ],
     title: "Gladius Lawn Care — Apps, routes, and the EPA reg number",
     description:
       "For 1-10 truck residential lawn ops sick of RealGreen and FieldRoutes. Per-application chemical logs, route density, FL 5B-9 license tracking.",
@@ -112,6 +190,24 @@ export const WAITLIST_COPY: Record<Exclude<VerticalSlug, "lighting">, WaitlistCo
   },
 
   "tree-care": {
+    faq: [
+      {
+        q: "What about Arborgold? They've been in tree-care for decades.",
+        a: "Arborgold's UI is straight out of 2008. Operators we've talked to keep it because of muscle memory and inertia, not because they love it. Climbers and ground crews who grew up on iPhones are losing patience with desktop-only flows and 3-click workflows that should be 1-click. We're betting the next generation of tree-care owners switch on UX alone.",
+      },
+      {
+        q: "Why does ANSI A300 matter so much in your design?",
+        a: "Because the price difference between a Class I structural prune and a Class III hazard-clean prune is 4x — and the liability if you don't document which class was bid is real. Generic CRMs treat 'tree trimming' as one line item. Real tree-care economics need DBH, crown class, prune class, and equipment access (bucket vs spider lift vs crane) priced separately or you bleed margin.",
+      },
+      {
+        q: "Tree-care isn't shipped yet. Why the waitlist?",
+        a: "Q2 2027 is the target. The waitlist puts you ahead of public launch and gets you founder-direct setup when it's ready. Lighting is live today — the platform underneath (customer records, scheduling, billing, audit chain, Trust Console) all extends to tree-care without rebuilding from scratch.",
+      },
+      {
+        q: "How does the COI / CGL verification work?",
+        a: "Per-crew per-job. Upload your CGL once with limits — when a takedown over a pool gets bid, the system flags if your $2M GL doesn't cover the property's required $5M. Property owner's COI requirements get stored as a constraint; bids that violate them surface a warning before they go out the door. One OSHA fall fatality + an inadequate COI ends the company — software has to know that.",
+      },
+    ],
     title: "Gladius Tree Care — ANSI A300, climbers, and crane day",
     description:
       "For tree-care ops tired of underbidding storm work. Per-tree job costing, ISA-cert tracking, bucket vs spider lift vs crane pricing — Arborgold's gap.",
@@ -132,6 +228,24 @@ export const WAITLIST_COPY: Record<Exclude<VerticalSlug, "lighting">, WaitlistCo
   },
 
   snow: {
+    faq: [
+      {
+        q: "What about Aspire Snow? Doesn't that exist?",
+        a: "Aspire Snow is the enterprise tier of an enterprise product. If you're a $20M+ commercial firm with a dedicated dispatcher, Aspire Snow works. The single-truck plow guy who runs 12 push contracts and salts 8 lots is using a notebook, a phone, and the NWS site refreshing every 30 minutes. We sit between — built for the 1-5 truck snow op the enterprise tier doesn't talk to.",
+      },
+      {
+        q: "Snow ops fire at 2 AM. Does your dispatch hold up at that hour?",
+        a: "Yes — that's exactly the design constraint. NWS data triggers the page when accumulation crosses your contract threshold. The on-call rotation auto-pages the next operator if the first doesn't acknowledge in 5 minutes. Salt allocation per site updates as bulk yards get drawn. The slip-and-fall log captures geotagged photos with timestamps a defense attorney will actually use.",
+      },
+      {
+        q: "Why is the slip-and-fall log so prominent?",
+        a: "Because one slip-and-fall lawsuit settled at $50K can wipe out a season's profit. Insurance carriers and defense attorneys both want timestamped, geotagged photo evidence that the lot was pushed and salted on a defensible cadence. Generic CRMs don't capture this; the spreadsheet shop captures it badly. It has to be one tap from the cab.",
+      },
+      {
+        q: "Snow isn't shipped yet — when?",
+        a: "Q3 2026 early access for FL — wait, no, snow doesn't happen in FL. Northeast and Midwest target. The waitlist puts you ahead of public launch and gets you founder-direct setup. Realistically: lighting is live in Sarasota now, snow ships when we have a Northeast operator willing to be the design partner.",
+      },
+    ],
     title: "Gladius Snow — Push contracts, salt math, 2 AM dispatch",
     description:
       "For Northeast and Midwest snow ops. Per-event vs seasonal contract math, weather-trigger dispatch at 2 AM, salt allocation, slip-and-fall site logs.",
@@ -152,6 +266,24 @@ export const WAITLIST_COPY: Record<Exclude<VerticalSlug, "lighting">, WaitlistCo
   },
 
   commercial: {
+    faq: [
+      {
+        q: "What about Aspire? Aren't they the commercial standard?",
+        a: "Aspire is built for the $20M+ commercial firm with a finance department. The shop doing $3M-$15M running 40 HOA + retail + office contracts is patching FreshBooks + DocuSign + a shared Dropbox + Google Drive + a notebook of NTE thresholds. We're the layer that holds COIs, enforces NTEs, routes port-call work in 24 hours, and ships board-ready monthly reports.",
+      },
+      {
+        q: "How does the NTE (not-to-exceed) routing actually work?",
+        a: "Each contract has an NTE per port-call (e.g. $500 self-approve, anything over goes to GM approval). Field tech reports a tree-down or pipe-leak from the cab; system checks the contract NTE; if over, it routes to the GM (in-app + email + SMS) before the truck rolls. GM approves or counter-offers; tech proceeds. Every step audit-logged with timestamp + actor.",
+      },
+      {
+        q: "Commercial isn't shipped yet. Q4 2026 is far away.",
+        a: "It is. The waitlist is for portfolio operators who want the founder-direct setup when it ships — and who have COI/NTE/board-report patterns we can design against. We'd rather build the commercial workflows with 3 real portfolio operators than guess. If you're running 20+ contracts and willing to be a design partner, the conversation is 30 minutes with the founders.",
+      },
+      {
+        q: "What about Yardbook or BOSS LM?",
+        a: "Yardbook is free and built for solo lawn ops — different segment. BOSS LM is solid for the $1-3M commercial shop but the contract-management depth (auto-renewal, escalator clauses, exhibit-A versioning, COI tracking, NTE enforcement) isn't there. We're going deeper on the contract layer because that's where commercial operators actually leak revenue.",
+      },
+    ],
     title: "Gladius Commercial — COIs, NTEs, and the 40-property GM",
     description:
       "For multi-property HOA, retail, and office contracts. COI auto-renewal, NTE threshold routing, port-call dispatch, board-ready monthly reporting.",

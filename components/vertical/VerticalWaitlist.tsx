@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import { Footer } from "@/components/footer";
 import { Nav } from "@/components/nav";
 import { ScrollReveal } from "@/components/scroll-reveal";
@@ -6,6 +6,10 @@ import { VerticalEcosystemStrip } from "./VerticalEcosystemStrip";
 import { WaitlistForm } from "./WaitlistForm";
 import { WAITLIST_COPY } from "@/lib/vertical/copy";
 import { getVertical, type VerticalSlug } from "@/lib/vertical/types";
+
+function safeJsonLd(data: unknown): string {
+  return JSON.stringify(data).replace(/<\/(script)/gi, "<\\/$1");
+}
 
 type Props = {
   vertical: Exclude<VerticalSlug, "lighting">;
@@ -22,10 +26,28 @@ export function VerticalWaitlist({ vertical }: Props) {
   const copy = WAITLIST_COPY[vertical];
   const Icon = def.icon;
 
+  const faqJsonLd = copy.faq && copy.faq.length > 0
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: copy.faq.map((item) => ({
+          "@type": "Question",
+          name: item.q,
+          acceptedAnswer: { "@type": "Answer", text: item.a },
+        })),
+      }
+    : null;
+
   return (
     <>
       <Nav />
       <main id="main">
+        {faqJsonLd && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
+          />
+        )}
         {/* Hero */}
         <section className="relative overflow-hidden border-b border-bone/10 bg-pitch py-28 md:py-32">
           <div
@@ -132,6 +154,44 @@ export function VerticalWaitlist({ vertical }: Props) {
             </ScrollReveal>
           </div>
         </section>
+
+        {/* FAQ accordion — only renders when copy provides faq[]. The 7
+            verticals each have 4 FAQs, lighting has its own page. */}
+        {copy.faq && copy.faq.length > 0 && (
+          <section className="border-b border-bone/10 bg-obsidian py-24 md:py-28">
+            <div className="mx-auto max-w-content px-6">
+              <ScrollReveal>
+                <p className="text-xs font-semibold uppercase tracking-crest text-honey-bright">
+                  Common questions
+                </p>
+                <h2 className="mt-3 max-w-3xl font-serif text-h2-md font-semibold tracking-[-0.01em] text-bone md:text-h2-lg">
+                  The questions every operator asks first.
+                </h2>
+              </ScrollReveal>
+
+              <div className="mt-12 flex flex-col divide-y divide-bone/10 rounded-2xl border border-bone/10 bg-bone/[0.02]">
+                {copy.faq.map((item, i) => (
+                  <ScrollReveal key={item.q} delay={(i % 2) * 0.05}>
+                    <details className="group p-6 md:p-7">
+                      <summary className="flex cursor-pointer list-none items-start justify-between gap-4">
+                        <span className="text-[16px] font-medium leading-snug text-bone md:text-[17px]">
+                          {item.q}
+                        </span>
+                        <ChevronDown
+                          className="mt-1 h-4 w-4 shrink-0 text-honey-bright transition-transform group-open:rotate-180"
+                          aria-hidden
+                        />
+                      </summary>
+                      <p className="mt-4 text-[15px] leading-[1.7] text-bone/75">
+                        {item.a}
+                      </p>
+                    </details>
+                  </ScrollReveal>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Ecosystem strip — every vertical page shows it. */}
         <VerticalEcosystemStrip

@@ -165,6 +165,7 @@ export const SECRET_TABS = [
   { slug: "demo-pipeline", name: "Demo Pipeline", icon: Database },
   { slug: "tenants", name: "Tenants", icon: Building2 },
   { slug: "vertical-leads", name: "Vertical Leads", icon: Lightbulb },
+  { slug: "landing-previews", name: "Landing Previews", icon: Eye },
 ] as const;
 
 export type ProductKind = "demo" | "tenant" | "founders";
