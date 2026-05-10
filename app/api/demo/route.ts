@@ -33,7 +33,7 @@ type DemoBody = {
 };
 
 const FOUNDER_EMAILS = ["ricardo.gamon99@icloud.com", "joshuapyorke@gmail.com"];
-const FROM = "GladiusTurf <demo@gladiusturf.com>";
+const FROM = (process.env.RESEND_FROM_EMAIL || "").trim() || "GladiusTurf <founders@gladiusturf.com>";
 
 const TIER_DISPLAY: Record<Tier, string> = {
   independent: "Independent · $597/crew/mo",

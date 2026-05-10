@@ -337,12 +337,9 @@ export default async function Page() {
           <ShieldCheck className="h-4 w-4" />
         </span>
         <div className="text-[13px] text-g-text-muted">
-          <strong className="text-g-text">Settings edit UI ships next.</strong>
-          {" "}For now this surface is read-only — the values are sourced from
-          your <code className="font-geist-mono">tenants</code>,{" "}
-          <code className="font-geist-mono">tenant_messaging_settings</code>,
-          and <code className="font-geist-mono">tenant_invitations</code>{" "}
-          rows. Need a change before the editor ships?{" "}
+          <strong className="text-g-text">Founder-direct support during your first 30 days.</strong>
+          {" "}Most settings are managed by your account team during onboarding.
+          Need a change? Email us and a founder will handle it same-day.{" "}
           <a
             href="mailto:founders@gladiusturf.com"
             className="text-g-accent hover:underline"

@@ -239,19 +239,24 @@ function ScheduleBucket({
         {rows.map((r) => {
           const cust = Array.isArray(r.customers) ? r.customers[0] : r.customers;
           const start = new Date(r.starts_at);
-          const end = new Date(r.ends_at);
+          const end = r.ends_at ? new Date(r.ends_at) : null;
           const dateLabel = start.toLocaleDateString("en-US", {
             weekday: "short",
             month: "short",
             day: "numeric",
           });
-          const timeLabel = `${start.toLocaleTimeString("en-US", {
-            hour: "numeric",
-            minute: "2-digit",
-          })} → ${end.toLocaleTimeString("en-US", {
-            hour: "numeric",
-            minute: "2-digit",
-          })}`;
+          const timeLabel = end
+            ? `${start.toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+              })} → ${end.toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+              })}`
+            : start.toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+              });
           const link = r.customer_id
             ? `/app/customers/${r.customer_id}`
             : null;

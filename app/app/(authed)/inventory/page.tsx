@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import { Boxes } from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
 import { KPICard } from "@/components/app/ui/KPICard";
@@ -23,7 +22,20 @@ export const metadata = {
 export default async function InventoryPage() {
   const session = await readAppSession();
   if (session.kind !== "tenant") {
-    redirect("/app/login");
+    return (
+      <div className="flex flex-col gap-6">
+        <PageHeader
+          eyebrow="Demo · Ops"
+          title="Inventory"
+          subtitle="Move what's been sitting longest."
+        />
+        <EmptyState
+          icon={Boxes}
+          title="Tenant-only engine"
+          body="Inventory tracking is live for tenant workspaces. Sign up to scan, receive, and age-track your lighting stock."
+        />
+      </div>
+    );
   }
 
   const items = await getInventoryForTenant(session.tenant.id);

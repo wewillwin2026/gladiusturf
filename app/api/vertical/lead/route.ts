@@ -48,7 +48,7 @@ type Body = {
 };
 
 const FOUNDER_EMAILS = ["ricardo.gamon99@icloud.com", "joshuapyorke@gmail.com"];
-const FROM = "GladiusTurf <demo@gladiusturf.com>";
+const FROM = (process.env.RESEND_FROM_EMAIL || "").trim() || "GladiusTurf <founders@gladiusturf.com>";
 
 const FIELD_LIMITS = {
   name: 120,

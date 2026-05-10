@@ -37,7 +37,7 @@ export async function POST(req: Request) {
   try {
     const resend = new Resend(apiKey);
     await resend.emails.send({
-      from: "GladiusTurf War Room <war-room@gladiusturf.com>",
+      from: (process.env.RESEND_FROM_EMAIL || "").trim() || "GladiusTurf <founders@gladiusturf.com>",
       to: email,
       subject: "Your War Room sign-in link",
       text: [

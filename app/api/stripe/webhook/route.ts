@@ -57,24 +57,32 @@ export async function POST(req: Request) {
 
   const sb = supabaseAdmin();
 
-  // Dedupe — try to insert the event row. If unique constraint fires,
-  // the event was already processed. Return 200 quickly.
+  // Dedupe with retry support: insert with processed=false. On duplicate,
+  // check if already processed — if yes, return 200. If no, re-run handler
+  // (previous attempt failed). After handler success, mark processed=true.
   {
     const { error: dupErr } = await sb
       .from("stripe_events")
-      .insert({ id: event.id, type: event.type, deal_id: null });
+      .insert({ id: event.id, type: event.type, deal_id: null, processed: false });
     if (dupErr) {
       const msg = (dupErr.message ?? "").toLowerCase();
-      if (
+      const isDup =
         msg.includes("duplicate") ||
         msg.includes("unique") ||
-        (dupErr as { code?: string }).code === "23505"
-      ) {
-        return NextResponse.json({ ok: true, deduped: true });
+        (dupErr as { code?: string }).code === "23505";
+      if (isDup) {
+        const { data: existing } = await sb
+          .from("stripe_events")
+          .select("processed")
+          .eq("id", event.id)
+          .maybeSingle();
+        if ((existing as { processed?: boolean })?.processed) {
+          return NextResponse.json({ ok: true, deduped: true });
+        }
+        // Not yet processed — fall through to re-run handler.
+      } else {
+        console.warn("[stripe/webhook] dedupe insert error", dupErr);
       }
-      // Non-dedupe error — log but proceed; better to occasionally
-      // double-process than drop the event silently.
-      console.warn("[stripe/webhook] dedupe insert error", dupErr);
     }
   }
 
@@ -97,7 +105,6 @@ export async function POST(req: Request) {
         break;
       }
       default: {
-        // Not handled — that's fine, just record we saw it.
         break;
       }
     }
@@ -107,12 +114,13 @@ export async function POST(req: Request) {
       event.type,
       err instanceof Error ? err.message : err,
     );
-    // Return 500 so Stripe retries. The dedupe row stays — but on retry
-    // dedupe will short-circuit, which means a one-shot failure is
-    // permanent unless we delete the dedupe row. For Phase 1 we accept
-    // that tradeoff; Phase 2 adds explicit retry logic.
     return NextResponse.json({ error: "handler_failed" }, { status: 500 });
   }
+
+  await sb
+    .from("stripe_events")
+    .update({ processed: true })
+    .eq("id", event.id);
 
   return NextResponse.json({ ok: true });
 }

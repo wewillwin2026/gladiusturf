@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
   Activity,
@@ -55,7 +54,24 @@ const SUBPROCESSORS = [
 export default async function TrustConsolePage() {
   const session = await readAppSession();
   if (session.kind !== "tenant") {
-    redirect("/app/login");
+    return (
+      <div className="flex flex-col gap-6">
+        <PageHeader
+          eyebrow="Demo · Trust Console"
+          title="Trust Console"
+          subtitle="Every AI run, every consent record, every audit event — in real time."
+        />
+        <div className="g-card flex items-start gap-3 p-6">
+          <ShieldCheck className="h-5 w-5 shrink-0 text-g-accent mt-0.5" />
+          <div className="text-[13px] text-g-text-muted">
+            <strong className="text-g-text">Tenant-only engine.</strong>{" "}
+            The Trust Console is live for tenant workspaces — every AI call,
+            every consent attestation, every founder cross-tenant read, and a
+            cryptographic Merkle root per UTC day. Sign up to see yours.
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const sb = supabaseAdmin();

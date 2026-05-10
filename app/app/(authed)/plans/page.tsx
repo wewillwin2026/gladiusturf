@@ -139,11 +139,13 @@ export default async function PlansPage() {
         actions={
           <>
             <AddCustomTierButton />
-            <Button variant="primary">
-              <Sparkles className="h-3.5 w-3.5" />
-              Run plan-conversion campaign
-              <ArrowRight className="h-3 w-3" />
-            </Button>
+            <Link href="/app/campaigns">
+              <Button variant="primary" type="button">
+                <Sparkles className="h-3.5 w-3.5" />
+                Run plan-conversion campaign
+                <ArrowRight className="h-3 w-3" />
+              </Button>
+            </Link>
           </>
         }
       />

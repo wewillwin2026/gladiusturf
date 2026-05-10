@@ -24,14 +24,13 @@ with t as (
   select id as tenant_id from public.tenants where slug = 'bright-lights-encina'
 )
 insert into public.tenant_invitations (
-  email, tenant_id, role, status, created_at, updated_at
+  email, tenant_id, role, status, created_at
 )
 select
   '<FELIPE_EMAIL>',
   t.tenant_id,
   'owner',
   'active',
-  '2026-05-04 00:00:00+00'::timestamptz,
-  now()
+  '2026-05-04 00:00:00+00'::timestamptz
 from t
 on conflict (email, tenant_id) do nothing;

@@ -93,6 +93,7 @@ create table if not exists public.stripe_events (
   id text primary key,
   type text not null,
   deal_id uuid references public.deals(id) on delete set null,
+  processed boolean not null default false,
   processed_at timestamptz not null default now()
 );
 

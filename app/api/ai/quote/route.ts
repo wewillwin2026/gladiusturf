@@ -76,9 +76,14 @@ export async function POST(req: Request) {
     `Write the scope-of-work paragraph.`,
   ].join("\n");
 
+  const session = await readAppSession();
+  const companyName =
+    session.kind === "tenant"
+      ? session.tenant.display_name
+      : "Cypress Lawn & Landscape";
   const systemPrompt = [
-    "You are an estimator at Cypress Lawn & Landscape, a high-end residential",
-    "and small-commercial landscaping company in Tampa, FL. You write the",
+    `You are an estimator at ${companyName}, a high-end residential`,
+    "and small-commercial landscaping company. You write the",
     "scope-of-work paragraph that goes inside a customer-facing quote.",
     "",
     "Style:",
@@ -92,7 +97,6 @@ export async function POST(req: Request) {
   ].join("\n");
 
   const client = new Anthropic({ apiKey });
-  const session = await readAppSession();
   const sessionKind: AiSessionKind =
     session.kind === "tenant"
       ? "tenant"

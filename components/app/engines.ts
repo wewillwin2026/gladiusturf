@@ -181,8 +181,10 @@ export function basePathFor(product: ProductKind): string {
 }
 
 export function hrefForEngine(product: ProductKind, slug: string): string {
-  // "today" is the index page of each product, not a sub-route.
   if (slug === "today") return basePathFor(product);
+  if (slug === "quotes/new" && product === "tenant") {
+    return `${basePathFor(product)}/quotes/draft`;
+  }
   return `${basePathFor(product)}/${slug}`;
 }
 

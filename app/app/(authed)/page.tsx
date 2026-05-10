@@ -298,7 +298,7 @@ export default async function AppHomePage() {
           guardianInStormCount={guardianInStormCount}
         />
         <TodayDashboard
-          product="founders"
+          product="tenant"
           eyebrowOverride={`${session.tenant.display_name} · Live`}
           greeting={greeting}
           subtitle={subtitle}

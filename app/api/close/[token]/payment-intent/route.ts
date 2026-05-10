@@ -99,7 +99,7 @@ export async function POST(
       if (pi.client_secret && pi.status !== "succeeded" && pi.status !== "canceled") {
         return NextResponse.json({
           clientSecret: pi.client_secret,
-          publishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+          publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
         });
       }
     } catch {
@@ -230,6 +230,6 @@ export async function POST(
 
   return NextResponse.json({
     clientSecret: pi.client_secret,
-    publishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
   });
 }

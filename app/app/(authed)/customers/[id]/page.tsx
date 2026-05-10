@@ -477,15 +477,8 @@ export default async function CustomerDetailPage({
               </div>
               <p className="mt-3 text-[12px] text-g-text-faint">
                 Review request + seasonal check-in flows land here in a
-                later slice.
+                later slice. Use the header button to send a review ask now.
               </p>
-              <button
-                type="button"
-                className="mt-3 inline-flex items-center gap-1.5 text-[12px] text-g-accent hover:underline"
-              >
-                <MessageSquare className="h-3 w-3" />
-                Send review request
-              </button>
             </div>
           </div>
         </section>
@@ -741,13 +734,6 @@ export default async function CustomerDetailPage({
                 No reviews yet. Auto-ask fires after next NPS &ge; 8 visit.
               </p>
             )}
-            <button
-              type="button"
-              className="mt-3 inline-flex items-center gap-1.5 text-[12px] text-g-accent hover:underline"
-            >
-              <MessageSquare className="h-3 w-3" />
-              Send review request
-            </button>
           </div>
         </div>
       </section>

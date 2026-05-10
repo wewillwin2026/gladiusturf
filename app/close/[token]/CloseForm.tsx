@@ -70,10 +70,10 @@ export function CloseForm({
         </div>
         <h2 className="font-serif text-2xl text-g-text">Payment received.</h2>
         <p className="max-w-md text-[14px] leading-[1.6] text-g-text-muted">
-          Welcome to GladiusTurf, {deal.prospectCompany}. We just emailed you
-          a sign-in link at{" "}
-          <span className="font-geist-mono text-g-text">{deal.prospectEmail}</span>.
-          Open it on this device and you&apos;ll land in your workspace.
+          Welcome to GladiusTurf, {deal.prospectCompany}. A founder will email
+          your workspace sign-in link to{" "}
+          <span className="font-geist-mono text-g-text">{deal.prospectEmail}</span>{" "}
+          within 24 hours.
         </p>
         <p className="text-[11px] text-g-text-faint">
           Receipt + invoice will arrive separately from Stripe.
