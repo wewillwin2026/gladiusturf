@@ -23,19 +23,18 @@ export function EnginesGrid() {
       <div className="mx-auto max-w-7xl px-6">
         <ScrollReveal>
           <div className="mx-auto max-w-3xl text-center">
-            <Eyebrow className="mb-3">The engine catalog</Eyebrow>
+            <Eyebrow className="mb-3">Everything in the box</Eyebrow>
             <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
               One spine. Five tiers.
               <br />
               <span className="text-champagne-bright">
-                Twelve engines live. Twenty-one in development.
+                Built around how a crew actually runs the day.
               </span>
             </h2>
-            <p className="mt-5 text-lg text-parchment/70">
-              We don&apos;t ship features. We ship engines — and we organize
-              them the way a crew actually runs the day. Win the work. Keep the
-              customer. Get smarter every night. Execute in the field. Compound
-              the network.
+            <p className="mt-5 text-lg text-bone/80">
+              Win the work. Keep the customer. Get smarter every night.
+              Execute in the field. Compound the network. Each engine has a
+              specific dollar number tied to it.
             </p>
           </div>
         </ScrollReveal>
