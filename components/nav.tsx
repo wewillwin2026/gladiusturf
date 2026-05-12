@@ -8,58 +8,34 @@ import { SignInDropdown } from "@/components/sign-in-dropdown";
 import { cn } from "@/lib/cn";
 import { VERTICALS } from "@/lib/vertical/types";
 
+// Nav trimmed 2026-05-12 after the board's emergency review: a buyer
+// who lands on the homepage needs three things — see the price, book a
+// demo, or sign back into their workspace. Everything else lives in the
+// footer until customer count justifies the breadth.
 const PRIMARY_LINKS: { href: string; label: string; live?: boolean }[] = [
-  { href: "/lighting", label: "Lighting", live: true },
-  { href: "/platform", label: "Platform" },
-  { href: "/product", label: "Engines" },
   { href: "/pricing", label: "Pricing" },
+  { href: "/lighting", label: "Lighting", live: true },
   { href: "/compare", label: "Compare" },
-  { href: "/contact", label: "Contact" },
 ];
 
 const MOBILE_SECTIONS: { title: string; links: { href: string; label: string }[] }[] = [
   {
-    title: "Explore",
+    title: "Start here",
     links: [
-      { href: "/lighting", label: "Lighting" },
-      { href: "/platform", label: "Platform" },
-      { href: "/product", label: "Engines" },
-      { href: "/pricing", label: "Pricing" },
-      { href: "/compare", label: "Compare" },
-      { href: "/manifesto", label: "Manifesto" },
-    ],
-  },
-  {
-    title: "Product",
-    links: [
-      { href: "/portal", label: "Client Portal" },
-      { href: "/field", label: "Field Crew App" },
-      { href: "/score", label: "LRI Score" },
-      { href: "/surplus-yard", label: "Surplus Yard" },
-      { href: "/find-a-crew", label: "Find a Crew" },
-    ],
-  },
-  {
-    title: "Books",
-    links: [
-      { href: "/books", label: "Books" },
-      { href: "/payroll", label: "Payroll" },
-      { href: "/retention", label: "Retention" },
-    ],
-  },
-  {
-    title: "Trust",
-    links: [
-      { href: "/security", label: "Security" },
-      { href: "/integrations", label: "Integrations" },
-    ],
-  },
-  {
-    title: "Talk to us",
-    links: [
-      { href: "/contact", label: "Contact" },
       { href: "/demo", label: "Book a demo" },
-      { href: "/council", label: "The Council" },
+      { href: "/pricing", label: "Pricing" },
+      { href: "/lighting", label: "Lighting (live)" },
+      { href: "/compare", label: "Compare" },
+    ],
+  },
+  {
+    title: "More",
+    links: [
+      { href: "/platform", label: "Platform" },
+      { href: "/product", label: "All engines" },
+      { href: "/manifesto", label: "Manifesto" },
+      { href: "/security", label: "Security" },
+      { href: "/contact", label: "Contact founder" },
     ],
   },
 ];
@@ -100,9 +76,9 @@ export function Nav() {
           <Link href="/" aria-label="GladiusTurf home">
             <LogoMark size={40} theme="dark" withWordmark />
           </Link>
-          <nav className="hidden items-center gap-8 text-sm text-bone/70 md:flex">
+          <nav className="hidden items-center gap-8 text-sm text-bone/85 md:flex">
             {PRIMARY_LINKS.map((link, i) => (
-              <a
+              <Link
                 key={link.href}
                 className={cn(
                   "inline-flex items-center gap-1.5 transition-colors",
@@ -111,6 +87,7 @@ export function Nav() {
                     : "hover:text-honey-bright"
                 )}
                 href={link.href}
+                prefetch
               >
                 {link.label}
                 {link.live && (
@@ -119,14 +96,14 @@ export function Nav() {
                     className="h-1.5 w-1.5 rounded-full bg-honey-bright"
                   />
                 )}
-              </a>
+              </Link>
             ))}
           </nav>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <SignInDropdown />
             <Link
               href="/demo"
-              className="group hidden items-center gap-1.5 rounded-full bg-lime-bright px-4 py-2 text-sm font-semibold text-forest-deep shadow-cta transition-all hover:bg-lime hover:shadow-cta-hover sm:inline-flex"
+              className="group inline-flex items-center gap-1.5 rounded-full bg-lime-bright px-3 py-2 text-xs font-semibold text-forest-deep shadow-cta transition-all hover:bg-lime hover:shadow-cta-hover sm:px-4 sm:text-sm"
             >
               Book a demo
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -217,19 +194,20 @@ export function Nav() {
 
               {MOBILE_SECTIONS.map((section) => (
                 <div key={section.title} className="mb-8">
-                  <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-bone/40">
+                  <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-bone/55">
                     {section.title}
                   </h4>
                   <ul className="mt-4 flex flex-col gap-3 text-base">
                     {section.links.map((l) => (
                       <li key={l.href}>
-                        <a
+                        <Link
                           href={l.href}
                           onClick={() => setOpen(false)}
+                          prefetch
                           className="text-bone/85 transition-colors hover:text-moss-bright"
                         >
                           {l.label}
-                        </a>
+                        </Link>
                       </li>
                     ))}
                   </ul>

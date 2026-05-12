@@ -4,26 +4,28 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 
 const PILOT_STATS = [
   {
-    stat: "12 founding crews live",
-    sub: "Pilot cohort across the East Coast, Midwest, and Texas",
+    stat: "1 paying customer, live",
+    sub: "Bright Lights Landscape Lighting · Sarasota, FL",
   },
   {
-    stat: "$1.4M+ recovered",
-    sub: "Quotes saved, late invoices closed, dormant accounts re-engaged",
+    stat: "Founder-led setup",
+    sub: "Direct line to the team. No CSM, no ticket queue, no offshore script.",
   },
   {
-    stat: "0 churned in 90 days",
-    sub: "Through the cohort's first quarter live",
+    stat: "30 days, no fight",
+    sub: "Money back if it doesn't pay for itself in month one. Data export included.",
   },
 ];
 
 /**
- * Three-column homepage social proof block. Refactored away from
- * placeholder customer logos + fake testimonial — pilots are still
- * ramping. Now reads:
- *   left  → cohort scarcity card (pulls from /pricing scarcity copy)
- *   center → founder manifesto card (defensible, on-brand, no fake names)
- *   right → modeled stats with disclaimer footnote
+ * Three-column homepage social proof block. Rewritten 2026-05-12 after the
+ * board's emergency review flagged the prior "12 founding crews / $1.4M+
+ * recovered / 0 churned" stats as a credibility bomb — they contradicted
+ * the homepage FAQ which honestly named our single paying customer.
+ *
+ *   left   → pricing-promise card (durable cap, not countdown theater)
+ *   center → founder manifesto card
+ *   right  → honest customer count + guarantee
  */
 export function SocialProofStrip() {
   return (
@@ -56,7 +58,7 @@ export function SocialProofStrip() {
                   href="/demo"
                   className="inline-flex items-center gap-2 text-sm font-medium text-champagne-bright transition-colors hover:text-champagne"
                 >
-                  Reserve a slot
+                  Book a 30-minute demo
                   <ArrowRight className="h-3.5 w-3.5" aria-hidden />
                 </a>
               </div>
@@ -76,11 +78,11 @@ export function SocialProofStrip() {
                 </span>
               </div>
               <blockquote className="font-serif text-[17px] leading-relaxed text-bone">
-                We watched friends in landscape lose six figures a year to
+                I watched friends in landscape lose six figures a year to
                 software gaps nobody was solving. Quotes dying in voicemail.
                 Upsells nobody flagged. Late invoices the office forgot to
-                chase. Gladius is the operating system we wished they&rsquo;d
-                had — built engine by engine, with a specific dollar number
+                chase. Gladius is the operating system I wished they&rsquo;d
+                had — shipped engine by engine, with a specific dollar number
                 tied to every one.
               </blockquote>
               <div className="mt-auto flex items-center gap-3 border-t border-bone/10 pt-4">
@@ -94,7 +96,7 @@ export function SocialProofStrip() {
                 </div>
                 <div className="text-xs leading-snug text-bone/55">
                   <div className="font-medium text-bone/85">
-                    The Gladius founders
+                    Ricardo Gamon · Founder
                   </div>
                   <div>Built for crew owners. By people who owe them.</div>
                 </div>
@@ -105,26 +107,22 @@ export function SocialProofStrip() {
           {/* Right third — modeled-stat card with footnote disclaimer */}
           <ScrollReveal delay={0.16}>
             <div className="flex h-full flex-col gap-4 rounded-2xl border border-bone/10 bg-bone/[0.02] p-6">
-              <Eyebrow tone="champagne">Pilot results</Eyebrow>
+              <Eyebrow tone="champagne">Who we serve today</Eyebrow>
               <div className="flex flex-col gap-4">
                 {PILOT_STATS.map((s) => (
                   <div key={s.stat} className="space-y-1">
                     <div className="font-serif text-xl font-semibold leading-tight text-bone">
                       {s.stat}
-                      <sup className="ml-0.5 text-xs font-normal text-bone/40">
-                        *
-                      </sup>
                     </div>
-                    <div className="text-xs leading-snug text-bone/50">
+                    <div className="text-xs leading-snug text-bone/65">
                       {s.sub}
                     </div>
                   </div>
                 ))}
               </div>
-              <p className="mt-auto border-t border-bone/10 pt-3 text-[11px] leading-relaxed text-bone/40">
-                *Modeled across founding-cohort pilot engagements, Q1 2026.
-                Individual results vary by service mix, crew count, and
-                existing pipeline gaps.
+              <p className="mt-auto border-t border-bone/10 pt-3 text-[11px] leading-relaxed text-bone/55">
+                We&rsquo;ll tell you the honest count over a dressed-up
+                customer list. That doesn&rsquo;t change in month two.
               </p>
             </div>
           </ScrollReveal>

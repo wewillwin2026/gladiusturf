@@ -11,7 +11,6 @@ import { AnimatedCounter } from "@/components/animated-counter";
 import { CtaBand } from "@/components/cta-band";
 import { EnginesGrid } from "@/components/engines-grid";
 import { Eyebrow } from "@/components/eyebrow";
-import { BdcExplainer } from "@/components/bdc-explainer";
 import { Footer } from "@/components/footer";
 import { Hero } from "@/components/hero";
 import { HomeFaq } from "@/components/home-faq";
@@ -22,11 +21,10 @@ import { PricingSection } from "@/components/pricing-section";
 import { ProductLoop } from "@/components/product-loop";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { SocialProofStrip } from "@/components/social-proof-strip";
-import { VerticalEcosystemStrip } from "@/components/vertical/VerticalEcosystemStrip";
 
 export const metadata: Metadata = {
   description:
-    "GladiusTurf is the landscape system — twelve engines live across five layers (winning the work, keeping the customer, getting smarter, running the crew, building the network) with twenty-one more on the roadmap — that catches every forgotten quote, missed upsell, late invoice, and dropped referral your current stack is letting walk.",
+    "Software that answers the phone, sends the quote, dispatches the crew, and gets paid — without you touching it. Catches every forgotten quote, missed upsell, late invoice, and dropped referral your current stack is letting walk. 30-day money-back, no fight.",
   alternates: { canonical: "/" },
   openGraph: {
     images: [{ url: "/crest.png", width: 600, height: 800 }],
@@ -51,18 +49,18 @@ const PROBLEM_STATS = [
   {
     value: 232200,
     prefix: "$",
-    label: "leaked from the average crew's books each year",
+    label: "estimated leak per year, modeled from a typical $1–$5M crew's pipeline",
     accent: true,
   },
   {
     value: 5400,
     prefix: "$",
-    label: "lost to missed calls per month at the average shop",
+    label: "lost to missed calls per month at the average shop (modeled)",
   },
   {
-    value: 12,
-    suffix: " engines live",
-    label: "across five layers — twenty-one more on the roadmap, all priced in",
+    value: 30,
+    suffix: "-day refund",
+    label: "money back if it doesn't pay for itself in month one — no fight, data export included",
   },
 ];
 
@@ -91,7 +89,7 @@ const PRODUCT_BLOCKS: ProductBlock[] = [
       "Stale quotes auto-rescued before they age out",
       "Ghosted prospects re-engaged with a personal SMS",
     ],
-    proof: "Founding crews recover ~$14,200/mo in deals that would have died.",
+    proof: "Modeled recovery: ~$14,200/mo from a typical pipeline audit.",
     flip: false,
   },
   {
@@ -104,7 +102,7 @@ const PRODUCT_BLOCKS: ProductBlock[] = [
       "Crew gets a punch-list, client gets a 1-tap approve",
       "Upsell revenue tied to next visit, not next quarter",
     ],
-    proof: "Avg founding crew adds $38,000/mo in upsell revenue.",
+    proof: "Modeled upside: ~$38,000/mo in surfaced upsell revenue.",
     flip: true,
   },
   {
@@ -117,7 +115,7 @@ const PRODUCT_BLOCKS: ProductBlock[] = [
       "Reps that kill referrals flagged before churn",
       "Next-door outreach fires on every great review",
     ],
-    proof: "$180,000/yr in referral revenue most crews have no idea they're losing.",
+    proof: "Modeled leak: ~$180,000/yr in referral revenue most crews never see.",
     flip: false,
   },
   {
@@ -130,7 +128,7 @@ const PRODUCT_BLOCKS: ProductBlock[] = [
       "Change orders approved by the homeowner in 2 taps",
       "Job history, photos, and invoices self-serve 24/7",
     ],
-    proof: "73% fewer 'when are you coming?' calls inside the first 60 days.",
+    proof: "Designed to cut routine 'when are you coming?' calls in half within 60 days.",
     flip: true,
     accent: "honey",
     mock: "portal",
@@ -145,7 +143,7 @@ const PRODUCT_BLOCKS: ProductBlock[] = [
       "Day 3 / Day 7 / Day 14 warm before human handoff",
       "Seasonal reminders timed to NOAA, scripted from Site Memory",
     ],
-    proof: "+24% retention and $12,800/mo recovered in late invoices.",
+    proof: "Modeled outcome: ~$12,800/mo recovered in late invoices, retention lift in the +20% range.",
     flip: false,
     accent: "moss",
     mock: "cadence",
@@ -280,15 +278,12 @@ export default function HomePage() {
         {/* a. Hero */}
         <Hero />
 
-        {/* a2. Vertical ecosystem strip — exposes the 8 verticals (1 live, 7 waitlist) */}
-        <VerticalEcosystemStrip />
-
         {/* b. Built-with technology bar */}
         <section className="border-y border-bone/10 bg-slate-deep py-14">
           <div className="mx-auto max-w-7xl px-6">
             <ScrollReveal>
               <p className="text-center text-xs font-semibold uppercase tracking-crest text-bone/55">
-                Same infrastructure trusted by Stripe, OpenAI, and Linear.
+                Built on the same stack that powers your bank and your phone.
               </p>
             </ScrollReveal>
             <ScrollReveal delay={0.1}>
@@ -360,9 +355,9 @@ export default function HomePage() {
             <ScrollReveal delay={0.1}>
               <p className="mx-auto mt-6 max-w-2xl text-center text-lg text-bone/70">
                 Quotes that die in voicemail. Upsells nobody flagged. Referrals
-                that got chased by a competitor first. The 12 founding crews
-                that audited their pipelines with us last quarter were stunned
-                by the number.
+                a competitor chased first. We&rsquo;ll run a free pipeline
+                audit in week one and tell you exactly what your number is —
+                modeled from your real data, not ours.
               </p>
             </ScrollReveal>
 
@@ -406,9 +401,10 @@ export default function HomePage() {
             </ScrollReveal>
 
             <ScrollReveal delay={0.2}>
-              <p className="mt-8 text-center text-xs text-bone/40">
-                Source: Gladius founding crew pipeline audits, 2026. Modeled
-                across 12 shops, $1M-$5M ARR, audited Q1 2026.
+              <p className="mt-8 text-center text-xs text-bone/55">
+                Estimate, not promise. Modeled from a typical $1M–$5M ARR
+                landscape shop&rsquo;s pipeline gaps. We&rsquo;ll run the same
+                audit on your actual data in week one and show our math.
               </p>
             </ScrollReveal>
           </div>
@@ -550,9 +546,6 @@ export default function HomePage() {
 
         {/* j. FAQ — 8 questions, native details/summary accordion */}
         <HomeFaq />
-
-        {/* k. GladiusBDC explainer — replaces the inline single-line addon */}
-        <BdcExplainer />
 
         {/* l. Final CTA */}
         <CtaBand />

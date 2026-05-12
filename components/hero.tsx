@@ -55,10 +55,10 @@ export function Hero() {
               Precision · Groundskeeping
             </motion.p>
 
-            {/* Crest — centered, no frame; bigger so the prestige reads */}
+            {/* Crest — small mark; the headline leads, not the heraldry */}
             <motion.div
               {...fadeUp(0.05)}
-              className="mb-10 flex items-center justify-center"
+              className="mb-7 flex items-center justify-center"
             >
               <Image
                 src="/crest.png"
@@ -66,14 +66,14 @@ export function Hero() {
                 width={520}
                 height={693}
                 priority
-                sizes="(min-width: 1024px) 360px, (min-width: 768px) 300px, 220px"
-                className="h-[220px] w-auto select-none md:h-[300px] lg:h-[360px]"
+                sizes="(min-width: 768px) 112px, 80px"
+                className="h-[80px] w-auto select-none md:h-[112px]"
               />
             </motion.div>
 
             <motion.h1
               {...fadeUp(0.1)}
-              className="font-serif text-5xl font-semibold leading-[1.05] tracking-[-0.02em] text-bone md:text-7xl"
+              className="font-serif text-[40px] font-semibold leading-[1.05] tracking-[-0.02em] text-bone sm:text-5xl md:text-7xl"
             >
               Software books the job.
               <br className="hidden sm:block" />
@@ -82,17 +82,16 @@ export function Hero() {
 
             <motion.p
               {...fadeUp(0.18)}
-              className="mx-auto mt-8 max-w-3xl text-lg text-parchment/70 md:text-xl"
+              className="mx-auto mt-8 max-w-2xl text-lg text-parchment/80 md:text-xl"
             >
-              Twelve engines live, twenty-one more on the roadmap, across five
-              layers — winning the work, keeping the customer, getting smarter,
-              running the crew, and building the network. The first landscape
-              system that learns your shop.
+              Catches every forgotten quote, missed upsell, late invoice,
+              and dropped referral your current stack is letting walk.
+              30-day money-back, no fight.
             </motion.p>
 
             <motion.div
               {...fadeUp(0.26)}
-              className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4"
+              className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:items-baseline sm:gap-6"
             >
               <Link
                 href="/demo"
@@ -103,9 +102,9 @@ export function Hero() {
               </Link>
               <Link
                 href="/pricing"
-                className="group inline-flex items-center gap-2 rounded-full border border-champagne-bright/40 px-7 py-3.5 text-base font-medium text-champagne-bright transition-all hover:border-champagne-bright hover:bg-champagne/10"
+                className="inline-flex items-center gap-1 text-sm font-medium text-champagne-bright/85 underline-offset-4 transition-colors hover:text-champagne-bright hover:underline"
               >
-                See pricing →
+                or see pricing →
               </Link>
             </motion.div>
 
