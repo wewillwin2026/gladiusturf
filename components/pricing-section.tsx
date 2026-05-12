@@ -21,7 +21,7 @@ export function PricingSection() {
                 <div className="text-sm font-semibold text-bone">
                   Annual increase capped at 5% — forever.
                 </div>
-                <div className="text-xs text-bone/55">
+                <div className="text-xs text-bone/75">
                   Aspire just hiked their list 102% YoY. We won&apos;t do that
                   to you, in writing.
                 </div>

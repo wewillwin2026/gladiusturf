@@ -34,17 +34,6 @@ export const metadata: Metadata = {
   },
 };
 
-const TECH_STACK = [
-  "Stripe",
-  "Twilio",
-  "Anthropic Claude",
-  "Vercel",
-  "Supabase",
-  "Resend",
-  "Clerk",
-  "Next.js",
-];
-
 const PROBLEM_STATS = [
   {
     value: 232200,
@@ -166,12 +155,12 @@ function PortalMock() {
           Live
         </span>
       </div>
-      <p className="text-[11px] text-bone/55">
+      <p className="text-[11px] text-bone/70">
         Welcome back, Carla — your next visit is Tuesday.
       </p>
       <table className="mt-1 w-full table-fixed text-[11px]">
         <thead>
-          <tr className="text-left text-[9px] font-semibold uppercase tracking-[0.16em] text-bone/40">
+          <tr className="text-left text-[9px] font-semibold uppercase tracking-[0.16em] text-bone/65">
             <th className="pb-2">When</th>
             <th className="pb-2">Service</th>
             <th className="pb-2 text-right">Action</th>
@@ -230,7 +219,7 @@ function CadenceMock() {
           Active
         </span>
       </div>
-      <p className="text-[11px] text-bone/55">
+      <p className="text-[11px] text-bone/70">
         Carla Brown · 12 Pine Hollow Lane · last paid Apr 2
       </p>
       <ul className="mt-1 flex flex-col gap-2.5">
@@ -247,17 +236,17 @@ function CadenceMock() {
             />
             <div className="flex-1">
               <div className="flex items-baseline justify-between">
-                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-bone/55">
+                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-bone/70">
                   {s.day}
                 </span>
-                <span className="text-[10px] text-bone/40">
+                <span className="text-[10px] text-bone/65">
                   {s.status === "sent" ? "delivered" : "queued"}
                 </span>
               </div>
               <div className="text-[11px] font-semibold text-bone">
                 {s.label}
               </div>
-              <div className="text-[10px] text-bone/55">{s.copy}</div>
+              <div className="text-[10px] text-bone/70">{s.copy}</div>
             </div>
           </li>
         ))}
@@ -278,37 +267,6 @@ export default function HomePage() {
         {/* a. Hero */}
         <Hero />
 
-        {/* b. Built-with technology bar */}
-        <section className="border-y border-bone/10 bg-slate-deep py-14">
-          <div className="mx-auto max-w-7xl px-6">
-            <ScrollReveal>
-              <p className="text-center text-xs font-semibold uppercase tracking-crest text-bone/55">
-                Built on the same stack that powers your bank and your phone.
-              </p>
-            </ScrollReveal>
-            <ScrollReveal delay={0.1}>
-              <div className="mt-7 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
-                {TECH_STACK.map((label, i) => (
-                  <span
-                    key={label}
-                    className={`font-mono text-[13px] tracking-[0.06em] ${
-                      i % 2 === 0 ? "text-champagne-bright" : "text-moss-bright"
-                    }`}
-                  >
-                    {label}
-                  </span>
-                ))}
-              </div>
-            </ScrollReveal>
-            <ScrollReveal delay={0.18}>
-              <p className="mx-auto mt-5 max-w-xl text-center text-xs leading-relaxed text-bone/45">
-                Built on the modern stack — not stitched together from
-                2010-era field-service software.
-              </p>
-            </ScrollReveal>
-          </div>
-        </section>
-
         {/* b2. Animated product loop — replaces founder video. SVG/CSS interim;
                  swap for /animations/product-loop.json + Lottie player when ready. */}
         <section className="border-b border-bone/10 bg-pitch py-20">
@@ -319,7 +277,7 @@ export default function HomePage() {
                 <h2 className="mt-4 font-serif text-3xl font-semibold tracking-[-0.02em] text-bone md:text-4xl">
                   Watch what happens when an inbound lead hits the system.
                 </h2>
-                <p className="mx-auto mt-3 max-w-xl text-sm italic text-bone/60">
+                <p className="mx-auto mt-3 max-w-xl text-sm italic text-bone/72">
                   Real workflow, sped up. The same loop runs on every customer,
                   every day.
                 </p>
@@ -362,7 +320,7 @@ export default function HomePage() {
             </ScrollReveal>
 
             <ScrollReveal delay={0.12}>
-              <p className="mx-auto mt-6 max-w-2xl text-center text-base italic text-bone/55">
+              <p className="mx-auto mt-6 max-w-2xl text-center text-base italic text-bone/70">
                 Don&apos;t be the owner explaining to your spouse why the books
                 were down again — when the work was already booked.
               </p>
@@ -392,7 +350,7 @@ export default function HomePage() {
                         suffix={stat.suffix}
                       />
                     </div>
-                    <p className="mt-4 text-sm leading-[1.5] text-bone/60">
+                    <p className="mt-4 text-sm leading-[1.5] text-bone/72">
                       {stat.label}
                     </p>
                   </div>
@@ -401,7 +359,7 @@ export default function HomePage() {
             </ScrollReveal>
 
             <ScrollReveal delay={0.2}>
-              <p className="mt-8 text-center text-xs text-bone/55">
+              <p className="mt-8 text-center text-xs text-bone/70">
                 Estimate, not promise. Modeled from a typical $1M–$5M ARR
                 landscape shop&rsquo;s pipeline gaps. We&rsquo;ll run the same
                 audit on your actual data in week one and show our math.
@@ -424,7 +382,7 @@ export default function HomePage() {
                 <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
                   Every engine is a specific number
                   <br />
-                  <span className="text-bone/55">
+                  <span className="text-bone/70">
                     going into your bank account.
                   </span>
                 </h2>
@@ -499,7 +457,7 @@ export default function HomePage() {
                           <CadenceMock />
                         ) : (
                           <div className="flex flex-col items-center gap-3 px-8 text-center">
-                            <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-bone/40">
+                            <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-bone/70">
                               Product preview
                             </span>
                             <span className="font-serif text-3xl font-semibold text-bone">

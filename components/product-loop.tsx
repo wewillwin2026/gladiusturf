@@ -104,10 +104,10 @@ export function ProductLoop() {
 
       {/* Caption overlay */}
       <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 border-t border-bone/10 bg-pitch/40 px-4 py-3 backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-        <span className="text-[11px] uppercase tracking-crest text-bone/55">
+        <span className="text-[11px] uppercase tracking-crest text-bone/80">
           One inbound text → quote → crew assigned → paid
         </span>
-        <span className="text-[11px] text-bone/40">
+        <span className="text-[11px] text-bone/70">
           ~30 seconds, every time
         </span>
       </div>

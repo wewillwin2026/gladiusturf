@@ -65,7 +65,7 @@ export function EnginesGrid() {
                   <h3 className="font-serif text-3xl font-semibold tracking-[-0.02em] text-bone md:text-4xl">
                     <span className={tierToneCls}>{tier.tagline}</span>
                   </h3>
-                  <p className="mt-4 text-base text-bone/60">{tier.blurb}</p>
+                  <p className="mt-4 text-base text-bone/75">{tier.blurb}</p>
                 </div>
               </ScrollReveal>
 

@@ -40,7 +40,7 @@ export function HowItWorks() {
             <h2 className="mt-4 font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
               From signed contract to first recovered dollar.
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-base text-bone/60">
+            <p className="mx-auto mt-4 max-w-2xl text-base text-bone/75">
               Three steps. Founder-led the whole way. No 90-day implementation
               drag.
             </p>

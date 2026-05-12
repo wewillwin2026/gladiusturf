@@ -73,7 +73,7 @@ export function SocialProofStrip() {
                   className="h-4 w-4 text-champagne-bright"
                   aria-hidden
                 />
-                <span className="text-xs font-semibold uppercase tracking-crest text-bone/55">
+                <span className="text-xs font-semibold uppercase tracking-crest text-bone/70">
                   Why we built this
                 </span>
               </div>
@@ -94,7 +94,7 @@ export function SocialProofStrip() {
                     G
                   </span>
                 </div>
-                <div className="text-xs leading-snug text-bone/55">
+                <div className="text-xs leading-snug text-bone/70">
                   <div className="font-medium text-bone/85">
                     Ricardo Gamon · Founder
                   </div>
@@ -120,7 +120,7 @@ export function SocialProofStrip() {
                   </div>
                 ))}
               </div>
-              <p className="mt-auto border-t border-bone/10 pt-3 text-[11px] leading-relaxed text-bone/55">
+              <p className="mt-auto border-t border-bone/10 pt-3 text-[11px] leading-relaxed text-bone/70">
                 We&rsquo;ll tell you the honest count over a dressed-up
                 customer list. That doesn&rsquo;t change in month two.
               </p>

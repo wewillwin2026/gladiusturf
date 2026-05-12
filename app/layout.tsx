@@ -32,24 +32,24 @@ const jetbrains = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://gladiusturf.com"),
   title: {
-    default: "GladiusTurf — Landscaping Revenue Intelligence",
+    default: "GladiusTurf — All-in-one software for landscape companies",
     template: "%s · GladiusTurf",
   },
   description:
-    "Twelve revenue engines live, twenty-one more on the roadmap, across five tiers for landscape crew owners. Flat per-crew pricing. Not a CRM.",
+    "All-in-one software for landscape companies. Answers the phones, sends the quotes, dispatches the crews, and chases the invoices — so you can run the business. Per-crew pricing, 30-day money-back.",
   openGraph: {
     type: "website",
     siteName: "GladiusTurf",
-    title: "GladiusTurf — Landscaping Revenue Intelligence",
+    title: "GladiusTurf — All-in-one software for landscape companies",
     description:
-      "Twelve revenue engines live, twenty-one more on the roadmap, across five tiers for landscape crew owners. Flat per-crew pricing. Not a CRM.",
+      "Phones, quotes, crews, invoices — one tool, not seven. Per-crew pricing, 30-day money-back, no fight.",
     images: [{ url: "/crest.png", width: 600, height: 800 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "GladiusTurf — Landscaping Revenue Intelligence",
+    title: "GladiusTurf — All-in-one software for landscape companies",
     description:
-      "Twelve engines live, twenty-one in development. Flat per-crew pricing. Not a CRM.",
+      "Phones, quotes, crews, invoices — one tool, not seven. Per-crew pricing, 30-day money-back.",
     images: ["/crest.png"],
   },
   icons: {

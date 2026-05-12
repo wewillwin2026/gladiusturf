@@ -47,12 +47,12 @@ export function Hero() {
 
         <div className="relative mx-auto max-w-7xl px-6">
           <div className="mx-auto max-w-4xl text-center">
-            {/* Heritage tagline above the floating crest */}
+            {/* Category eyebrow — names WHAT this is, before the headline */}
             <motion.p
               {...fadeUp(0)}
-              className="mb-6 text-xs font-medium uppercase tracking-crest text-champagne"
+              className="mb-6 text-xs font-medium uppercase tracking-crest text-champagne-bright"
             >
-              Precision · Groundskeeping
+              Software for landscape companies
             </motion.p>
 
             {/* Crest — small mark; the headline leads, not the heraldry */}
@@ -66,27 +66,28 @@ export function Hero() {
                 width={520}
                 height={693}
                 priority
-                sizes="(min-width: 768px) 112px, 80px"
-                className="h-[80px] w-auto select-none md:h-[112px]"
+                sizes="(min-width: 768px) 96px, 72px"
+                className="h-[72px] w-auto select-none md:h-[96px]"
               />
             </motion.div>
 
             <motion.h1
               {...fadeUp(0.1)}
-              className="font-serif text-[40px] font-semibold leading-[1.05] tracking-[-0.02em] text-bone sm:text-5xl md:text-7xl"
+              className="font-serif text-[40px] font-semibold leading-[1.05] tracking-[-0.02em] text-bone sm:text-5xl md:text-6xl lg:text-7xl"
             >
-              Software books the job.
+              Phones, quotes, crews, invoices.
               <br className="hidden sm:block" />
-              <span className="text-moss-bright">We close the revenue.</span>
+              <span className="text-moss-bright">One tool, not seven.</span>
             </motion.h1>
 
             <motion.p
               {...fadeUp(0.18)}
-              className="mx-auto mt-8 max-w-2xl text-lg text-parchment/80 md:text-xl"
+              className="mx-auto mt-8 max-w-2xl text-lg leading-relaxed text-bone/85 md:text-xl"
             >
-              Catches every forgotten quote, missed upsell, late invoice,
-              and dropped referral your current stack is letting walk.
-              30-day money-back, no fight.
+              We answer the calls, send the quotes, dispatch the crews, and
+              chase the invoices. You run the business. Catches every
+              forgotten lead and late invoice your current stack is letting
+              walk.
             </motion.p>
 
             <motion.div
@@ -111,27 +112,21 @@ export function Hero() {
             {/* Risk-reversal sub-line below CTAs */}
             <motion.p
               {...fadeUp(0.30)}
-              className="mt-6 text-xs uppercase tracking-crest text-bone/45"
+              className="mt-6 text-xs font-medium uppercase tracking-crest text-bone/75"
             >
-              30-day money-back guarantee
-              <span className="mx-3 text-bone/25">·</span>
+              30-day money-back
+              <span className="mx-3 text-bone/35">·</span>
               Switch from your current stack in 48 hours
             </motion.p>
 
             {/* Heritage proof strip — small caps, champagne-tone */}
             <motion.p
               {...fadeUp(0.34)}
-              className="mt-12 text-xs uppercase tracking-crest text-bone/40"
+              className="mt-12 text-xs font-medium uppercase tracking-crest text-bone/70"
             >
-              <span className="text-champagne-bright/85">
-                Per-crew pricing · annual increase capped at 5%
+              <span className="text-champagne-bright">
+                Per-crew pricing · increase capped at 5%/year
               </span>
-              <span className="mx-3 text-bone/25">·</span>
-              <span>Built on Stripe</span>
-              <span className="mx-3 text-bone/25">·</span>
-              <span>Twilio</span>
-              <span className="mx-3 text-bone/25">·</span>
-              <span>Anthropic Claude</span>
             </motion.p>
           </div>
         </div>
