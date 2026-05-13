@@ -7,6 +7,7 @@ import {
   emailDispatcherMode,
   sendEmailToCustomer,
 } from "@/lib/messaging/email";
+import { quoteShareTemplate } from "@/lib/messaging/templates";
 import { validateBomWrite } from "@/lib/schema/bom";
 
 export type DraftQuoteInput = {
@@ -250,38 +251,18 @@ export async function emailQuoteToCustomer(
     process.env.NEXT_PUBLIC_SITE_URL || "https://gladiusturf.com";
   const link = `${baseUrl}/quote/${row.id}`;
   const tenantName = session.tenant.display_name ?? "GladiusTurf";
-  const title = row.bom?.title ?? "Your quote";
-  const lang = row.language === "es" ? "es" : "en";
-  const subject =
-    lang === "es"
-      ? `Su presupuesto de ${tenantName}`
-      : `Your quote from ${tenantName}`;
-  const greeting =
-    lang === "es"
-      ? `Hola ${customer.display_name},`
-      : `Hi ${customer.display_name},`;
-  const body =
-    lang === "es"
-      ? `Le preparamos un presupuesto: ${title}. Puede revisarlo aquí:`
-      : `We prepared a quote for you: ${title}. You can review it here:`;
-  const closing =
-    lang === "es"
-      ? `Si tiene preguntas, simplemente responda a este correo. — ${tenantName}`
-      : `If you have questions, just reply to this email. — ${tenantName}`;
-  const html = `
-    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0a0a0a;color:#f5f5f5;padding:32px 24px;max-width:560px;margin:0 auto;">
-      <p style="font-size:14px;line-height:1.6;margin:0 0 16px;">${greeting}</p>
-      <p style="font-size:14px;line-height:1.6;margin:0 0 24px;">${body}</p>
-      <p style="margin:32px 0;">
-        <a href="${link}" style="display:inline-block;padding:14px 22px;background:#00d26a;color:#0a0a0a;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">${
-          lang === "es" ? "Ver mi presupuesto" : "View my quote"
-        }</a>
-      </p>
-      <p style="font-size:12px;line-height:1.55;color:#888;margin:24px 0 0;">${closing}</p>
-      <p style="font-size:11px;line-height:1.55;color:#555;margin:24px 0 0;font-family:ui-monospace,Menlo,monospace;">${link}</p>
-    </div>
-  `;
-  const text = `${greeting}\n\n${body}\n\n${link}\n\n${closing}`;
+  const quoteTitle = row.bom?.title ?? "Your quote";
+
+  // Centralized bilingual template (lib/messaging/templates.ts). Switching
+  // a customer's preferred_language from "en" → "es" instantly retargets
+  // this and every other transactional send.
+  const tpl = quoteShareTemplate({
+    locale: row.language,
+    customerName: customer.display_name,
+    tenantName,
+    link,
+    quoteTitle,
+  });
 
   // Quote-share is a transactional message: the customer asked for a
   // quote (offline) and the tenant is fulfilling that request. Under
@@ -292,9 +273,9 @@ export async function emailQuoteToCustomer(
   const result = await sendEmailToCustomer({
     tenantId: session.tenant.id,
     customerId: row.customer_id,
-    subject,
-    html,
-    text,
+    subject: tpl.subject,
+    html: tpl.html,
+    text: tpl.text,
     source: "quote-share",
     skipConsentGate: true,
   });

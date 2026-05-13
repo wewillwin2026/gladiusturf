@@ -12,6 +12,11 @@ import { readAppSession } from "@/lib/app/session";
 
 export const dynamic = "force-dynamic";
 
+// `verticals: undefined` means "all verticals." Use specific slugs from
+// the tenants.vertical enum to gate. The audit (2026-05-13) flagged that
+// a lawn-care tenant was seeing Storm Mode + Backflow Radar — both
+// inappropriate. Now the sidebar shows only what a vertical actually
+// runs.
 const TENANT_AUTOMATIONS: {
   slug: string;
   href: string | null;
@@ -19,6 +24,7 @@ const TENANT_AUTOMATIONS: {
   name: string;
   status: "live" | "soon";
   body: string;
+  verticals?: string[];
 }[] = [
   {
     slug: "storm",
@@ -27,6 +33,10 @@ const TENANT_AUTOMATIONS: {
     name: "Storm Mode",
     status: "live",
     body: "When a named storm hits your service area, queue a bilingual check-in to every customer in the affected ZIPs. Top-tier plan members jump the queue.",
+    // Florida-storm-specific. Snow operators use snow-call lists, not
+    // hurricane radar. Lawn-care + tree-care care less than lighting
+    // because their assets aren't electrified.
+    verticals: ["lighting", "irrigation", "pool", "landscape", "commercial"],
   },
   {
     slug: "backflow-radar",
@@ -35,6 +45,7 @@ const TENANT_AUTOMATIONS: {
     name: "Backflow Compliance Radar",
     status: "live",
     body: "Irrigation tenants only. Florida backflow assemblies need annual filings — late = shut-off + fines. Radar surfaces overdue + due-soon, routed to the right utility portal (BSI Online, JEA, Sarasota County, etc).",
+    verticals: ["irrigation"],
   },
   {
     slug: "inbox-reply",
@@ -57,6 +68,10 @@ const TENANT_AUTOMATIONS: {
 export default async function Page() {
   const session = await readAppSession();
   if (session.kind === "tenant") {
+    const tenantVertical = session.tenant.vertical;
+    const filtered = TENANT_AUTOMATIONS.filter(
+      (a) => !a.verticals || a.verticals.includes(tenantVertical),
+    );
     return (
       <div className="flex flex-col gap-6">
         <PageHeader
@@ -66,7 +81,7 @@ export default async function Page() {
         />
 
         <div className="grid gap-3 md:grid-cols-3">
-          {TENANT_AUTOMATIONS.map((a) => {
+          {filtered.map((a) => {
             const Icon = a.icon;
             const Card = (
               <div className="g-card flex h-full flex-col gap-3 p-5 transition-colors hover:bg-g-surface-2">

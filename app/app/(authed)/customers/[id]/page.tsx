@@ -32,6 +32,7 @@ import { PlanPicker } from "./PlanPicker";
 import { LogVisitButton } from "./LogVisitButton";
 import { SendReviewAskButton } from "./SendReviewAskButton";
 import { LightingAssets } from "./LightingAssets";
+import { VoltageTestsPanel } from "./VoltageTestsPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -163,12 +164,25 @@ export default async function CustomerDetailPage({
           .order("deleted_at", { ascending: false })
       : Promise.resolve({ data: [], error: null });
 
+    const voltageTestsQuery = isLighting
+      ? sb
+          .from("lighting_voltage_tests")
+          .select(
+            "id, fixture_id, measured_volts, source_tap_volts, tap_label, result, notes, measured_at",
+          )
+          .eq("tenant_id", session.tenant.id)
+          .eq("customer_id", id)
+          .order("measured_at", { ascending: false })
+          .limit(50)
+      : Promise.resolve({ data: [], error: null });
+
     const [
       fixturesRes,
       transformersRes,
       claimsRes,
       archivedFixturesRes,
       archivedTransformersRes,
+      voltageTestsRes,
       plansRes,
       subRes,
       scheduleRes,
@@ -179,6 +193,7 @@ export default async function CustomerDetailPage({
       claimsQuery,
       archivedFixturesQuery,
       archivedTransformersQuery,
+      voltageTestsQuery,
         sb
           .from("plans")
           .select("id, display_name, annual_price_cents, badge, most_popular")
@@ -235,6 +250,35 @@ export default async function CustomerDetailPage({
       void deleted_at;
       return rest;
     }) as DbTransformer[];
+
+    type VoltageTestRowRaw = {
+      id: string;
+      fixture_id: string | null;
+      measured_volts: number | string;
+      source_tap_volts: number | string | null;
+      tap_label: string | null;
+      result: "pass" | "low" | "high" | "open" | "short";
+      notes: string | null;
+      measured_at: string;
+    };
+    const voltageTestsRaw = (voltageTestsRes.data ?? []) as VoltageTestRowRaw[];
+    const voltageTests = voltageTestsRaw.map((t) => ({
+      id: t.id,
+      fixture_id: t.fixture_id,
+      measured_volts: typeof t.measured_volts === "string"
+        ? Number(t.measured_volts)
+        : t.measured_volts,
+      source_tap_volts:
+        t.source_tap_volts == null
+          ? null
+          : typeof t.source_tap_volts === "string"
+            ? Number(t.source_tap_volts)
+            : t.source_tap_volts,
+      tap_label: t.tap_label,
+      result: t.result,
+      notes: t.notes,
+      measured_at: t.measured_at,
+    }));
     const claims = (claimsRes.data ?? []) as Array<{
       id: string;
       fixture_id: string | null;
@@ -408,14 +452,28 @@ export default async function CustomerDetailPage({
                 </p>
               </div>
             ) : (
-              <LightingAssets
-                customerId={c.id}
-                fixtures={fixtures}
-                transformers={transformers}
-                claims={claims}
-                archivedFixtures={archivedFixtures}
-                archivedTransformers={archivedTransformers}
-              />
+              <div className="flex flex-col gap-4">
+                <LightingAssets
+                  customerId={c.id}
+                  fixtures={fixtures}
+                  transformers={transformers}
+                  claims={claims}
+                  archivedFixtures={archivedFixtures}
+                  archivedTransformers={archivedTransformers}
+                />
+                <VoltageTestsPanel
+                  customerId={c.id}
+                  fixtures={fixtures.map((f) => ({
+                    id: f.id,
+                    label: `${f.external_id ?? f.brand} · ${f.fixture_type}`,
+                  }))}
+                  transformers={transformers.map((t) => ({
+                    id: t.id,
+                    label: `${t.external_id ?? t.brand} · ${t.watts_capacity ?? "?"}W`,
+                  }))}
+                  tests={voltageTests}
+                />
+              </div>
             )}
           </div>
 
