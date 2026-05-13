@@ -99,6 +99,32 @@ export function VerticalWaitlist({ vertical }: Props) {
                     <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                   </a>
                 )}
+                {vertical === "landscape" && (
+                  <a
+                    href="/demo/heritage-grounds"
+                    data-track="waitlist_landscape_preview"
+                    className="group inline-flex items-center gap-2 text-sm font-medium text-bone/85 underline-offset-4 transition-colors hover:text-bone hover:underline"
+                  >
+                    or see it on design-build data first
+                    <span className="font-mono text-[12px] text-champagne-bright">
+                      (passcode LAND26)
+                    </span>
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                  </a>
+                )}
+                {vertical === "pool" && (
+                  <a
+                    href="/demo/blue-haven"
+                    data-track="waitlist_pool_preview"
+                    className="group inline-flex items-center gap-2 text-sm font-medium text-bone/85 underline-offset-4 transition-colors hover:text-bone hover:underline"
+                  >
+                    or see it on pool-service data first
+                    <span className="font-mono text-[12px] text-champagne-bright">
+                      (passcode POOL26)
+                    </span>
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                  </a>
+                )}
               </div>
             </ScrollReveal>
           </div>
