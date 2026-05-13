@@ -1,0 +1,46 @@
+/* Aquaflow Irrigation — deep teal + grass palette (2026-05-13).
+   Scoped to .af-root to avoid bleed. */
+
+.af-root {
+  --af-primary-dark: #06262a;
+  --af-bg: #0a3438;
+  --af-bg-2: #134247;
+  --af-bg-3: #1c545a;
+  --af-border: rgba(245, 241, 232, 0.12);
+  --af-border-strong: rgba(245, 241, 232, 0.22);
+  --af-accent: #4dc4b2;
+  --af-accent-2: #38a89a;
+  --af-grass: #8a9b5e;
+  --af-text: #f5f1e8;
+  --af-text-muted: rgba(245, 241, 232, 0.78);
+  --af-text-faint: rgba(245, 241, 232, 0.55);
+  --af-success: #9dff8a;
+  --af-alert: #e85f5f;
+  --af-warning: #f4b860;
+  --af-info: #7cc8e8;
+
+  background: var(--af-primary-dark);
+  color: var(--af-text);
+  font-family: var(--font-geist-sans, ui-sans-serif, system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+.af-root * { box-sizing: border-box; }
+.af-root .af-card { background: var(--af-bg); border: 1px solid var(--af-border); border-radius: 12px; }
+.af-root .af-card-elevated { background: var(--af-bg-2); border: 1px solid var(--af-border-strong); border-radius: 12px; }
+.af-root .af-glow { background: radial-gradient(circle at 50% 0%, rgba(77, 196, 178, 0.18) 0%, rgba(77, 196, 178, 0.06) 30%, transparent 60%); }
+.af-root .af-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--af-accent); }
+.af-root .af-eyebrow-muted { font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--af-text-faint); }
+.af-root .af-pill { display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; padding: 2px 8px; font-size: 11px; border: 1px solid var(--af-border-strong); background: var(--af-bg-3); color: var(--af-text-muted); }
+.af-root .af-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 18px; border-radius: 999px; background: var(--af-accent); color: #06262a; font-weight: 600; font-size: 13px; border: none; cursor: pointer; transition: background 160ms ease; }
+.af-root .af-btn-primary:hover { background: var(--af-accent-2); }
+.af-root .af-btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+.af-root .af-btn-ghost { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; background: transparent; color: var(--af-text-muted); font-size: 12px; border: 1px solid var(--af-border-strong); cursor: pointer; transition: all 160ms ease; }
+.af-root .af-btn-ghost:hover { color: var(--af-text); border-color: var(--af-accent); }
+.af-root .af-input { width: 100%; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--af-border-strong); border-radius: 8px; padding: 10px 12px; color: var(--af-text); font-size: 14px; outline: none; }
+.af-root .af-input:focus { border-color: var(--af-accent); }
+.af-root .af-mono { font-family: var(--font-geist-mono, ui-monospace, monospace); font-variant-numeric: tabular-nums; }
+.af-root .af-serif { font-family: var(--font-fraunces, serif); }
+
+@keyframes af-fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.af-root .af-fade-in { animation: af-fade-in 240ms ease-out; }
