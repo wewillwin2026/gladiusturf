@@ -94,7 +94,10 @@ function Column({
 
 export function Footer() {
   return (
-    <footer className="border-t border-bone/10 bg-pitch text-bone">
+    <footer
+      aria-label="Footer"
+      className="border-t border-bone/10 bg-pitch text-bone"
+    >
       <div className="mx-auto max-w-7xl px-6 py-20">
         <div className="grid grid-cols-2 gap-x-8 gap-y-12 md:grid-cols-8">
           <div className="col-span-2 md:col-span-2">

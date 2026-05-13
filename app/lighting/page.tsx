@@ -81,7 +81,7 @@ export default function LightingPage() {
   return (
     <>
       <Nav />
-      <main id="main" className="bg-tw-bg-base text-tw-text-primary">
+      <main id="main-content" className="bg-tw-bg-base text-tw-text-primary">
         {/* JSON-LD must land in the initial HTML for crawlers — use plain
             <script> rather than next/script (which defers via React hydration
             and would be invisible to Google's first-pass renderer). */}

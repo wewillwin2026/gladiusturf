@@ -163,7 +163,7 @@ export default function HomePage() {
   return (
     <>
       <Nav />
-      <main>
+      <main id="main-content">
         {/* a. Hero */}
         <Hero />
 

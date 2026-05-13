@@ -41,7 +41,7 @@ export function VerticalWaitlist({ vertical }: Props) {
   return (
     <>
       <Nav />
-      <main id="main">
+      <main id="main-content">
         {faqJsonLd && (
           <script
             type="application/ld+json"

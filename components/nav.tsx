@@ -76,7 +76,10 @@ export function Nav() {
           <Link href="/" aria-label="GladiusTurf home">
             <LogoMark size={40} theme="dark" withWordmark />
           </Link>
-          <nav className="hidden items-center gap-8 text-sm text-bone/85 md:flex">
+          <nav
+            aria-label="Primary"
+            className="hidden items-center gap-8 text-sm text-bone/85 md:flex"
+          >
             {PRIMARY_LINKS.map((link, i) => (
               <Link
                 key={link.href}

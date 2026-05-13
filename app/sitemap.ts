@@ -9,6 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "",
     "/product",
     "/pricing",
+    "/pricing/cfo",
     "/compare",
     "/manifesto",
     "/demo",
@@ -28,6 +29,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/loss",
     "/council",
     "/forge",
+    "/transparency",
+    "/legal/privacy",
+    "/legal/terms",
+    "/legal/dpa",
+    "/legal/security",
   ];
 
   // /vs/[slug] — one entry per competitor (excludes the noindexed

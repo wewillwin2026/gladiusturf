@@ -75,7 +75,7 @@ export default function DemoPage() {
   return (
     <>
       <Nav />
-      <main className="bg-obsidian">
+      <main id="main-content" className="bg-obsidian">
         {/* HERO */}
         <section className="border-b border-bone/10">
           <div className="mx-auto grid max-w-7xl grid-cols-1 gap-16 px-6 py-28 lg:grid-cols-[1.1fr_1fr] lg:items-start">
