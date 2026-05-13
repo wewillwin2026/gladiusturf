@@ -1,0 +1,194 @@
+/* Sterling Lawn Co brand palette (2026-05-12).
+   Scoped to .sl-root so the green/lawn-care tokens don't leak into the
+   rest of the site (and don't collide with the Bright Lights .bl-root). */
+
+.sl-root {
+  --sl-primary-dark: #0b1f12;
+  --sl-bg: #142a1c;
+  --sl-bg-2: #1c3a26;
+  --sl-bg-3: #244a32;
+  --sl-border: rgba(245, 241, 232, 0.12);
+  --sl-border-strong: rgba(245, 241, 232, 0.22);
+  --sl-accent: #7fe27a;
+  --sl-accent-2: #5bcc56;
+  --sl-text: #f5f1e8;
+  --sl-text-muted: rgba(245, 241, 232, 0.78);
+  --sl-text-faint: rgba(245, 241, 232, 0.55);
+  --sl-success: #9dff8a;
+  --sl-alert: #e85f5f;
+  --sl-info: #7cc8e8;
+
+  background: var(--sl-primary-dark);
+  color: var(--sl-text);
+  font-family: var(--font-geist-sans, ui-sans-serif, system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.sl-root * {
+  box-sizing: border-box;
+}
+
+.sl-root .sl-card {
+  background: var(--sl-bg);
+  border: 1px solid var(--sl-border);
+  border-radius: 12px;
+}
+
+.sl-root .sl-card-elevated {
+  background: var(--sl-bg-2);
+  border: 1px solid var(--sl-border-strong);
+  border-radius: 12px;
+}
+
+.sl-root .sl-glow {
+  background: radial-gradient(
+    circle at 50% 0%,
+    rgba(127, 226, 122, 0.16) 0%,
+    rgba(127, 226, 122, 0.05) 30%,
+    transparent 60%
+  );
+}
+
+.sl-root .sl-eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sl-accent);
+}
+
+.sl-root .sl-eyebrow-muted {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sl-text-faint);
+}
+
+.sl-root .sl-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 11px;
+  border: 1px solid var(--sl-border-strong);
+  background: var(--sl-bg-3);
+  color: var(--sl-text-muted);
+}
+
+.sl-root .sl-pill-warn {
+  background: rgba(232, 95, 95, 0.12);
+  color: var(--sl-alert);
+  border-color: rgba(232, 95, 95, 0.4);
+}
+
+.sl-root .sl-pill-amber {
+  background: rgba(244, 184, 96, 0.14);
+  color: #f4b860;
+  border-color: rgba(244, 184, 96, 0.4);
+}
+
+.sl-root .sl-pill-success {
+  background: rgba(157, 255, 138, 0.1);
+  color: var(--sl-success);
+  border-color: rgba(157, 255, 138, 0.4);
+}
+
+.sl-root .sl-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--sl-accent);
+  color: #0b1f12;
+  font-weight: 600;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+  transition: background 160ms ease;
+}
+
+.sl-root .sl-btn-primary:hover {
+  background: var(--sl-accent-2);
+}
+
+.sl-root .sl-btn-primary:focus-visible {
+  outline: 2px solid var(--sl-accent);
+  outline-offset: 2px;
+}
+
+.sl-root .sl-btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.sl-root .sl-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--sl-text-muted);
+  font-size: 12px;
+  border: 1px solid var(--sl-border-strong);
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.sl-root .sl-btn-ghost:hover {
+  color: var(--sl-text);
+  border-color: var(--sl-accent);
+}
+
+.sl-root .sl-btn-ghost:focus-visible {
+  outline: 2px solid var(--sl-accent);
+  outline-offset: 2px;
+}
+
+.sl-root .sl-input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--sl-border-strong);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--sl-text);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 160ms ease;
+}
+
+.sl-root .sl-input:focus {
+  border-color: var(--sl-accent);
+}
+
+.sl-root .sl-mono {
+  font-family: var(--font-geist-mono, ui-monospace, "SFMono-Regular", monospace);
+  font-variant-numeric: tabular-nums;
+}
+
+.sl-root .sl-serif {
+  font-family: var(--font-fraunces, "Fraunces", "Iowan Old Style", serif);
+}
+
+@keyframes sl-pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.sl-root .sl-pulse {
+  animation: sl-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes sl-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.sl-root .sl-fade-in {
+  animation: sl-fade-in 240ms ease-out;
+}

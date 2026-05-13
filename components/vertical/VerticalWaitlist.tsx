@@ -77,14 +77,29 @@ export function VerticalWaitlist({ vertical }: Props) {
             </ScrollReveal>
 
             <ScrollReveal delay={0.15}>
-              <a
-                href="#waitlist-form"
-                data-track={`waitlist_hero_${vertical}`}
-                className="group mt-10 inline-flex items-center gap-2 rounded-full bg-honey-bright px-7 py-3.5 text-base font-semibold text-forest-deep shadow-pop-honey transition-all hover:bg-honey hover:shadow-cta-hover"
-              >
-                Join the {def.name.toLowerCase()} waitlist
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </a>
+              <div className="mt-10 flex flex-col items-start gap-4 sm:flex-row sm:items-baseline sm:gap-6">
+                <a
+                  href="#waitlist-form"
+                  data-track={`waitlist_hero_${vertical}`}
+                  className="group inline-flex items-center gap-2 rounded-full bg-honey-bright px-7 py-3.5 text-base font-semibold text-forest-deep shadow-pop-honey transition-all hover:bg-honey hover:shadow-cta-hover"
+                >
+                  Join the {def.name.toLowerCase()} waitlist
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </a>
+                {vertical === "lawn-care" && (
+                  <a
+                    href="/demo/sterling-lawn"
+                    data-track="waitlist_lawn_care_preview"
+                    className="group inline-flex items-center gap-2 text-sm font-medium text-bone/85 underline-offset-4 transition-colors hover:text-bone hover:underline"
+                  >
+                    or see it on lawn-care data first
+                    <span className="font-mono text-[12px] text-champagne-bright">
+                      (passcode LAWN24)
+                    </span>
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                  </a>
+                )}
+              </div>
             </ScrollReveal>
           </div>
         </section>
