@@ -2,6 +2,7 @@ import { TodayDashboard } from "@/components/app/TodayDashboard";
 import { TenantOnboardingHero } from "@/components/app/TenantOnboardingHero";
 import { OnboardingChecklist } from "@/components/app/OnboardingChecklist";
 import { StormRadarTile } from "@/components/app/StormRadarTile";
+import { TenantTrendsCard } from "@/components/app/TenantTrendsCard";
 import {
   OwnersDailyOneLiner,
   pickNextMove,
@@ -134,7 +135,10 @@ export default async function AppHomePage() {
       month: "long",
       day: "numeric",
     });
-    const greeting = `Today, ${dayName} ${monthDay}`;
+    // Dashboard greeting — owner-style salutation + the date as a softer
+    // eyebrow underneath. Replaces "Today, Monday May 13" which read as a
+    // factual restatement of the calendar.
+    const greeting = `Dashboard · ${dayName}, ${monthDay}`;
     const subtitle =
       `${customerCount} customers · ${fixtureCount} ${reg.assetLabelPlural} tracked · ` +
       `${noPlan} on no plan — ${
@@ -285,6 +289,143 @@ export default async function AppHomePage() {
       // Migration not yet applied or duplicate-by-design; both ignored.
     }
 
+    // ---- 30-day vs prior 30-day trends ----
+    const now = new Date();
+    const thirtyDaysAgoIso = new Date(
+      now.getTime() - 30 * 24 * 60 * 60 * 1000,
+    ).toISOString();
+    const sixtyDaysAgoIso = new Date(
+      now.getTime() - 60 * 24 * 60 * 60 * 1000,
+    ).toISOString();
+
+    const [
+      quotesSentLast30Res,
+      quotesSentPrior30Res,
+      proposalsPaidLast30Res,
+      proposalsPaidPrior30Res,
+      visitsCompletedLast30Res,
+      visitsCompletedPrior30Res,
+      reviewsLast30Res,
+      reviewsPrior30Res,
+    ] = await Promise.all([
+      sb
+        .from("proposals")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", session.tenant.id)
+        .gte("sent_at", thirtyDaysAgoIso),
+      sb
+        .from("proposals")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", session.tenant.id)
+        .gte("sent_at", sixtyDaysAgoIso)
+        .lt("sent_at", thirtyDaysAgoIso),
+      sb
+        .from("proposals")
+        .select("total_cents")
+        .eq("tenant_id", session.tenant.id)
+        .in("status", ["sold", "installed"])
+        .gte("sold_at", thirtyDaysAgoIso),
+      sb
+        .from("proposals")
+        .select("total_cents")
+        .eq("tenant_id", session.tenant.id)
+        .in("status", ["sold", "installed"])
+        .gte("sold_at", sixtyDaysAgoIso)
+        .lt("sold_at", thirtyDaysAgoIso),
+      sb
+        .from("schedule_items")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", session.tenant.id)
+        .eq("status", "completed")
+        .gte("starts_at", thirtyDaysAgoIso),
+      sb
+        .from("schedule_items")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", session.tenant.id)
+        .eq("status", "completed")
+        .gte("starts_at", sixtyDaysAgoIso)
+        .lt("starts_at", thirtyDaysAgoIso),
+      sb
+        .from("reviews")
+        .select("id, rating")
+        .eq("tenant_id", session.tenant.id)
+        .gte("created_at", thirtyDaysAgoIso),
+      sb
+        .from("reviews")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", session.tenant.id)
+        .gte("created_at", sixtyDaysAgoIso)
+        .lt("created_at", thirtyDaysAgoIso),
+    ]);
+
+    const last30PaidRows = (proposalsPaidLast30Res.data ?? []) as Array<{
+      total_cents: number | null;
+    }>;
+    const prior30PaidRows = (proposalsPaidPrior30Res.data ?? []) as Array<{
+      total_cents: number | null;
+    }>;
+    const last30Reviews = (reviewsLast30Res.data ?? []) as Array<{
+      id: string;
+      rating: number | null;
+    }>;
+    const last30RevenueCents = last30PaidRows.reduce(
+      (s, r) => s + (r.total_cents ?? 0),
+      0,
+    );
+    const prior30RevenueCents = prior30PaidRows.reduce(
+      (s, r) => s + (r.total_cents ?? 0),
+      0,
+    );
+    const last30ReviewAvg =
+      last30Reviews.length === 0
+        ? null
+        : last30Reviews.reduce((s, r) => s + (r.rating ?? 0), 0) /
+          last30Reviews.length;
+
+    const trends = [
+      {
+        label: "Quotes sent",
+        thisCount: quotesSentLast30Res.count ?? 0,
+        priorCount: quotesSentPrior30Res.count ?? 0,
+        format: "count" as const,
+        hint: "All proposals moved from draft → sent",
+      },
+      {
+        label: "Quotes paid",
+        thisCount: last30PaidRows.length,
+        priorCount: prior30PaidRows.length,
+        format: "count" as const,
+        hint:
+          last30PaidRows.length > 0
+            ? `${last30Reviews.length > 0 ? "Closed" : "Won"} this window`
+            : undefined,
+      },
+      {
+        label: "Revenue (paid)",
+        thisCount: last30RevenueCents,
+        priorCount: prior30RevenueCents,
+        format: "money_cents" as const,
+        hint: "Sum of paid proposals · all tiers",
+      },
+      {
+        label: "Visits completed",
+        thisCount: visitsCompletedLast30Res.count ?? 0,
+        priorCount: visitsCompletedPrior30Res.count ?? 0,
+        format: "count" as const,
+        hint: "schedule_items marked complete",
+      },
+      {
+        label: "Reviews",
+        thisCount: last30Reviews.length,
+        priorCount: reviewsPrior30Res.count ?? 0,
+        format: "count" as const,
+        hint:
+          last30ReviewAvg != null
+            ? `${last30ReviewAvg.toFixed(1)} ★ average this window`
+            : undefined,
+      },
+    ];
+
     return (
       <div className="flex flex-col gap-4">
         <OwnersDailyOneLiner
@@ -307,6 +448,7 @@ export default async function AppHomePage() {
           activity={activity}
           funnel={{ sent: 0, viewed: 0, won: 0, scheduled: 0 }}
         />
+        <TenantTrendsCard trends={trends} />
       </div>
     );
   }

@@ -14,9 +14,11 @@ import type { ProductKind } from "./engines";
 export function MobileNavTrigger({
   product,
   vertical = null,
+  tenantName = null,
 }: {
   product: ProductKind;
   vertical?: string | null;
+  tenantName?: string | null;
 }) {
   const [open, setOpen] = React.useState(false);
 
@@ -48,6 +50,7 @@ export function MobileNavTrigger({
             product={product}
             variant="mobile"
             vertical={vertical}
+            tenantName={tenantName}
             onNavigate={() => setOpen(false)}
           />
         </RD.Content>

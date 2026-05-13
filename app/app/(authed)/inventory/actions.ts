@@ -108,6 +108,110 @@ export async function markUnitDamaged(
   return { ok: true };
 }
 
+// ---- create item ----------------------------------------------------
+
+const ITEM_CATEGORIES = [
+  "fixture",
+  "transformer",
+  "wire",
+  "controller",
+  "sensor",
+  "bulb",
+  "accessory",
+  "other",
+] as const;
+
+type ItemCategory = (typeof ITEM_CATEGORIES)[number];
+
+export type CreateItemResult =
+  | { ok: true; id: string }
+  | { error: string };
+
+/**
+ * Create a new inventory SKU. Without this, a fresh tenant has nothing
+ * to pick from in the Receive dialog — and "Inventory doesn't work."
+ *
+ * v1 captures the minimum useful fields: sku, name, category, brand,
+ * unit, unit cost, par level. Price + group + description editable later
+ * from the row detail view.
+ */
+export async function createInventoryItem(
+  formData: FormData,
+): Promise<CreateItemResult> {
+  const session = await readAppSession();
+  if (session.kind !== "tenant") return { error: "unauthenticated" };
+
+  const sku = String(formData.get("sku") ?? "").trim();
+  const name = String(formData.get("name") ?? "").trim();
+  const categoryRaw = String(formData.get("category") ?? "other").trim();
+  const category: ItemCategory = (ITEM_CATEGORIES as readonly string[]).includes(
+    categoryRaw,
+  )
+    ? (categoryRaw as ItemCategory)
+    : "other";
+  const brand = String(formData.get("brand") ?? "").trim() || null;
+  const unit = String(formData.get("unit") ?? "ea").trim() || "ea";
+  const unitCostRaw = String(formData.get("unitCost") ?? "").trim();
+  const unitCostCents = unitCostRaw
+    ? Math.round(Number(unitCostRaw) * 100)
+    : null;
+  const parLevelRaw = String(formData.get("parLevel") ?? "").trim();
+  const parLevel = parLevelRaw
+    ? Math.max(0, Math.round(Number(parLevelRaw)))
+    : null;
+
+  if (!sku) return { error: "missing_sku" };
+  if (!name) return { error: "missing_name" };
+  if (unitCostCents != null && !Number.isFinite(unitCostCents)) {
+    return { error: "invalid_cost" };
+  }
+
+  const sb = supabaseAdmin();
+
+  // Pre-check (tenant_id, sku) so we can return a clean duplicate
+  // message instead of letting the unique constraint surface a 23505.
+  const { data: existing } = await sb
+    .from("inventory_items")
+    .select("id")
+    .eq("tenant_id", session.tenant.id)
+    .eq("sku", sku)
+    .maybeSingle();
+  if (existing) return { error: "duplicate_sku" };
+
+  const { data, error } = await sb
+    .from("inventory_items")
+    .insert({
+      tenant_id: session.tenant.id,
+      sku,
+      name,
+      category,
+      brand,
+      unit,
+      unit_cost_cents: unitCostCents,
+      par_level: parLevel,
+      active: true,
+    })
+    .select("id")
+    .single();
+
+  if (error || !data) {
+    console.warn("createInventoryItem failed", error);
+    return { error: "insert_failed" };
+  }
+
+  await sb.from("audit_log").insert({
+    tenant_id: session.tenant.id,
+    user_id: null,
+    action: "inventory_item_created",
+    entity_type: "inventory_items",
+    entity_id: (data as { id: string }).id,
+    metadata: { sku, name, category },
+  });
+
+  revalidatePath("/app/inventory");
+  return { ok: true, id: (data as { id: string }).id };
+}
+
 // ---- receive units --------------------------------------------------
 
 export type ReceiveInput = {

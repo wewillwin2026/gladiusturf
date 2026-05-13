@@ -9,7 +9,6 @@ import {
 } from "@/lib/inventory/queries";
 import { money } from "@/lib/shared/format";
 import { InventoryTable } from "./_components/InventoryTable";
-import { ScanButton } from "./_components/ScanButton";
 import { InventoryActions } from "./_components/InventoryActions";
 
 export const dynamic = "force-dynamic";
@@ -85,8 +84,7 @@ export default async function InventoryPage() {
         <EmptyState
           icon={Boxes}
           title="No inventory yet"
-          body="Scan a fresh box to add it."
-          action={<ScanButton />}
+          body="Add your first SKU with the New item button above (e.g. VOLT-G4-3W). Once an item exists, hit Receive to add units against it, scan QR labels in the field, and print labels for new arrivals."
         />
       ) : (
         <InventoryTable items={items} />

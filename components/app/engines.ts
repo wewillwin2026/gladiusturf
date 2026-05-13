@@ -93,7 +93,7 @@ export type Engine = {
 };
 
 export const ENGINE_GROUPS: { id: EngineGroup; label: string }[] = [
-  { id: "overview", label: "Today" },
+  { id: "overview", label: "Dashboard" },
   { id: "customers", label: "Customers" },
   { id: "sell", label: "Sell" },
   { id: "field", label: "Field" },
@@ -105,7 +105,7 @@ export const ENGINE_GROUPS: { id: EngineGroup; label: string }[] = [
 
 export const ENGINES: Engine[] = [
   // Today (1)
-  { slug: "today", name: "Today", group: "overview", icon: LayoutDashboard, ordinal: 1 },
+  { slug: "today", name: "Dashboard", group: "overview", icon: LayoutDashboard, ordinal: 1 },
 
   // Customers (1)
   { slug: "customers", name: "Customers", group: "customers", icon: Users, ordinal: 2 },

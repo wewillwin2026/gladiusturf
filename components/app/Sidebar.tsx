@@ -18,13 +18,18 @@ export type SidebarVariant = "desktop" | "mobile";
 
 interface SidebarProps {
   product: ProductKind;
-  /** Desktop = sticky narrow column; mobile = drawer body. Defaults to desktop. */
   variant?: SidebarVariant;
-  /** Called when a nav link is clicked. Used by the mobile Sheet to close itself. */
   onNavigate?: () => void;
-  /** Tenant vertical — filters the engine list (lighting tenants don't see
-   *  Backflow Compliance Radar, etc). null = render all engines. */
   vertical?: string | null;
+  /** Tenant display name shown in header. Falls back to "GladiusTurf"
+   *  (or "War Room" for founders) when null. */
+  tenantName?: string | null;
+}
+
+function brandInitial(name: string | null, product: ProductKind): string {
+  if (product === "founders") return "F";
+  const trimmed = (name ?? "").trim();
+  return trimmed ? trimmed.slice(0, 1).toUpperCase() : "G";
 }
 
 export function Sidebar({
@@ -32,47 +37,74 @@ export function Sidebar({
   variant = "desktop",
   onNavigate,
   vertical = null,
+  tenantName = null,
 }: SidebarProps) {
   const pathname = usePathname() ?? "/";
   const base =
     product === "founders" ? "/founders/war-room" : "/app";
-  // Tenant sessions filter to engines applicable to their vertical. Demo +
-  // founders see the full list — they're tour/internal surfaces.
   const visibleEngines =
     product === "tenant" && vertical
       ? enginesForVertical(vertical)
       : ENGINES;
 
+  const headerLabel =
+    product === "founders"
+      ? "War Room"
+      : product === "tenant"
+        ? (tenantName ?? "GladiusTurf")
+        : "GladiusTurf";
+  const initial = brandInitial(tenantName, product);
+
   return (
     <nav
       className={cn(
-        "flex flex-col gap-4 p-3 bg-g-bg",
+        "flex flex-col gap-3 px-3 pt-4 pb-3 bg-g-bg",
         variant === "desktop" &&
-          "hidden md:flex w-[232px] shrink-0 overflow-y-auto h-screen sticky top-0 border-r border-g-border",
+          "hidden md:flex w-[244px] shrink-0 overflow-y-auto h-screen sticky top-0 border-r border-g-border",
         variant === "mobile" && "h-full w-full overflow-y-auto",
       )}
     >
+      {/* Brand header — bigger mark, tenant name in bold, status pill
+          inline. Reduces the dead space that surrounded the 24×24 G
+          square in the prior layout. */}
       <Link
         href={base}
         prefetch
         onClick={onNavigate}
-        className="flex items-center gap-2 px-2 h-10 group"
+        className="group flex items-start gap-2.5 px-1.5 py-1.5 rounded-md hover:bg-g-surface-2 transition-colors"
       >
-        <span className="h-6 w-6 rounded-md bg-g-accent-faint border border-g-accent/40 inline-flex items-center justify-center text-g-accent text-[12px] font-medium">
-          G
-        </span>
-        <span className="font-medium text-g-text text-[14px]">
-          {product === "founders" ? "War Room" : "GladiusTurf"}
-        </span>
         <span
           className={cn(
-            "ml-auto text-[10px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded border",
+            "h-10 w-10 shrink-0 rounded-lg inline-flex items-center justify-center font-semibold text-[16px]",
             product === "demo"
-              ? "border-g-border-subtle text-g-text-faint"
-              : "border-g-accent/40 text-g-accent bg-g-accent-faint",
+              ? "bg-g-surface-2 border border-g-border text-g-text-muted"
+              : "bg-g-accent-faint border border-g-accent/40 text-g-accent",
           )}
         >
-          {product === "demo" ? "Demo" : "Live"}
+          {initial}
+        </span>
+        <span className="flex min-w-0 flex-col leading-[1.15] pt-0.5">
+          <span className="font-medium text-g-text text-[14px] truncate">
+            {headerLabel}
+          </span>
+          <span className="mt-0.5 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.14em]">
+            <span
+              className={cn(
+                product === "demo"
+                  ? "text-g-text-faint"
+                  : "text-g-accent",
+              )}
+            >
+              {product === "demo"
+                ? "Demo"
+                : product === "founders"
+                  ? "Founders"
+                  : "Live"}
+            </span>
+            {product === "tenant" && vertical && (
+              <span className="text-g-text-faint">· {vertical}</span>
+            )}
+          </span>
         </span>
       </Link>
 

@@ -57,8 +57,8 @@ export default async function DraftQuotePage({
 
       <PageHeader
         eyebrow={`${session.tenant.display_name} · New quote`}
-        title="Draft a quote"
-        subtitle="Manual draft — pick the customer, name the job, set the number. The AI Quote Drafter ships next; this gets you quoting today."
+        title="New quote"
+        subtitle="1. Pick a customer  ·  2. Name the job  ·  3. Add line items (or just a total)  ·  4. Press Send — we'll email + text them a one-tap quote link. Save as draft if you're not ready to send."
       />
 
       <DraftQuoteForm
