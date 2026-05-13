@@ -227,10 +227,13 @@ export function ChemicalsBrowser({ product }: { product: ProductKind }) {
                       MSDS expiring
                     </span>
                   )}
-                  <button className="inline-flex items-center gap-1 text-[11px] text-g-text-muted hover:text-g-text">
+                  <span
+                    className="inline-flex cursor-default items-center gap-1 text-[11px] text-g-text-muted"
+                    title="MSDS upload + viewer ships with Chemicals v2"
+                  >
                     <FileText className="h-3 w-3" />
                     MSDS
-                  </button>
+                  </span>
                 </div>
               </div>
             ))}
