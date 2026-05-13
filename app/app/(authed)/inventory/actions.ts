@@ -108,6 +108,56 @@ export async function markUnitDamaged(
   return { ok: true };
 }
 
+// ---- SKU lookup from a scanned code --------------------------------
+
+export type SkuLookupResult =
+  | { kind: "existing_item"; itemId: string; sku: string; name: string }
+  | { kind: "new"; sku: string }
+  | { error: string };
+
+/**
+ * Given a raw scanned barcode/QR string, decide:
+ *   - "existing_item" — this SKU already lives in inventory_items for
+ *     this tenant. Caller should offer "Receive 1 more" instead of
+ *     opening a duplicate create form.
+ *   - "new" — no item with this SKU yet. Caller prefills the New Item
+ *     form with the SKU and lets the user fill the rest.
+ *
+ * The scanned string is normalized: trimmed, uppercased, max 80 chars.
+ * No external UPC database lookup yet — that ships when we wire a
+ * product-catalog integration (out of scope this sprint).
+ */
+export async function lookupSkuFromScan(
+  code: string,
+): Promise<SkuLookupResult> {
+  const session = await readAppSession();
+  if (session.kind !== "tenant") return { error: "unauthenticated" };
+
+  const sku = (code ?? "").trim().slice(0, 80);
+  if (!sku) return { error: "missing_code" };
+
+  const sb = supabaseAdmin();
+  const { data: existing, error } = await sb
+    .from("inventory_items")
+    .select("id, sku, name")
+    .eq("tenant_id", session.tenant.id)
+    .eq("sku", sku)
+    .maybeSingle();
+  if (error) {
+    console.warn("lookupSkuFromScan error", error);
+    return { error: "lookup_failed" };
+  }
+  if (existing) {
+    return {
+      kind: "existing_item",
+      itemId: (existing as { id: string }).id,
+      sku: (existing as { sku: string }).sku,
+      name: (existing as { name: string }).name,
+    };
+  }
+  return { kind: "new", sku };
+}
+
 // ---- create item ----------------------------------------------------
 
 const ITEM_CATEGORIES = [
