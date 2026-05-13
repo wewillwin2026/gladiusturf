@@ -69,6 +69,20 @@ export function LightingHero() {
           </div>
         </ScrollReveal>
 
+        <ScrollReveal delay={0.2}>
+          <a
+            href="/demo/bright-lights-encina"
+            data-track="lighting_preview_demo_hero"
+            className="group mt-5 inline-flex items-center gap-2 text-sm text-tw-text-secondary underline-offset-4 transition-colors hover:text-tw-accent-bronze hover:underline"
+          >
+            or see it on Bright Lights&rsquo; data first
+            <span className="font-mono text-[12px] text-tw-accent-bronze">
+              (passcode 2598)
+            </span>
+            <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+          </a>
+        </ScrollReveal>
+
         {/* Stat strip — three real numbers with sources cited */}
         <ScrollReveal delay={0.22}>
           <div className="mt-20 grid grid-cols-1 gap-8 border-t border-tw-line pt-12 md:grid-cols-3">
