@@ -138,6 +138,32 @@ export function VerticalWaitlist({ vertical }: Props) {
                     <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                   </a>
                 )}
+                {vertical === "tree-care" && (
+                  <a
+                    href="/demo/timbercare"
+                    data-track="waitlist_tree_care_preview"
+                    className="group inline-flex items-center gap-2 text-sm font-medium text-bone/85 underline-offset-4 transition-colors hover:text-bone hover:underline"
+                  >
+                    or see it on tree-care data first
+                    <span className="font-mono text-[12px] text-champagne-bright">
+                      (passcode TREE26)
+                    </span>
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                  </a>
+                )}
+                {vertical === "commercial" && (
+                  <a
+                    href="/demo/meridian-grounds"
+                    data-track="waitlist_commercial_preview"
+                    className="group inline-flex items-center gap-2 text-sm font-medium text-bone/85 underline-offset-4 transition-colors hover:text-bone hover:underline"
+                  >
+                    or see it on commercial data first
+                    <span className="font-mono text-[12px] text-champagne-bright">
+                      (passcode COMM26)
+                    </span>
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                  </a>
+                )}
               </div>
             </ScrollReveal>
           </div>

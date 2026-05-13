@@ -1,0 +1,45 @@
+/* Meridian Commercial Grounds — slate + cobalt (2026-05-13).
+   Scoped to .mg-root. */
+
+.mg-root {
+  --mg-primary-dark: #0a1224;
+  --mg-bg: #131c30;
+  --mg-bg-2: #1b283e;
+  --mg-bg-3: #243454;
+  --mg-border: rgba(245, 241, 232, 0.12);
+  --mg-border-strong: rgba(245, 241, 232, 0.22);
+  --mg-accent: #6b94d6;
+  --mg-accent-2: #547fc0;
+  --mg-success: #9dff8a;
+  --mg-text: #f5f1e8;
+  --mg-text-muted: rgba(245, 241, 232, 0.78);
+  --mg-text-faint: rgba(245, 241, 232, 0.55);
+  --mg-alert: #e85f5f;
+  --mg-warning: #f4b860;
+  --mg-info: #7cc8e8;
+
+  background: var(--mg-primary-dark);
+  color: var(--mg-text);
+  font-family: var(--font-geist-sans, ui-sans-serif, system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+.mg-root * { box-sizing: border-box; }
+.mg-root .mg-card { background: var(--mg-bg); border: 1px solid var(--mg-border); border-radius: 12px; }
+.mg-root .mg-card-elevated { background: var(--mg-bg-2); border: 1px solid var(--mg-border-strong); border-radius: 12px; }
+.mg-root .mg-glow { background: radial-gradient(circle at 50% 0%, rgba(107, 148, 214, 0.18) 0%, rgba(107, 148, 214, 0.06) 30%, transparent 60%); }
+.mg-root .mg-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mg-accent); }
+.mg-root .mg-eyebrow-muted { font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mg-text-faint); }
+.mg-root .mg-pill { display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; padding: 2px 8px; font-size: 11px; border: 1px solid var(--mg-border-strong); background: var(--mg-bg-3); color: var(--mg-text-muted); }
+.mg-root .mg-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 18px; border-radius: 999px; background: var(--mg-accent); color: #0a1224; font-weight: 600; font-size: 13px; border: none; cursor: pointer; transition: background 160ms ease; }
+.mg-root .mg-btn-primary:hover { background: var(--mg-accent-2); }
+.mg-root .mg-btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+.mg-root .mg-btn-ghost { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; background: transparent; color: var(--mg-text-muted); font-size: 12px; border: 1px solid var(--mg-border-strong); cursor: pointer; transition: all 160ms ease; }
+.mg-root .mg-btn-ghost:hover { color: var(--mg-text); border-color: var(--mg-accent); }
+.mg-root .mg-input { width: 100%; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--mg-border-strong); border-radius: 8px; padding: 10px 12px; color: var(--mg-text); font-size: 14px; outline: none; }
+.mg-root .mg-input:focus { border-color: var(--mg-accent); }
+.mg-root .mg-mono { font-family: var(--font-geist-mono, ui-monospace, monospace); font-variant-numeric: tabular-nums; }
+.mg-root .mg-serif { font-family: var(--font-fraunces, serif); }
+
+@keyframes mg-fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.mg-root .mg-fade-in { animation: mg-fade-in 240ms ease-out; }

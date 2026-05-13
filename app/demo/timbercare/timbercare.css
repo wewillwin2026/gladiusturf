@@ -1,0 +1,46 @@
+/* TimberCare Co — deep forest + bark palette (2026-05-13).
+   Scoped to .tc-root. */
+
+.tc-root {
+  --tc-primary-dark: #0a1410;
+  --tc-bg: #122019;
+  --tc-bg-2: #1c2f24;
+  --tc-bg-3: #25402f;
+  --tc-border: rgba(245, 241, 232, 0.12);
+  --tc-border-strong: rgba(245, 241, 232, 0.22);
+  --tc-accent: #b48a4b;
+  --tc-accent-2: #9d7639;
+  --tc-leaf: #6e9b5a;
+  --tc-text: #f5f1e8;
+  --tc-text-muted: rgba(245, 241, 232, 0.78);
+  --tc-text-faint: rgba(245, 241, 232, 0.55);
+  --tc-success: #9dff8a;
+  --tc-alert: #e85f5f;
+  --tc-warning: #f4b860;
+  --tc-info: #7cc8e8;
+
+  background: var(--tc-primary-dark);
+  color: var(--tc-text);
+  font-family: var(--font-geist-sans, ui-sans-serif, system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+.tc-root * { box-sizing: border-box; }
+.tc-root .tc-card { background: var(--tc-bg); border: 1px solid var(--tc-border); border-radius: 12px; }
+.tc-root .tc-card-elevated { background: var(--tc-bg-2); border: 1px solid var(--tc-border-strong); border-radius: 12px; }
+.tc-root .tc-glow { background: radial-gradient(circle at 50% 0%, rgba(180, 138, 75, 0.18) 0%, rgba(180, 138, 75, 0.06) 30%, transparent 60%); }
+.tc-root .tc-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--tc-accent); }
+.tc-root .tc-eyebrow-muted { font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--tc-text-faint); }
+.tc-root .tc-pill { display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; padding: 2px 8px; font-size: 11px; border: 1px solid var(--tc-border-strong); background: var(--tc-bg-3); color: var(--tc-text-muted); }
+.tc-root .tc-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 18px; border-radius: 999px; background: var(--tc-accent); color: #0a1410; font-weight: 600; font-size: 13px; border: none; cursor: pointer; transition: background 160ms ease; }
+.tc-root .tc-btn-primary:hover { background: var(--tc-accent-2); }
+.tc-root .tc-btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+.tc-root .tc-btn-ghost { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; background: transparent; color: var(--tc-text-muted); font-size: 12px; border: 1px solid var(--tc-border-strong); cursor: pointer; transition: all 160ms ease; }
+.tc-root .tc-btn-ghost:hover { color: var(--tc-text); border-color: var(--tc-accent); }
+.tc-root .tc-input { width: 100%; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--tc-border-strong); border-radius: 8px; padding: 10px 12px; color: var(--tc-text); font-size: 14px; outline: none; }
+.tc-root .tc-input:focus { border-color: var(--tc-accent); }
+.tc-root .tc-mono { font-family: var(--font-geist-mono, ui-monospace, monospace); font-variant-numeric: tabular-nums; }
+.tc-root .tc-serif { font-family: var(--font-fraunces, serif); }
+
+@keyframes tc-fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.tc-root .tc-fade-in { animation: tc-fade-in 240ms ease-out; }
