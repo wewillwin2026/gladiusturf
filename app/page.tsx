@@ -1,20 +1,16 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import {
   CalendarClock,
-  LayoutDashboard,
   Phone,
   Sparkles,
-  Users,
 } from "lucide-react";
-import { AnimatedCounter } from "@/components/animated-counter";
 import { CtaBand } from "@/components/cta-band";
-import { EnginesGrid } from "@/components/engines-grid";
 import { Eyebrow } from "@/components/eyebrow";
 import { Footer } from "@/components/footer";
 import { Hero } from "@/components/hero";
 import { HomeFaq } from "@/components/home-faq";
 import { HowItWorks } from "@/components/how-it-works";
+import { LossCalculatorInline } from "@/components/loss-calculator";
 import { Nav } from "@/components/nav";
 import { Pill } from "@/components/pill";
 import { PricingSection } from "@/components/pricing-section";
@@ -33,25 +29,6 @@ export const metadata: Metadata = {
     images: ["/crest.png"],
   },
 };
-
-const PROBLEM_STATS = [
-  {
-    value: 232200,
-    prefix: "$",
-    label: "estimated leak per year, modeled from a typical $1–$5M crew's pipeline",
-    accent: true,
-  },
-  {
-    value: 5400,
-    prefix: "$",
-    label: "lost to missed calls per month at the average shop (modeled)",
-  },
-  {
-    value: 30,
-    suffix: "-day refund",
-    label: "money back if it doesn't pay for itself in month one — no fight, data export included",
-  },
-];
 
 type ProductBlock = {
   eyebrow: string;
@@ -95,34 +72,6 @@ const PRODUCT_BLOCKS: ProductBlock[] = [
     flip: true,
   },
   {
-    eyebrow: "Referral Radar",
-    icon: <Users className="h-3 w-3" />,
-    headline: "Your best crew brings referrals. Your worst crew kills them.",
-    body: "Radar tracks which properties produce new business, which reps quietly lose them, and fires next-door outreach the moment a job goes well — before the neighbor calls a competitor first.",
-    bullets: [
-      "Per-property referral lift, scored weekly",
-      "Reps that kill referrals flagged before churn",
-      "Next-door outreach fires on every great review",
-    ],
-    proof: "Modeled leak: ~$180,000/yr in referral revenue most crews never see.",
-    flip: false,
-  },
-  {
-    eyebrow: "Client Portal",
-    icon: <LayoutDashboard className="h-3 w-3" />,
-    headline: "The phone stops ringing for status updates.",
-    body: "Your branded portal lives at your domain, in your colors. Homeowners reschedule visits, book new services, pay invoices, and approve change orders themselves — and every action lands in your dispatch board in real time.",
-    bullets: [
-      "Reschedule, book, and pay from one branded link",
-      "Change orders approved by the homeowner in 2 taps",
-      "Job history, photos, and invoices self-serve 24/7",
-    ],
-    proof: "Designed to cut routine 'when are you coming?' calls in half within 60 days.",
-    flip: true,
-    accent: "honey",
-    mock: "portal",
-  },
-  {
     eyebrow: "The FollowUp",
     icon: <CalendarClock className="h-3 w-3" />,
     headline: "The follow-up that catches what the office misses.",
@@ -138,55 +87,6 @@ const PRODUCT_BLOCKS: ProductBlock[] = [
     mock: "cadence",
   },
 ];
-
-function PortalMock() {
-  const rows = [
-    { date: "Tue · Jul 30", service: "Mow + edge", action: "Reschedule" },
-    { date: "Fri · Aug 02", service: "Bed mulch refresh", action: "Pay invoice" },
-    { date: "Wed · Aug 14", service: "Aeration + overseed", action: "Book service" },
-  ];
-  return (
-    <div className="flex h-full w-full flex-col gap-3 rounded-lg bg-forest-mid/60 p-4 text-left">
-      <div className="flex items-center justify-between">
-        <span className="font-serif text-sm font-semibold text-honey-bright">
-          Your Crew · Client Portal
-        </span>
-        <span className="rounded-full bg-honey/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.2em] text-honey-bright">
-          Live
-        </span>
-      </div>
-      <p className="text-[11px] text-bone/70">
-        Welcome back, Carla — your next visit is Tuesday.
-      </p>
-      <table className="mt-1 w-full table-fixed text-[11px]">
-        <thead>
-          <tr className="text-left text-[9px] font-semibold uppercase tracking-[0.16em] text-bone/65">
-            <th className="pb-2">When</th>
-            <th className="pb-2">Service</th>
-            <th className="pb-2 text-right">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((r) => (
-            <tr key={r.date} className="border-t border-bone/5">
-              <td className="py-2 pr-2 text-bone/70">{r.date}</td>
-              <td className="py-2 pr-2 text-bone/85">{r.service}</td>
-              <td className="py-2 text-right">
-                <span className="rounded-full border border-honey-bright/40 bg-honey/5 px-2 py-0.5 text-[10px] font-semibold text-honey-bright">
-                  {r.action}
-                </span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div className="mt-auto flex items-center justify-between border-t border-bone/10 pt-3 text-[10px] text-bone/50">
-        <span>Self-serve · 24/7</span>
-        <span className="text-honey-bright">73% fewer status calls</span>
-      </div>
-    </div>
-  );
-}
 
 function CadenceMock() {
   const steps = [
@@ -291,84 +191,18 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* b3. Social proof strip — placeholder logos / quote / pilot stats */}
+        {/* b3. Loss calculator — moved up 2026-05-12. Personal $X leak
+                from the prospect's own numbers replaces the static $232,200
+                modeled-aggregate. Lead-magnet + micro-conversion in one. */}
+        <LossCalculatorInline />
+
+        {/* b4. Social proof strip — honest 1-customer count + pricing
+                promise + founder line. */}
         <SocialProofStrip />
 
-        {/* c. The real cost — problem section */}
-        <section className="relative overflow-hidden py-28">
-          <div className="mx-auto max-w-7xl px-6">
-            <ScrollReveal>
-              <Eyebrow className="mb-3 text-center">
-                The real cost of a leaky stack
-              </Eyebrow>
-            </ScrollReveal>
-
-            <ScrollReveal delay={0.05}>
-              <h2 className="mx-auto max-w-3xl text-center font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
-                <span className="text-champagne-bright">$232,200</span> walks out of
-                every crew&apos;s books each year.
-              </h2>
-            </ScrollReveal>
-
-            <ScrollReveal delay={0.1}>
-              <p className="mx-auto mt-6 max-w-2xl text-center text-lg text-bone/70">
-                Quotes that die in voicemail. Upsells nobody flagged. Referrals
-                a competitor chased first. We&rsquo;ll run a free pipeline
-                audit in week one and tell you exactly what your number is —
-                modeled from your real data, not ours.
-              </p>
-            </ScrollReveal>
-
-            <ScrollReveal delay={0.12}>
-              <p className="mx-auto mt-6 max-w-2xl text-center text-base italic text-bone/70">
-                Don&apos;t be the owner explaining to your spouse why the books
-                were down again — when the work was already booked.
-              </p>
-            </ScrollReveal>
-
-            <ScrollReveal delay={0.15}>
-              <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-3">
-                {PROBLEM_STATS.map((stat) => (
-                  <div
-                    key={stat.label}
-                    className={
-                      stat.accent
-                        ? "rounded-2xl border border-champagne/30 bg-gradient-to-b from-champagne/10 to-transparent p-8 text-center"
-                        : "rounded-2xl border border-bone/10 bg-bone/[0.02] p-8 text-center"
-                    }
-                  >
-                    <div
-                      className={
-                        stat.accent
-                          ? "font-serif text-6xl font-semibold tracking-tight text-champagne-bright md:text-7xl"
-                          : "font-serif text-6xl font-semibold tracking-tight text-champagne-bright/85 md:text-7xl"
-                      }
-                    >
-                      <AnimatedCounter
-                        value={stat.value}
-                        prefix={stat.prefix}
-                        suffix={stat.suffix}
-                      />
-                    </div>
-                    <p className="mt-4 text-sm leading-[1.5] text-bone/72">
-                      {stat.label}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal delay={0.2}>
-              <p className="mt-8 text-center text-xs text-bone/70">
-                Estimate, not promise. Modeled from a typical $1M–$5M ARR
-                landscape shop&rsquo;s pipeline gaps. We&rsquo;ll run the same
-                audit on your actual data in week one and show our math.
-              </p>
-            </ScrollReveal>
-          </div>
-        </section>
-
-        {/* d. Product highlights — five marquee engines, moved ahead of the engines grid so the prospect's "is this real?" question lands before the depth dump */}
+        {/* d. Product highlights — three marquee engines (cut from five
+                2026-05-12 per conversion-first plan; Referral Radar +
+                Client Portal moved to /product). */}
         <section
           id="product"
           className="border-t border-bone/10 bg-slate-deep py-28"
@@ -451,9 +285,7 @@ export default function HomePage() {
                       className={`aspect-[4/3] overflow-hidden rounded-2xl border border-bone/10 bg-gradient-to-br p-1 ${accentGradient}`}
                     >
                       <div className="flex h-full w-full items-center justify-center rounded-xl bg-forest-deep p-6">
-                        {b.mock === "portal" ? (
-                          <PortalMock />
-                        ) : b.mock === "cadence" ? (
+                        {b.mock === "cadence" ? (
                           <CadenceMock />
                         ) : (
                           <div className="flex flex-col items-center gap-3 px-8 text-center">
@@ -464,7 +296,7 @@ export default function HomePage() {
                               {b.eyebrow}
                             </span>
                             <span className={`font-mono text-sm ${accentText}`}>
-                              {b.proof.split("Founding crews ").pop()}
+                              {b.proof}
                             </span>
                           </div>
                         )}
@@ -477,27 +309,10 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* e. How it works — 3-step ladder, between product highlights and the depth-dump engines grid */}
+        {/* e. How it works — 3-step ladder */}
         <HowItWorks />
 
-        {/* f. Engines grid — with a blurred crest watermark behind the section H2 */}
-        <div className="relative">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute left-1/2 top-24 -z-0 -translate-x-1/2"
-          >
-            <Image
-              src="/crest.png"
-              alt=""
-              width={520}
-              height={520}
-              className="h-auto w-[520px] opacity-30 blur-[6px] select-none"
-            />
-          </div>
-          <div className="relative">
-            <EnginesGrid />
-          </div>
-        </div>
+        {/* f. (EnginesGrid removed from home 2026-05-12 — full catalog at /product) */}
 
         {/* i. Pricing */}
         <PricingSection />

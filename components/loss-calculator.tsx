@@ -16,8 +16,12 @@ import { ScrollReveal } from "@/components/scroll-reveal";
  * multipliers. The only difference is FRAMING: every output is labeled as a
  * CURRENT loss leaking through the prospect's stack, not a future recovery.
  *
- * NOTE: Math is duplicated from roi-calculator.tsx by intent (per project
- * brief). If you change the benchmarks or scaling factors here, change them
+ * Two exported variants:
+ *   - <LossCalculator>       : full-page version, mounted at /loss
+ *   - <LossCalculatorInline> : homepage section #2 (heading + body only,
+ *                              no /loss hero, no trailing CtaBand)
+ *
+ * NOTE: If you change the benchmarks or scaling factors here, change them
  * in components/roi-calculator.tsx too — or extract both into a shared
  * lib/roi-math.ts module.
  */
@@ -38,9 +42,7 @@ function inquiryScale(per: number): number {
 }
 
 type EngineOutput = {
-  /** Loss-framed label, e.g. "Lost quotes (forgotten in voicemail)". */
   label: string;
-  /** Original engine name for the basis line. */
   engine: string;
   yearly: number;
   basis: string;
@@ -55,10 +57,7 @@ function compute({
   crews: number;
   avgTicket: number;
   inquiriesPerCrewPerMonth: number;
-}): {
-  engines: EngineOutput[];
-  total: number;
-} {
+}): { engines: EngineOutput[]; total: number } {
   const c = diminish(crews);
   const t = ticketScale(avgTicket);
   const i = inquiryScale(inquiriesPerCrewPerMonth);
@@ -135,11 +134,6 @@ function fmtMoneyPrecise(n: number): string {
   return `$${Math.round(n).toLocaleString()}`;
 }
 
-/**
- * Pull a sharp comparison line beneath the headline leak number. We pick
- * whichever ratio reads strongest at the user's loss level, and gracefully
- * fall back to the smaller comparison if the bigger one would round to zero.
- */
 const COST_PER_CREW_CHIEF = 58_000;
 const COST_PER_MOWER = 11_000;
 const COST_PER_SIX_MONTHS_OFF = 90_000;
@@ -167,27 +161,6 @@ function comparisonLine(total: number): string {
 }
 
 export function LossCalculator() {
-  const [crews, setCrews] = useState(3);
-  const [avgTicket, setAvgTicket] = useState(BENCHMARK_AVG_TICKET);
-  const [inquiriesPerCrewPerMonth, setInquiries] = useState(
-    BENCHMARK_INQUIRIES_PER_CREW
-  );
-
-  const { engines, total } = useMemo(
-    () => compute({ crews, avgTicket, inquiriesPerCrewPerMonth }),
-    [crews, avgTicket, inquiriesPerCrewPerMonth]
-  );
-
-  const tierAnnualCost = (monthly: number) => monthly * 12 * crews;
-
-  const reset = () => {
-    setCrews(3);
-    setAvgTicket(BENCHMARK_AVG_TICKET);
-    setInquiries(BENCHMARK_INQUIRIES_PER_CREW);
-  };
-
-  const punchline = comparisonLine(total);
-
   return (
     <>
       <section className="relative overflow-hidden border-b border-bone/10 bg-pitch py-24 md:py-28">
@@ -202,15 +175,15 @@ export function LossCalculator() {
               <h1 className="mt-6 font-serif text-5xl font-semibold leading-[1.05] tracking-[-0.02em] text-bone md:text-7xl">
                 What is your current stack costing you?
               </h1>
-              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-parchment/75 md:text-xl">
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-bone/80 md:text-xl">
                 Most landscape software is structurally incapable of catching
                 what walks out the door. Type your shop&rsquo;s numbers.
                 We&rsquo;ll tell you what last year actually cost &mdash; quote
                 by quote, late invoice by late invoice.
               </p>
-              <p className="mt-3 max-w-2xl text-sm text-bone/50">
-                Modeled from founding-cohort pilot benchmarks, Q1 2026.
-                Conservative scaling for multi-crew shops.
+              <p className="mt-3 max-w-2xl text-sm text-bone/65">
+                Modeled from pilot pipeline-audit benchmarks. Conservative
+                scaling for multi-crew shops.
               </p>
             </div>
           </ScrollReveal>
@@ -219,200 +192,267 @@ export function LossCalculator() {
 
       <section className="border-b border-bone/10 bg-obsidian py-20">
         <div className="mx-auto max-w-7xl px-6">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] lg:gap-14">
-            {/* INPUTS */}
-            <ScrollReveal>
-              <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-7">
-                <div className="flex items-center justify-between">
-                  <Eyebrow tone="champagne">Your shop</Eyebrow>
-                  <button
-                    type="button"
-                    onClick={reset}
-                    className="inline-flex items-center gap-1.5 text-xs uppercase tracking-crest text-bone/45 transition-colors hover:text-champagne-bright"
-                  >
-                    <RefreshCcw className="h-3 w-3" />
-                    Reset
-                  </button>
-                </div>
-
-                <div className="mt-7 flex flex-col gap-7">
-                  <SliderInput
-                    label="Crews"
-                    sublabel="Trucks running on a typical day"
-                    value={crews}
-                    min={1}
-                    max={20}
-                    step={1}
-                    display={`${crews}`}
-                    onChange={setCrews}
-                  />
-                  <SliderInput
-                    label="Average ticket"
-                    sublabel="Per-service revenue (mowing, fert app, hardscape touchup)"
-                    value={avgTicket}
-                    min={120}
-                    max={1200}
-                    step={20}
-                    display={fmtMoneyPrecise(avgTicket)}
-                    onChange={setAvgTicket}
-                  />
-                  <SliderInput
-                    label="Inquiries per crew per month"
-                    sublabel="Inbound texts, calls, web form fills"
-                    value={inquiriesPerCrewPerMonth}
-                    min={20}
-                    max={200}
-                    step={5}
-                    display={`${inquiriesPerCrewPerMonth}`}
-                    onChange={setInquiries}
-                  />
-                </div>
-
-                {/* Headline LEAK card — replaces /roi's recovery card */}
-                <div className="mt-8 rounded-xl border border-champagne/30 bg-champagne/[0.06] px-5 py-5">
-                  <div className="text-xs uppercase tracking-crest text-champagne-bright">
-                    Modeled annual leak
-                  </div>
-                  <div className="mt-1 font-serif text-4xl font-semibold tracking-tight text-champagne-bright md:text-5xl">
-                    {fmtMoneyPrecise(total)}
-                  </div>
-                  <div className="mt-2 text-xs text-bone/55">
-                    Across all marquee gaps, after diminishing-returns
-                    multi-crew adjustment.
-                  </div>
-                  <div className="mt-3 border-t border-champagne/15 pt-3 text-xs italic text-bone/70">
-                    {punchline}
-                  </div>
-                </div>
-              </div>
-            </ScrollReveal>
-
-            {/* OUTPUTS */}
-            <ScrollReveal delay={0.1}>
-              <div className="flex flex-col gap-6">
-                <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-7">
-                  <div className="flex items-center gap-2">
-                    <Calculator className="h-4 w-4 text-champagne-bright" />
-                    <span className="text-xs uppercase tracking-crest text-bone/55">
-                      What&rsquo;s leaking, line by line
-                    </span>
-                  </div>
-                  <ul className="mt-5 flex flex-col gap-4">
-                    {engines.map((e) => (
-                      <li
-                        key={e.engine}
-                        className="flex items-baseline justify-between gap-3 border-b border-bone/5 pb-3 last:border-b-0 last:pb-0"
-                      >
-                        <div>
-                          <div className="font-serif text-base text-bone">
-                            {e.label}
-                          </div>
-                          <div className="text-xs text-bone/45">{e.basis}</div>
-                        </div>
-                        <div className="font-mono text-lg font-semibold tabular-nums text-champagne-bright">
-                          {fmtMoneyPrecise(e.yearly)}
-                          <span className="text-xs font-normal text-bone/40">
-                            {" "}
-                            / yr
-                          </span>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Tier "what it costs to fix this" grid — flipped from /roi */}
-                <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-7">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs uppercase tracking-crest text-bone/55">
-                      What it would cost to fix this · {crews} crew
-                      {crews === 1 ? "" : "s"}
-                    </span>
-                  </div>
-                  <div className="mt-5 grid gap-4 sm:grid-cols-3">
-                    {TIERS.map((tier) => {
-                      const annualCost = tierAnnualCost(tier.monthly);
-                      const recoverableDays = Math.max(
-                        1,
-                        Math.round((annualCost / total) * 365)
-                      );
-                      // weeks of leak required to equal the tier's annual cost
-                      const weeksOfLeak = Math.max(
-                        1,
-                        Math.round((annualCost / total) * 52)
-                      );
-                      const isFeatured = tier.id === "professional";
-                      return (
-                        <div
-                          key={tier.id}
-                          className={
-                            isFeatured
-                              ? "rounded-xl border border-moss/40 bg-gradient-to-b from-moss/10 to-transparent p-5"
-                              : "rounded-xl border border-bone/10 bg-bone/[0.03] p-5"
-                          }
-                        >
-                          <div
-                            className={`text-xs uppercase tracking-crest ${
-                              isFeatured
-                                ? "text-moss-bright"
-                                : "text-champagne-bright"
-                            }`}
-                          >
-                            {tier.name}
-                          </div>
-                          <div className="mt-2 font-serif text-2xl text-bone">
-                            ${tier.monthly.toLocaleString()}
-                            <span className="text-xs text-bone/50"> / mo</span>
-                          </div>
-                          <div className="mt-1 text-[11px] text-bone/45">
-                            annual cost: {fmtMoney(annualCost)}
-                          </div>
-                          <div className="mt-4 inline-flex items-center rounded-full border border-champagne/30 bg-champagne/[0.08] px-3 py-1 font-mono text-[11px] tabular-nums text-champagne-bright">
-                            Recoverable in {recoverableDays}{" "}
-                            {recoverableDays === 1 ? "day" : "days"}
-                          </div>
-                          <div className="mt-3 text-[11px] leading-relaxed text-bone/55">
-                            You leak more than this in {weeksOfLeak}{" "}
-                            {weeksOfLeak === 1 ? "week" : "weeks"}.
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* CTAs */}
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <Link
-                    href="/demo"
-                    className="group inline-flex items-center justify-center gap-2 rounded-full bg-lime-bright px-7 py-3.5 text-base font-semibold text-forest shadow-cta transition-all hover:bg-lime hover:shadow-cta-hover"
-                  >
-                    Stop the leak — book a 30-min demo
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </Link>
-                  <Link
-                    href="/roi"
-                    className="group inline-flex items-center justify-center gap-2 rounded-full border border-champagne-bright/40 px-6 py-3 text-sm font-medium text-champagne-bright transition-all hover:border-champagne-bright hover:bg-champagne/10"
-                  >
-                    See the recovery math instead →
-                  </Link>
-                </div>
-
-                <p className="text-xs leading-relaxed text-bone/40">
-                  Conservative scaling for multi-crew shops (0.85^crews
-                  diminishing factor; floors at 0.30). Real founding-cohort
-                  recovery has clustered within ±15% of these projections
-                  through Q1 2026. The leak is real. The math is honest. Cancel
-                  anytime if it isn&rsquo;t.
-                </p>
-              </div>
-            </ScrollReveal>
-          </div>
+          <CalculatorBody variant="full" />
         </div>
       </section>
 
       <CtaBand />
     </>
+  );
+}
+
+export function LossCalculatorInline() {
+  return (
+    <section
+      id="leak"
+      className="scroll-mt-20 border-b border-bone/10 bg-pitch py-24 md:py-28"
+    >
+      <div className="relative mx-auto max-w-7xl px-6">
+        <ScrollReveal>
+          <div className="mx-auto max-w-3xl text-center">
+            <Pill tone="champagne">See your number</Pill>
+            <h2 className="mt-5 font-serif text-4xl font-semibold leading-[1.08] tracking-[-0.02em] text-bone md:text-5xl">
+              What is your software costing you?
+            </h2>
+            <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-bone/80">
+              Move the sliders. You&rsquo;ll see what last year actually cost
+              you, line by line. Then we&rsquo;ll book a call to show you
+              which engines close each gap.
+            </p>
+          </div>
+        </ScrollReveal>
+        <div className="mt-12">
+          <CalculatorBody variant="inline" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CalculatorBody({ variant }: { variant: "full" | "inline" }) {
+  const [crews, setCrews] = useState(3);
+  const [avgTicket, setAvgTicket] = useState(BENCHMARK_AVG_TICKET);
+  const [inquiriesPerCrewPerMonth, setInquiries] = useState(
+    BENCHMARK_INQUIRIES_PER_CREW,
+  );
+
+  const { engines, total } = useMemo(
+    () => compute({ crews, avgTicket, inquiriesPerCrewPerMonth }),
+    [crews, avgTicket, inquiriesPerCrewPerMonth],
+  );
+
+  const tierAnnualCost = (monthly: number) => monthly * 12 * crews;
+
+  const reset = () => {
+    setCrews(3);
+    setAvgTicket(BENCHMARK_AVG_TICKET);
+    setInquiries(BENCHMARK_INQUIRIES_PER_CREW);
+  };
+
+  const punchline = comparisonLine(total);
+  const leakParam = Math.round(total);
+  const demoHref = `/demo?leak=${leakParam}`;
+
+  return (
+    <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] lg:gap-14">
+      {/* INPUTS */}
+      <ScrollReveal>
+        <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-7">
+          <div className="flex items-center justify-between">
+            <Eyebrow tone="champagne">Your shop</Eyebrow>
+            <button
+              type="button"
+              onClick={reset}
+              className="inline-flex items-center gap-1.5 text-xs uppercase tracking-crest text-bone/65 transition-colors hover:text-champagne-bright"
+            >
+              <RefreshCcw className="h-3 w-3" />
+              Reset
+            </button>
+          </div>
+
+          <div className="mt-7 flex flex-col gap-7">
+            <SliderInput
+              label="Crews"
+              sublabel="Trucks running on a typical day"
+              value={crews}
+              min={1}
+              max={20}
+              step={1}
+              display={`${crews}`}
+              onChange={setCrews}
+            />
+            <SliderInput
+              label="Average ticket"
+              sublabel="Per-service revenue"
+              value={avgTicket}
+              min={120}
+              max={1200}
+              step={20}
+              display={fmtMoneyPrecise(avgTicket)}
+              onChange={setAvgTicket}
+            />
+            <SliderInput
+              label="Inquiries per crew per month"
+              sublabel="Inbound texts, calls, web form fills"
+              value={inquiriesPerCrewPerMonth}
+              min={20}
+              max={200}
+              step={5}
+              display={`${inquiriesPerCrewPerMonth}`}
+              onChange={setInquiries}
+            />
+          </div>
+
+          <div className="mt-8 rounded-xl border border-champagne/30 bg-champagne/[0.06] px-5 py-5">
+            <div className="text-xs uppercase tracking-crest text-champagne-bright">
+              Modeled annual leak
+            </div>
+            <div className="mt-1 font-serif text-4xl font-semibold tracking-tight text-champagne-bright md:text-5xl">
+              {fmtMoneyPrecise(total)}
+            </div>
+            <div className="mt-2 text-xs text-bone/70">
+              Across all marquee gaps, after diminishing-returns multi-crew
+              adjustment.
+            </div>
+            <div className="mt-3 border-t border-champagne/15 pt-3 text-xs italic text-bone/80">
+              {punchline}
+            </div>
+          </div>
+
+          {/* Inline-variant gets a primary CTA right under the leak number
+              so a mobile visitor doesn't have to scroll the right column */}
+          {variant === "inline" && (
+            <Link
+              href={demoHref}
+              className="group mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-lime-bright px-6 py-3.5 text-sm font-semibold text-forest-deep shadow-cta transition-all hover:bg-lime hover:shadow-cta-hover"
+            >
+              Stop this leak — book my demo
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          )}
+        </div>
+      </ScrollReveal>
+
+      {/* OUTPUTS */}
+      <ScrollReveal delay={0.1}>
+        <div className="flex flex-col gap-6">
+          <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-7">
+            <div className="flex items-center gap-2">
+              <Calculator className="h-4 w-4 text-champagne-bright" />
+              <span className="text-xs uppercase tracking-crest text-bone/75">
+                What&rsquo;s leaking, line by line
+              </span>
+            </div>
+            <ul className="mt-5 flex flex-col gap-4">
+              {engines.map((e) => (
+                <li
+                  key={e.engine}
+                  className="flex items-baseline justify-between gap-3 border-b border-bone/5 pb-3 last:border-b-0 last:pb-0"
+                >
+                  <div>
+                    <div className="font-serif text-base text-bone">
+                      {e.label}
+                    </div>
+                    <div className="text-xs text-bone/65">{e.basis}</div>
+                  </div>
+                  <div className="font-mono text-lg font-semibold tabular-nums text-champagne-bright">
+                    {fmtMoneyPrecise(e.yearly)}
+                    <span className="text-xs font-normal text-bone/65">
+                      {" "}
+                      / yr
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="rounded-2xl border border-bone/10 bg-bone/[0.02] p-7">
+            <div className="flex items-center justify-between">
+              <span className="text-xs uppercase tracking-crest text-bone/75">
+                What it would cost to fix this · {crews} crew
+                {crews === 1 ? "" : "s"}
+              </span>
+            </div>
+            <div className="mt-5 grid gap-4 sm:grid-cols-3">
+              {TIERS.map((tier) => {
+                const annualCost = tierAnnualCost(tier.monthly);
+                const recoverableDays = Math.max(
+                  1,
+                  Math.round((annualCost / total) * 365),
+                );
+                const weeksOfLeak = Math.max(
+                  1,
+                  Math.round((annualCost / total) * 52),
+                );
+                const isFeatured = tier.id === "professional";
+                return (
+                  <div
+                    key={tier.id}
+                    className={
+                      isFeatured
+                        ? "rounded-xl border border-moss/40 bg-gradient-to-b from-moss/10 to-transparent p-5"
+                        : "rounded-xl border border-bone/10 bg-bone/[0.03] p-5"
+                    }
+                  >
+                    <div
+                      className={`text-xs uppercase tracking-crest ${
+                        isFeatured
+                          ? "text-moss-bright"
+                          : "text-champagne-bright"
+                      }`}
+                    >
+                      {tier.name}
+                    </div>
+                    <div className="mt-2 font-serif text-2xl text-bone">
+                      ${tier.monthly.toLocaleString()}
+                      <span className="text-xs text-bone/70"> / mo</span>
+                    </div>
+                    <div className="mt-1 text-[11px] text-bone/70">
+                      annual cost: {fmtMoney(annualCost)}
+                    </div>
+                    <div className="mt-4 inline-flex items-center rounded-full border border-champagne/30 bg-champagne/[0.08] px-3 py-1 font-mono text-[11px] tabular-nums text-champagne-bright">
+                      Recoverable in {recoverableDays}{" "}
+                      {recoverableDays === 1 ? "day" : "days"}
+                    </div>
+                    <div className="mt-3 text-[11px] leading-relaxed text-bone/75">
+                      You leak more than this in {weeksOfLeak}{" "}
+                      {weeksOfLeak === 1 ? "week" : "weeks"}.
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* CTA row */}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Link
+              href={demoHref}
+              className="group inline-flex items-center justify-center gap-2 rounded-full bg-lime-bright px-7 py-3.5 text-base font-semibold text-forest shadow-cta transition-all hover:bg-lime hover:shadow-cta-hover"
+            >
+              Stop the leak — book a 30-min demo
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+            {variant === "full" && (
+              <Link
+                href="/roi"
+                className="group inline-flex items-center justify-center gap-2 rounded-full border border-champagne-bright/40 px-6 py-3 text-sm font-medium text-champagne-bright transition-all hover:border-champagne-bright hover:bg-champagne/10"
+              >
+                See the recovery math instead →
+              </Link>
+            )}
+          </div>
+
+          <p className="text-xs leading-relaxed text-bone/65">
+            Conservative scaling for multi-crew shops (0.85^crews diminishing
+            factor; floors at 0.30). Pilot recovery has clustered within ±15%
+            of these projections. The leak is real. The math is honest.
+            Cancel anytime if it isn&rsquo;t.
+          </p>
+        </div>
+      </ScrollReveal>
+    </div>
   );
 }
 
@@ -440,7 +480,7 @@ function SliderInput({
       <div className="flex items-baseline justify-between gap-3">
         <div>
           <div className="text-sm font-medium text-bone">{label}</div>
-          <div className="mt-0.5 text-[11px] text-bone/45">{sublabel}</div>
+          <div className="mt-0.5 text-[11px] text-bone/70">{sublabel}</div>
         </div>
         <div className="font-mono text-base font-semibold text-champagne-bright tabular-nums">
           {display}

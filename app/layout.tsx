@@ -3,6 +3,7 @@ import Script from "next/script";
 import { Inter, Fraunces, JetBrains_Mono } from "next/font/google";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
+import { StickyCtaBar } from "@/components/sticky-cta-bar";
 import { TrackingScript } from "@/components/tracking-script";
 import { UtmCapture } from "@/components/utm-capture";
 import "./globals.css";
@@ -69,6 +70,7 @@ export default function RootLayout({
     >
       <body>
         {children}
+        <StickyCtaBar />
         <TrackingScript />
         <UtmCapture />
         {process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN && (

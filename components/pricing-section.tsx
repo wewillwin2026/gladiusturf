@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/eyebrow";
 import { PricingTiersToggle } from "@/components/pricing-tiers-toggle";
 import { ScrollReveal } from "@/components/scroll-reveal";
@@ -43,10 +45,9 @@ export function PricingSection() {
             <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-bone md:text-5xl">
               Flat per crew. Unlimited seats. Forever.
             </h2>
-            <p className="mt-4 text-lg text-bone/65">
-              Every plan ships with every engine we&apos;ve built (12 live
-              today, 21 more on the roadmap). No per-user fees. No add-on tax.
-              Annual prepay = 2 months free.
+            <p className="mt-4 text-lg text-bone/80">
+              Every plan ships with every engine. No per-user fees. No add-on
+              tax. Annual prepay = 2 months free.
             </p>
           </div>
         </ScrollReveal>
@@ -55,6 +56,20 @@ export function PricingSection() {
         <div className="text-center">
           <PricingTiersToggle />
         </div>
+
+        {/* CFO defense packet — surfaced 2026-05-12 for the buyer who
+            wants to see the math vs. Aspire, Jobber, LMN, etc. */}
+        <ScrollReveal delay={0.1}>
+          <div className="mx-auto mt-12 flex max-w-2xl items-center justify-center">
+            <Link
+              href="/pricing/cfo"
+              className="group inline-flex items-center gap-2 rounded-full border border-bone/15 bg-bone/[0.03] px-5 py-3 text-sm font-medium text-bone/85 transition-colors hover:border-champagne-bright/50 hover:text-bone"
+            >
+              How is this defensible vs. Aspire and Jobber?
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   );

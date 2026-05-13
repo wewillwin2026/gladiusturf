@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import {
   ArrowRight,
@@ -135,7 +136,9 @@ export default function DemoPage() {
                     Founders run the call
                   </span>
                 </div>
-                <DemoForm />
+                <Suspense fallback={<DemoFormSkeleton />}>
+                  <DemoForm />
+                </Suspense>
               </div>
             </div>
           </div>
@@ -298,5 +301,18 @@ export default function DemoPage() {
       </main>
       <Footer />
     </>
+  );
+}
+
+function DemoFormSkeleton() {
+  return (
+    <div className="flex flex-col gap-5 rounded-2xl border border-bone/10 bg-bone/[0.02] p-8">
+      <div className="h-7 w-2/3 animate-pulse rounded bg-bone/[0.06]" />
+      <div className="h-4 w-full animate-pulse rounded bg-bone/[0.04]" />
+      <div className="h-11 animate-pulse rounded-md bg-bone/[0.04]" />
+      <div className="h-11 animate-pulse rounded-md bg-bone/[0.04]" />
+      <div className="h-11 animate-pulse rounded-md bg-bone/[0.04]" />
+      <div className="h-12 w-40 animate-pulse rounded-full bg-bone/[0.06]" />
+    </div>
   );
 }

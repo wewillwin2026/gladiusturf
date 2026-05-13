@@ -102,10 +102,11 @@ export function Hero() {
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
-                href="/pricing"
+                href="#leak"
+                scroll={true}
                 className="inline-flex items-center gap-1 text-sm font-medium text-champagne-bright/85 underline-offset-4 transition-colors hover:text-champagne-bright hover:underline"
               >
-                or see pricing →
+                or see your number first ↓
               </Link>
             </motion.div>
 

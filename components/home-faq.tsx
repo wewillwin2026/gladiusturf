@@ -4,51 +4,30 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 
 type FaqItem = { q: string; a: ReactNode };
 
+// FAQ trimmed 8 → 5 on 2026-05-12 per the conversion-first plan. Kept
+// only the objection-killers — setup time, adoption, refund, who runs
+// onboarding, and the honest customer-count answer. Engines-as-features
+// and founder-bio entries moved to /about (deferred).
 const FAQS: FaqItem[] = [
   {
     q: "How long does setup actually take?",
     a: "48 hours from signed contract to live engines, founder-led. Two onboarding calls in week one. Your data — customers, jobs, invoices — moves over without you lifting a finger.",
   },
   {
-    q: "Will my crew chiefs adopt this?",
+    q: "Will my crew chiefs actually adopt this?",
     a: "The Field Crew App is a PWA that installs on the cheapest Android phone in 30 seconds. It works offline because the suburbs lose signal constantly. We've onboarded 50+-year-old crew chiefs in under 20 minutes.",
-  },
-  {
-    q: "What about my QuickBooks?",
-    a: "One-way sync to QuickBooks Online or Xero ships in week one. Your bookkeeper still gets clean books. We don't replace your accountant.",
-  },
-  {
-    q: "How does this work with my existing phone system?",
-    a: "We sit alongside it. Your office phone keeps ringing. We capture voicemails that go unreturned, route inbound texts the system can answer, and hand off the rest to your crew. Your number stays your number.",
   },
   {
     q: "What if it doesn't deliver?",
     a: "30-day money-back guarantee. We refund the month, you keep the data export. No call to retain you, no fight.",
   },
   {
-    q: "Who's the founder and why landscape?",
-    a: (
-      <>
-        {/* PASTE FOUNDER BIO HERE — 2-3 sentences. Lead with the personal reason, then the thesis. */}
-        {/* Sentence 1: Who you are + the personal connection to landscape ops. */}
-        {/* Sentence 2: Why now — what you saw that made this the moment. */}
-        <p>
-          The thesis is simple: $100B industry, running on field-service
-          software built for HVAC, with a labor crisis, a generational
-          ownership transition, and zero AI-native tooling. The window is open
-          for exactly one operating system to claim the category. We&rsquo;re
-          building it.
-        </p>
-      </>
-    ),
-  },
-  {
-    q: "Why call them “engines” instead of features?",
-    a: "A feature is something you ship and forget. An engine runs every night, gets smarter from your data, and produces a measurable revenue outcome. Each one has a specific dollar number tied to it — the kind of number a crew owner’s spouse asks about at dinner.",
+    q: "Who actually runs the onboarding?",
+    a: "A founder. Not a CSM. Not a ticket queue. For the first year, every paying customer gets a direct line to Ricardo and Joshua. White-glove migration, two onboarding calls in week one, and a Slack channel that doesn't sleep.",
   },
   {
     q: "Do you have customers in my service area?",
-    a: "We're early — a Sarasota lighting business is our first paying customer (Bright Lights Landscape Lighting). The engines are geographic-agnostic by design: NOAA-timed seasonal logic auto-adjusts to your zone, your frost dates, your storm windows. Snow-belt shops get snow-contract automations on Day 1; Sun Belt shops get year-round irrigation logic instead. We'd rather tell you the honest count than dress up a customer list.",
+    a: "We're early — a Sarasota lighting business (Bright Lights Landscape Lighting) is our first paying customer. The engines are geographic-agnostic by design: NOAA-timed seasonal logic auto-adjusts to your zone, your frost dates, your storm windows. We'd rather tell you the honest count than dress up a customer list.",
   },
 ];
 

@@ -61,17 +61,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const required = [
-    "crewName",
-    "ownerName",
-    "email",
-    "phone",
-    "currentSoftware",
-    "crewSize",
-    "tier",
-    "preferredDate",
-    "preferredTime",
-  ] as const;
+  // 2026-05-12 schema cut: only the 3 fields the homepage form collects
+  // are required. The rest are nullable and the founder gathers them on
+  // the call itself.
+  const required = ["crewName", "email", "phone"] as const;
   const missing = required.filter((k) => !body[k] || !String(body[k]).trim());
   if (missing.length) {
     const labels = missing.map((k) => FIELD_LABELS[k] ?? k).join(", ");
@@ -88,13 +81,14 @@ export async function POST(req: Request) {
     );
   }
 
-  const tier = body.tier as Tier;
-  if (!["independent", "professional", "enterprise"].includes(tier)) {
-    return NextResponse.json(
-      { error: "Please pick a tier." },
-      { status: 400 }
-    );
-  }
+  // tier is now optional; only validate when present.
+  const tier: Tier | null = (() => {
+    const v = body.tier;
+    if (!v || !["independent", "professional", "enterprise"].includes(v)) {
+      return null;
+    }
+    return v;
+  })();
 
   // Compute preferred_at on the server (ignore client value to keep one source of truth)
   // Using ET tz string; Postgres will store as timestamptz in UTC.
@@ -130,11 +124,11 @@ export async function POST(req: Request) {
       .from("demo_requests")
       .insert({
         crew_name: body.crewName,
-        owner_name: body.ownerName,
+        owner_name: body.ownerName || null,
         email: String(body.email).trim().toLowerCase(),
         phone: body.phone,
-        current_software: body.currentSoftware,
-        crew_size: body.crewSize,
+        current_software: body.currentSoftware || null,
+        crew_size: body.crewSize || null,
         tier_interest: tier,
         wants_bdc: Boolean(body.wantsBdc),
         preferred_at: preferredAtIso,
@@ -156,12 +150,19 @@ export async function POST(req: Request) {
     } else {
       bookingId = data?.id ?? null;
       if (bookingId) {
+        const noteBits: string[] = ["Demo booked."];
+        if (body.preferredDate && body.preferredTime) {
+          noteBits.push(`Preferred ${body.preferredDate} ${body.preferredTime} ET.`);
+        }
+        if (body.altTimeNote) {
+          noteBits.push(`Note: ${body.altTimeNote}`);
+        }
         await sb.from("pipeline_events").insert({
           booking_id: bookingId,
           event_type: "created",
-          to_value: tier,
+          to_value: tier || "untiered",
           actor: "prospect",
-          note: `Demo booked. Preferred ${body.preferredDate} ${body.preferredTime} ET.`,
+          note: noteBits.join(" "),
         });
       }
     }
@@ -173,38 +174,52 @@ export async function POST(req: Request) {
   if (process.env.RESEND_API_KEY) {
     try {
       const resend = new Resend(process.env.RESEND_API_KEY);
-      const lines = [
+      const lines: (string | null)[] = [
         `Crew: ${body.crewName}`,
-        `Owner: ${body.ownerName}`,
+        body.ownerName ? `Owner: ${body.ownerName}` : null,
         `Email: ${body.email}`,
         `Phone: ${body.phone}`,
-        ``,
-        `Tier: ${TIER_DISPLAY[tier]}`,
-        body.wantsBdc ? `Add-on: GladiusBDC (+$499/mo)` : null,
-        ``,
-        `Preferred: ${body.preferredDate} at ${body.preferredTime} ET`,
-        body.altTimeNote ? `Alt time: ${body.altTimeNote}` : null,
-        ``,
-        `Current software: ${body.currentSoftware}`,
-        `Crew size: ${body.crewSize}`,
-        ``,
+      ];
+      if (tier) {
+        lines.push("", `Tier: ${TIER_DISPLAY[tier]}`);
+      }
+      if (body.wantsBdc) {
+        lines.push(`Add-on: GladiusBDC (+$499/mo)`);
+      }
+      if (body.preferredDate && body.preferredTime) {
+        lines.push("", `Preferred: ${body.preferredDate} at ${body.preferredTime} ET`);
+      }
+      if (body.altTimeNote) {
+        lines.push(`Best window / notes: ${body.altTimeNote}`);
+      }
+      if (body.currentSoftware) {
+        lines.push("", `Current software: ${body.currentSoftware}`);
+      }
+      if (body.crewSize) {
+        lines.push(`Crew size: ${body.crewSize}`);
+      }
+      lines.push(
+        "",
         `Source: ${body.source_page || "—"}`,
-        body.utm_source ? `UTM: ${body.utm_source} / ${body.utm_medium || "—"} / ${body.utm_campaign || "—"}` : null,
+        body.utm_source
+          ? `UTM: ${body.utm_source} / ${body.utm_medium || "—"} / ${body.utm_campaign || "—"}`
+          : null,
         body.referrer ? `Referrer: ${body.referrer}` : null,
-        ``,
+        "",
         `Open in War Room → https://gladiusturf.com/founders/war-room`,
-      ]
-        .filter((l) => l !== null)
-        .join("\n");
+      );
 
-      const subject = `🚨 Demo · ${body.crewName} · ${TIER_DISPLAY[tier].split(" · ")[0]}${body.wantsBdc ? " + BDC" : ""}`;
+      const subjectTail = tier
+        ? ` · ${TIER_DISPLAY[tier].split(" · ")[0]}${body.wantsBdc ? " + BDC" : ""}`
+        : "";
+      const subject = `🚨 Demo · ${body.crewName}${subjectTail}`;
 
       await resend.emails.send({
         from: FROM,
         to: FOUNDER_EMAILS,
         replyTo: String(body.email),
         subject,
-        text: lines,
+        text: lines.filter((l) => l !== null).join("\n"),
       });
     } catch (err) {
       console.warn("Resend send failed (non-fatal)", err);
