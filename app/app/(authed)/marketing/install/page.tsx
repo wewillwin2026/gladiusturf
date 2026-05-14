@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
-import { CheckCircle2, Clock, Code2, Sparkles } from "lucide-react";
+import { CheckCircle2, Clock, Code2, Plug, Sparkles } from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
 import { readAppSession } from "@/lib/app/session";
 import { supabaseAdmin } from "@/lib/supabase";
 import { CopyBlock } from "@/components/app/marketing/CopyBlock";
+import { RevealableSecret } from "@/components/app/marketing/RevealableSecret";
 
 export const dynamic = "force-dynamic";
 
@@ -131,6 +132,86 @@ export default async function InstallTrackerPage() {
           <p className="mt-3 text-[12px] text-g-text-muted">
             Or use the &ldquo;Insert Headers and Footers&rdquo; plugin and paste
             the standard snippet into the &ldquo;Header&rdquo; box.
+          </p>
+        </div>
+      </section>
+
+      {/* WordPress plugin (server-side leads + webhooks) */}
+      <section className="g-card overflow-hidden">
+        <header className="flex items-center gap-2 border-b border-g-border-subtle px-5 py-3">
+          <Plug className="h-3.5 w-3.5 text-g-text-muted" />
+          <h2 className="text-[13px] text-g-text">
+            WordPress plugin · server-side leads
+          </h2>
+          <span className="ml-auto text-[10px] uppercase tracking-[0.14em] text-g-text-faint">
+            4 config fields
+          </span>
+        </header>
+        <div className="px-5 py-4 space-y-4">
+          <p className="text-[12px] text-g-text-muted">
+            If your site has the Gladius WordPress plugin installed, paste
+            these four values into its settings. The plugin forwards new
+            quote leads + interaction events directly to your CRM
+            (independent of the browser tracker above).
+          </p>
+
+          <div className="grid gap-3">
+            <div>
+              <div className="text-[10px] uppercase tracking-[0.14em] text-g-text-faint mb-1">
+                Base URL
+              </div>
+              <CopyBlock value="https://gladiusturf.com" />
+            </div>
+            <div>
+              <div className="text-[10px] uppercase tracking-[0.14em] text-g-text-faint mb-1">
+                Tenant slug
+              </div>
+              <CopyBlock value={tenant.slug} />
+            </div>
+            <div>
+              <div className="text-[10px] uppercase tracking-[0.14em] text-g-text-faint mb-1">
+                API key (treat as a password)
+              </div>
+              <RevealableSecret value={tenant.api_key} />
+            </div>
+            <div>
+              <div className="text-[10px] uppercase tracking-[0.14em] text-g-text-faint mb-1">
+                Authorization header (if your plugin asks for it directly)
+              </div>
+              <CopyBlock value={`Authorization: Bearer ${tenant.api_key}`} />
+            </div>
+          </div>
+
+          <div className="border-t border-g-border-subtle pt-3">
+            <div className="text-[12px] font-medium text-g-text mb-1">
+              Endpoints the plugin will call
+            </div>
+            <ul className="space-y-1 text-[12px] text-g-text-muted">
+              <li>
+                <code>POST /api/integrations/leads</code> — new quote
+                requests
+              </li>
+              <li>
+                <code>POST /api/integrations/webhooks</code> — phone /
+                email / CTA clicks
+              </li>
+              <li>
+                <code>GET /api/integrations/health</code> — connection
+                test
+              </li>
+            </ul>
+          </div>
+
+          <p className="text-[11px] text-g-text-faint">
+            Need a fresh key? Email{" "}
+            <a
+              href="mailto:founders@gladiusturf.com"
+              className="text-g-accent hover:underline"
+            >
+              founders@gladiusturf.com
+            </a>{" "}
+            — we&rsquo;ll rotate it for you. Self-serve rotation ships
+            next week.
           </p>
         </div>
       </section>
