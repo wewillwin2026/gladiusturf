@@ -7,6 +7,7 @@ import {
   verifyMagicToken,
 } from "@/lib/founders/auth";
 import { verifyTotpCode } from "@/lib/founders/totp";
+import { founderPhone, verifySmsOtp } from "@/lib/founders/sms-otp";
 
 export const runtime = "nodejs";
 
@@ -32,16 +33,25 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid or expired link" }, { status: 401 });
   }
 
-  const secret = await getFounderSecret(tok.email);
-  if (!secret?.totp_secret) {
-    return NextResponse.json(
-      { error: "Not enrolled. Visit /founders/enroll first." },
-      { status: 412 },
-    );
-  }
+  const phone = founderPhone(tok.email);
 
-  if (!verifyTotpCode(secret.totp_secret, code)) {
-    return NextResponse.json({ error: "Invalid code" }, { status: 401 });
+  if (phone) {
+    // SMS OTP path
+    if (!verifySmsOtp(tok.email, code)) {
+      return NextResponse.json({ error: "Invalid code" }, { status: 401 });
+    }
+  } else {
+    // TOTP path (existing)
+    const secret = await getFounderSecret(tok.email);
+    if (!secret?.totp_secret) {
+      return NextResponse.json(
+        { error: "Not enrolled. Visit /founders/enroll first." },
+        { status: 412 },
+      );
+    }
+    if (!verifyTotpCode(secret.totp_secret, code)) {
+      return NextResponse.json({ error: "Invalid code" }, { status: 401 });
+    }
   }
 
   await recordFounderLogin(tok.email);

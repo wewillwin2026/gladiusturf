@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { verifyMagicToken, getFounderSecret } from "@/lib/founders/auth";
+import { founderPhone, maskPhone } from "@/lib/founders/sms-otp";
 import { VerifyForm } from "./VerifyForm";
 
 export const metadata: Metadata = {
@@ -38,11 +39,18 @@ export default async function VerifyPage({
     );
   }
 
-  const secret = await getFounderSecret(tok.email);
-  // First-time login → /enroll. Otherwise prompt for TOTP.
-  if (!secret?.totp_secret) {
-    redirect(`/founders/enroll?token=${encodeURIComponent(token)}`);
+  const phone = founderPhone(tok.email);
+
+  if (!phone) {
+    // TOTP path — if not enrolled, redirect to enroll.
+    const secret = await getFounderSecret(tok.email);
+    if (!secret?.totp_secret) {
+      redirect(`/founders/enroll?token=${encodeURIComponent(token)}`);
+    }
   }
+
+  const mode = phone ? "sms" : "totp";
+  const phoneHint = phone ? maskPhone(phone) : null;
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-pitch px-6 py-16">
@@ -55,11 +63,13 @@ export default async function VerifyPage({
             One last step
           </h1>
           <p className="mt-2 text-sm text-bone/60">
-            Enter the 6-digit code from your authenticator.
+            {mode === "sms"
+              ? `Enter the 6-digit code we'll text to ${phoneHint}.`
+              : "Enter the 6-digit code from your authenticator."}
           </p>
         </div>
         <div className="rounded-2xl border border-champagne/30 bg-bone/[0.02] p-7 shadow-pop-champagne">
-          <VerifyForm token={token} email={tok.email} />
+          <VerifyForm token={token} email={tok.email} mode={mode} phoneHint={phoneHint} />
         </div>
       </div>
     </main>

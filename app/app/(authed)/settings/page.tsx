@@ -8,7 +8,6 @@ import {
   MessageSquare,
   Moon,
   ShieldCheck,
-  Users,
 } from "lucide-react";
 import Link from "next/link";
 import { PageHeader } from "@/components/app/PageHeader";
@@ -19,6 +18,7 @@ import { dispatcherMode, twilioCredStatus } from "@/lib/messaging/dispatch";
 import { emailDispatcherMode, resendCredStatus } from "@/lib/messaging/email";
 import { ReviewUrlForm } from "./_components/ReviewUrlForm";
 import { OwnerSmsForm } from "./_components/OwnerSmsForm";
+import { TeamCard } from "@/components/app/settings/TeamCard";
 
 export const dynamic = "force-dynamic";
 
@@ -42,21 +42,31 @@ export default async function Page() {
   }
 
   const sb = supabaseAdmin();
-  const [settingsRes, invitesRes] = await Promise.all([
-    sb
-      .from("tenant_messaging_settings")
-      .select(
-        "quiet_hours_start, quiet_hours_end, blocked_weekdays, timezone",
-      )
-      .eq("tenant_id", session.tenant.id)
-      .maybeSingle(),
-    sb
-      .from("tenant_invitations")
-      .select("email, role, status, created_at")
-      .eq("tenant_id", session.tenant.id)
-      .eq("status", "active")
-      .order("created_at", { ascending: true }),
-  ]);
+  const [settingsRes, invitesRes, currentUserInviteRes, memberCountRes] =
+    await Promise.all([
+      sb
+        .from("tenant_messaging_settings")
+        .select("quiet_hours_start, quiet_hours_end, blocked_weekdays, timezone")
+        .eq("tenant_id", session.tenant.id)
+        .maybeSingle(),
+      sb
+        .from("tenant_invitations")
+        .select("email, role, invited_by, created_at")
+        .eq("tenant_id", session.tenant.id)
+        .eq("status", "active")
+        .order("created_at", { ascending: true }),
+      sb
+        .from("tenant_invitations")
+        .select("role")
+        .eq("tenant_id", session.tenant.id)
+        .eq("email", session.email.toLowerCase())
+        .eq("status", "active")
+        .maybeSingle(),
+      sb
+        .from("tenant_members")
+        .select("user_id", { count: "exact", head: true })
+        .eq("tenant_id", session.tenant.id),
+    ]);
 
   // tenants.review_url + owner_phone + daily_briefing_sms_enabled —
   // defensive read: columns may not be deployed yet, in which case the
@@ -94,10 +104,13 @@ export default async function Page() {
     .split(",")
     .map((s: string) => Number.parseInt(s.trim(), 10))
     .filter((n: number) => Number.isFinite(n));
+  const currentRole =
+    (currentUserInviteRes.data as { role: string } | null)?.role ?? "viewer";
+  const memberCount = memberCountRes.count ?? 0;
   const invites = (invitesRes.data ?? []) as Array<{
     email: string;
     role: string;
-    status: string;
+    invited_by: string | null;
     created_at: string;
   }>;
 
@@ -297,40 +310,13 @@ export default async function Page() {
         </div>
       </section>
 
-      <section className="g-card overflow-hidden">
-        <header className="flex items-center justify-between px-5 py-4 border-b border-g-border-subtle">
-          <div className="flex items-center gap-2">
-            <Users className="h-4 w-4 text-g-accent" />
-            <span className="text-[11px] uppercase tracking-[0.12em] text-g-text-faint">
-              Team
-            </span>
-          </div>
-          <span className="text-[11px] font-geist-mono text-g-text-faint">
-            {invites.length} active
-          </span>
-        </header>
-        <div className="p-4">
-          {invites.length === 0 ? (
-            <p className="text-[13px] text-g-text-muted text-center py-6">
-              No team members invited yet. Founders add your team via support.
-            </p>
-          ) : (
-            <ul className="flex flex-col gap-1.5">
-              {invites.map((m) => (
-                <li
-                  key={`${m.email}-${m.role}`}
-                  className="flex items-center justify-between text-[13px] py-1.5 border-b border-g-border-subtle/40 last:border-b-0"
-                >
-                  <span className="text-g-text font-medium">{m.email}</span>
-                  <span className="inline-flex items-center rounded-full bg-g-surface-2 px-2 py-0.5 text-[11px] uppercase tracking-[0.1em] text-g-text-muted">
-                    {m.role}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </section>
+      <TeamCard
+        tenantId={session.tenant.id}
+        currentEmail={session.email}
+        currentRole={currentRole}
+        invitations={invites}
+        memberCount={memberCount}
+      />
 
       <section className="g-card flex items-start gap-3 p-4">
         <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-g-accent-faint text-g-accent">
