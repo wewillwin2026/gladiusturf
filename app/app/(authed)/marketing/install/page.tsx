@@ -151,7 +151,7 @@ export default async function InstallTrackerPage() {
               <li>• Phone clicks (tel: links)</li>
               <li>• Email clicks (mailto: links)</li>
               <li>
-                • Custom CTAs (any element with <code>data-track="cta"</code>)
+                • Custom CTAs (any element with <code>data-track=&quot;cta&quot;</code>)
               </li>
               <li>• Scroll depth (25/50/75/100%)</li>
               <li>• UTM source / medium / campaign (first-touch)</li>

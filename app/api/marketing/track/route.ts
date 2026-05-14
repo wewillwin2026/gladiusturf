@@ -192,7 +192,7 @@ export async function POST(req: Request): Promise<Response> {
   // the most recent open session for this visitor within 30 minutes,
   // else create a new row.
   let sessionId = (body.sessionId ?? "").trim().slice(0, 80) || null;
-  let firstEventPath: string | null = events[0]?.path ?? null;
+  const firstEventPath: string | null = events[0]?.path ?? null;
 
   if (sessionId) {
     // Treat as an external/correlation id we hash into a UUID — easier
