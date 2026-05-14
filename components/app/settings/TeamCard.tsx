@@ -193,7 +193,7 @@ export function TeamCard({
           )}
           {inviteSuccess && (
             <p className="mt-2 text-[12px] text-g-accent" role="status">
-              Invitation sent — they'll receive an email with a sign-in link.
+              Invitation sent — they&apos;ll receive an email with a sign-in link.
             </p>
           )}
         </div>
