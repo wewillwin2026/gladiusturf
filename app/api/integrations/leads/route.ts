@@ -284,26 +284,41 @@ export async function POST(req: Request): Promise<Response> {
     .select("id")
     .single();
 
-  // ---- 5. Founder alert — fire-and-forget, never blocks the response ----
-  void (async () => {
+  // ---- 5. Founder alert — awaited inline so Vercel's serverless
+  //         runtime doesn't kill it when the response returns. ~300ms
+  //         worst case via Resend; acceptable on a once-per-lead path.
+  const founderEmail = process.env.FOUNDER_ALERT_EMAIL;
+  if (!founderEmail) {
+    // Make the missing-env case visible in audit_log so we don't have
+    // to debug from the outside next time.
+    await sb.from("audit_log").insert({
+      tenant_id: tenant.id,
+      user_id: null,
+      action: "tenant_alert.skipped",
+      entity_type: "customer",
+      entity_id: customerId,
+      metadata: {
+        kind: "wp_lead_received",
+        reason: "FOUNDER_ALERT_EMAIL env not set",
+      },
+    });
+  } else {
+    const subject = `New lead · ${tenant.display_name} · ${name ?? phoneE164 ?? email ?? "anonymous"}`;
+    const lines = [
+      `Tenant: ${tenant.display_name} (${tenant.slug})`,
+      name ? `Name: ${name}` : null,
+      phoneE164 ? `Phone: ${phoneE164}` : null,
+      email ? `Email: ${email}` : null,
+      address ? `Address: ${address}` : null,
+      service ? `Service: ${service}` : null,
+      notes ? `Notes: ${notes}` : null,
+      source ? `Source: ${source}${campaign ? ` · ${campaign}` : ""}${medium ? ` · ${medium}` : ""}` : null,
+      pageUrl ? `Page: ${pageUrl}` : null,
+      referrer ? `Referrer: ${referrer}` : null,
+      customerExisted ? "(existing customer)" : "(new customer)",
+    ].filter(Boolean) as string[];
+    const html = lines.map((l) => `<div>${l}</div>`).join("");
     try {
-      const founderEmail = process.env.FOUNDER_ALERT_EMAIL;
-      if (!founderEmail) return;
-      const subject = `New lead · ${tenant.display_name} · ${name ?? phoneE164 ?? email ?? "anonymous"}`;
-      const lines = [
-        `Tenant: ${tenant.display_name} (${tenant.slug})`,
-        name ? `Name: ${name}` : null,
-        phoneE164 ? `Phone: ${phoneE164}` : null,
-        email ? `Email: ${email}` : null,
-        address ? `Address: ${address}` : null,
-        service ? `Service: ${service}` : null,
-        notes ? `Notes: ${notes}` : null,
-        source ? `Source: ${source}${campaign ? ` · ${campaign}` : ""}${medium ? ` · ${medium}` : ""}` : null,
-        pageUrl ? `Page: ${pageUrl}` : null,
-        referrer ? `Referrer: ${referrer}` : null,
-        customerExisted ? "(existing customer)" : "(new customer)",
-      ].filter(Boolean) as string[];
-      const html = lines.map((l) => `<div>${l}</div>`).join("");
       await sendInternalAlert({
         tenantId: tenant.id,
         entityId: customerId ?? undefined,
@@ -317,7 +332,7 @@ export async function POST(req: Request): Promise<Response> {
     } catch (e) {
       console.warn("[/api/integrations/leads] founder alert failed", e);
     }
-  })();
+  }
 
   return NextResponse.json(
     {
