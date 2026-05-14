@@ -129,11 +129,17 @@ export function MarketingTrafficCard({
                 Marketing tracker isn&rsquo;t pointed here yet
               </div>
               <p className="mt-1 text-[11px] text-g-text-muted">
-                Drop a tracker snippet on your website and we&rsquo;ll
-                surface visitors → form starts → quote conversions next
-                to your customer data. Reach out and we&rsquo;ll send
-                the snippet — install is one line.
+                Drop one line on your website and we&rsquo;ll surface
+                visitors → form starts → quote conversions next to your
+                customer data.
               </p>
+              <Link
+                href="/app/marketing/install"
+                className="mt-2 inline-flex items-center gap-1 text-[12px] text-g-accent hover:underline"
+              >
+                Install the tracker
+                <ArrowRight className="h-3 w-3" />
+              </Link>
             </div>
           </div>
         </div>

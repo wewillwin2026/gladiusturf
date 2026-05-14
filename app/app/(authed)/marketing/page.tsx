@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
-import { ArrowRight, Globe2 } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Globe2, Settings2 } from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
 import { readAppSession } from "@/lib/app/session";
 import { supabaseAdmin } from "@/lib/supabase";
@@ -59,7 +60,11 @@ export default async function MarketingPage() {
   const session = await readAppSession();
   if (session.kind === "unauthenticated") redirect("/app/login");
   if (session.kind !== "tenant") notFound();
-  if (!session.tenant.marketing_tab_enabled) notFound();
+  // Tab not enabled yet — bounce them to the install page so they have
+  // a clear next step instead of a 404.
+  if (!session.tenant.marketing_tab_enabled) {
+    redirect("/app/marketing/install");
+  }
 
   const sb = supabaseAdmin();
 
@@ -183,6 +188,14 @@ export default async function MarketingPage() {
         title="Marketing"
         subtitle={`${last7Count.toLocaleString()} sessions last 7d · ${totalSessions30.toLocaleString()} last 30d. Web visitors → quote conversions, scoped to your shop.`}
       />
+
+      <Link
+        href="/app/marketing/install"
+        className="self-start inline-flex items-center gap-1.5 text-[11px] text-g-text-muted hover:text-g-text"
+      >
+        <Settings2 className="h-3 w-3" />
+        Tracker install + manual events
+      </Link>
 
       {/* Funnel row */}
       <section className="g-card overflow-hidden">
