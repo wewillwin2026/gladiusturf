@@ -90,6 +90,18 @@ export type Engine = {
    * the Holiday Install surface; etc.
    */
   verticals?: string[];
+  /**
+   * Optional per-tenant boolean flag the engine requires. When set,
+   * the engine is hidden unless `flags[featureFlag] === true`. The
+   * demo + founder shells render the full list regardless. Used to
+   * stage new surfaces (e.g. Marketing tracker) so the tab only
+   * lights up after the tenant's site is wired to the ingest API.
+   */
+  featureFlag?: "marketing";
+};
+
+export type TenantFlags = {
+  marketing?: boolean;
 };
 
 export const ENGINE_GROUPS: { id: EngineGroup; label: string }[] = [
@@ -142,6 +154,9 @@ export const ENGINES: Engine[] = [
   // Pulse (3) — metrics + audit, kept separate from Loop conversations
   { slug: "reports", name: "Reports", group: "pulse", icon: BarChart3, ordinal: 23 },
   { slug: "analytics", name: "Analytics", group: "pulse", icon: TrendingUp, ordinal: 24 },
+  // Marketing — per-tenant web tracker; gated by tenants.marketing_tab_enabled.
+  // Tab lights up once the tenant's website is posting to /api/marketing/track.
+  { slug: "marketing", name: "Marketing", group: "pulse", icon: Globe2, ordinal: 23.7, featureFlag: "marketing" },
   // Trust Console — Trust Director's #1 board recommendation 2026-05-08.
   // Tenant-visible audit chain: AI runs, consent ledger, founder reads,
   // sub-processors. The "moat no incumbent will copy" engine.
@@ -199,4 +214,20 @@ export function enginesForVertical(vertical: string | null): Engine[] {
   return ENGINES.filter(
     (e) => !e.verticals || e.verticals.includes(vertical),
   );
+}
+
+/**
+ * Apply both vertical AND per-tenant feature-flag filtering. Pass
+ * `vertical = null` + `flags = {}` for the demo/founder shells to
+ * skip both gates.
+ */
+export function enginesForTenant(
+  vertical: string | null,
+  flags: TenantFlags,
+): Engine[] {
+  const base = enginesForVertical(vertical);
+  return base.filter((e) => {
+    if (!e.featureFlag) return true;
+    return flags[e.featureFlag] === true;
+  });
 }

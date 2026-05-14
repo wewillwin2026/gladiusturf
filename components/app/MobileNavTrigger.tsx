@@ -4,7 +4,7 @@ import * as React from "react";
 import * as RD from "@radix-ui/react-dialog";
 import { Menu, X } from "lucide-react";
 import { Sidebar } from "./Sidebar";
-import type { ProductKind } from "./engines";
+import type { ProductKind, TenantFlags } from "./engines";
 
 /**
  * Mobile-only nav trigger. Renders a hamburger button that's hidden ≥ md, and
@@ -15,10 +15,12 @@ export function MobileNavTrigger({
   product,
   vertical = null,
   tenantName = null,
+  flags = {},
 }: {
   product: ProductKind;
   vertical?: string | null;
   tenantName?: string | null;
+  flags?: TenantFlags;
 }) {
   const [open, setOpen] = React.useState(false);
 
@@ -51,6 +53,7 @@ export function MobileNavTrigger({
             variant="mobile"
             vertical={vertical}
             tenantName={tenantName}
+            flags={flags}
             onNavigate={() => setOpen(false)}
           />
         </RD.Content>

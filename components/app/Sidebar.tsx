@@ -7,9 +7,10 @@ import {
   ENGINES,
   ENGINE_GROUPS,
   SECRET_TABS,
-  enginesForVertical,
+  enginesForTenant,
   hrefForEngine,
   type ProductKind,
+  type TenantFlags,
 } from "./engines";
 import { cn } from "@/lib/cn";
 import { buildVersion } from "@/lib/shared/format";
@@ -24,6 +25,8 @@ interface SidebarProps {
   /** Tenant display name shown in header. Falls back to "GladiusTurf"
    *  (or "War Room" for founders) when null. */
   tenantName?: string | null;
+  /** Per-tenant feature flags. Only used when product === "tenant". */
+  flags?: TenantFlags;
 }
 
 function brandInitial(name: string | null, product: ProductKind): string {
@@ -38,13 +41,14 @@ export function Sidebar({
   onNavigate,
   vertical = null,
   tenantName = null,
+  flags = {},
 }: SidebarProps) {
   const pathname = usePathname() ?? "/";
   const base =
     product === "founders" ? "/founders/war-room" : "/app";
   const visibleEngines =
-    product === "tenant" && vertical
-      ? enginesForVertical(vertical)
+    product === "tenant"
+      ? enginesForTenant(vertical, flags)
       : ENGINES;
 
   const headerLabel =

@@ -230,6 +230,7 @@ export type TenantRow = {
   primary_language: string;
   bilingual: boolean;
   active: boolean;
+  marketing_tab_enabled: boolean;
 };
 
 export async function getTenantBySlug(slug: string): Promise<TenantRow | null> {
@@ -237,7 +238,7 @@ export async function getTenantBySlug(slug: string): Promise<TenantRow | null> {
   const { data, error } = await sb
     .from("tenants")
     .select(
-      "id, slug, display_name, vertical, plan_tier, brand_primary_hex, brand_accent_hex, primary_language, bilingual, active",
+      "id, slug, display_name, vertical, plan_tier, brand_primary_hex, brand_accent_hex, primary_language, bilingual, active, marketing_tab_enabled",
     )
     .eq("slug", slug)
     .maybeSingle();

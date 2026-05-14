@@ -3,6 +3,7 @@ import { TenantOnboardingHero } from "@/components/app/TenantOnboardingHero";
 import { OnboardingChecklist } from "@/components/app/OnboardingChecklist";
 import { StormRadarTile } from "@/components/app/StormRadarTile";
 import { TenantTrendsCard } from "@/components/app/TenantTrendsCard";
+import { MarketingTrafficCard } from "@/components/app/MarketingTrafficCard";
 import {
   OwnersDailyOneLiner,
   pickNextMove,
@@ -382,6 +383,79 @@ export default async function AppHomePage() {
         : last30Reviews.reduce((s, r) => s + (r.rating ?? 0), 0) /
           last30Reviews.length;
 
+    // ---- Marketing traffic summary — 7d vs prior 7d ----
+    const sevenDaysAgoIso = new Date(
+      now.getTime() - 7 * 24 * 60 * 60 * 1000,
+    ).toISOString();
+    const fourteenDaysAgoIso = new Date(
+      now.getTime() - 14 * 24 * 60 * 60 * 1000,
+    ).toISOString();
+
+    const [
+      webSessionsLast7Res,
+      webSessionsPrior7Res,
+      webSessionsLast7AggRes,
+    ] = await Promise.all([
+      sb
+        .from("web_sessions")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", session.tenant.id)
+        .gte("last_seen_at", sevenDaysAgoIso),
+      sb
+        .from("web_sessions")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", session.tenant.id)
+        .gte("last_seen_at", fourteenDaysAgoIso)
+        .lt("last_seen_at", sevenDaysAgoIso),
+      sb
+        .from("web_sessions")
+        .select("utm_source, form_start_count, form_submit_count, referrer")
+        .eq("tenant_id", session.tenant.id)
+        .gte("last_seen_at", sevenDaysAgoIso),
+    ]);
+
+    const last7Sessions = (webSessionsLast7AggRes.data ?? []) as Array<{
+      utm_source: string | null;
+      form_start_count: number;
+      form_submit_count: number;
+      referrer: string | null;
+    }>;
+    const formStartsLast7 = last7Sessions.reduce(
+      (s, r) => s + (r.form_start_count ?? 0),
+      0,
+    );
+    const formSubmitsLast7 = last7Sessions.reduce(
+      (s, r) => s + (r.form_submit_count ?? 0),
+      0,
+    );
+    const sourceCounts = new Map<string, number>();
+    for (const s of last7Sessions) {
+      const key =
+        s.utm_source?.trim() ||
+        (s.referrer
+          ? (() => {
+              try {
+                return new URL(s.referrer).hostname;
+              } catch {
+                return "direct";
+              }
+            })()
+          : "direct");
+      sourceCounts.set(key, (sourceCounts.get(key) ?? 0) + 1);
+    }
+    const topSources = Array.from(sourceCounts.entries())
+      .map(([source, count]) => ({ source, count }))
+      .sort((a, b) => b.count - a.count);
+
+    const marketingSummary = {
+      visitorsLast7: webSessionsLast7Res.count ?? 0,
+      visitorsPrior7: webSessionsPrior7Res.count ?? 0,
+      formStartsLast7,
+      formSubmitsLast7,
+      topSources,
+      tabEnabled: !!session.tenant.marketing_tab_enabled,
+    };
+
     const trends = [
       {
         label: "Quotes sent",
@@ -449,6 +523,7 @@ export default async function AppHomePage() {
           funnel={{ sent: 0, viewed: 0, won: 0, scheduled: 0 }}
         />
         <TenantTrendsCard trends={trends} />
+        <MarketingTrafficCard summary={marketingSummary} />
       </div>
     );
   }

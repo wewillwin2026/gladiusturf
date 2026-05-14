@@ -32,6 +32,7 @@ export default async function AppAuthedLayout({
         hideAskGladius
         vertical={session.tenant.vertical}
         tenantName={session.tenant.display_name}
+        flags={{ marketing: session.tenant.marketing_tab_enabled }}
       >
         {children}
       </AppShell>

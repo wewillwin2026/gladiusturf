@@ -9,7 +9,7 @@ import { Topbar } from "./Topbar";
 import { CommandPalette } from "./CommandPalette";
 import { FloatingAskGladiusButton } from "./AskGladius";
 import { TooltipProvider } from "./ui/Tooltip";
-import { type ProductKind } from "./engines";
+import { type ProductKind, type TenantFlags } from "./engines";
 
 export function AppShell({
   product,
@@ -18,6 +18,7 @@ export function AppShell({
   hideAskGladius = false,
   vertical = null,
   tenantName = null,
+  flags = {},
   children,
 }: {
   product: ProductKind;
@@ -28,6 +29,9 @@ export function AppShell({
   /** Display name shown in the sidebar header. Tenants get their shop
    *  name; demo + founder default to the product label. */
   tenantName?: string | null;
+  /** Per-tenant feature flags. Tenant authed layouts pass tenant row
+   *  derived flags here; demo + founders shells leave it as `{}`. */
+  flags?: TenantFlags;
   children: React.ReactNode;
 }) {
   return (
@@ -35,9 +39,9 @@ export function AppShell({
       <ThemeProvider>
         <CommandPaletteProvider>
           <TooltipProvider>
-            <Sidebar product={product} vertical={vertical} tenantName={tenantName} />
+            <Sidebar product={product} vertical={vertical} tenantName={tenantName} flags={flags} />
             <div className="flex-1 flex flex-col min-w-0">
-              <Topbar product={product} user={user} logoutHref={logoutHref} vertical={vertical} tenantName={tenantName} />
+              <Topbar product={product} user={user} logoutHref={logoutHref} vertical={vertical} tenantName={tenantName} flags={flags} />
               <main className="flex-1 px-6 py-6 max-w-[1480px] w-full mx-auto">
                 {children}
               </main>
