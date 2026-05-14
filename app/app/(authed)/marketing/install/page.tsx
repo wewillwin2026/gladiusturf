@@ -158,9 +158,9 @@ export default async function InstallTrackerPage() {
           <div className="grid gap-3">
             <div>
               <div className="text-[10px] uppercase tracking-[0.14em] text-g-text-faint mb-1">
-                Base URL
+                Base URL (the plugin appends /leads, /webhooks, /health)
               </div>
-              <CopyBlock value="https://gladiusturf.com" />
+              <CopyBlock value="https://gladiusturf.com/api/integrations" />
             </div>
             <div>
               <div className="text-[10px] uppercase tracking-[0.14em] text-g-text-faint mb-1">
