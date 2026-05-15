@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { Resend } from "resend";
 import {
   FOUNDER_COOKIE_NAME,
   verifyFounderSessionCookieValue,
@@ -10,7 +11,16 @@ import {
   ADMIN_COOKIE_NAME,
   verifySessionCookieValue,
 } from "@/lib/admin-auth";
+import { createTenantMagicToken } from "@/lib/app/tenant-auth";
 import { supabaseAdmin } from "@/lib/supabase";
+
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://gladiusturf.com";
+
+function fromAddress(): string {
+  const env = (process.env.RESEND_FROM_EMAIL ?? "").trim();
+  return env.length > 0 ? env : "GladiusTurf <founders@gladiusturf.com>";
+}
 
 type ActionResult = { ok: true } | { error: string };
 
@@ -51,6 +61,14 @@ export async function addInvitation(
   if (!ALLOWED_ROLES.has(role)) return { error: "invalid role" };
 
   const sb = supabaseAdmin();
+
+  // Fetch tenant display name + slug for the welcome email.
+  const { data: tenant } = await sb
+    .from("tenants")
+    .select("display_name, slug")
+    .eq("id", tenantId)
+    .maybeSingle();
+
   const { error } = await sb.from("tenant_invitations").upsert(
     {
       tenant_id: tenantId,
@@ -63,6 +81,43 @@ export async function addInvitation(
     { onConflict: "email,tenant_id" },
   );
   if (error) return { error: error.message };
+
+  // Send welcome email so the invitee gets a direct sign-in link.
+  const apiKey = process.env.RESEND_API_KEY;
+  if (apiKey && tenant) {
+    try {
+      const token = createTenantMagicToken(email, tenant.slug);
+      const link = `${SITE_URL}/api/app/auth/verify?token=${encodeURIComponent(token)}`;
+      const displayName = tenant.display_name ?? "your workspace";
+      const resend = new Resend(apiKey);
+      const sendRes = await resend.emails.send({
+        from: fromAddress(),
+        to: email,
+        subject: `You've been invited to ${displayName}`,
+        html: [
+          `<p>You've been invited to the <strong>${displayName}</strong> workspace on GladiusTurf as <strong>${role}</strong>.</p>`,
+          `<p><a href="${link}" style="background:#a3e635;color:#000;padding:10px 20px;border-radius:6px;text-decoration:none;display:inline-block;font-weight:600;margin:8px 0;">Access your workspace →</a></p>`,
+          `<p style="color:#888;font-size:13px;">This link expires in 15 minutes. If it does, visit <a href="${SITE_URL}/app/login">${SITE_URL}/app/login</a> and enter your email to get a fresh one.</p>`,
+          `<p style="color:#888;font-size:13px;">— GladiusTurf</p>`,
+        ].join(""),
+        text: [
+          `You've been invited to ${displayName} on GladiusTurf as ${role}.`,
+          "",
+          "Sign in (link valid 15 min):",
+          link,
+          "",
+          `If the link expires, visit ${SITE_URL}/app/login and enter your email for a new one.`,
+          "",
+          "— GladiusTurf",
+        ].join("\n"),
+      });
+      if (sendRes.error) {
+        console.warn("[war-room/addInvitation] welcome email rejected by Resend", sendRes.error);
+      }
+    } catch (e) {
+      console.warn("[war-room/addInvitation] welcome email failed (non-fatal)", e);
+    }
+  }
 
   revalidatePath("/founders/war-room/tenants");
   return { ok: true };
