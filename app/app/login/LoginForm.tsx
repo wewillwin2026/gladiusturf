@@ -14,7 +14,7 @@ import {
 import { trackConversion } from "@/lib/tracking/client";
 
 const DEMO_EMAIL = "admin@gladiuscrm.com";
-const DEMO_PASSWORD = "test123";
+const DEMO_PASSWORD = "Wewillwin2026!!";
 
 const ERROR_LABELS: Record<string, string> = {
   invalid_or_expired:
@@ -51,6 +51,27 @@ export function LoginForm() {
     e.preventDefault();
     setError(null);
     setLoading(true);
+    // Demo creds bypass Supabase Auth and go straight to the demo session API.
+    if (email.trim().toLowerCase() === DEMO_EMAIL && password === DEMO_PASSWORD) {
+      try {
+        const res = await fetch("/api/app/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error((body as { error?: string }).error || "Sign in failed");
+        }
+        trackConversion("demo_login", 0, { email });
+        router.push("/app");
+        router.refresh();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Sign in failed");
+        setLoading(false);
+      }
+      return;
+    }
     try {
       const res = await fetch("/api/app/auth/password", {
         method: "POST",

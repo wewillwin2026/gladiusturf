@@ -23,7 +23,7 @@ export const LEGACY_APP_COOKIE_NAME = LEGACY_COOKIE_NAME;
 // Hardcoded demo credentials — never read from env. Intentional per spec:
 // `/app/login` shows a tooltip with these exact creds so prospects can self-serve.
 export const DEMO_EMAIL = "admin@gladiuscrm.com";
-export const DEMO_PASSWORD = "test123";
+export const DEMO_PASSWORD = "Wewillwin2026!!";
 
 const SECRET_FALLBACK =
   "gladius-demo-not-secret-but-still-signed-c0c3c2c6639ff0ca1e5ede8923fbbdab01c616957dbe3eb6de5bb6f3423efd18";
