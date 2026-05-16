@@ -15,6 +15,7 @@ import { VERTICALS } from "@/lib/vertical/types";
 const PRIMARY_LINKS: { href: string; label: string; live?: boolean }[] = [
   { href: "/pricing", label: "Pricing" },
   { href: "/lighting", label: "Lighting", live: true },
+  { href: "/landscaping", label: "Landscaping", live: true },
   { href: "/compare", label: "Compare" },
 ];
 
@@ -25,6 +26,7 @@ const MOBILE_SECTIONS: { title: string; links: { href: string; label: string }[]
       { href: "/demo", label: "Book a demo" },
       { href: "/pricing", label: "Pricing" },
       { href: "/lighting", label: "Lighting (live)" },
+      { href: "/landscaping", label: "Landscaping (live)" },
       { href: "/compare", label: "Compare" },
     ],
   },

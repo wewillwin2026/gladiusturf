@@ -170,6 +170,7 @@ export const ENGINES: Engine[] = [
 ];
 
 export const SECRET_TABS = [
+  { slug: "command", name: "Command Center", icon: Globe2 },
   { slug: "secret", name: "Overview", icon: Eye },
   { slug: "secret/visits", name: "Visits", icon: Globe2 },
   { slug: "secret/funnel", name: "Funnel", icon: Activity },
