@@ -85,7 +85,7 @@ const ENGINES: EngineBlock[] = [
       "Stale quotes auto-rescued before they age out",
       "Ghosted prospects re-engaged with a personal SMS",
     ],
-    proof: "Modeled recovery: ~$14,200/mo from a typical pipeline audit.",
+    proof: "Conservative estimate: ~$14,200/mo — we'll run your number on the call.",
     flip: false,
   },
   {
@@ -98,7 +98,7 @@ const ENGINES: EngineBlock[] = [
       "Late-invoice follow-up recovers $12,800/mo on average",
       "Human handoff with full thread when automation hands off",
     ],
-    proof: "Modeled outcome: ~$12,800/mo recovered in late invoices.",
+    proof: "Conservative estimate: ~$12,800/mo recovered — we'll run your number on the call.",
     flip: true,
   },
   {
@@ -111,7 +111,7 @@ const ENGINES: EngineBlock[] = [
       "Crew gets punch-list, client gets 1-tap approve",
       "Upsell revenue tied to next visit, not next quarter",
     ],
-    proof: "Modeled upside: ~$38,000/mo in surfaced upsell revenue.",
+    proof: "Conservative estimate: ~$38,000/mo — we'll run your number on the call.",
     flip: false,
   },
 ];
@@ -176,9 +176,9 @@ export default function LandscapingPage() {
 
               {/* Subhead */}
               <p className="mt-7 max-w-2xl text-lg leading-[1.6] text-bone/70">
-                GladiusTurf answers the calls, sends the quotes, dispatches the
-                crews, and chases the money. Every forgotten lead and late
-                invoice your current stack lets walk — stopped.
+                Dead quotes come back. Late invoices get paid. Upsells get
+                captured before the truck pulls out. Live by Wednesday,
+                recovering revenue by Thursday.
               </p>
 
               {/* CTAs */}
@@ -187,18 +187,18 @@ export default function LandscapingPage() {
                   href="/demo"
                   className="group inline-flex items-center gap-2 rounded-full bg-lime-bright px-6 py-3.5 text-sm font-semibold text-forest-deep shadow-cta transition-all hover:shadow-cta-hover"
                 >
-                  Book a 30-min demo
+                  Book a free pipeline audit
                   <ArrowRight
                     className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
                     aria-hidden
                   />
                 </Link>
-                <Link
-                  href="/#leak"
+                <a
+                  href="#problem"
                   className="text-sm text-bone/60 underline underline-offset-4 transition-colors hover:text-bone/85"
                 >
-                  or see your number first ↓
-                </Link>
+                  or see what&apos;s costing you first ↓
+                </a>
               </div>
 
               {/* Risk reversal */}
@@ -242,12 +242,12 @@ export default function LandscapingPage() {
         </section>
 
         {/* ── Section 2: Problem ──────────────────────────────────────────── */}
-        <section className="border-y border-bone/10 bg-obsidian py-24 md:py-28">
+        <section id="problem" className="border-y border-bone/10 bg-obsidian py-24 md:py-28">
           <div className="mx-auto max-w-6xl px-6">
             <ScrollReveal>
               <h2 className="max-w-3xl font-serif text-3xl font-semibold tracking-[-0.02em] text-bone md:text-4xl">
-                The same six problems ending every landscape company's growth
-                story.
+                The same six problems ending every landscape company&apos;s
+                growth story.
               </h2>
             </ScrollReveal>
 
@@ -286,6 +286,7 @@ export default function LandscapingPage() {
 
             <div className="mt-16 flex flex-col gap-20">
               {ENGINES.map((engine, idx) => (
+
                 <ScrollReveal key={engine.eyebrow} delay={0.06}>
                   <div
                     className={`grid grid-cols-1 items-center gap-12 lg:grid-cols-2 ${
@@ -337,6 +338,27 @@ export default function LandscapingPage() {
                   </div>
                 </ScrollReveal>
               ))}
+
+              {/* Stacked total */}
+              <ScrollReveal delay={0.1}>
+                <div className="rounded-2xl border border-champagne/30 bg-champagne/[0.04] px-8 py-6 text-center">
+                  <p className="font-serif text-2xl font-semibold text-bone md:text-3xl">
+                    $65,000/mo modeled upside · $780K annualized.
+                  </p>
+                  <p className="mx-auto mt-3 max-w-xl text-[14px] leading-[1.6] text-bone/60">
+                    The $232K average leak is the floor, not the ceiling. Stack
+                    all three engines and the math changes. We&apos;ll run your
+                    actual number on the demo call.
+                  </p>
+                  <Link
+                    href="/demo"
+                    className="group mt-5 inline-flex items-center gap-2 rounded-full bg-lime-bright px-6 py-3 text-sm font-semibold text-forest-deep shadow-cta transition-all hover:shadow-cta-hover"
+                  >
+                    Book a free pipeline audit
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
+                  </Link>
+                </div>
+              </ScrollReveal>
             </div>
           </div>
         </section>
@@ -347,7 +369,7 @@ export default function LandscapingPage() {
             <ScrollReveal>
               <div className="rounded-2xl border border-champagne/25 bg-champagne/[0.04] p-10 text-center">
                 <p className="font-serif text-xl font-semibold text-bone md:text-2xl">
-                  1 paying customer · Bright Lights Landscape Lighting ·
+                  1 paying customer · landscape &amp; outdoor services ·
                   Sarasota, FL · 22 days live
                 </p>
                 <p className="mx-auto mt-5 max-w-xl text-[14px] leading-[1.65] text-bone/60">
@@ -359,7 +381,7 @@ export default function LandscapingPage() {
                   href="/demo"
                   className="group mt-7 inline-flex items-center gap-2 rounded-full bg-lime-bright px-6 py-3 text-sm font-semibold text-forest-deep shadow-cta transition-all hover:shadow-cta-hover"
                 >
-                  Book a 30-minute demo
+                  Book a free pipeline audit
                   <ArrowRight
                     className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
                     aria-hidden
@@ -405,6 +427,20 @@ export default function LandscapingPage() {
           </div>
         </section>
 
+        {/* ── Pricing nudge ──────────────────────────────────────────────── */}
+        <div className="bg-obsidian py-6 text-center">
+          <p className="text-[13px] text-bone/50">
+            Need the numbers first?{" "}
+            <Link href="/pricing" className="text-champagne-bright hover:underline">
+              See pricing →
+            </Link>{" "}
+            or{" "}
+            <Link href="/pricing/cfo" className="text-champagne-bright hover:underline">
+              read the CFO packet →
+            </Link>
+          </p>
+        </div>
+
         {/* ── Section 6: Lead form ─────────────────────────────────────────── */}
         <section
           id="landscaping-form"
@@ -443,7 +479,7 @@ export default function LandscapingPage() {
               <ScrollReveal delay={0.08}>
                 <WaitlistForm
                   vertical="landscape"
-                  submitLabel="Book my demo"
+                  submitLabel="Book my free audit"
                   footnote="We respond to every request within one business day."
                   successHeader="You're booked."
                   successBody="A founder will text you within the hour to lock the time. We'll run a free pipeline audit on the call."
