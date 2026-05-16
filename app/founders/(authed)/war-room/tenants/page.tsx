@@ -4,6 +4,7 @@ import { KPICard } from "@/components/app/ui/KPICard";
 import { EmptyState } from "@/components/app/ui/EmptyState";
 import { StatusPill, type Tone } from "@/components/app/ui/StatusPill";
 import { Button } from "@/components/app/ui/Button";
+import { ImpersonateButton } from "@/components/founders/ImpersonateButton";
 import { supabaseAdmin } from "@/lib/supabase";
 import { relTime } from "@/lib/shared/format";
 import { InviteForm } from "./InviteForm";
@@ -165,7 +166,7 @@ export default async function TenantsPage() {
                 className="g-card flex flex-col gap-4 p-5"
               >
                 <header className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="text-[15px] font-medium text-g-text">
                         {t.display_name}
@@ -201,7 +202,7 @@ export default async function TenantsPage() {
                       {invs.length === 1 ? "" : "s"}
                     </p>
                   </div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-2">
                     {t.brand_primary_hex && (
                       <span
                         title={`primary ${t.brand_primary_hex}`}
@@ -217,6 +218,9 @@ export default async function TenantsPage() {
                         className="h-6 w-6 rounded-md border border-g-border"
                         style={{ backgroundColor: t.brand_accent_hex }}
                       />
+                    )}
+                    {t.active && (
+                      <ImpersonateButton tenantSlug={t.slug} />
                     )}
                   </div>
                 </header>

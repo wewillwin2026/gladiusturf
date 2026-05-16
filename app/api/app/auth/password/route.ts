@@ -10,6 +10,12 @@ import {
   tenantInvitationFor,
   verifyTenantPassword,
 } from "@/lib/app/tenant-auth";
+import {
+  DEMO_EMAIL,
+  DEMO_PASSWORD,
+  buildAppSetCookieHeader,
+  createAppSessionCookieValue,
+} from "@/lib/app-auth";
 import { supabaseAdmin } from "@/lib/supabase";
 
 export const runtime = "nodejs";
@@ -43,6 +49,15 @@ export async function POST(req: Request) {
   const password = String(body.password || "");
   if (!email || !password) {
     return NextResponse.json({ error: "missing_credentials" }, { status: 400 });
+  }
+
+  // Admin/founder demo shortcut — works even when the client sends to this
+  // endpoint (e.g. old cached JS). Server-side interception is the safe path.
+  if (email === DEMO_EMAIL && password === DEMO_PASSWORD) {
+    const cookie = createAppSessionCookieValue();
+    const res = NextResponse.json({ ok: true });
+    res.headers.set("Set-Cookie", buildAppSetCookieHeader(cookie));
+    return res;
   }
 
   // Same anti-enumeration discipline as the magic-link route — generic
