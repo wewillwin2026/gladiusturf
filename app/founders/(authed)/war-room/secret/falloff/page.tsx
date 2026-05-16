@@ -1,15 +1,16 @@
-import { AlertTriangle, MousePointerClick, Zap } from "lucide-react";
+import { AlertTriangle, MousePointerClick, TrendingDown, Zap } from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
 import { KPICard } from "@/components/app/ui/KPICard";
 import { StatusPill } from "@/components/app/ui/StatusPill";
 import { SecretEmptyState } from "@/components/app/SecretEmptyState";
-import { loadFalloff } from "@/lib/tracking/queries";
+import { loadFalloff, loadBiggestLeak } from "@/lib/tracking/queries";
 import { num } from "@/lib/shared/format";
 
 export const dynamic = "force-dynamic";
 
 export default async function SecretFalloffPage() {
   const data = await loadFalloff(30);
+  const leak = await loadBiggestLeak(30);
   const isEmpty =
     data.schemaMissing ||
     (data.exitPages.length === 0 &&
@@ -31,6 +32,47 @@ export default async function SecretFalloffPage() {
           </StatusPill>
         }
       />
+
+      {/* THE decision card — biggest leak + one experiment (read-only). */}
+      <section className="g-card p-5 border border-g-warning/30 bg-g-warning/[0.04]">
+        <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-g-warning">
+          <TrendingDown className="h-3.5 w-3.5" />
+          Biggest leak · last {leak.windowDays}d
+        </div>
+        {leak.biggestLeak ? (
+          <>
+            <div className="mt-2 text-[20px] font-semibold text-g-text">
+              {leak.biggestLeak.fromLabel}{" "}
+              <span className="text-g-warning">→</span>{" "}
+              {leak.biggestLeak.toLabel}
+            </div>
+            <div className="mt-1 text-[13px] text-g-text-muted">
+              Lost{" "}
+              <span className="font-mono text-g-warning">
+                {num(leak.biggestLeak.lostCount)}
+              </span>{" "}
+              here — a{" "}
+              <span className="font-mono text-g-warning">
+                {leak.biggestLeak.dropPct}%
+              </span>{" "}
+              drop at this step.
+            </div>
+          </>
+        ) : (
+          <div className="mt-2 text-[14px] text-g-text">
+            No leak called this window.
+          </div>
+        )}
+        {leak.recommendation && (
+          <div className="mt-4 rounded-md border border-g-border-subtle bg-g-surface-2/60 p-3 text-[13px] text-g-text">
+            <span className="font-semibold text-g-warning">
+              Recommended experiment:{" "}
+            </span>
+            {leak.recommendation}
+          </div>
+        )}
+        <p className="mt-3 text-[10px] text-g-text-faint">{leak.note}</p>
+      </section>
 
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <KPICard

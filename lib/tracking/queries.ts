@@ -266,6 +266,127 @@ export async function loadFunnelCounts(days = 30): Promise<FunnelCounts> {
   }
 }
 
+export type FunnelLeak = {
+  windowDays: number;
+  steps: { key: string; label: string; count: number; pctOfTop: number }[];
+  biggestLeak: {
+    fromKey: string;
+    toKey: string;
+    fromLabel: string;
+    toLabel: string;
+    lostCount: number;
+    dropPct: number;
+  } | null;
+  recommendation: string | null;
+  schemaMissing: boolean;
+  note: string;
+};
+
+/**
+ * Funnel Leak Radar — the decision view, not a dashboard.
+ *
+ * Reuses the SAME funnel `loadFunnelCounts` already computes and
+ * answers one question: "what is the single biggest leak this window
+ * and what one experiment fixes it?" 100% read-only — every fix that
+ * touches the (founder-locked) landing is framed as a proposal, never
+ * applied here. Sister to gladius-crm's radar.funnelLeaks.
+ */
+export async function loadBiggestLeak(days = 30): Promise<FunnelLeak> {
+  // Turf landing traffic is early-stage and low; below this we refuse
+  // to invent a leak from noise (Bezos: be honest, don't fabricate).
+  const MIN_SIGNAL = 5;
+  const LOCK_NOTE =
+    "Read-only. Any fix that touches the landing page is a proposal — the Turf landing is founder-locked and needs explicit unlock to test.";
+
+  const f = await loadFunnelCounts(days);
+
+  const STEPS: { key: keyof FunnelCounts; label: string }[] = [
+    { key: "marketingVisits", label: "Marketing visits" },
+    { key: "demoFormFocus", label: "Touched demo form" },
+    { key: "demoFormSubmit", label: "Submitted demo form" },
+    { key: "demoLogins", label: "Logged into demo" },
+    { key: "quoteDrafted", label: "Drafted a quote" },
+    { key: "settingsBilling", label: "Viewed billing" },
+    { key: "signedDeals", label: "Signed" },
+  ];
+
+  const top = Math.max(1, f.marketingVisits);
+  const steps = STEPS.map((s) => {
+    const count = (f[s.key] as number) ?? 0;
+    return {
+      key: s.key as string,
+      label: s.label,
+      count,
+      pctOfTop: Math.round((count / top) * 1000) / 10,
+    };
+  });
+
+  const RECS: Record<string, string> = {
+    demoFormFocus:
+      "Most visitors never touch the demo form — the offer/CTA isn't pulling. Propose: stronger above-fold proof (the Bright Lights result) + a clearer single CTA.",
+    demoFormSubmit:
+      "They start the demo form but don't submit — form friction. Propose: cut fields and surface the '10 jobs in 30 days or you don't pay' guarantee inline.",
+    demoLogins:
+      "They book but never log into the demo — activation gap. Propose: faster, clearer demo-access email + a same-day reminder.",
+    quoteDrafted:
+      "They log in but never draft a quote — onboarding is unclear. Propose: a guided first-quote prompt on demo login.",
+    settingsBilling:
+      "They use it but never look at billing — value isn't landing. Propose: an in-app 'jobs booked / ROI' nudge toward upgrade.",
+    signedDeals:
+      "They view billing but don't sign — pricing or risk objection. Propose: lead the billing step with the 30-day guarantee.",
+  };
+
+  if (f.schemaMissing) {
+    return {
+      windowDays: days,
+      steps,
+      biggestLeak: null,
+      recommendation: "Tracking schema not live yet — run the tracking migration, then re-check.",
+      schemaMissing: true,
+      note: LOCK_NOTE,
+    };
+  }
+
+  let biggestLeak: FunnelLeak["biggestLeak"] = null;
+  let recommendation: string | null = null;
+
+  if (steps[0].count >= MIN_SIGNAL) {
+    let worst = -1;
+    for (let i = 1; i < STEPS.length; i++) {
+      const prev = steps[i - 1].count;
+      const cur = steps[i].count;
+      if (prev < MIN_SIGNAL) continue;
+      const dropPct = (prev - cur) / prev;
+      if (dropPct > worst) {
+        worst = dropPct;
+        biggestLeak = {
+          fromKey: steps[i - 1].key,
+          toKey: steps[i].key,
+          fromLabel: steps[i - 1].label,
+          toLabel: steps[i].label,
+          lostCount: prev - cur,
+          dropPct: Math.round(dropPct * 1000) / 10,
+        };
+      }
+    }
+    recommendation = biggestLeak
+      ? RECS[biggestLeak.toKey] ??
+        "Funnel is healthy across measured steps in this window — keep feeding it traffic."
+      : "Funnel is healthy across measured steps in this window — keep feeding it traffic.";
+  } else {
+    recommendation = `Only ${steps[0].count} marketing visits in the last ${days}d — not enough to trust a leak. Drive outreach/content traffic, then re-check.`;
+  }
+
+  return {
+    windowDays: days,
+    steps,
+    biggestLeak,
+    recommendation,
+    schemaMissing: false,
+    note: LOCK_NOTE,
+  };
+}
+
 export type ExitPage = { path: string; exits: number };
 
 export async function loadFalloff(
