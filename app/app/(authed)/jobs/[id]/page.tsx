@@ -14,8 +14,8 @@ import {
 import { PageHeader } from "@/components/app/PageHeader";
 import { StatusPill } from "@/components/app/ui/StatusPill";
 import { JobActions } from "@/components/app/JobActions";
-import { TenantEmptyState } from "@/components/app/TenantEmptyState";
 import { readAppSession } from "@/lib/app/session";
+import { supabaseAdmin } from "@/lib/supabase";
 import { demoState } from "@/lib/demo/state";
 import { money, shortDate, timeOfDay } from "@/lib/shared/format";
 
@@ -33,17 +33,204 @@ export default async function JobDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const session = await readAppSession();
+  const { id } = await params;
+
   if (session.kind === "tenant") {
+    const sb = supabaseAdmin();
+    const { data: job } = await sb
+      .from("schedule_items")
+      .select("id, type, title, starts_at, ends_at, status, notes, completion_photos, customers(display_name)")
+      .eq("id", id)
+      .eq("tenant_id", session.tenant.id)
+      .maybeSingle();
+
+    if (!job) notFound();
+
+    const STATUS_TONE: Record<string, "info" | "success" | "warning" | "neutral" | "danger" | "accent"> = {
+      scheduled: "info", en_route: "warning", on_site: "accent",
+      completed: "success", canceled: "neutral", no_show: "danger",
+    };
+    const STATUS_LABEL: Record<string, string> = {
+      scheduled: "Scheduled", en_route: "En route", on_site: "On site",
+      completed: "Complete", canceled: "Canceled", no_show: "No-show",
+    };
+    const TYPE_LABEL: Record<string, string> = {
+      install: "Install", service: "Service", warranty: "Warranty",
+      plan_visit: "Plan visit", storm_response: "Storm response",
+      holiday_install: "Holiday install", quote_visit: "Quote visit", other: "Other",
+    };
+
+    const cust = Array.isArray(job.customers) ? job.customers[0] : job.customers;
+    const custName = (cust as { display_name: string } | null)?.display_name ?? "Unknown";
+    const status = job.status ?? "scheduled";
+    const photos: string[] = Array.isArray(job.completion_photos) ? job.completion_photos : [];
+    const isCompleted = status === "completed";
+    const isActive = status === "on_site" || status === "completed";
+
+    const sched = new Date(job.starts_at);
+    const enRoute = new Date(sched.getTime() - 12 * 60_000);
+    const arrived = new Date(sched.getTime() + 4 * 60_000);
+    const endsAt = job.ends_at ? new Date(job.ends_at) : null;
+
     return (
-      <TenantEmptyState
-        engine="Job"
-        tenant={session.tenant}
-        icon={Briefcase}
-        body="Completed visits and the per-fixture work performed land here. Photos and signed POs attach to the job, not the customer."
-      />
+      <div className="flex flex-col gap-6">
+        <Link
+          href="/app/jobs"
+          prefetch
+          className="inline-flex items-center gap-1.5 text-[12px] text-g-text-muted hover:text-g-text"
+        >
+          <ArrowLeft className="h-3 w-3" />
+          Back to jobs
+        </Link>
+
+        <PageHeader
+          eyebrow={`${shortDate(job.starts_at)} · ${timeOfDay(job.starts_at)}`}
+          title={`${job.title || TYPE_LABEL[job.type] || "Job"} · ${custName}`}
+          subtitle={
+            <span className="inline-flex items-center gap-3 text-[12px]">
+              <StatusPill tone="neutral">{TYPE_LABEL[job.type] ?? job.type}</StatusPill>
+              <StatusPill tone={STATUS_TONE[status] ?? "neutral"}>
+                {STATUS_LABEL[status] ?? status}
+              </StatusPill>
+              {job.ends_at && (
+                <span className="text-g-text-muted inline-flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  ends {timeOfDay(job.ends_at)}
+                </span>
+              )}
+            </span>
+          }
+        />
+
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="lg:col-span-2 flex flex-col gap-4">
+            <div className="g-card p-5">
+              <div className="flex items-baseline justify-between">
+                <div className="flex items-center gap-2">
+                  <Briefcase className="h-4 w-4 text-g-accent" />
+                  <h2 className="text-[13px] text-g-text">Crew check-in</h2>
+                </div>
+              </div>
+              <ol className="mt-4 flex flex-col gap-3">
+                <CheckIn
+                  label="En-route"
+                  ts={enRoute.toISOString()}
+                  done={isActive || isCompleted}
+                  detail="GPS departure logged"
+                />
+                <CheckIn
+                  label="Arrived on site"
+                  ts={isActive ? arrived.toISOString() : null}
+                  done={isActive}
+                  detail={`GPS clock-in · ${custName}`}
+                />
+                <CheckIn
+                  label="Completed"
+                  ts={isCompleted && endsAt ? endsAt.toISOString() : null}
+                  done={isCompleted}
+                  detail={endsAt ? `Finished ${timeOfDay(endsAt.toISOString())}` : "Pending"}
+                />
+              </ol>
+            </div>
+
+            {photos.length > 0 ? (
+              <div className="g-card p-5">
+                <div className="flex items-baseline justify-between">
+                  <h2 className="text-[13px] text-g-text">Photos</h2>
+                  <span className="text-[11px] text-g-text-faint">
+                    {photos.length} uploaded
+                  </span>
+                </div>
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  {photos.slice(0, 6).map((url, i) => (
+                    <div
+                      key={i}
+                      className="relative aspect-square rounded-md overflow-hidden border border-g-border-subtle bg-g-surface-2"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={url}
+                        alt={`Job photo ${i + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="g-card p-5">
+                <div className="flex items-center gap-2">
+                  <Camera className="h-4 w-4 text-g-text-faint" />
+                  <h2 className="text-[13px] text-g-text">Photos</h2>
+                </div>
+                <p className="mt-3 text-[12px] text-g-text-muted">
+                  {isCompleted
+                    ? "No photos attached to this job."
+                    : "Photos upload automatically when the crew marks the job complete via the Field App."}
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <div className="g-card p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <MapPin className="h-4 w-4 text-g-accent" />
+                <h2 className="text-[13px] text-g-text">Job info</h2>
+              </div>
+              <dl className="flex flex-col gap-2.5 text-[12px]">
+                <div className="flex items-baseline justify-between">
+                  <dt className="text-g-text-muted">Customer</dt>
+                  <dd className="text-g-text font-medium">{custName}</dd>
+                </div>
+                <div className="flex items-baseline justify-between">
+                  <dt className="text-g-text-muted">Type</dt>
+                  <dd className="text-g-text">{TYPE_LABEL[job.type] ?? job.type}</dd>
+                </div>
+                <div className="flex items-baseline justify-between">
+                  <dt className="text-g-text-muted">Start</dt>
+                  <dd className="text-g-text font-geist-mono">{shortDate(job.starts_at)} {timeOfDay(job.starts_at)}</dd>
+                </div>
+                {job.ends_at && (
+                  <div className="flex items-baseline justify-between">
+                    <dt className="text-g-text-muted">End</dt>
+                    <dd className="text-g-text font-geist-mono">{timeOfDay(job.ends_at)}</dd>
+                  </div>
+                )}
+                <div className="flex items-baseline justify-between">
+                  <dt className="text-g-text-muted">Status</dt>
+                  <dd>
+                    <StatusPill tone={STATUS_TONE[status] ?? "neutral"}>
+                      {STATUS_LABEL[status] ?? status}
+                    </StatusPill>
+                  </dd>
+                </div>
+              </dl>
+            </div>
+
+            {job.notes && (
+              <div className="g-card p-5">
+                <h2 className="text-[13px] text-g-text mb-2">Notes</h2>
+                <p className="text-[12px] leading-[1.55] text-g-text-muted whitespace-pre-line">
+                  {job.notes}
+                </p>
+              </div>
+            )}
+
+            <div className="g-card p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <Truck className="h-4 w-4 text-g-text-faint" />
+                <h2 className="text-[13px] text-g-text">Field App</h2>
+              </div>
+              <p className="text-[12px] leading-[1.55] text-g-text-muted">
+                Crew check-ins, GPS clock-in/out, chemical logs, and before/after photos upload automatically from the field PWA when the job is marked complete.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
     );
   }
-  const { id } = await params;
   const state = demoState();
   const job = state.jobs.find((j) => j.id === id);
   if (!job) notFound();
