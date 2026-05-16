@@ -373,7 +373,7 @@ export default function LandscapingPage() {
                   Sarasota, FL · 22 days live
                 </p>
                 <p className="mx-auto mt-5 max-w-xl text-[14px] leading-[1.65] text-bone/60">
-                  We'd rather tell you the honest count than dress up a list.
+                  We&apos;d rather tell you the honest count than dress up a list.
                   The engines are live. The math is conservative. The refund is
                   real.
                 </p>
