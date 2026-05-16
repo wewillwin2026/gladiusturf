@@ -1,5 +1,3 @@
-"use server";
-
 import { createHash, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import {
