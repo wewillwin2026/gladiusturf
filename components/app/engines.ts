@@ -57,6 +57,7 @@ import {
   Timer,
   TrendingUp,
   Truck,
+  UserPlus,
   Users,
   Zap,
   type LucideIcon,
@@ -119,7 +120,8 @@ export const ENGINES: Engine[] = [
   // Today (1)
   { slug: "today", name: "Dashboard", group: "overview", icon: LayoutDashboard, ordinal: 1 },
 
-  // Customers (1)
+  // Customers (2) — Leads first (inbound from website), then full roster
+  { slug: "leads", name: "Leads", group: "customers", icon: UserPlus, ordinal: 1.5 },
   { slug: "customers", name: "Customers", group: "customers", icon: Users, ordinal: 2 },
 
   // Sell (4) — was sales group; merged 2026-05-08

@@ -5,6 +5,17 @@ import { authIntegration, unauthorized } from "@/lib/integrations/auth";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+// Preflight — browser cross-origin form-capture snippet
+export function OPTIONS() {
+  return new Response(null, { status: 204, headers: CORS_HEADERS });
+}
+
 type LeadBody = {
   // External identifier from the WP plugin row
   lead_id?: string | number;
@@ -31,6 +42,13 @@ function normalizePhone(raw: string | undefined): string | null {
   return null;
 }
 
+function corsJson(data: unknown, init?: { status?: number }): NextResponse {
+  return NextResponse.json(data, {
+    status: init?.status ?? 200,
+    headers: CORS_HEADERS,
+  });
+}
+
 export async function POST(req: Request) {
   const tenant = await authIntegration(req);
   if (!tenant) return unauthorized();
@@ -39,7 +57,7 @@ export async function POST(req: Request) {
   try {
     body = (await req.json()) as LeadBody;
   } catch {
-    return NextResponse.json({ error: "invalid_json" }, { status: 400 });
+    return corsJson({ error: "invalid_json" }, { status: 400 });
   }
 
   const sb = supabaseAdmin();
@@ -109,7 +127,7 @@ export async function POST(req: Request) {
 
   if (leadErr) {
     console.error("[integrations/leads] insert failed", leadErr.message);
-    return NextResponse.json({ error: "db_error" }, { status: 500 });
+    return corsJson({ error: "db_error" }, { status: 500 });
   }
 
   // Create a web_session + form_submit event so the marketing tab counts
@@ -143,7 +161,7 @@ export async function POST(req: Request) {
     }
   }
 
-  return NextResponse.json({
+  return corsJson({
     ok: true,
     id: (leadRow as { id: string }).id,
     customer_id: customerId,
