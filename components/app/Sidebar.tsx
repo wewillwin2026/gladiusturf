@@ -11,6 +11,7 @@ import {
   hrefForEngine,
   type ProductKind,
   type TenantFlags,
+  type TenantRole,
 } from "./engines";
 import { cn } from "@/lib/cn";
 import { buildVersion } from "@/lib/shared/format";
@@ -27,6 +28,8 @@ interface SidebarProps {
   tenantName?: string | null;
   /** Per-tenant feature flags. Only used when product === "tenant". */
   flags?: TenantFlags;
+  /** Tenant user role. null = show everything (demo/founder behaviour). */
+  role?: TenantRole | null;
 }
 
 function brandInitial(name: string | null, product: ProductKind): string {
@@ -42,13 +45,14 @@ export function Sidebar({
   vertical = null,
   tenantName = null,
   flags = {},
+  role = null,
 }: SidebarProps) {
   const pathname = usePathname() ?? "/";
   const base =
     product === "founders" ? "/founders/war-room" : "/app";
   const visibleEngines =
     product === "tenant"
-      ? enginesForTenant(vertical, flags)
+      ? enginesForTenant(vertical, flags, role ?? null)
       : ENGINES;
 
   const headerLabel =

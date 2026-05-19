@@ -21,6 +21,7 @@ export default async function AppAuthedLayout({
   }
 
   if (session.kind === "tenant") {
+    const role = session.role;
     return (
       <AppShell
         product="tenant"
@@ -33,6 +34,7 @@ export default async function AppAuthedLayout({
         vertical={session.tenant.vertical}
         tenantName={session.tenant.display_name}
         flags={{ marketing: session.tenant.marketing_tab_enabled }}
+        role={role}
       >
         {children}
       </AppShell>

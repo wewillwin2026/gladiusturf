@@ -25,6 +25,7 @@ export default async function InstallTrackerPage() {
   if (session.kind !== "tenant") redirect("/app");
 
   const tenant = session.tenant;
+  const isOwner = session.role === "owner";
   const sb = supabaseAdmin();
 
   // Last event seen — drives the "live" / "waiting" status pill.
@@ -136,85 +137,122 @@ export default async function InstallTrackerPage() {
         </div>
       </section>
 
-      {/* WordPress plugin (server-side leads + webhooks) */}
-      <section className="g-card overflow-hidden">
-        <header className="flex items-center gap-2 border-b border-g-border-subtle px-5 py-3">
-          <Plug className="h-3.5 w-3.5 text-g-text-muted" />
-          <h2 className="text-[13px] text-g-text">
-            WordPress plugin · server-side leads
-          </h2>
-          <span className="ml-auto text-[10px] uppercase tracking-[0.14em] text-g-text-faint">
-            4 config fields
-          </span>
-        </header>
-        <div className="px-5 py-4 space-y-4">
-          <p className="text-[12px] text-g-text-muted">
-            If your site has the Gladius WordPress plugin installed, paste
-            these four values into its settings. The plugin forwards new
-            quote leads + interaction events directly to your CRM
-            (independent of the browser tracker above).
-          </p>
+      {/* WordPress plugin (server-side leads + webhooks).
+          OWNER-ONLY: this block exposes the raw tenant API key. Non-owner
+          roles (admin/operator/viewer) see a restricted note instead so
+          the key never renders in their session. Founders impersonating
+          a tenant resolve to "owner" and still see it. */}
+      {isOwner ? (
+        <section className="g-card overflow-hidden">
+          <header className="flex items-center gap-2 border-b border-g-border-subtle px-5 py-3">
+            <Plug className="h-3.5 w-3.5 text-g-text-muted" />
+            <h2 className="text-[13px] text-g-text">
+              WordPress plugin · server-side leads
+            </h2>
+            <span className="ml-auto text-[10px] uppercase tracking-[0.14em] text-g-text-faint">
+              4 config fields
+            </span>
+          </header>
+          <div className="px-5 py-4 space-y-4">
+            <p className="text-[12px] text-g-text-muted">
+              If your site has the Gladius WordPress plugin installed, paste
+              these four values into its settings. The plugin forwards new
+              quote leads + interaction events directly to your CRM
+              (independent of the browser tracker above).
+            </p>
 
-          <div className="grid gap-3">
-            <div>
-              <div className="text-[10px] uppercase tracking-[0.14em] text-g-text-faint mb-1">
-                Base URL (the plugin appends /leads, /webhooks, /health)
+            <div className="grid gap-3">
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.14em] text-g-text-faint mb-1">
+                  Base URL (the plugin appends /leads, /webhooks, /health)
+                </div>
+                <CopyBlock value="https://gladiusturf.com/api/integrations" />
               </div>
-              <CopyBlock value="https://gladiusturf.com/api/integrations" />
-            </div>
-            <div>
-              <div className="text-[10px] uppercase tracking-[0.14em] text-g-text-faint mb-1">
-                Tenant slug
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.14em] text-g-text-faint mb-1">
+                  Tenant slug
+                </div>
+                <CopyBlock value={tenant.slug} />
               </div>
-              <CopyBlock value={tenant.slug} />
-            </div>
-            <div>
-              <div className="text-[10px] uppercase tracking-[0.14em] text-g-text-faint mb-1">
-                API key (treat as a password)
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.14em] text-g-text-faint mb-1">
+                  API key (treat as a password)
+                </div>
+                <RevealableSecret value={tenant.api_key} />
               </div>
-              <RevealableSecret value={tenant.api_key} />
-            </div>
-            <div>
-              <div className="text-[10px] uppercase tracking-[0.14em] text-g-text-faint mb-1">
-                Authorization header (if your plugin asks for it directly)
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.14em] text-g-text-faint mb-1">
+                  Authorization header (if your plugin asks for it directly)
+                </div>
+                <CopyBlock value={`Authorization: Bearer ${tenant.api_key}`} />
               </div>
-              <CopyBlock value={`Authorization: Bearer ${tenant.api_key}`} />
             </div>
+
+            <div className="border-t border-g-border-subtle pt-3">
+              <div className="text-[12px] font-medium text-g-text mb-1">
+                Endpoints the plugin will call
+              </div>
+              <ul className="space-y-1 text-[12px] text-g-text-muted">
+                <li>
+                  <code>POST /api/integrations/leads</code> — new quote
+                  requests
+                </li>
+                <li>
+                  <code>POST /api/integrations/webhooks</code> — phone /
+                  email / CTA clicks
+                </li>
+                <li>
+                  <code>GET /api/integrations/health</code> — connection
+                  test
+                </li>
+              </ul>
+            </div>
+
+            <p className="text-[11px] text-g-text-faint">
+              Need a fresh key? Email{" "}
+              <a
+                href="mailto:founders@gladiusturf.com"
+                className="text-g-accent hover:underline"
+              >
+                founders@gladiusturf.com
+              </a>{" "}
+              — we&rsquo;ll rotate it for you. Self-serve rotation ships
+              next week.
+            </p>
           </div>
-
-          <div className="border-t border-g-border-subtle pt-3">
-            <div className="text-[12px] font-medium text-g-text mb-1">
-              Endpoints the plugin will call
-            </div>
-            <ul className="space-y-1 text-[12px] text-g-text-muted">
-              <li>
-                <code>POST /api/integrations/leads</code> — new quote
-                requests
-              </li>
-              <li>
-                <code>POST /api/integrations/webhooks</code> — phone /
-                email / CTA clicks
-              </li>
-              <li>
-                <code>GET /api/integrations/health</code> — connection
-                test
-              </li>
-            </ul>
+        </section>
+      ) : (
+        <section className="g-card overflow-hidden">
+          <header className="flex items-center gap-2 border-b border-g-border-subtle px-5 py-3">
+            <Plug className="h-3.5 w-3.5 text-g-text-muted" />
+            <h2 className="text-[13px] text-g-text">
+              WordPress plugin · server-side leads
+            </h2>
+            <span className="ml-auto text-[10px] uppercase tracking-[0.14em] text-g-text-faint">
+              Owner only
+            </span>
+          </header>
+          <div className="px-5 py-4">
+            <p className="text-[12px] text-g-text-muted">
+              The server-side plugin uses an API key scoped to your whole
+              account, so it&rsquo;s restricted to account owners. The
+              browser tracker snippet above is all you need for visitor +
+              form tracking — no key required.
+            </p>
+            <p className="mt-3 text-[11px] text-g-text-faint">
+              Need the server-side lead webhook wired? Ask your account
+              owner, or email{" "}
+              <a
+                href="mailto:founders@gladiusturf.com"
+                className="text-g-accent hover:underline"
+              >
+                founders@gladiusturf.com
+              </a>{" "}
+              and we&rsquo;ll set it up for you.
+            </p>
           </div>
-
-          <p className="text-[11px] text-g-text-faint">
-            Need a fresh key? Email{" "}
-            <a
-              href="mailto:founders@gladiusturf.com"
-              className="text-g-accent hover:underline"
-            >
-              founders@gladiusturf.com
-            </a>{" "}
-            — we&rsquo;ll rotate it for you. Self-serve rotation ships
-            next week.
-          </p>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* What gets captured */}
       <section className="g-card overflow-hidden">

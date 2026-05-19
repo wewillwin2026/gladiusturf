@@ -9,7 +9,7 @@ import { Topbar } from "./Topbar";
 import { CommandPalette } from "./CommandPalette";
 import { FloatingAskGladiusButton } from "./AskGladius";
 import { TooltipProvider } from "./ui/Tooltip";
-import { type ProductKind, type TenantFlags } from "./engines";
+import { type ProductKind, type TenantFlags, type TenantRole } from "./engines";
 
 export function AppShell({
   product,
@@ -19,6 +19,7 @@ export function AppShell({
   vertical = null,
   tenantName = null,
   flags = {},
+  role,
   children,
 }: {
   product: ProductKind;
@@ -32,6 +33,9 @@ export function AppShell({
   /** Per-tenant feature flags. Tenant authed layouts pass tenant row
    *  derived flags here; demo + founders shells leave it as `{}`. */
   flags?: TenantFlags;
+  /** Tenant user role. Controls ownerOnly engine visibility. Pass null
+   *  (or omit) for the demo/founders shells — null means show everything. */
+  role?: TenantRole | null;
   children: React.ReactNode;
 }) {
   return (
@@ -39,9 +43,9 @@ export function AppShell({
       <ThemeProvider>
         <CommandPaletteProvider>
           <TooltipProvider>
-            <Sidebar product={product} vertical={vertical} tenantName={tenantName} flags={flags} />
+            <Sidebar product={product} vertical={vertical} tenantName={tenantName} flags={flags} role={role ?? null} />
             <div className="flex-1 flex flex-col min-w-0">
-              <Topbar product={product} user={user} logoutHref={logoutHref} vertical={vertical} tenantName={tenantName} flags={flags} />
+              <Topbar product={product} user={user} logoutHref={logoutHref} vertical={vertical} tenantName={tenantName} flags={flags} role={role ?? null} />
               <main className="flex-1 px-6 py-6 max-w-[1480px] w-full mx-auto">
                 {children}
               </main>

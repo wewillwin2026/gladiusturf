@@ -5,7 +5,7 @@ import { Bell, Command, LogOut, Moon, Search, Sun } from "lucide-react";
 import { Avatar } from "./ui/Avatar";
 import { IconButton } from "./ui/IconButton";
 import { useTheme } from "./ThemeProvider";
-import { type ProductKind, type TenantFlags } from "./engines";
+import { type ProductKind, type TenantFlags, type TenantRole } from "./engines";
 import { useCmdK } from "./CommandPaletteContext";
 import { MobileNavTrigger } from "./MobileNavTrigger";
 
@@ -16,6 +16,7 @@ export function Topbar({
   vertical = null,
   tenantName = null,
   flags = {},
+  role = null,
 }: {
   product: ProductKind;
   user: { name: string; subtitle: string };
@@ -23,13 +24,15 @@ export function Topbar({
   vertical?: string | null;
   tenantName?: string | null;
   flags?: TenantFlags;
+  /** Tenant user role — forwarded to MobileNavTrigger for owner-only gating. */
+  role?: TenantRole | null;
 }) {
   const { theme, toggle } = useTheme();
   const { open } = useCmdK();
 
   return (
     <header className="sticky top-0 z-30 flex items-center gap-2 sm:gap-4 h-12 px-3 sm:px-4 border-b border-g-border bg-g-bg/95 backdrop-blur supports-[backdrop-filter]:bg-g-bg/80">
-      <MobileNavTrigger product={product} vertical={vertical} tenantName={tenantName} flags={flags} />
+      <MobileNavTrigger product={product} vertical={vertical} tenantName={tenantName} flags={flags} role={role ?? null} />
       <button
         type="button"
         onClick={open}

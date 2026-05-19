@@ -7,9 +7,12 @@ import {
 import {
   TENANT_COOKIE_NAME,
   getTenantBySlug,
+  type TenantRole,
   type TenantRow,
   verifyTenantSessionCookieValue,
 } from "@/lib/app/tenant-auth";
+import { supabaseAdmin } from "@/lib/supabase";
+import { isFounderEmail } from "@/lib/founders/auth";
 
 /**
  * Server-side helper that reads /app session cookies and returns a
@@ -24,7 +27,7 @@ import {
  */
 
 export type AppSession =
-  | { kind: "tenant"; email: string; tenantSlug: string; tenant: TenantRow }
+  | { kind: "tenant"; email: string; tenantSlug: string; tenant: TenantRow; role: TenantRole }
   | { kind: "demo" }
   | { kind: "unauthenticated" };
 
@@ -36,11 +39,41 @@ export async function readAppSession(): Promise<AppSession> {
   if (tenantSession) {
     const tenant = await getTenantBySlug(tenantSession.tenantSlug);
     if (tenant && tenant.active) {
+      // Determine role. Founder god-mode: any email in the founder
+      // allow-list (GLADIUS_FOUNDER_EMAILS env OR the hardcoded
+      // fallback in lib/founders/auth) always resolves to "owner" on
+      // EVERY tenant — current and future — so Ricardo/Josh can
+      // impersonate any workspace and see everything (API keys
+      // included) to catch and fix bugs. This stays correct even if
+      // GLADIUS_FOUNDER_EMAILS is never set on Vercel.
+      let role: TenantRole = "viewer";
+      if (isFounderEmail(tenantSession.email)) {
+        role = "owner";
+      } else {
+        // Look up active invitation to get the assigned role.
+        try {
+          const sb = supabaseAdmin();
+          const { data } = await sb
+            .from("tenant_invitations")
+            .select("role")
+            .eq("email", tenantSession.email.toLowerCase().trim())
+            .eq("tenant_id", tenant.id)
+            .eq("status", "active")
+            .maybeSingle();
+          if (data && (data as { role: TenantRole }).role) {
+            role = (data as { role: TenantRole }).role;
+          }
+        } catch {
+          // Non-fatal: default to "viewer" if lookup fails.
+        }
+      }
+
       return {
         kind: "tenant",
         email: tenantSession.email,
         tenantSlug: tenantSession.tenantSlug,
         tenant,
+        role,
       };
     }
   }

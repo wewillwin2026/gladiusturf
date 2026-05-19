@@ -63,6 +63,9 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+// Re-export TenantRole so components can import it from a single place.
+export type { TenantRole } from "@/lib/app/tenant-auth";
+
 export type EngineGroup =
   | "overview"
   | "customers"
@@ -99,6 +102,12 @@ export type Engine = {
    * lights up after the tenant's site is wired to the ingest API.
    */
   featureFlag?: "marketing";
+  /**
+   * When true, this engine is only visible to "owner"-role tenant users.
+   * Non-owner tenant roles (admin, operator, viewer) will not see it.
+   * The demo shell always renders the full list (role=null bypasses this).
+   */
+  ownerOnly?: boolean;
 };
 
 export type TenantFlags = {
@@ -165,8 +174,8 @@ export const ENGINES: Engine[] = [
   { slug: "trust", name: "Trust Console", group: "pulse", icon: ShieldCheck, ordinal: 23.5 },
 
   // Platform (4)
-  { slug: "integrations", name: "Integrations", group: "platform", icon: Plug, ordinal: 27 },
-  { slug: "api", name: "API", group: "platform", icon: Key, ordinal: 28 },
+  { slug: "integrations", name: "Integrations", group: "platform", icon: Plug, ordinal: 27, ownerOnly: true },
+  { slug: "api", name: "API", group: "platform", icon: Key, ordinal: 28, ownerOnly: true },
   { slug: "changelog", name: "Changelog", group: "platform", icon: FileText, ordinal: 29 },
   { slug: "settings", name: "Settings", group: "platform", icon: Cog, ordinal: 30 },
 ];
@@ -220,17 +229,21 @@ export function enginesForVertical(vertical: string | null): Engine[] {
 }
 
 /**
- * Apply both vertical AND per-tenant feature-flag filtering. Pass
- * `vertical = null` + `flags = {}` for the demo/founder shells to
- * skip both gates.
+ * Apply vertical, per-tenant feature-flag, and role-based filtering.
+ * Pass `vertical = null` + `flags = {}` + `role = null` for the
+ * demo/founder shells to skip all gates (null role = show everything).
  */
 export function enginesForTenant(
   vertical: string | null,
   flags: TenantFlags,
+  role: import("@/lib/app/tenant-auth").TenantRole | null = null,
 ): Engine[] {
   const base = enginesForVertical(vertical);
   return base.filter((e) => {
-    if (!e.featureFlag) return true;
-    return flags[e.featureFlag] === true;
+    // Feature-flag gate (e.g. marketing tab).
+    if (e.featureFlag && flags[e.featureFlag] !== true) return false;
+    // Owner-only gate: null role means demo/founder — show everything.
+    if (e.ownerOnly && role !== null && role !== "owner") return false;
+    return true;
   });
 }
