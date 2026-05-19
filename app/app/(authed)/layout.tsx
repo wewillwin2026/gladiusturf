@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { AppShell } from "@/components/app/AppShell";
 import { readAppSession } from "@/lib/app/session";
 import { isFounderEmail } from "@/lib/founders/auth";
+import { isAppPathAllowed } from "@/lib/app/access";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +29,17 @@ export default async function AppAuthedLayout({
     // customer who is "owner" of their own shop must NOT see the
     // Founders Portal door. Only Ricardo/Josh (founder allow-list) do.
     const isFounder = isFounderEmail(session.email);
+
+    // SERVER-SIDE RBAC ENFORCEMENT. Hiding the sidebar link is not
+    // enough — a restricted worker (Crew Lead / Field Tech) could
+    // deep-link straight to /app/invoices, /app/reports, /app/settings,
+    // etc. The middleware forwards the resolved path as x-gt-path; if
+    // this role can't access that engine, bounce to the dashboard.
+    // Founders keep god-mode (isFounder bypasses founder-only gates).
+    const path = (await headers()).get("x-gt-path") ?? "";
+    if (path && !isAppPathAllowed(path, role, isFounder)) {
+      redirect("/app");
+    }
     return (
       <AppShell
         product="tenant"

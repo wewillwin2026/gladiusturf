@@ -93,6 +93,47 @@ export function canAccessEngine(
   return ROLE_RANK[role] >= ROLE_RANK[min];
 }
 
+/**
+ * Every slug that is a GUARDED engine surface (role- or founder-gated).
+ * A path whose first segment isn't here (e.g. /app/account/security,
+ * /app/onboarding) is NOT an engine and is left alone — it has its own
+ * logic and must stay reachable by every role.
+ */
+export const GUARDED_SLUGS: ReadonlySet<string> = new Set<string>([
+  ...Object.keys(ENGINE_MIN_ROLE),
+  ...FOUNDER_ONLY_ENGINES,
+]);
+
+/**
+ * Map an /app pathname to its engine slug.
+ *   "/app"               → "today"
+ *   "/app/invoices"      → "invoices"
+ *   "/app/customers/new" → "customers"
+ * Returns null if the path isn't under /app.
+ */
+export function engineSlugFromAppPath(pathname: string): string | null {
+  const m = pathname.replace(/[/]+$/, "").match(/^\/app(?:\/([^/?#]+))?/);
+  if (!m) return null;
+  return m[1] ?? "today";
+}
+
+/**
+ * Server-side gate used by the (authed) layout so a restricted worker
+ * cannot DEEP-LINK past a hidden sidebar item (e.g. typing
+ * /app/invoices). Unknown/non-engine segments are allowed (they aren't
+ * gated surfaces). role === null (demo) is always allowed.
+ */
+export function isAppPathAllowed(
+  pathname: string,
+  role: TenantRole | null,
+  isFounder: boolean,
+): boolean {
+  const slug = engineSlugFromAppPath(pathname);
+  if (!slug) return true;
+  if (!GUARDED_SLUGS.has(slug)) return true;
+  return canAccessEngine(role, isFounder, slug);
+}
+
 /** UI metadata for the Team management presets (owner picks one). */
 export type RolePreset = {
   role: TenantRole;

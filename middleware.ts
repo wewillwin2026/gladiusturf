@@ -88,9 +88,15 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(target, { status: 308 });
   }
 
-  // No-op for everything else.
+  // Pass the resolved pathname to the (authed) layout as a request
+  // header so it can enforce server-side RBAC (a restricted worker
+  // typing /app/invoices must be redirected, not just have the nav
+  // link hidden). Server components can't read the pathname otherwise.
+  // Auth logic above is unchanged — this only forwards a header.
   void search;
-  return NextResponse.next();
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-gt-path", pathname);
+  return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
 export const config = {

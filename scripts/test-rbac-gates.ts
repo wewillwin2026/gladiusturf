@@ -11,6 +11,7 @@
  */
 
 import { enginesForTenant } from "../components/app/engines";
+import { isAppPathAllowed } from "../lib/app/access";
 import { isFounderEmail } from "../lib/founders/auth";
 import type { TenantRole } from "../lib/app/tenant-auth";
 
@@ -61,6 +62,24 @@ for (const s of ["today", "customers", "leads", "schedule", "jobs", "routes", "i
   check(`viewer: has '${s}'`, tech.has(s));
 for (const s of ["quotes", "crew", "pricing", "invoices", "reports", "settings", "api", "integrations"])
   check(`viewer: NO '${s}'`, !tech.has(s));
+
+console.log("Server-side deep-link guard — isAppPathAllowed (the real fix)");
+// A restricted worker typing the URL directly must be bounced.
+check("viewer BLOCKED from /app/invoices", !isAppPathAllowed("/app/invoices", "viewer", false));
+check("viewer BLOCKED from /app/reports", !isAppPathAllowed("/app/reports", "viewer", false));
+check("viewer BLOCKED from /app/settings", !isAppPathAllowed("/app/settings", "viewer", false));
+check("viewer BLOCKED from /app/inbox", !isAppPathAllowed("/app/inbox", "viewer", false));
+check("operator BLOCKED from /app/invoices", !isAppPathAllowed("/app/invoices", "operator", false));
+check("operator BLOCKED from /app/settings", !isAppPathAllowed("/app/settings", "operator", false));
+check("admin BLOCKED from /app/settings (owner-only)", !isAppPathAllowed("/app/settings", "admin", false));
+check("admin ALLOWED /app/invoices", isAppPathAllowed("/app/invoices", "admin", false));
+check("owner(Felipe) ALLOWED /app/settings", isAppPathAllowed("/app/settings", "owner", false));
+check("owner(Felipe) BLOCKED /app/api (founder-only)", !isAppPathAllowed("/app/api", "owner", false));
+check("founder god-mode ALLOWED /app/api", isAppPathAllowed("/app/api", "owner", true));
+check("viewer ALLOWED /app (dashboard) — no redirect loop", isAppPathAllowed("/app", "viewer", false));
+check("viewer ALLOWED /app/customers/new (sub-path)", isAppPathAllowed("/app/customers/new", "viewer", false));
+check("viewer ALLOWED /app/account/security (non-engine)", isAppPathAllowed("/app/account/security", "viewer", false));
+check("demo(null) ALLOWED everything", isAppPathAllowed("/app/invoices", null, false));
 
 console.log("Founder identity — isFounderEmail (door + god-mode)");
 check("Ricardo IS founder", isFounderEmail("ricardo.gamon99@icloud.com"));
