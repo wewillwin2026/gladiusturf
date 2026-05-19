@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test:consent": "tsx scripts/test-consent-gate.ts",
     "test:rate-limit": "tsx scripts/test-rate-limit.ts",
-    "test": "npm run test:consent && npm run test:rate-limit"
+    "test:rbac": "tsx scripts/test-rbac-gates.ts",
+    "test": "npm run test:consent && npm run test:rate-limit && npm run test:rbac"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.91.1",

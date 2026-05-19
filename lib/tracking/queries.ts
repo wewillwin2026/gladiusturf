@@ -685,13 +685,19 @@ export async function loadLiveRadar(): Promise<LiveRadar> {
   const since = new Date(now - 2 * 60 * 60 * 1000).toISOString();
 
   try {
+    // Radar = real prospects on the public gladiusturf.com marketing
+    // site. Deliberately product = "marketing" only: this excludes the
+    // founders shell (war_room) AND the tenant/demo CRM (demo_crm) — so
+    // Felipe doing his daily work, and any founder who reached /app
+    // without the glx_founder=1 marker, never show as a "prospect"
+    // blip. Honest-empty when the site is quiet beats fake blips.
     const sessRes = await sb
       .from("sessions")
       .select(
         "id, visitor_id, started_at, product, entry_path, referrer, utm_source",
       )
       .gte("started_at", since)
-      .neq("product", "war_room")
+      .eq("product", "marketing")
       .order("started_at", { ascending: false })
       .limit(80);
     if (sessRes.error) {
@@ -716,11 +722,17 @@ export async function loadLiveRadar(): Promise<LiveRadar> {
     for (const v of visRes.data ?? []) visMap.set(v.id as string, v);
 
     const sessionIds = sessions.map((s) => s.id as string);
+    // Secondary .order("id") gives a STABLE tiebreaker for events that
+    // share an identical `ts` (batched pageview + scroll/click). Without
+    // it Postgres ORDER BY ts is non-deterministic on ties, so the
+    // derived `currentPath` (last valid path at max ts) could flicker
+    // to the prior path between polls.
     const evRes = await sb
       .from("tracking_events")
       .select("session_id, ts, type, path")
       .in("session_id", sessionIds)
       .order("ts", { ascending: true })
+      .order("id", { ascending: true })
       .limit(2000);
 
     type Agg = {
