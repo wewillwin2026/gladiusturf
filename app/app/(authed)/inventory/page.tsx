@@ -1,5 +1,7 @@
-import { Boxes } from "lucide-react";
+import { Boxes, Plus } from "lucide-react";
+import Link from "next/link";
 import { PageHeader } from "@/components/app/PageHeader";
+import { Button } from "@/components/app/ui/Button";
 import { KPICard } from "@/components/app/ui/KPICard";
 import { EmptyState } from "@/components/app/ui/EmptyState";
 import { readAppSession } from "@/lib/app/session";
@@ -46,7 +48,17 @@ export default async function InventoryPage() {
         eyebrow={`${session.tenant.display_name} · Ops`}
         title="Inventory"
         subtitle="Move what's been sitting longest."
-        actions={<InventoryActions items={items} />}
+        actions={
+          <>
+            <InventoryActions items={items} />
+            <Link href="/app/inventory/new" prefetch>
+              <Button variant="primary">
+                <Plus className="h-3.5 w-3.5" />
+                Add item
+              </Button>
+            </Link>
+          </>
+        }
       />
 
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">

@@ -1,6 +1,7 @@
-import { Calendar, ChevronRight, Clock, MapPin } from "lucide-react";
+import { Calendar, ChevronRight, Clock, MapPin, Plus } from "lucide-react";
 import Link from "next/link";
 import { PageHeader } from "@/components/app/PageHeader";
+import { Button } from "@/components/app/ui/Button";
 import { KPICard } from "@/components/app/ui/KPICard";
 import { StatusPill, type Tone } from "@/components/app/ui/StatusPill";
 import { ScheduleBoard } from "@/components/app/ScheduleBoard";
@@ -69,12 +70,27 @@ export default async function SchedulePage() {
 
     if (rows.length === 0) {
       return (
-        <TenantEmptyState
-          engine="Schedule"
-          tenant={session.tenant}
-          icon={Calendar}
-          body="Nothing on the calendar in the next 30 days. Accepting a quote auto-creates a placeholder install slot. Storm Mode and warranty visits also land here."
-        />
+        <div className="flex flex-col gap-6">
+          <PageHeader
+            eyebrow={`${session.tenant.display_name} · Schedule`}
+            title="Schedule"
+            subtitle="Nothing on the calendar in the next 30 days. Schedule a job to get the calendar moving."
+            actions={
+              <Link href="/app/jobs/new" prefetch>
+                <Button variant="primary">
+                  <Plus className="h-3.5 w-3.5" />
+                  Schedule a job
+                </Button>
+              </Link>
+            }
+          />
+          <TenantEmptyState
+            engine="Schedule"
+            tenant={session.tenant}
+            icon={Calendar}
+            body="Nothing on the calendar in the next 30 days. Accepting a quote auto-creates a placeholder install slot. Storm Mode and warranty visits also land here."
+          />
+        </div>
       );
     }
 
@@ -115,6 +131,14 @@ export default async function SchedulePage() {
           eyebrow={`${session.tenant.display_name} · Schedule`}
           title="Schedule"
           subtitle={`${rows.length} item${rows.length === 1 ? "" : "s"} in the next 30 days. Accepting a quote auto-creates an install slot.`}
+          actions={
+            <Link href="/app/jobs/new" prefetch>
+              <Button variant="primary">
+                <Plus className="h-3.5 w-3.5" />
+                Schedule a job
+              </Button>
+            </Link>
+          }
         />
 
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">

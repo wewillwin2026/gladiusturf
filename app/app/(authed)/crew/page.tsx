@@ -1,5 +1,7 @@
-import { Building2, Mail, Phone, UserCog } from "lucide-react";
+import { Building2, Mail, Phone, Plus, UserCog } from "lucide-react";
+import Link from "next/link";
 import { PageHeader } from "@/components/app/PageHeader";
+import { Button } from "@/components/app/ui/Button";
 import { KPICard } from "@/components/app/ui/KPICard";
 import { StatusPill, type Tone } from "@/components/app/ui/StatusPill";
 import { CrewBrowser } from "@/components/app/CrewBrowser";
@@ -80,6 +82,14 @@ export default async function Page() {
           totalActive === 0
             ? "Add your first crew member to start tracking hours, scheduling, and per-tech production."
             : `${totalActive} active · ${totalChiefs} crew chief${totalChiefs === 1 ? "" : "s"}. Hours roll up into Timesheets.`
+        }
+        actions={
+          <Link href="/app/crew/new" prefetch>
+            <Button variant="primary">
+              <Plus className="h-3.5 w-3.5" />
+              Add crew member
+            </Button>
+          </Link>
         }
       />
 

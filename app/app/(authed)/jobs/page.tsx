@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Briefcase, Camera, CircleAlert, MapPin } from "lucide-react";
+import { Briefcase, Camera, CircleAlert, MapPin, Plus } from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
+import { Button } from "@/components/app/ui/Button";
 import { KPICard } from "@/components/app/ui/KPICard";
 import { StatusPill, type Tone } from "@/components/app/ui/StatusPill";
 import { JobsBoard } from "@/components/app/JobsBoard";
@@ -139,12 +140,27 @@ export default async function JobsPage() {
 
   if (rows.length === 0) {
     return (
-      <TenantEmptyState
-        engine="Jobs"
-        tenant={session.tenant}
-        icon={Briefcase}
-        body="A job is a scheduled visit — install, service, warranty, plan visit, storm response. Add one from /app/schedule or accept a quote and the install slot auto-creates here."
-      />
+      <div className="flex flex-col gap-6">
+        <PageHeader
+          eyebrow={`${session.tenant.display_name} · Jobs`}
+          title="Jobs"
+          subtitle="A job is a scheduled visit — install, service, warranty, plan visit, storm response. Schedule your first one to get started."
+          actions={
+            <Link href="/app/jobs/new" prefetch>
+              <Button variant="primary">
+                <Plus className="h-3.5 w-3.5" />
+                Schedule a job
+              </Button>
+            </Link>
+          }
+        />
+        <TenantEmptyState
+          engine="Jobs"
+          tenant={session.tenant}
+          icon={Briefcase}
+          body="A job is a scheduled visit — install, service, warranty, plan visit, storm response. Add one from /app/schedule or accept a quote and the install slot auto-creates here."
+        />
+      </div>
     );
   }
 
@@ -180,6 +196,14 @@ export default async function JobsPage() {
         eyebrow={`${session.tenant.display_name} · Jobs`}
         title="Jobs"
         subtitle={`${buckets.today.length} today · ${buckets.tomorrow.length} tomorrow · ${rows.length} total in the 60-day window.`}
+        actions={
+          <Link href="/app/jobs/new" prefetch>
+            <Button variant="primary">
+              <Plus className="h-3.5 w-3.5" />
+              Schedule a job
+            </Button>
+          </Link>
+        }
       />
 
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">

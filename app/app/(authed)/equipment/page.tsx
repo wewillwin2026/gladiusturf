@@ -1,5 +1,7 @@
-import { Hammer, Truck, Wrench, Zap } from "lucide-react";
+import Link from "next/link";
+import { Hammer, Plus, Truck, Wrench, Zap } from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
+import { Button } from "@/components/app/ui/Button";
 import { KPICard } from "@/components/app/ui/KPICard";
 import { StatusPill, type Tone } from "@/components/app/ui/StatusPill";
 import { EquipmentBrowser } from "@/components/app/EquipmentBrowser";
@@ -94,6 +96,14 @@ export default async function Page() {
           rows.length === 0
             ? "Add your first piece of equipment to start tracking the fleet."
             : `${active.length} active · ${inShop.length} in shop · ${trucks} truck${trucks === 1 ? "" : "s"} rolling.`
+        }
+        actions={
+          <Link href="/app/equipment/new" prefetch>
+            <Button variant="primary">
+              <Plus className="h-3.5 w-3.5" />
+              Add equipment
+            </Button>
+          </Link>
         }
       />
 
