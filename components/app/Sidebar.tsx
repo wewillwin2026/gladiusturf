@@ -65,7 +65,7 @@ export function Sidebar({
   // demo → full list for sales walkthroughs.
   const visibleEngines =
     product === "tenant"
-      ? enginesForTenant(vertical, flags, role ?? null)
+      ? enginesForTenant(vertical, flags, role ?? null, isFounder)
       : product === "founders"
         ? []
         : ENGINES;

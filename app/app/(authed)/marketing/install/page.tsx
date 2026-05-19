@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { CheckCircle2, Clock, Code2, Plug, Sparkles } from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
 import { readAppSession } from "@/lib/app/session";
+import { isFounderEmail } from "@/lib/founders/auth";
 import { supabaseAdmin } from "@/lib/supabase";
 import { CopyBlock } from "@/components/app/marketing/CopyBlock";
 import { RevealableSecret } from "@/components/app/marketing/RevealableSecret";
@@ -25,7 +26,10 @@ export default async function InstallTrackerPage() {
   if (session.kind !== "tenant") redirect("/app");
 
   const tenant = session.tenant;
-  const isOwner = session.role === "owner";
+  // The raw tenant API key is FOUNDER-only (Ricardo/Josh) — never any
+  // tenant role, not even the shop "owner" (Felipe). Founders see it
+  // for support/debugging via god-mode impersonation.
+  const isFounder = isFounderEmail(session.email);
   const sb = supabaseAdmin();
 
   // Last event seen — drives the "live" / "waiting" status pill.
@@ -142,7 +146,7 @@ export default async function InstallTrackerPage() {
           roles (admin/operator/viewer) see a restricted note instead so
           the key never renders in their session. Founders impersonating
           a tenant resolve to "owner" and still see it. */}
-      {isOwner ? (
+      {isFounder ? (
         <section className="g-card overflow-hidden">
           <header className="flex items-center gap-2 border-b border-g-border-subtle px-5 py-3">
             <Plug className="h-3.5 w-3.5 text-g-text-muted" />
@@ -229,19 +233,18 @@ export default async function InstallTrackerPage() {
               WordPress plugin · server-side leads
             </h2>
             <span className="ml-auto text-[10px] uppercase tracking-[0.14em] text-g-text-faint">
-              Owner only
+              Managed by GladiusTurf
             </span>
           </header>
           <div className="px-5 py-4">
             <p className="text-[12px] text-g-text-muted">
               The server-side plugin uses an API key scoped to your whole
-              account, so it&rsquo;s restricted to account owners. The
+              account, so it&rsquo;s managed for you by GladiusTurf. The
               browser tracker snippet above is all you need for visitor +
               form tracking — no key required.
             </p>
             <p className="mt-3 text-[11px] text-g-text-faint">
-              Need the server-side lead webhook wired? Ask your account
-              owner, or email{" "}
+              Need the server-side lead webhook wired? Email{" "}
               <a
                 href="mailto:founders@gladiusturf.com"
                 className="text-g-accent hover:underline"

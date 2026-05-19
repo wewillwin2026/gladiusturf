@@ -1,58 +1,68 @@
 /**
- * RBAC gate covenant test (2026-05-19).
+ * RBAC gate covenant test (field-service preset model, 2026-05-19).
  *
- * Felipe (Bright Lights, role=admin) must NEVER see founders-only
- * surfaces (API / Integrations tabs) and must NOT be treated as a
- * founder (no Founders Portal door). Founders + the demo/founders
- * shell must still see everything. This asserts the PURE decision
- * functions that actually gate the UI — no server, no cookies, no
- * production. Run via:  npm run test:rbac
+ * Asserts the PURE decision functions that gate Felipe's CRM:
+ *   Owner(owner)  Manager(admin)  Crew Lead(operator)  Field Tech(viewer)
+ * + founder god-mode (api/integrations are FOUNDER-only, never any
+ *   tenant role incl. owner). No server, no cookies, no production.
+ * Run via:  npm run test:rbac   (also part of `npm test`).
  *
  * Zero-dep single-file script. Exits 1 on any failure for CI.
  */
 
 import { enginesForTenant } from "../components/app/engines";
 import { isFounderEmail } from "../lib/founders/auth";
+import type { TenantRole } from "../lib/app/tenant-auth";
 
 let failures = 0;
 function check(name: string, cond: boolean) {
-  const tag = cond ? "PASS" : "FAIL";
   if (!cond) failures += 1;
-  console.log(`  [${tag}] ${name}`);
+  console.log(`  [${cond ? "PASS" : "FAIL"}] ${name}`);
 }
 
-const slugs = (role: Parameters<typeof enginesForTenant>[2]) =>
-  new Set(enginesForTenant("lighting", { marketing: true }, role).map((e) => e.slug));
+const slugs = (role: TenantRole | null, isFounder = false) =>
+  new Set(
+    enginesForTenant("lighting", { marketing: true }, role, isFounder).map(
+      (e) => e.slug,
+    ),
+  );
 
-console.log("RBAC gate — enginesForTenant ownerOnly filter");
-
-// Felipe = admin → NO api / integrations, but KEEPS normal CRM tools.
-const admin = slugs("admin");
-check("admin: NO 'api' tab", !admin.has("api"));
-check("admin: NO 'integrations' tab", !admin.has("integrations"));
-check("admin: keeps 'customers'", admin.has("customers"));
-check("admin: keeps 'leads'", admin.has("leads"));
-check("admin: keeps 'quotes'", admin.has("quotes"));
-check("admin: keeps 'crew'", admin.has("crew"));
-
-// Founder impersonating (role resolves to owner) → sees everything.
+console.log("Owner (Felipe) — full shop, NEVER founder-only api/integrations");
 const owner = slugs("owner");
-check("owner: HAS 'api' tab", owner.has("api"));
-check("owner: HAS 'integrations' tab", owner.has("integrations"));
+for (const s of ["today", "customers", "leads", "quotes", "crew", "pricing", "invoices", "reports", "settings", "marketing"])
+  check(`owner: has '${s}'`, owner.has(s));
+check("owner: NO 'api' (founder-only)", !owner.has("api"));
+check("owner: NO 'integrations' (founder-only)", !owner.has("integrations"));
 
-// Demo / founders shell (role=null) → full list, nothing gated.
-const nul = slugs(null);
-check("null(role): HAS 'api' tab", nul.has("api"));
-check("null(role): HAS 'integrations' tab", nul.has("integrations"));
+console.log("Founder god-mode (owner role + isFounder) — sees everything");
+const god = slugs("owner", true);
+check("founder: HAS 'api'", god.has("api"));
+check("founder: HAS 'integrations'", god.has("integrations"));
+check("founder: HAS 'settings'", god.has("settings"));
 
-// Other non-owner roles also blocked.
-for (const r of ["viewer", "operator"] as const) {
-  const s = slugs(r);
-  check(`${r}: NO 'api' tab`, !s.has("api"));
-  check(`${r}: NO 'integrations' tab`, !s.has("integrations"));
-}
+console.log("Manager (admin) — money/reports yes, Settings/Team no");
+const mgr = slugs("admin");
+for (const s of ["customers", "quotes", "crew", "pricing", "invoices", "reports", "marketing"])
+  check(`admin: has '${s}'`, mgr.has(s));
+check("admin: NO 'settings' (owner-only)", !mgr.has("settings"));
+check("admin: NO 'api'", !mgr.has("api"));
+check("admin: NO 'integrations'", !mgr.has("integrations"));
 
-console.log("Founder identity — isFounderEmail (Founders Portal door + god-mode)");
+console.log("Crew Lead (operator) — jobs/quotes yes, money/admin no");
+const crew = slugs("operator");
+for (const s of ["today", "customers", "leads", "quotes", "schedule", "jobs", "crew"])
+  check(`operator: has '${s}'`, crew.has(s));
+for (const s of ["pricing", "invoices", "reports", "analytics", "settings", "api", "integrations"])
+  check(`operator: NO '${s}'`, !crew.has(s));
+
+console.log("Field Tech (viewer) — their work, mostly read");
+const tech = slugs("viewer");
+for (const s of ["today", "customers", "leads", "schedule", "jobs", "routes", "inventory"])
+  check(`viewer: has '${s}'`, tech.has(s));
+for (const s of ["quotes", "crew", "pricing", "invoices", "reports", "settings", "api", "integrations"])
+  check(`viewer: NO '${s}'`, !tech.has(s));
+
+console.log("Founder identity — isFounderEmail (door + god-mode)");
 check("Ricardo IS founder", isFounderEmail("ricardo.gamon99@icloud.com"));
 check("Josh IS founder", isFounderEmail("joshuapyorke@gmail.com"));
 check("Ricardo IS founder (case-insensitive)", isFounderEmail("Ricardo.Gamon99@iCloud.com"));

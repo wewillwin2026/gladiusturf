@@ -64,6 +64,9 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+import type { TenantRole } from "@/lib/app/tenant-auth";
+import { canAccessEngine } from "@/lib/app/access";
+
 // Re-export TenantRole so components can import it from a single place.
 export type { TenantRole } from "@/lib/app/tenant-auth";
 
@@ -103,12 +106,6 @@ export type Engine = {
    * lights up after the tenant's site is wired to the ingest API.
    */
   featureFlag?: "marketing";
-  /**
-   * When true, this engine is only visible to "owner"-role tenant users.
-   * Non-owner tenant roles (admin, operator, viewer) will not see it.
-   * The demo shell always renders the full list (role=null bypasses this).
-   */
-  ownerOnly?: boolean;
 };
 
 export type TenantFlags = {
@@ -175,8 +172,8 @@ export const ENGINES: Engine[] = [
   { slug: "trust", name: "Trust Console", group: "pulse", icon: ShieldCheck, ordinal: 23.5 },
 
   // Platform (4)
-  { slug: "integrations", name: "Integrations", group: "platform", icon: Plug, ordinal: 27, ownerOnly: true },
-  { slug: "api", name: "API", group: "platform", icon: Key, ordinal: 28, ownerOnly: true },
+  { slug: "integrations", name: "Integrations", group: "platform", icon: Plug, ordinal: 27 },
+  { slug: "api", name: "API", group: "platform", icon: Key, ordinal: 28 },
   { slug: "changelog", name: "Changelog", group: "platform", icon: FileText, ordinal: 29 },
   { slug: "settings", name: "Settings", group: "platform", icon: Cog, ordinal: 30 },
 ];
@@ -231,21 +228,25 @@ export function enginesForVertical(vertical: string | null): Engine[] {
 }
 
 /**
- * Apply vertical, per-tenant feature-flag, and role-based filtering.
- * Pass `vertical = null` + `flags = {}` + `role = null` for the
- * demo/founder shells to skip all gates (null role = show everything).
+ * Apply vertical, per-tenant feature-flag, and RBAC filtering.
+ *
+ * - `role = null` (demo / founders-full shell) skips the role gate.
+ * - `isFounder` lets a founder (Ricardo/Josh) see the founder-only
+ *   engines (api, integrations) when impersonating a tenant, even
+ *   though the tenant "owner" role itself never sees them.
+ * The role→engine matrix lives in lib/app/access.ts (single source).
  */
 export function enginesForTenant(
   vertical: string | null,
   flags: TenantFlags,
-  role: import("@/lib/app/tenant-auth").TenantRole | null = null,
+  role: TenantRole | null = null,
+  isFounder = false,
 ): Engine[] {
   const base = enginesForVertical(vertical);
   return base.filter((e) => {
     // Feature-flag gate (e.g. marketing tab).
     if (e.featureFlag && flags[e.featureFlag] !== true) return false;
-    // Owner-only gate: null role means demo/founder — show everything.
-    if (e.ownerOnly && role !== null && role !== "owner") return false;
-    return true;
+    // RBAC gate (founder-only engines + per-role minimum).
+    return canAccessEngine(role, isFounder, e.slug);
   });
 }
