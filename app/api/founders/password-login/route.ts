@@ -56,5 +56,14 @@ export async function POST(req: Request) {
   const cookie = createFounderSessionCookieValue(email);
   const res = NextResponse.json({ ok: true });
   res.headers.set("Set-Cookie", buildFounderSetCookieHeader(cookie));
+  // glx_founder=1 — 1-year, non-HttpOnly traffic-exclusion marker.
+  // Mirrors gladiuscrm.com: /api/track drops any request carrying it,
+  // so the founder's own browsing never pollutes the visitor radar.
+  // Outlives the 7-day session cookie on purpose (a founder with a
+  // lapsed session still must not be counted as a prospect).
+  res.headers.append(
+    "Set-Cookie",
+    `glx_founder=1; Path=/; Max-Age=${365 * 24 * 60 * 60}; SameSite=Lax; Secure`,
+  );
   return res;
 }

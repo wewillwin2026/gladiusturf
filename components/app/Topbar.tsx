@@ -17,6 +17,7 @@ export function Topbar({
   tenantName = null,
   flags = {},
   role = null,
+  isFounder = false,
 }: {
   product: ProductKind;
   user: { name: string; subtitle: string };
@@ -26,13 +27,16 @@ export function Topbar({
   flags?: TenantFlags;
   /** Tenant user role — forwarded to MobileNavTrigger for owner-only gating. */
   role?: TenantRole | null;
+  /** Founder allow-list flag — forwarded so the mobile drawer also
+   *  shows the discreet Founders Portal door. */
+  isFounder?: boolean;
 }) {
   const { theme, toggle } = useTheme();
   const { open } = useCmdK();
 
   return (
     <header className="sticky top-0 z-30 flex items-center gap-2 sm:gap-4 h-12 px-3 sm:px-4 border-b border-g-border bg-g-bg/95 backdrop-blur supports-[backdrop-filter]:bg-g-bg/80">
-      <MobileNavTrigger product={product} vertical={vertical} tenantName={tenantName} flags={flags} role={role ?? null} />
+      <MobileNavTrigger product={product} vertical={vertical} tenantName={tenantName} flags={flags} role={role ?? null} isFounder={isFounder} />
       <button
         type="button"
         onClick={open}

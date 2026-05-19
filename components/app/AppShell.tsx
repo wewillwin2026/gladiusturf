@@ -20,6 +20,7 @@ export function AppShell({
   tenantName = null,
   flags = {},
   role,
+  isFounder = false,
   children,
 }: {
   product: ProductKind;
@@ -36,6 +37,10 @@ export function AppShell({
   /** Tenant user role. Controls ownerOnly engine visibility. Pass null
    *  (or omit) for the demo/founders shells — null means show everything. */
   role?: TenantRole | null;
+  /** True only for Ricardo/Josh (founder allow-list). Reveals the
+   *  discreet "Founders Portal" door at the bottom of the sidebar.
+   *  Independent of `role` — a paying tenant owner is NOT a founder. */
+  isFounder?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -43,9 +48,9 @@ export function AppShell({
       <ThemeProvider>
         <CommandPaletteProvider>
           <TooltipProvider>
-            <Sidebar product={product} vertical={vertical} tenantName={tenantName} flags={flags} role={role ?? null} />
+            <Sidebar product={product} vertical={vertical} tenantName={tenantName} flags={flags} role={role ?? null} isFounder={isFounder} />
             <div className="flex-1 flex flex-col min-w-0">
-              <Topbar product={product} user={user} logoutHref={logoutHref} vertical={vertical} tenantName={tenantName} flags={flags} role={role ?? null} />
+              <Topbar product={product} user={user} logoutHref={logoutHref} vertical={vertical} tenantName={tenantName} flags={flags} role={role ?? null} isFounder={isFounder} />
               <main className="flex-1 px-6 py-6 max-w-[1480px] w-full mx-auto">
                 {children}
               </main>

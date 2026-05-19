@@ -31,7 +31,36 @@ type SupabaseError = { code?: string; message?: string };
 
 const PRODUCTS = new Set(["marketing", "demo_crm", "war_room"]);
 
+/**
+ * Founder / own-traffic exclusion — mirrors gladiuscrm.com's
+ * isFounderRequest(). If the browser carries the long-lived
+ * `glx_founder=1` marker (set at founder login) or an active founder
+ * session cookie, we drop the event entirely so Ricardo/Josh browsing
+ * the site or the /app shell never inflates the visitor radar. This is
+ * the bulletproof server-side layer — it works regardless of which JS
+ * the browser has cached.
+ */
+function isFounderOwnTraffic(req: Request): boolean {
+  const raw = req.headers.get("cookie") || "";
+  if (!raw) return false;
+  return (
+    /(?:^|;\s*)glx_founder=1(?:;|$)/.test(raw) ||
+    /(?:^|;\s*)gladius_founder_session=[^;]+/.test(raw) ||
+    /(?:^|;\s*)gt_founders_session=[^;]+/.test(raw)
+  );
+}
+
 export async function POST(req: Request) {
+  // Drop founder/own traffic before any parsing or DB work. Return 200
+  // so the client tracker treats it as accepted and never retries.
+  if (isFounderOwnTraffic(req)) {
+    return NextResponse.json({
+      ok: true,
+      persisted: false,
+      reason: "founder-excluded",
+    });
+  }
+
   let body: ClientPayload;
   try {
     body = await req.json();

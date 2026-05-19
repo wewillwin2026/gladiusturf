@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app/AppShell";
 import { readAppSession } from "@/lib/app/session";
+import { isFounderEmail } from "@/lib/founders/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,10 @@ export default async function AppAuthedLayout({
 
   if (session.kind === "tenant") {
     const role = session.role;
+    // Founder check is independent of tenant role: a future paying
+    // customer who is "owner" of their own shop must NOT see the
+    // Founders Portal door. Only Ricardo/Josh (founder allow-list) do.
+    const isFounder = isFounderEmail(session.email);
     return (
       <AppShell
         product="tenant"
@@ -35,6 +40,7 @@ export default async function AppAuthedLayout({
         tenantName={session.tenant.display_name}
         flags={{ marketing: session.tenant.marketing_tab_enabled }}
         role={role}
+        isFounder={isFounder}
       >
         {children}
       </AppShell>

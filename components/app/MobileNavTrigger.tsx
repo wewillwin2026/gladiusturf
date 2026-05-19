@@ -17,6 +17,7 @@ export function MobileNavTrigger({
   tenantName = null,
   flags = {},
   role = null,
+  isFounder = false,
 }: {
   product: ProductKind;
   vertical?: string | null;
@@ -24,6 +25,9 @@ export function MobileNavTrigger({
   flags?: TenantFlags;
   /** Tenant user role — forwarded to Sidebar for owner-only gating. */
   role?: TenantRole | null;
+  /** Founder allow-list flag — forwarded to Sidebar for the
+   *  discreet Founders Portal door. */
+  isFounder?: boolean;
 }) {
   const [open, setOpen] = React.useState(false);
 
@@ -58,6 +62,7 @@ export function MobileNavTrigger({
             tenantName={tenantName}
             flags={flags}
             role={role}
+            isFounder={isFounder}
             onNavigate={() => setOpen(false)}
           />
         </RD.Content>
