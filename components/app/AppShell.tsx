@@ -9,6 +9,7 @@ import { Topbar } from "./Topbar";
 import { CommandPalette } from "./CommandPalette";
 import { FloatingAskGladiusButton } from "./AskGladius";
 import { TooltipProvider } from "./ui/Tooltip";
+import { GuidedTour } from "./GuidedTour";
 import { type ProductKind, type TenantFlags, type TenantRole } from "./engines";
 
 export function AppShell({
@@ -56,6 +57,34 @@ export function AppShell({
               </main>
             </div>
             <CommandPalette product={product} />
+            {/* First-login interactive walkthrough — tenant shells only.
+                The demo + founders shells deliberately never get it. The
+                tenantKey is stable per tenant + user so the tour shows
+                once and survives navigation. */}
+            {product === "tenant" && (
+              <>
+                <GuidedTour
+                  role={role ?? null}
+                  isFounder={isFounder}
+                  tenantKey={`${tenantName ?? "t"}::${user.name}`}
+                />
+                {/* Discreet "replay tour" door — low-opacity "?" in the
+                    bottom-left, out of the way of the Ask Gladius FAB
+                    (bottom-right). Dispatches the global replay event
+                    GuidedTour listens for. */}
+                <button
+                  type="button"
+                  title="Replay product tour"
+                  aria-label="Replay product tour"
+                  onClick={() =>
+                    window.dispatchEvent(new Event("gt:replay-tour"))
+                  }
+                  className="fixed bottom-4 left-4 z-40 h-7 w-7 rounded-full bg-g-surface-2 border border-g-border-subtle text-g-text-faint hover:text-g-accent hover:border-g-accent/40 text-[12px] leading-none opacity-40 hover:opacity-100 transition-all"
+                >
+                  ?
+                </button>
+              </>
+            )}
             {!hideAskGladius && <FloatingAskGladiusButton product={product} />}
             <Toaster
               position="top-right"

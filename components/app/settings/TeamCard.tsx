@@ -10,6 +10,8 @@ import {
   revokeTeamMember,
   resendInviteEmail,
 } from "@/app/app/(authed)/settings/_actions/teamActions";
+import { ROLE_PRESETS, ROLE_LABEL } from "@/lib/app/access";
+import type { TenantRole } from "@/lib/app/tenant-auth";
 
 type Invitation = {
   email: string;
@@ -27,6 +29,15 @@ type Props = {
 };
 
 const ALL_ROLES = ["owner", "admin", "operator", "viewer"] as const;
+
+function isTenantRole(value: string): value is TenantRole {
+  return value === "owner" || value === "admin" || value === "operator" || value === "viewer";
+}
+
+/** Friendly preset label for a stored role code; falls back to the raw string. */
+function roleLabel(role: string): string {
+  return isTenantRole(role) ? ROLE_LABEL[role] : role;
+}
 
 function roleTone(role: string): Tone {
   switch (role) {
@@ -59,8 +70,17 @@ export function TeamCard({
       ? ALL_ROLES
       : (["operator", "viewer"] as const);
 
+  // Presets the current user is allowed to assign, in ROLE_PRESETS order
+  // (Owner → Manager → Crew Lead → Field Tech).
+  const availablePresets = ROLE_PRESETS.filter((p) =>
+    (availableRoles as readonly string[]).includes(p.role),
+  );
+
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<string>(availableRoles[availableRoles.length - 1]);
+
+  const selectedPreset =
+    availablePresets.find((p) => p.role === role) ?? availablePresets[availablePresets.length - 1];
   const [inviteError, setInviteError] = useState<string | null>(null);
   const [inviteSuccess, setInviteSuccess] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -171,9 +191,9 @@ export function TeamCard({
               disabled={pending}
               className="h-9 rounded-md border border-g-border bg-g-surface px-2 text-[13px] text-g-text focus-visible:border-g-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-g-accent/30 disabled:opacity-50"
             >
-              {availableRoles.map((r) => (
-                <option key={r} value={r}>
-                  {r}
+              {availablePresets.map((p) => (
+                <option key={p.role} value={p.role}>
+                  {p.label}
                 </option>
               ))}
             </select>
@@ -186,6 +206,14 @@ export function TeamCard({
               {pending ? "Sending…" : "Invite & send link"}
             </Button>
           </form>
+          {selectedPreset && (
+            <p className="mt-2 text-[12px] text-g-text-muted">
+              <span className="text-g-text">{selectedPreset.label}</span>
+              <span className="text-g-text-faint"> · {selectedPreset.persona}</span>
+              {" — "}
+              {selectedPreset.blurb}
+            </p>
+          )}
           {inviteError && (
             <p className="mt-2 text-[12px] text-g-danger" role="alert">
               {inviteError}
@@ -218,7 +246,7 @@ export function TeamCard({
                     <span className="text-[13px] font-medium text-g-text truncate">
                       {inv.email}
                     </span>
-                    <StatusPill tone={roleTone(inv.role)}>{inv.role}</StatusPill>
+                    <StatusPill tone={roleTone(inv.role)}>{roleLabel(inv.role)}</StatusPill>
                     {isSelf && (
                       <StatusPill tone="neutral">you</StatusPill>
                     )}
