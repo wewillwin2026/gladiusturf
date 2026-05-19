@@ -51,7 +51,7 @@ export default async function Page() {
         .maybeSingle(),
       sb
         .from("tenant_invitations")
-        .select("email, role, invited_by, created_at")
+        .select("email, role, invited_by, created_at, notes")
         .eq("tenant_id", session.tenant.id)
         .eq("status", "active")
         .order("created_at", { ascending: true }),
@@ -112,6 +112,7 @@ export default async function Page() {
     role: string;
     invited_by: string | null;
     created_at: string;
+    notes: string | null;
   }>;
 
   const smsMode = dispatcherMode();

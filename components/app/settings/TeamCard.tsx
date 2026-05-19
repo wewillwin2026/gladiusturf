@@ -1,16 +1,16 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Users, Mail, Trash2, RefreshCw } from "lucide-react";
+import Link from "next/link";
+import { Users, Mail, Trash2, RefreshCw, UserPlus } from "lucide-react";
 import { Button } from "@/components/app/ui/Button";
-import { Input } from "@/components/app/ui/Input";
 import { StatusPill, type Tone } from "@/components/app/ui/StatusPill";
 import {
-  inviteTeamMember,
   revokeTeamMember,
   resendInviteEmail,
 } from "@/app/app/(authed)/settings/_actions/teamActions";
-import { ROLE_PRESETS, ROLE_LABEL } from "@/lib/app/access";
+import { parseInvitationTitle } from "@/app/app/(authed)/settings/team/new/title";
+import { ROLE_LABEL } from "@/lib/app/access";
 import type { TenantRole } from "@/lib/app/tenant-auth";
 
 type Invitation = {
@@ -18,6 +18,7 @@ type Invitation = {
   role: string;
   invited_by: string | null;
   created_at: string;
+  notes: string | null;
 };
 
 type Props = {
@@ -27,8 +28,6 @@ type Props = {
   invitations: Invitation[];
   memberCount: number;
 };
-
-const ALL_ROLES = ["owner", "admin", "operator", "viewer"] as const;
 
 function isTenantRole(value: string): value is TenantRole {
   return value === "owner" || value === "admin" || value === "operator" || value === "viewer";
@@ -63,28 +62,11 @@ export function TeamCard({
   invitations,
   memberCount,
 }: Props) {
-  const isManager = currentRole === "owner" || currentRole === "admin";
+  // Only the workspace OWNER can add or remove users. (Managers can do
+  // operational work; user management is owner-only per the matrix.)
+  const isOwner = currentRole === "owner";
 
-  const availableRoles =
-    currentRole === "owner"
-      ? ALL_ROLES
-      : (["operator", "viewer"] as const);
-
-  // Presets the current user is allowed to assign, in ROLE_PRESETS order
-  // (Owner → Manager → Crew Lead → Field Tech).
-  const availablePresets = ROLE_PRESETS.filter((p) =>
-    (availableRoles as readonly string[]).includes(p.role),
-  );
-
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState<string>(availableRoles[availableRoles.length - 1]);
-
-  const selectedPreset =
-    availablePresets.find((p) => p.role === role) ?? availablePresets[availablePresets.length - 1];
-  const [inviteError, setInviteError] = useState<string | null>(null);
-  const [inviteSuccess, setInviteSuccess] = useState(false);
-  const [pending, startTransition] = useTransition();
-
+  const [, startTransition] = useTransition();
   const [rowState, setRowState] = useState<
     Record<string, { loading: boolean; error: string | null; sent?: boolean }>
   >({});
@@ -97,21 +79,6 @@ export function TeamCard({
       ...prev,
       [rowEmail]: { ...prev[rowEmail], ...patch },
     }));
-  }
-
-  function handleInvite(formData: FormData) {
-    setInviteError(null);
-    setInviteSuccess(false);
-    startTransition(async () => {
-      const res = await inviteTeamMember(formData);
-      if ("error" in res) {
-        setInviteError(res.error);
-      } else {
-        setEmail("");
-        setInviteSuccess(true);
-        setTimeout(() => setInviteSuccess(false), 4000);
-      }
-    });
   }
 
   function handleRevoke(memberEmail: string) {
@@ -148,104 +115,56 @@ export function TeamCard({
 
   return (
     <section className="g-card overflow-hidden" aria-label="Team">
-      <header className="flex items-center justify-between px-5 py-4 border-b border-g-border-subtle">
+      <header className="flex flex-wrap items-center justify-between gap-2 px-5 py-4 border-b border-g-border-subtle">
         <div className="flex items-center gap-2">
           <Users className="h-4 w-4 text-g-accent" />
           <span className="text-[11px] uppercase tracking-[0.12em] text-g-text-faint">
             Team
           </span>
-        </div>
-        <div className="flex items-center gap-2">
           <span className="text-[11px] font-geist-mono text-g-text-faint">
-            {invitations.length} member{invitations.length === 1 ? "" : "s"}
+            · {invitations.length} member{invitations.length === 1 ? "" : "s"}
           </span>
           {memberCount > 0 && (
             <StatusPill tone="success">{memberCount} signed in</StatusPill>
           )}
         </div>
-      </header>
-
-      {isManager && (
-        <div className="border-b border-g-border-subtle px-5 py-4">
-          <p className="mb-3 text-[11px] uppercase tracking-[0.12em] text-g-text-faint">
-            Invite team member
-          </p>
-          <form
-            action={handleInvite}
-            className="flex flex-col gap-2 sm:flex-row sm:items-start"
-          >
-            <Input
-              type="email"
-              name="email"
-              required
-              placeholder="teammate@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={pending}
-              className="sm:w-64"
-            />
-            <select
-              name="role"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              disabled={pending}
-              className="h-9 rounded-md border border-g-border bg-g-surface px-2 text-[13px] text-g-text focus-visible:border-g-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-g-accent/30 disabled:opacity-50"
-            >
-              {availablePresets.map((p) => (
-                <option key={p.role} value={p.role}>
-                  {p.label}
-                </option>
-              ))}
-            </select>
-            <Button
-              type="submit"
-              variant="primary"
-              size="md"
-              disabled={pending}
-            >
-              {pending ? "Sending…" : "Invite & send link"}
+        {isOwner && (
+          <Link href="/app/settings/team/new" prefetch>
+            <Button variant="primary" size="sm">
+              <UserPlus className="h-3.5 w-3.5" />
+              Add user
             </Button>
-          </form>
-          {selectedPreset && (
-            <p className="mt-2 text-[12px] text-g-text-muted">
-              <span className="text-g-text">{selectedPreset.label}</span>
-              <span className="text-g-text-faint"> · {selectedPreset.persona}</span>
-              {" — "}
-              {selectedPreset.blurb}
-            </p>
-          )}
-          {inviteError && (
-            <p className="mt-2 text-[12px] text-g-danger" role="alert">
-              {inviteError}
-            </p>
-          )}
-          {inviteSuccess && (
-            <p className="mt-2 text-[12px] text-g-accent" role="status">
-              Invitation sent — they&apos;ll receive an email with a sign-in link.
-            </p>
-          )}
-        </div>
-      )}
+          </Link>
+        )}
+      </header>
 
       <div className="p-4">
         {invitations.length === 0 ? (
           <p className="py-6 text-center text-[13px] text-g-text-muted">
-            No team members yet.{isManager ? " Use the form above to invite your first teammate." : ""}
+            No team members yet.{isOwner ? " Click \"Add user\" to add your first teammate." : ""}
           </p>
         ) : (
           <ul className="flex flex-col divide-y divide-g-border-subtle/40">
             {invitations.map((inv) => {
               const state = rowState[inv.email] ?? { loading: false, error: null };
               const isSelf = inv.email === currentEmail.toLowerCase();
+              const title = parseInvitationTitle(inv.notes);
               return (
                 <li
                   key={inv.email}
                   className="flex flex-wrap items-center justify-between gap-2 py-2.5 first:pt-0 last:pb-0"
                 >
                   <div className="flex flex-wrap items-center gap-2 min-w-0">
-                    <span className="text-[13px] font-medium text-g-text truncate">
-                      {inv.email}
-                    </span>
+                    <div className="flex min-w-0 flex-col">
+                      <span className="text-[13px] font-medium text-g-text truncate">
+                        {inv.email}
+                      </span>
+                      {title && (
+                        <span className="text-[11px] text-g-text-muted truncate">
+                          {title}
+                        </span>
+                      )}
+                    </div>
                     <StatusPill tone={roleTone(inv.role)}>{roleLabel(inv.role)}</StatusPill>
                     {isSelf && (
                       <StatusPill tone="neutral">you</StatusPill>
@@ -254,7 +173,7 @@ export function TeamCard({
                       {relTime(inv.created_at)}
                     </span>
                   </div>
-                  {isManager && !isSelf && (
+                  {isOwner && !isSelf && (
                     <div className="flex items-center gap-1">
                       {state.sent ? (
                         <span className="text-[11px] text-g-accent">Sent!</span>
@@ -272,9 +191,13 @@ export function TeamCard({
                       )}
                       <button
                         type="button"
-                        title="Remove access"
+                        title="Remove user"
                         disabled={state.loading}
-                        onClick={() => handleRevoke(inv.email)}
+                        onClick={() => {
+                          if (confirm(`Remove ${inv.email} from this workspace? They lose access immediately.`)) {
+                            handleRevoke(inv.email);
+                          }
+                        }}
                         className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-g-danger/70 hover:bg-g-danger/10 hover:text-g-danger disabled:opacity-40"
                       >
                         <Trash2 className="h-3 w-3" />
@@ -292,12 +215,12 @@ export function TeamCard({
         )}
       </div>
 
-      {!isManager && (
+      {!isOwner && (
         <div className="border-t border-g-border-subtle px-5 py-3">
           <div className="flex items-center gap-2 text-[12px] text-g-text-muted">
             <Mail className="h-3.5 w-3.5 shrink-0" />
             <span>
-              To invite teammates, contact your workspace owner or{" "}
+              Only the workspace owner can add or remove users. Contact them or{" "}
               <a
                 href="mailto:founders@gladiusturf.com"
                 className="text-g-accent hover:underline"
