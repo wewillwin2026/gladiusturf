@@ -56,10 +56,19 @@ export function Sidebar({
   const pathname = usePathname() ?? "/";
   const base =
     product === "founders" ? "/founders/war-room" : "/app";
+  // Founders Portal is founders-only tooling (Live Radar, traffic
+  // intel, Tenants + Impersonate, demo pipeline) — it must NOT mirror
+  // the client CRM operator engines. To inspect a tenant's real
+  // workspace a founder uses the Impersonate button, which opens /app
+  // as that tenant. So: tenant → vertical/role-filtered engines;
+  // founders → no client engines (only the SECRET_TABS section below);
+  // demo → full list for sales walkthroughs.
   const visibleEngines =
     product === "tenant"
       ? enginesForTenant(vertical, flags, role ?? null)
-      : ENGINES;
+      : product === "founders"
+        ? []
+        : ENGINES;
 
   const headerLabel =
     product === "founders"
