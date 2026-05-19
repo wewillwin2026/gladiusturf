@@ -616,3 +616,220 @@ export async function loadReplays(limit = 18): Promise<{
     return { sessions: [], schemaMissing: false };
   }
 }
+
+// ── Live Visitor Radar ──────────────────────────────────────────────
+// The "who's on gladiusturf.com right now" surface. Same data-source
+// discipline as every other secret tab (real `sessions`/`visitors`/
+// `tracking_events`, never seeded). Founder/own traffic is already
+// dropped upstream at /api/track via the glx_founder=1 marker, so this
+// is precise by construction. Heat/status is derived live (no Visitor
+// aggregate table / cron needed at this volume — gladiuscrm.com uses
+// one only for high-traffic performance).
+
+export type RadarStatus = "live" | "warm" | "cooling" | "converting";
+
+export type RadarBlip = {
+  sessionId: string;
+  visitorHash: string;
+  status: RadarStatus;
+  heatScore: number;
+  startedAt: string;
+  lastActivityAt: string;
+  minutesIdle: number;
+  pageviews: number;
+  currentPath: string | null;
+  entryPath: string | null;
+  referrer: string | null;
+  utmSource: string | null;
+  product: string | null;
+  country: string | null;
+  region: string | null;
+  city: string | null;
+  demoIntent: boolean;
+  returning: boolean;
+};
+
+export type LiveRadar = {
+  nowIso: string;
+  blips: RadarBlip[];
+  totals: { live: number; warm: number; cooling: number; converting: number };
+  schemaMissing: boolean;
+};
+
+const RADAR_WINDOW_MS = 60 * 60 * 1000; // last activity ≤ 60 min = on the radar
+const DEMO_INTENT_TYPES = new Set([
+  "demo_form_focus",
+  "demo_form_submit",
+  "demo_login",
+  "quote_drafted",
+]);
+
+export async function loadLiveRadar(): Promise<LiveRadar> {
+  const empty: LiveRadar = {
+    nowIso: new Date().toISOString(),
+    blips: [],
+    totals: { live: 0, warm: 0, cooling: 0, converting: 0 },
+    schemaMissing: false,
+  };
+
+  let sb;
+  try {
+    sb = supabaseAdmin();
+  } catch {
+    return { ...empty, schemaMissing: true };
+  }
+
+  const now = Date.now();
+  // Coarse 2h prefilter on session start; the real cutoff is last
+  // activity ≤ 60 min, computed below from events.
+  const since = new Date(now - 2 * 60 * 60 * 1000).toISOString();
+
+  try {
+    const sessRes = await sb
+      .from("sessions")
+      .select(
+        "id, visitor_id, started_at, product, entry_path, referrer, utm_source",
+      )
+      .gte("started_at", since)
+      .neq("product", "war_room")
+      .order("started_at", { ascending: false })
+      .limit(80);
+    if (sessRes.error) {
+      if (isMissing(sessRes.error)) return { ...empty, schemaMissing: true };
+      throw sessRes.error;
+    }
+    const sessions = sessRes.data ?? [];
+    if (sessions.length === 0) return empty;
+
+    const visIds = Array.from(
+      new Set(sessions.map((s) => s.visitor_id).filter(Boolean)),
+    ) as string[];
+    const visRes = visIds.length
+      ? await sb
+          .from("visitors")
+          .select(
+            "id, visitor_hash, first_seen_at, last_seen_at, country, region, city",
+          )
+          .in("id", visIds)
+      : { data: [] as Record<string, unknown>[] };
+    const visMap = new Map<string, Record<string, unknown>>();
+    for (const v of visRes.data ?? []) visMap.set(v.id as string, v);
+
+    const sessionIds = sessions.map((s) => s.id as string);
+    const evRes = await sb
+      .from("tracking_events")
+      .select("session_id, ts, type, path")
+      .in("session_id", sessionIds)
+      .order("ts", { ascending: true })
+      .limit(2000);
+
+    type Agg = {
+      lastTs: number;
+      pageviews: number;
+      currentPath: string | null;
+      demoIntent: boolean;
+    };
+    const agg = new Map<string, Agg>();
+    for (const ev of evRes.data ?? []) {
+      const sid = ev.session_id as string;
+      const tsMs = new Date(ev.ts as string).getTime();
+      const a = agg.get(sid) ?? {
+        lastTs: 0,
+        pageviews: 0,
+        currentPath: null,
+        demoIntent: false,
+      };
+      if (tsMs >= a.lastTs) {
+        a.lastTs = tsMs;
+        if (ev.path) a.currentPath = ev.path as string;
+      }
+      if (ev.type === "pageview") a.pageviews += 1;
+      if (DEMO_INTENT_TYPES.has(ev.type as string)) a.demoIntent = true;
+      agg.set(sid, a);
+    }
+
+    const blips: RadarBlip[] = [];
+    for (const s of sessions) {
+      const sid = s.id as string;
+      const a = agg.get(sid);
+      const startedMs = new Date(s.started_at as string).getTime();
+      const lastTs = a?.lastTs && a.lastTs > 0 ? a.lastTs : startedMs;
+      const idleMs = now - lastTs;
+      if (idleMs > RADAR_WINDOW_MS) continue; // off the radar
+
+      const minutesIdle = Math.floor(idleMs / 60000);
+      const demoIntent = a?.demoIntent ?? false;
+      let status: RadarStatus;
+      if (demoIntent && idleMs <= 15 * 60 * 1000) status = "converting";
+      else if (idleMs <= 2 * 60 * 1000) status = "live";
+      else if (idleMs <= 15 * 60 * 1000) status = "warm";
+      else status = "cooling";
+
+      const v = visMap.get(s.visitor_id as string);
+      const firstSeen = v?.first_seen_at
+        ? new Date(v.first_seen_at as string).getTime()
+        : startedMs;
+      const returning = startedMs - firstSeen > 6 * 60 * 60 * 1000;
+      const pageviews = a?.pageviews ?? 0;
+
+      const recencyBoost =
+        status === "converting"
+          ? 30
+          : status === "live"
+            ? 15
+            : status === "warm"
+              ? 8
+              : 3;
+      const heatScore =
+        pageviews * 2 +
+        (demoIntent ? 25 : 0) +
+        recencyBoost +
+        (returning ? 6 : 0);
+
+      blips.push({
+        sessionId: sid,
+        visitorHash: (v?.visitor_hash as string) ?? "—",
+        status,
+        heatScore,
+        startedAt: s.started_at as string,
+        lastActivityAt: new Date(lastTs).toISOString(),
+        minutesIdle,
+        pageviews,
+        currentPath: a?.currentPath ?? (s.entry_path as string) ?? null,
+        entryPath: (s.entry_path as string) ?? null,
+        referrer: (s.referrer as string) ?? null,
+        utmSource: (s.utm_source as string) ?? null,
+        product: (s.product as string) ?? null,
+        country: (v?.country as string) ?? null,
+        region: (v?.region as string) ?? null,
+        city: (v?.city as string) ?? null,
+        demoIntent,
+        returning,
+      });
+    }
+
+    blips.sort(
+      (x, y) =>
+        y.heatScore - x.heatScore ||
+        new Date(y.lastActivityAt).getTime() -
+          new Date(x.lastActivityAt).getTime(),
+    );
+
+    const totals = {
+      live: blips.filter((b) => b.status === "live").length,
+      warm: blips.filter((b) => b.status === "warm").length,
+      cooling: blips.filter((b) => b.status === "cooling").length,
+      converting: blips.filter((b) => b.status === "converting").length,
+    };
+
+    return {
+      nowIso: new Date().toISOString(),
+      blips,
+      totals,
+      schemaMissing: false,
+    };
+  } catch (err) {
+    if (isMissing(err)) return { ...empty, schemaMissing: true };
+    return empty;
+  }
+}

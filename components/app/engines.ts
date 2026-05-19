@@ -47,6 +47,7 @@ import {
   Newspaper,
   PenSquare,
   Plug,
+  Radar,
   Receipt,
   Repeat,
   Route,
@@ -181,6 +182,7 @@ export const ENGINES: Engine[] = [
 ];
 
 export const SECRET_TABS = [
+  { slug: "secret/radar", name: "Live Radar", icon: Radar },
   { slug: "command", name: "Command Center", icon: Globe2 },
   { slug: "secret", name: "Overview", icon: Eye },
   { slug: "secret/visits", name: "Visits", icon: Globe2 },
