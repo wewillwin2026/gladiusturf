@@ -1,5 +1,14 @@
 import Link from "next/link";
-import { ArrowRight, Boxes, Sparkles, Upload, UserPlus } from "lucide-react";
+import {
+  ArrowRight,
+  Boxes,
+  Briefcase,
+  HardHat,
+  Sparkles,
+  Upload,
+  UserPlus,
+  Users,
+} from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
 import { Button } from "@/components/app/ui/Button";
 import type { TenantRow } from "@/lib/app/tenant-auth";
@@ -8,29 +17,31 @@ import type { TenantRow } from "@/lib/app/tenant-auth";
  * First-run shell for a tenant whose workspace has no customers yet.
  * Renders instead of TodayDashboard when `customerCount === 0`.
  *
- * Board (2026-05-07): Jobs + Product called the prior 3-CTA fork
- * "indecision wearing a tuxedo" — the hero now has ONE dominant action
- * (drop a list / paste a list) and demotes manual entry + starter
- * inventory to small links. The first emotion should be momentum, not
- * a fork in the road.
+ * Dominant action stays the CSV import (one-button to populate the
+ * shop). Below it, "Or start anywhere" surfaces every individual
+ * create path the operator now has — customers, jobs, crew, inventory,
+ * team invites — so a fresh tenant sees the full breadth of the CRM
+ * from Day 1 rather than a sea of zeroed KPIs OR a single CSV button
+ * that looks like the only option.
  */
 export function TenantOnboardingHero({
   tenant,
-  starterItemCount,
-  starterUnitCount,
+  isOwner = true,
 }: {
   tenant: TenantRow;
-  starterItemCount: number;
-  starterUnitCount: number;
+  /** Owner-only flows (Invite teammate) are hidden for non-owners. */
+  isOwner?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
         eyebrow={`${tenant.display_name} · Day 1`}
         title={`Welcome, ${tenant.display_name}.`}
-        subtitle="Drop your customer list — we'll handle the rest."
+        subtitle="Drop your customer list to populate the whole CRM — or start anywhere below."
       />
 
+      {/* Dominant CTA — CSV import. Same as before; it's still the
+          highest-leverage day-1 action. */}
       <Link
         href="/app/import/customers"
         prefetch
@@ -63,34 +74,58 @@ export function TenantOnboardingHero({
         </div>
       </Link>
 
-      <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[12px] text-g-text-muted">
-        <span>Or:</span>
-        <Link
-          href="/app/customers/new"
-          prefetch
-          className="inline-flex items-center gap-1 hover:text-g-text"
-        >
-          <UserPlus className="h-3 w-3" />
-          Add one customer manually
-        </Link>
-        <span className="text-g-text-faint">·</span>
-        <Link
-          href="/app/inventory"
-          prefetch
-          className="inline-flex items-center gap-1 hover:text-g-text"
-        >
-          <Boxes className="h-3 w-3" />
-          Browse {starterItemCount} starter SKUs ({starterUnitCount} units)
-        </Link>
-        <span className="text-g-text-faint">·</span>
-        <Link
-          href="/app/onboarding/profile"
-          prefetch
-          className="inline-flex items-center gap-1 hover:text-g-text"
-        >
-          <Sparkles className="h-3 w-3" />
-          Tell us about your shop
-        </Link>
+      {/* "Or start anywhere" — every create flow the operator has,
+          surfaced. Replaces the old broken "Browse N starter SKUs" link
+          and the cramped inline option row. */}
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center gap-2">
+          <div className="h-px flex-1 bg-g-border-subtle" />
+          <span className="text-[11px] uppercase tracking-[0.14em] text-g-text-faint">
+            Or start anywhere
+          </span>
+          <div className="h-px flex-1 bg-g-border-subtle" />
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <QuickAction
+            href="/app/customers/new"
+            icon={UserPlus}
+            title="Add a customer"
+            body="One at a time — name, address, contact, language."
+          />
+          <QuickAction
+            href="/app/jobs/new"
+            icon={Briefcase}
+            title="Schedule a job"
+            body="Install, service, warranty, plan visit, storm response."
+          />
+          <QuickAction
+            href="/app/crew/new"
+            icon={HardHat}
+            title="Add a crew member"
+            body="Lead, tech, or helper — hours and rate optional."
+          />
+          <QuickAction
+            href="/app/inventory/new"
+            icon={Boxes}
+            title="Add an inventory item"
+            body="Fixtures, transformers, wire — your real catalog."
+          />
+          {isOwner && (
+            <QuickAction
+              href="/app/settings/team/new"
+              icon={Users}
+              title="Invite a teammate"
+              body="Email + password + title + role. They sign in immediately."
+            />
+          )}
+          <QuickAction
+            href="/app/onboarding/profile"
+            icon={Sparkles}
+            title="Tell us about your shop"
+            body="Brand, hours, service area — informs every AI prompt."
+          />
+        </div>
       </div>
 
       <div className="g-card flex items-start gap-3 p-4 text-[13px] text-g-text-muted">
@@ -104,5 +139,36 @@ export function TenantOnboardingHero({
         </div>
       </div>
     </div>
+  );
+}
+
+function QuickAction({
+  href,
+  icon: Icon,
+  title,
+  body,
+}: {
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  body: string;
+}) {
+  return (
+    <Link
+      href={href}
+      prefetch
+      className="group flex items-start gap-3 rounded-lg border border-g-border bg-g-surface p-4 transition-colors hover:border-g-accent/50 hover:bg-g-surface-2"
+    >
+      <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-g-accent-faint text-g-accent">
+        <Icon className="h-4 w-4" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-1 text-[13px] font-medium text-g-text">
+          {title}
+          <ArrowRight className="h-3 w-3 text-g-text-faint transition-transform group-hover:translate-x-0.5 group-hover:text-g-accent" />
+        </div>
+        <p className="mt-0.5 text-[12px] text-g-text-muted">{body}</p>
+      </div>
+    </Link>
   );
 }

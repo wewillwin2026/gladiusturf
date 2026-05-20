@@ -117,16 +117,22 @@ export default async function AppHomePage() {
     const customerCount = customersRes.count ?? customers.length;
 
     // Day-1 onboarding: tenant has no customers yet. Show the welcome hero
-    // instead of a sea of zeroed KPIs that look broken.
+    // instead of a sea of zeroed KPIs that look broken. The hero surfaces
+    // every create flow (customers/jobs/crew/inventory/team) — owner-only
+    // actions hidden for non-owners.
     if (customerCount === 0) {
       return (
         <TenantOnboardingHero
           tenant={session.tenant}
-          starterItemCount={starterItemsRes.count ?? 0}
-          starterUnitCount={starterUnitsRes.count ?? 0}
+          isOwner={session.role === "owner"}
         />
       );
     }
+    // starterItemsRes / starterUnitsRes are still queried above to keep
+    // the prior shape (other callers / future analytics may reference
+    // them); the hero no longer renders the broken "Browse N SKUs" link.
+    void starterItemsRes;
+    void starterUnitsRes;
     const fixtureCount = assets.length;
     const noPlan = customers.filter((c) => !c.customer_tier).length;
 
