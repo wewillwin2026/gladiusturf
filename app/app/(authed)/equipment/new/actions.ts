@@ -4,16 +4,23 @@ import { revalidatePath } from "next/cache";
 import { readAppSession } from "@/lib/app/session";
 import { supabaseAdmin } from "@/lib/supabase";
 
+// Category + status values MUST match the tenant_equipment CHECK
+// constraints (migration 20260513_c). The schema set is landscape-leaning
+// (mower/blower/trimmer) but accepts truck/trailer/lift/multimeter/other —
+// lighting-specific gear (transformers, fixtures) goes under "other" for
+// now. A future migration could add 'transformer'/'fixture' categories.
 const CATEGORIES = [
   "truck",
   "trailer",
-  "tool",
-  "transformer",
-  "meter",
+  "lift",
+  "mower",
+  "blower",
+  "trimmer",
+  "multimeter",
   "other",
 ] as const;
 
-const STATUSES = ["available", "in_use", "maintenance", "retired"] as const;
+const STATUSES = ["active", "in_shop", "retired", "lost"] as const;
 
 export type CreateEquipmentInput = {
   display_name: string;
@@ -49,10 +56,10 @@ export async function createEquipment(
 
   const category = (CATEGORIES as readonly string[]).includes(input.category)
     ? input.category
-    : "tool";
+    : "other";
   const status = (STATUSES as readonly string[]).includes(input.status)
     ? input.status
-    : "available";
+    : "active";
 
   const sb = supabaseAdmin();
   const now = new Date().toISOString();

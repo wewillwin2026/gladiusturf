@@ -85,6 +85,10 @@ export async function addTeamMember(
   }
 
   // Upsert the invitation (role + title-as-JSON-in-notes).
+  // NOTE: `invited_by` is a uuid (FK to auth.users) — the old code in
+  // `_actions/teamActions.ts:inviteTeamMember` passed `session.email`
+  // (a string) which violates the column type. We omit it here (null
+  // is the existing convention; every prior row has invited_by=null).
   const sb = supabaseAdmin();
   const notesJson = title ? JSON.stringify({ title }) : null;
   const { error: dbError } = await sb.from("tenant_invitations").upsert(
@@ -93,7 +97,6 @@ export async function addTeamMember(
       email,
       role,
       status: "active",
-      invited_by: session.email,
       notes: notesJson,
     },
     { onConflict: "email,tenant_id" },

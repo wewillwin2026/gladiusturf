@@ -4,7 +4,11 @@ import { revalidatePath } from "next/cache";
 import { readAppSession } from "@/lib/app/session";
 import { supabaseAdmin } from "@/lib/supabase";
 
-export type CrewRole = "lead" | "tech" | "helper";
+// Role values MUST match the crew_members.role CHECK constraint
+// (migration 20260513_b): owner | chief | crew | admin | apprentice.
+// We expose 3 friendly options (chief/crew/apprentice) — owner/admin
+// overlap with tenant access roles and don't belong on this form.
+export type CrewRole = "chief" | "crew" | "apprentice";
 
 export type CreateCrewMemberInput = {
   display_name: string;
@@ -21,7 +25,7 @@ export type CreateCrewMemberResult =
   | { ok: true; id: string }
   | { error: string };
 
-const ROLES = ["lead", "tech", "helper"] as const;
+const ROLES = ["chief", "crew", "apprentice"] as const;
 
 /**
  * Create a single crew member for the authenticated tenant. Used by the
@@ -41,7 +45,7 @@ export async function createCrewMember(
 
   const role: CrewRole = (ROLES as readonly string[]).includes(input.role)
     ? input.role
-    : "tech";
+    : "crew";
 
   const hourlyRateCents =
     input.hourly_rate_dollars != null &&

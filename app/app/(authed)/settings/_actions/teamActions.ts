@@ -74,6 +74,9 @@ export async function inviteTeamMember(
     return { error: "Only owners can invite owners or admins" };
   }
 
+  // NOTE: `invited_by` is a uuid FK to auth.users — passing
+  // session.email (a string) used to fail the column type. Omit it
+  // (existing convention; every prior row has invited_by=null).
   const sb = supabaseAdmin();
   const { error: dbError } = await sb.from("tenant_invitations").upsert(
     {
@@ -81,7 +84,6 @@ export async function inviteTeamMember(
       email,
       role,
       status: "active",
-      invited_by: session.email,
     },
     { onConflict: "email,tenant_id" },
   );

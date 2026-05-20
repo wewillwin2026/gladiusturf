@@ -8,20 +8,23 @@ import { Button } from "@/components/app/ui/Button";
 import { Input, Textarea } from "@/components/app/ui/Input";
 import { createEquipment } from "../actions";
 
+// Must match tenant_equipment CHECK constraints (migration 20260513_c).
 const CATEGORIES = [
   { value: "truck", label: "Truck" },
   { value: "trailer", label: "Trailer" },
-  { value: "tool", label: "Tool" },
-  { value: "transformer", label: "Transformer" },
-  { value: "meter", label: "Meter" },
+  { value: "lift", label: "Lift" },
+  { value: "mower", label: "Mower" },
+  { value: "blower", label: "Blower" },
+  { value: "trimmer", label: "Trimmer" },
+  { value: "multimeter", label: "Multimeter" },
   { value: "other", label: "Other" },
 ] as const;
 
 const STATUSES = [
-  { value: "available", label: "Available" },
-  { value: "in_use", label: "In use" },
-  { value: "maintenance", label: "Maintenance" },
+  { value: "active", label: "Active" },
+  { value: "in_shop", label: "In shop" },
   { value: "retired", label: "Retired" },
+  { value: "lost", label: "Lost" },
 ] as const;
 
 const SELECT_CLASS =
@@ -31,8 +34,8 @@ export function EquipmentForm() {
   const router = useRouter();
   const [busy, setBusy] = React.useState(false);
   const [name, setName] = React.useState("");
-  const [category, setCategory] = React.useState("tool");
-  const [status, setStatus] = React.useState("available");
+  const [category, setCategory] = React.useState("other");
+  const [status, setStatus] = React.useState("active");
   const [make, setMake] = React.useState("");
   const [model, setModel] = React.useState("");
   const [serialNo, setSerialNo] = React.useState("");

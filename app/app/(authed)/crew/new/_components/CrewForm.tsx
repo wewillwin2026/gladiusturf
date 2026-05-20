@@ -12,7 +12,7 @@ export function CrewForm() {
   const router = useRouter();
   const [busy, setBusy] = React.useState(false);
   const [name, setName] = React.useState("");
-  const [role, setRole] = React.useState<CrewRole>("tech");
+  const [role, setRole] = React.useState<CrewRole>("crew");
   const [title, setTitle] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [phone, setPhone] = React.useState("");
@@ -83,9 +83,9 @@ export function CrewForm() {
               onChange={(e) => setRole(e.target.value as CrewRole)}
               className="mt-1.5 h-9 w-full rounded-md bg-g-surface border border-g-border px-3 text-[13px] text-g-text focus-visible:border-g-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-g-accent/30"
             >
-              <option value="lead">Lead</option>
-              <option value="tech">Tech</option>
-              <option value="helper">Helper</option>
+              <option value="chief">Crew Chief</option>
+              <option value="crew">Crew</option>
+              <option value="apprentice">Apprentice</option>
             </select>
           </div>
           <div>
