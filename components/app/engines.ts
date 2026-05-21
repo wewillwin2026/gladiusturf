@@ -160,12 +160,10 @@ export const ENGINES: Engine[] = [
   { slug: "automations", name: "Automations", group: "loop", icon: Repeat, ordinal: 25 },
   { slug: "ask-gladius", name: "Ask Gladius", group: "loop", icon: Bot, ordinal: 26 },
 
-  // Pulse (3) — metrics + audit, kept separate from Loop conversations
+  // Pulse — metrics + audit. Marketing engine removed 2026-05-21 per
+  // founder ask ("Felipe doesn't need marketing tab — delete that").
   { slug: "reports", name: "Reports", group: "pulse", icon: BarChart3, ordinal: 23 },
   { slug: "analytics", name: "Analytics", group: "pulse", icon: TrendingUp, ordinal: 24 },
-  // Marketing — per-tenant web tracker; gated by tenants.marketing_tab_enabled.
-  // Tab lights up once the tenant's website is posting to /api/marketing/track.
-  { slug: "marketing", name: "Marketing", group: "pulse", icon: Globe2, ordinal: 23.7, featureFlag: "marketing" },
   // Trust Console — Trust Director's #1 board recommendation 2026-05-08.
   // Tenant-visible audit chain: AI runs, consent ledger, founder reads,
   // sub-processors. The "moat no incumbent will copy" engine.

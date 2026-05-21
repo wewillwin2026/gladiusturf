@@ -4,22 +4,25 @@
  * Loaded once via the root layout's import.
  */
 
+/* Bourbon palette (2026-05-21) — warm cream + cocoa + copper.
+ * Replaces the prior near-black operator theme. Fallback hex codes
+ * preserved in memory/reference_gladiusturf_palette_options.md. */
 .gladius-app {
-  --g-bg: #0a0a0b;
-  --g-surface: #141416;
-  --g-surface-2: #1c1c20;
-  --g-border: #26262a;
-  --g-border-subtle: #1f1f23;
-  --g-text: #fafafa;
-  --g-text-muted: #a1a1aa;
-  --g-text-faint: #71717a;
-  --g-accent: #00d26a;
-  --g-accent-hover: #00e878;
-  --g-accent-faint: #042414;
-  --g-success: #22c55e;
-  --g-warning: #f59e0b;
-  --g-danger: #ef4444;
-  --g-info: #3b82f6;
+  --g-bg: #FAF6EE;            /* cream canvas */
+  --g-surface: #FFFEFA;       /* paper-white cards */
+  --g-surface-2: #F4EDDF;     /* sand (sidebar, hovered chrome) */
+  --g-border: #E8DFCB;        /* sand edge */
+  --g-border-subtle: #F0E8D5; /* cream edge */
+  --g-text: #2C2620;          /* cocoa */
+  --g-text-muted: #6B6259;    /* stone */
+  --g-text-faint: #95897C;    /* smoke */
+  --g-accent: #B8651F;        /* copper */
+  --g-accent-hover: #9B5119;
+  --g-accent-faint: #F7E5D0;  /* amber wash */
+  --g-success: #5C7D3F;       /* moss (kept olive-leaning to harmonize) */
+  --g-warning: #B8843A;       /* honey */
+  --g-danger: #A8412F;        /* brick */
+  --g-info: #2563EB;
 
   background: var(--g-bg);
   color: var(--g-text);
@@ -31,22 +34,23 @@
   font-feature-settings: "ss01", "cv11";
 }
 
+/* Light-mode override kept as alias — both surfaces now use Bourbon. */
 .gladius-app[data-theme="light"] {
-  --g-bg: #fafaf9;
-  --g-surface: #ffffff;
-  --g-surface-2: #f4f4f5;
-  --g-border: #e4e4e7;
-  --g-border-subtle: #f1f1f3;
-  --g-text: #0a0a0b;
-  --g-text-muted: #52525b;
-  --g-text-faint: #71717a;
-  --g-accent: #00a852;
-  --g-accent-hover: #00c25f;
-  --g-accent-faint: #e8f8ee;
-  --g-success: #16a34a;
-  --g-warning: #d97706;
-  --g-danger: #dc2626;
-  --g-info: #2563eb;
+  --g-bg: #FAF6EE;
+  --g-surface: #FFFEFA;
+  --g-surface-2: #F4EDDF;
+  --g-border: #E8DFCB;
+  --g-border-subtle: #F0E8D5;
+  --g-text: #2C2620;
+  --g-text-muted: #6B6259;
+  --g-text-faint: #95897C;
+  --g-accent: #B8651F;
+  --g-accent-hover: #9B5119;
+  --g-accent-faint: #F7E5D0;
+  --g-success: #5C7D3F;
+  --g-warning: #B8843A;
+  --g-danger: #A8412F;
+  --g-info: #2563EB;
 }
 
 .gladius-app .mono,

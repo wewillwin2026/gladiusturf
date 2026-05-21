@@ -30,7 +30,7 @@ const slugs = (role: TenantRole | null, isFounder = false) =>
 
 console.log("Owner (Felipe) — full shop, NEVER founder-only api/integrations");
 const owner = slugs("owner");
-for (const s of ["today", "customers", "leads", "quotes", "crew", "pricing", "invoices", "reports", "settings", "marketing"])
+for (const s of ["today", "customers", "leads", "quotes", "crew", "pricing", "invoices", "reports", "settings"])
   check(`owner: has '${s}'`, owner.has(s));
 check("owner: NO 'api' (founder-only)", !owner.has("api"));
 check("owner: NO 'integrations' (founder-only)", !owner.has("integrations"));
@@ -43,7 +43,7 @@ check("founder: HAS 'settings'", god.has("settings"));
 
 console.log("Manager (admin) — money/reports yes, Settings/Team no");
 const mgr = slugs("admin");
-for (const s of ["customers", "quotes", "crew", "pricing", "invoices", "reports", "marketing"])
+for (const s of ["customers", "quotes", "crew", "pricing", "invoices", "reports"])
   check(`admin: has '${s}'`, mgr.has(s));
 check("admin: NO 'settings' (owner-only)", !mgr.has("settings"));
 check("admin: NO 'api'", !mgr.has("api"));
