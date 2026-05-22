@@ -1,7 +1,5 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import fs from "node:fs";
-import path from "node:path";
 import { AppShell } from "@/components/app/AppShell";
 import { readAppSession } from "@/lib/app/session";
 import { isFounderEmail } from "@/lib/founders/auth";
@@ -10,26 +8,23 @@ import { isAppPathAllowed } from "@/lib/app/access";
 /**
  * Resolve a tenant's brand logo URL.
  *
- * Convention: a file at `public/tenant-logos/<slug>.png` (or .jpg /
- * .svg / .webp) is the tenant's logo. The sidebar renders it in
- * place of the letter-mark when present. Easy onboarding for new
- * tenants — drop the file with the right name, redeploy.
+ * The file lives at `public/tenant-logos/<slug>.<ext>` and is served
+ * as a static CDN asset. We CANNOT `fs.existsSync` in production —
+ * Vercel doesn't bundle `public/` into the serverless lambda's
+ * filesystem (it's only on the CDN), so an fs probe would always
+ * fail in prod even when the asset serves at the URL.
  *
- * Defensive: returns null on any file-system hiccup or unknown
- * extension. The sidebar gracefully falls back to the letter mark.
+ * Instead: keep an explicit slug → file map. To onboard a new tenant
+ * with a logo, drop the file in public/tenant-logos/ AND add the
+ * entry below. One line of code per tenant, but every entry is
+ * proven-to-exist instead of guessed-by-filesystem.
  */
+const TENANT_LOGOS: Record<string, string> = {
+  "bright-lights-encina": "/tenant-logos/bright-lights-encina.png",
+};
+
 function tenantLogoUrl(slug: string): string | null {
-  const extensions = ["png", "jpg", "jpeg", "svg", "webp"];
-  for (const ext of extensions) {
-    const rel = `/tenant-logos/${slug}.${ext}`;
-    const abs = path.join(process.cwd(), "public", rel);
-    try {
-      if (fs.existsSync(abs)) return rel;
-    } catch {
-      // ignore — fall through
-    }
-  }
-  return null;
+  return TENANT_LOGOS[slug] ?? null;
 }
 
 export const dynamic = "force-dynamic";
