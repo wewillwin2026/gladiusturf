@@ -112,7 +112,7 @@ function FallbackMap({
             <path
               d="M 6 0 L 0 0 0 6"
               fill="none"
-              stroke="rgba(0, 210, 106, 0.15)"
+              stroke="rgba(184, 101, 31, 0.15)"
               strokeWidth="0.1"
             />
           </pattern>
@@ -169,7 +169,7 @@ function Pins({
               <MapPin
                 className={
                   isSelected
-                    ? "h-4 w-4 text-g-accent drop-shadow-[0_0_6px_rgba(0,210,106,0.8)]"
+                    ? "h-4 w-4 text-g-accent drop-shadow-[0_0_6px_rgba(184,101,31,0.8)]"
                     : c.tier === "Enterprise"
                       ? "h-3.5 w-3.5 text-g-warning"
                       : c.tier === "Pro"

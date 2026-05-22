@@ -176,7 +176,7 @@ export function OwnersDailyOneLiner({
         className="pointer-events-none absolute inset-0 -z-0 opacity-60"
         style={{
           background:
-            "radial-gradient(ellipse at top right, rgba(0,210,106,0.10) 0%, rgba(0,210,106,0.03) 50%, transparent 80%)",
+            "radial-gradient(ellipse at top right, rgba(184,101,31,0.10) 0%, rgba(184,101,31,0.03) 50%, transparent 80%)",
         }}
       />
       <div className="relative flex items-start gap-4">

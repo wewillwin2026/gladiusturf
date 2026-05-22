@@ -37,7 +37,7 @@ export function SatelliteCanvas({
   if (measuring && !measurements) {
     return (
       <div className="relative w-full h-full bg-g-surface-2 flex items-center justify-center">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,210,106,0.08),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(184,101,31,0.08),transparent_60%)]" />
         <div className="flex flex-col items-center gap-3 text-g-text-muted">
           <div className="relative h-12 w-12">
             <Satellite className="h-12 w-12 text-g-accent animate-pulse" />
@@ -116,7 +116,7 @@ function FallbackSatellite({ m }: { m: Measurements }) {
             <path
               d="M 4 0 L 0 0 0 4"
               fill="none"
-              stroke="rgba(0, 210, 106, 0.18)"
+              stroke="rgba(184, 101, 31, 0.18)"
               strokeWidth="0.1"
             />
           </pattern>
@@ -160,8 +160,8 @@ function PolygonOverlay({ m }: { m: Measurements }) {
     >
       <polygon
         points={points}
-        fill="rgba(0, 210, 106, 0.18)"
-        stroke="rgb(0, 210, 106)"
+        fill="rgba(184, 101, 31, 0.18)"
+        stroke="rgb(184, 101, 31)"
         strokeWidth="0.4"
         strokeLinejoin="round"
         style={{

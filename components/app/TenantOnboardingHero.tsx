@@ -52,7 +52,7 @@ export function TenantOnboardingHero({
           className="pointer-events-none absolute inset-0 -z-0 opacity-50"
           style={{
             background:
-              "radial-gradient(ellipse at top right, rgba(0,210,106,0.15) 0%, rgba(0,210,106,0.04) 50%, transparent 80%)",
+              "radial-gradient(ellipse at top right, rgba(184,101,31,0.15) 0%, rgba(184,101,31,0.04) 50%, transparent 80%)",
           }}
         />
         <div className="relative flex flex-col items-center gap-3 text-center">
