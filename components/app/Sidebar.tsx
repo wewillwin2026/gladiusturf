@@ -91,30 +91,48 @@ export function Sidebar({
         variant === "mobile" && "h-full w-full overflow-y-auto",
       )}
     >
-      {/* Brand header — bigger mark, tenant name in bold, status pill
-          inline. Reduces the dead space that surrounded the 24×24 G
-          square in the prior layout. */}
-      <Link
-        href={base}
-        prefetch
-        onClick={onNavigate}
-        className="group flex items-start gap-2.5 px-1.5 py-1.5 rounded-md hover:bg-g-surface-2 transition-colors"
-      >
-        {logoUrl ? (
-          // Tenant brand logo — renders in a white-pad container so dark
-          // PNG logos read against the navy sidebar. Falls through to the
-          // letter mark if no logoUrl is provided.
-          <span className="h-10 w-10 shrink-0 rounded-lg inline-flex items-center justify-center bg-white p-0.5 border border-g-accent/40 overflow-hidden">
-            {/* Plain <img> — the file ships from /public so Next will not
-                rewrite it through next/image's loader. */}
+      {/* Brand header — two layouts.
+          (A) Logo present: full sidebar-width white panel containing
+              the logo at its natural aspect ratio (no dead space).
+              Logo IS the branding; no text-name beneath. Status pill
+              shows below, centered.
+          (B) No logo: original letter-mark + bold tenant name +
+              inline status pill. */}
+      {logoUrl ? (
+        <Link
+          href={base}
+          prefetch
+          onClick={onNavigate}
+          className="group block px-1 py-1.5 rounded-md hover:bg-g-surface-2 transition-colors"
+        >
+          <span className="block w-full rounded-md bg-white px-3 py-2.5 border border-g-accent/40 shadow-[0_2px_8px_rgba(0,0,0,0.25)]">
+            {/* Plain <img> — file ships from /public; bypass next/image. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={logoUrl}
               alt={tenantName ?? "Tenant logo"}
-              className="h-full w-full object-contain"
+              className="block w-full h-auto max-h-14 object-contain"
             />
           </span>
-        ) : (
+          <span className="mt-2 flex items-center justify-center gap-1.5 text-[10px] uppercase tracking-[0.14em] text-g-accent">
+            <span className="inline-flex h-1.5 w-1.5 rounded-full bg-g-success" />
+            {product === "demo"
+              ? "Demo"
+              : product === "founders"
+                ? "Founders"
+                : "Live"}
+            {product === "tenant" && vertical && (
+              <span className="text-g-text-faint">· {vertical}</span>
+            )}
+          </span>
+        </Link>
+      ) : (
+        <Link
+          href={base}
+          prefetch
+          onClick={onNavigate}
+          className="group flex items-start gap-2.5 px-1.5 py-1.5 rounded-md hover:bg-g-surface-2 transition-colors"
+        >
           <span
             className={cn(
               "h-10 w-10 shrink-0 rounded-lg inline-flex items-center justify-center font-semibold text-[16px]",
@@ -125,31 +143,31 @@ export function Sidebar({
           >
             {initial}
           </span>
-        )}
-        <span className="flex min-w-0 flex-col leading-[1.15] pt-0.5">
-          <span className="font-medium text-g-text text-[14px] truncate">
-            {headerLabel}
-          </span>
-          <span className="mt-0.5 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.14em]">
-            <span
-              className={cn(
-                product === "demo"
-                  ? "text-g-text-faint"
-                  : "text-g-accent",
-              )}
-            >
-              {product === "demo"
-                ? "Demo"
-                : product === "founders"
-                  ? "Founders"
-                  : "Live"}
+          <span className="flex min-w-0 flex-col leading-[1.15] pt-0.5">
+            <span className="font-medium text-g-text text-[14px] truncate">
+              {headerLabel}
             </span>
-            {product === "tenant" && vertical && (
-              <span className="text-g-text-faint">· {vertical}</span>
-            )}
+            <span className="mt-0.5 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.14em]">
+              <span
+                className={cn(
+                  product === "demo"
+                    ? "text-g-text-faint"
+                    : "text-g-accent",
+                )}
+              >
+                {product === "demo"
+                  ? "Demo"
+                  : product === "founders"
+                    ? "Founders"
+                    : "Live"}
+              </span>
+              {product === "tenant" && vertical && (
+                <span className="text-g-text-faint">· {vertical}</span>
+              )}
+            </span>
           </span>
-        </span>
-      </Link>
+        </Link>
+      )}
 
       {/* IA rebuild 2026-05-21: tenant + demo shells now show 10
           essentials flat at the top, with everything else tucked under
