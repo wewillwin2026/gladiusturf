@@ -87,7 +87,7 @@ export function TerritoryBrowser({ product }: { product: ProductKind }) {
                 key={r.zip}
                 className={`relative rounded-lg border border-g-border-subtle p-3 transition-all hover:border-g-accent/40 ${sizeClass}`}
                 style={{
-                  background: `linear-gradient(180deg, rgba(184, 101, 31, ${intensity * 0.18}) 0%, rgba(184, 101, 31, ${intensity * 0.04}) 100%)`,
+                  background: `linear-gradient(180deg, rgba(224, 180, 80, ${intensity * 0.18}) 0%, rgba(224, 180, 80, ${intensity * 0.04}) 100%)`,
                 }}
                 title={`${r.zip} — ${r.count} customers · avg ${money(r.avg)} LTV`}
               >

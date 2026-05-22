@@ -35,6 +35,9 @@ interface SidebarProps {
    *  discreet "Founders Portal" door at the bottom. Absent from the DOM
    *  entirely for everyone else — a tenant owner is NOT a founder. */
   isFounder?: boolean;
+  /** Per-tenant brand logo URL. When provided, replaces the letter
+   *  mark in the brand header. e.g. "/tenant-logos/bright-lights-encina.png". */
+  logoUrl?: string | null;
 }
 
 function brandInitial(name: string | null, product: ProductKind): string {
@@ -52,6 +55,7 @@ export function Sidebar({
   flags = {},
   role = null,
   isFounder = false,
+  logoUrl = null,
 }: SidebarProps) {
   const pathname = usePathname() ?? "/";
   const base =
@@ -96,16 +100,32 @@ export function Sidebar({
         onClick={onNavigate}
         className="group flex items-start gap-2.5 px-1.5 py-1.5 rounded-md hover:bg-g-surface-2 transition-colors"
       >
-        <span
-          className={cn(
-            "h-10 w-10 shrink-0 rounded-lg inline-flex items-center justify-center font-semibold text-[16px]",
-            product === "demo"
-              ? "bg-g-surface-2 border border-g-border text-g-text-muted"
-              : "bg-g-accent-faint border border-g-accent/40 text-g-accent",
-          )}
-        >
-          {initial}
-        </span>
+        {logoUrl ? (
+          // Tenant brand logo — renders in a white-pad container so dark
+          // PNG logos read against the navy sidebar. Falls through to the
+          // letter mark if no logoUrl is provided.
+          <span className="h-10 w-10 shrink-0 rounded-lg inline-flex items-center justify-center bg-white p-0.5 border border-g-accent/40 overflow-hidden">
+            {/* Plain <img> — the file ships from /public so Next will not
+                rewrite it through next/image's loader. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={logoUrl}
+              alt={tenantName ?? "Tenant logo"}
+              className="h-full w-full object-contain"
+            />
+          </span>
+        ) : (
+          <span
+            className={cn(
+              "h-10 w-10 shrink-0 rounded-lg inline-flex items-center justify-center font-semibold text-[16px]",
+              product === "demo"
+                ? "bg-g-surface-2 border border-g-border text-g-text-muted"
+                : "bg-g-accent-faint border border-g-accent/40 text-g-accent",
+            )}
+          >
+            {initial}
+          </span>
+        )}
         <span className="flex min-w-0 flex-col leading-[1.15] pt-0.5">
           <span className="font-medium text-g-text text-[14px] truncate">
             {headerLabel}

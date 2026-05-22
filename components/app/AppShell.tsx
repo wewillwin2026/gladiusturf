@@ -22,6 +22,7 @@ export function AppShell({
   flags = {},
   role,
   isFounder = false,
+  logoUrl = null,
   children,
 }: {
   product: ProductKind;
@@ -32,6 +33,9 @@ export function AppShell({
   /** Display name shown in the sidebar header. Tenants get their shop
    *  name; demo + founder default to the product label. */
   tenantName?: string | null;
+  /** Per-tenant logo URL (e.g. /tenant-logos/<slug>.png). When present
+   *  the Sidebar renders it in place of the letter mark. */
+  logoUrl?: string | null;
   /** Per-tenant feature flags. Tenant authed layouts pass tenant row
    *  derived flags here; demo + founders shells leave it as `{}`. */
   flags?: TenantFlags;
@@ -49,7 +53,7 @@ export function AppShell({
       <ThemeProvider>
         <CommandPaletteProvider>
           <TooltipProvider>
-            <Sidebar product={product} vertical={vertical} tenantName={tenantName} flags={flags} role={role ?? null} isFounder={isFounder} />
+            <Sidebar product={product} vertical={vertical} tenantName={tenantName} flags={flags} role={role ?? null} isFounder={isFounder} logoUrl={logoUrl} />
             <div className="flex-1 flex flex-col min-w-0">
               <Topbar product={product} user={user} logoutHref={logoutHref} vertical={vertical} tenantName={tenantName} flags={flags} role={role ?? null} isFounder={isFounder} />
               <main className="flex-1 px-6 py-6 max-w-[1480px] w-full mx-auto">

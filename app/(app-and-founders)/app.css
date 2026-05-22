@@ -4,25 +4,27 @@
  * Loaded once via the root layout's import.
  */
 
-/* Bourbon palette (2026-05-21) — warm cream + cocoa + copper.
- * Replaces the prior near-black operator theme. Fallback hex codes
- * preserved in memory/reference_gladiusturf_palette_options.md. */
+/* AUREUS NOIR · LIGHTER (2026-05-22) — tuxedo midnight blue + warm gold.
+ * Replaces Bourbon (rejected: too light/wrong direction). Matches the
+ * Elmer-aesthetic the founder confirmed. Bourbon hex + the 4 fallback
+ * palette hex tables preserved in
+ * memory/reference_gladiusturf_palette_options.md. */
 .gladius-app {
-  --g-bg: #FAF6EE;            /* cream canvas */
-  --g-surface: #FFFEFA;       /* paper-white cards */
-  --g-surface-2: #F4EDDF;     /* sand (sidebar, hovered chrome) */
-  --g-border: #E8DFCB;        /* sand edge */
-  --g-border-subtle: #F0E8D5; /* cream edge */
-  --g-text: #2C2620;          /* cocoa */
-  --g-text-muted: #6B6259;    /* stone */
-  --g-text-faint: #95897C;    /* smoke */
-  --g-accent: #B8651F;        /* copper */
-  --g-accent-hover: #9B5119;
-  --g-accent-faint: #F7E5D0;  /* amber wash */
-  --g-success: #5C7D3F;       /* moss (kept olive-leaning to harmonize) */
-  --g-warning: #B8843A;       /* honey */
-  --g-danger: #A8412F;        /* brick */
-  --g-info: #2563EB;
+  --g-bg: #142340;            /* lighter tuxedo navy base */
+  --g-surface: #22355C;       /* richer navy card */
+  --g-surface-2: #1A2A4A;     /* secondary surface (rails, hovered chrome) */
+  --g-border: #2D446C;        /* navy edge */
+  --g-border-subtle: #1F3258; /* subtle navy edge */
+  --g-text: #F2F4F7;          /* near-white */
+  --g-text-muted: #97A4BD;    /* slate-blue muted */
+  --g-text-faint: #6F7E97;    /* deeper slate */
+  --g-accent: #E0B450;        /* warm gold (the soul) */
+  --g-accent-hover: #C99C3E;
+  --g-accent-faint: #2A2417;  /* dark gold-tinted wash for active rows */
+  --g-success: #5FD17C;       /* mossy green */
+  --g-warning: #E89A4C;       /* honey-orange */
+  --g-danger: #DC3545;        /* clean red */
+  --g-info: #2D7AFF;          /* electric blue */
 
   background: var(--g-bg);
   color: var(--g-text);
@@ -34,23 +36,25 @@
   font-feature-settings: "ss01", "cv11";
 }
 
-/* Light-mode override kept as alias — both surfaces now use Bourbon. */
+/* Light-mode token alias kept for [data-theme="light"] — both
+ * surfaces use Aureus. No light mode for the tenant CRM anymore;
+ * the founder picked dark-premium across the board. */
 .gladius-app[data-theme="light"] {
-  --g-bg: #FAF6EE;
-  --g-surface: #FFFEFA;
-  --g-surface-2: #F4EDDF;
-  --g-border: #E8DFCB;
-  --g-border-subtle: #F0E8D5;
-  --g-text: #2C2620;
-  --g-text-muted: #6B6259;
-  --g-text-faint: #95897C;
-  --g-accent: #B8651F;
-  --g-accent-hover: #9B5119;
-  --g-accent-faint: #F7E5D0;
-  --g-success: #5C7D3F;
-  --g-warning: #B8843A;
-  --g-danger: #A8412F;
-  --g-info: #2563EB;
+  --g-bg: #142340;
+  --g-surface: #22355C;
+  --g-surface-2: #1A2A4A;
+  --g-border: #2D446C;
+  --g-border-subtle: #1F3258;
+  --g-text: #F2F4F7;
+  --g-text-muted: #97A4BD;
+  --g-text-faint: #6F7E97;
+  --g-accent: #E0B450;
+  --g-accent-hover: #C99C3E;
+  --g-accent-faint: #2A2417;
+  --g-success: #5FD17C;
+  --g-warning: #E89A4C;
+  --g-danger: #DC3545;
+  --g-info: #2D7AFF;
 }
 
 .gladius-app .mono,
