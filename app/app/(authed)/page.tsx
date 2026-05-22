@@ -3,7 +3,11 @@ import { TenantOnboardingHero } from "@/components/app/TenantOnboardingHero";
 import { OnboardingChecklist } from "@/components/app/OnboardingChecklist";
 import { StormRadarTile } from "@/components/app/StormRadarTile";
 import { TenantTrendsCard } from "@/components/app/TenantTrendsCard";
-import { MarketingTrafficCard } from "@/components/app/MarketingTrafficCard";
+import { ConversionFunnelCard } from "@/components/app/ConversionFunnelCard";
+import { RetentionRiskCard } from "@/components/app/RetentionRiskCard";
+import { ProfitMarginCard } from "@/components/app/ProfitMarginCard";
+// MarketingTrafficCard dropped 2026-05-22 per founder ask ("Felipe
+// doesn't need anything related to marketing").
 import {
   OwnersDailyOneLiner,
   pickNextMove,
@@ -389,78 +393,37 @@ export default async function AppHomePage() {
         : last30Reviews.reduce((s, r) => s + (r.rating ?? 0), 0) /
           last30Reviews.length;
 
-    // ---- Marketing traffic summary — 7d vs prior 7d ----
-    const sevenDaysAgoIso = new Date(
-      now.getTime() - 7 * 24 * 60 * 60 * 1000,
-    ).toISOString();
-    const fourteenDaysAgoIso = new Date(
-      now.getTime() - 14 * 24 * 60 * 60 * 1000,
-    ).toISOString();
-
-    const [
-      webSessionsLast7Res,
-      webSessionsPrior7Res,
-      webSessionsLast7AggRes,
-    ] = await Promise.all([
-      sb
-        .from("web_sessions")
-        .select("id", { count: "exact", head: true })
+    // ---- Retention risk — customers with no visit in 90+ days ----
+    // Two-step: pull the customer ids that DO have a recent visit, then
+    // count customers whose id is NOT in that set. Cheap with the
+    // current schema (schedule_items has tenant_id + customer_id).
+    // Reuses `ninetyDaysAgoIso` already declared at the top of this
+    // tenant branch (don't redeclare — same window).
+    let atRiskCount = 0;
+    let atRiskPotentialCents = 0;
+    try {
+      const recentVisitsRes = await sb
+        .from("schedule_items")
+        .select("customer_id")
         .eq("tenant_id", session.tenant.id)
-        .gte("last_seen_at", sevenDaysAgoIso),
-      sb
-        .from("web_sessions")
-        .select("id", { count: "exact", head: true })
-        .eq("tenant_id", session.tenant.id)
-        .gte("last_seen_at", fourteenDaysAgoIso)
-        .lt("last_seen_at", sevenDaysAgoIso),
-      sb
-        .from("web_sessions")
-        .select("utm_source, form_start_count, form_submit_count, referrer")
-        .eq("tenant_id", session.tenant.id)
-        .gte("last_seen_at", sevenDaysAgoIso),
-    ]);
-
-    const last7Sessions = (webSessionsLast7AggRes.data ?? []) as Array<{
-      utm_source: string | null;
-      form_start_count: number;
-      form_submit_count: number;
-      referrer: string | null;
-    }>;
-    const formStartsLast7 = last7Sessions.reduce(
-      (s, r) => s + (r.form_start_count ?? 0),
-      0,
-    );
-    const formSubmitsLast7 = last7Sessions.reduce(
-      (s, r) => s + (r.form_submit_count ?? 0),
-      0,
-    );
-    const sourceCounts = new Map<string, number>();
-    for (const s of last7Sessions) {
-      const key =
-        s.utm_source?.trim() ||
-        (s.referrer
-          ? (() => {
-              try {
-                return new URL(s.referrer).hostname;
-              } catch {
-                return "direct";
-              }
-            })()
-          : "direct");
-      sourceCounts.set(key, (sourceCounts.get(key) ?? 0) + 1);
+        .gte("starts_at", ninetyDaysAgoIso)
+        .not("customer_id", "is", null);
+      const visitedIds = new Set<string>(
+        (recentVisitsRes.data ?? [])
+          .map((r) => (r as { customer_id: string | null }).customer_id)
+          .filter((v): v is string => !!v),
+      );
+      // Customers with NO row in visitedIds are at risk. We already
+      // have the full customer list above (customers / customerCount).
+      const allCustomerIds = customers.map((c) => (c as { id: string }).id);
+      const atRiskIds = allCustomerIds.filter((id) => !visitedIds.has(id));
+      atRiskCount = atRiskIds.length;
+      // Estimate winback potential as $350 per at-risk customer (cheap
+      // average ticket; refined once invoice-history exists per customer).
+      atRiskPotentialCents = atRiskCount * 35000;
+    } catch {
+      // schedule_items may be empty or missing; non-fatal.
     }
-    const topSources = Array.from(sourceCounts.entries())
-      .map(([source, count]) => ({ source, count }))
-      .sort((a, b) => b.count - a.count);
-
-    const marketingSummary = {
-      visitorsLast7: webSessionsLast7Res.count ?? 0,
-      visitorsPrior7: webSessionsPrior7Res.count ?? 0,
-      formStartsLast7,
-      formSubmitsLast7,
-      topSources,
-      tabEnabled: !!session.tenant.marketing_tab_enabled,
-    };
 
     const trends = [
       {
@@ -529,7 +492,36 @@ export default async function AppHomePage() {
           funnel={{ sent: 0, viewed: 0, won: 0, scheduled: 0 }}
         />
         <TenantTrendsCard trends={trends} />
-        <MarketingTrafficCard summary={marketingSummary} />
+
+        {/* Conversion funnel — single-glance "where is the leak" view. */}
+        <ConversionFunnelCard
+          sent={quotesSentLast30Res.count ?? 0}
+          viewed={inFlightQuotesCount}
+          won={last30PaidRows.length}
+          openCents={proposals
+            .filter((p) => p.status === "sent" || p.status === "viewed")
+            .reduce(
+              (s, p) =>
+                s + ((p as unknown as { total_cents?: number }).total_cents ?? 0),
+              0,
+            )}
+          windowDays={30}
+        />
+
+        {/* Insight pair — proactive AI: retention risk + profit pulse.
+            Sits below the funnel so the eye reads:
+              today → trends → funnel → risks/profit. */}
+        <section className="grid gap-3 lg:grid-cols-2">
+          <RetentionRiskCard
+            atRiskCount={atRiskCount}
+            potentialCents={atRiskPotentialCents}
+            totalCustomers={customerCount}
+          />
+          <ProfitMarginCard
+            revenueCents={last30RevenueCents}
+            priorRevenueCents={prior30RevenueCents}
+          />
+        </section>
       </div>
     );
   }
