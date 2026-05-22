@@ -32,8 +32,31 @@ export const ROLE_RANK: Record<TenantRole, number> = {
   owner: 4,
 };
 
-/** Engines only a founder (not any tenant role) may see. */
-export const FOUNDER_ONLY_ENGINES = new Set<string>(["api", "integrations"]);
+/**
+ * Engines only a founder may see/reach. Combines:
+ *   1. Hidden from the /app sidebar entirely (TENANT_HIDDEN_SLUGS filter
+ *      in enginesForTenant — even founders impersonating don't see them
+ *      in the tenant nav, since they live on /founders/war-room).
+ *   2. Blocked at the layout level for non-founders via isAppPathAllowed
+ *      → canAccessEngine → FOUNDER_ONLY_ENGINES check. A tenant typing
+ *      /app/analytics in the URL bar gets redirected to /app.
+ * Founders themselves can still reach these URLs directly when needed.
+ *
+ * Founder ask 2026-05-22: "Bright Lights doesn't need to see any of
+ * that — just us in the founders page."
+ */
+export const FOUNDER_ONLY_ENGINES = new Set<string>([
+  "api",
+  "integrations",
+  "analytics",
+  "trust",
+  "changelog",
+]);
+
+/** Sidebar-only filter — same set today, kept as a separate name for
+ *  forward flexibility (if we ever want something HIDDEN-but-tenant-
+ *  reachable or FOUNDER-only-but-shown-in-sidebar). */
+export const TENANT_HIDDEN_SLUGS = FOUNDER_ONLY_ENGINES;
 
 /**
  * Minimum tenant role to SEE an engine in the sidebar / reach its page.

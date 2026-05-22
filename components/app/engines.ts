@@ -65,7 +65,7 @@ import {
 } from "lucide-react";
 
 import type { TenantRole } from "@/lib/app/tenant-auth";
-import { canAccessEngine } from "@/lib/app/access";
+import { canAccessEngine, TENANT_HIDDEN_SLUGS } from "@/lib/app/access";
 
 // Re-export TenantRole so components can import it from a single place.
 export type { TenantRole } from "@/lib/app/tenant-auth";
@@ -229,9 +229,9 @@ export function enginesForVertical(vertical: string | null): Engine[] {
  * Apply vertical, per-tenant feature-flag, and RBAC filtering.
  *
  * - `role = null` (demo / founders-full shell) skips the role gate.
- * - `isFounder` lets a founder (Ricardo/Josh) see the founder-only
- *   engines (api, integrations) when impersonating a tenant, even
- *   though the tenant "owner" role itself never sees them.
+ * - `TENANT_HIDDEN_SLUGS` are hidden from /app entirely — even for
+ *   founders impersonating. Those tools live on /founders/war-room.
+ *   The URLs still resolve; only the sidebar entry is hidden.
  * The role→engine matrix lives in lib/app/access.ts (single source).
  */
 export function enginesForTenant(
@@ -242,6 +242,8 @@ export function enginesForTenant(
 ): Engine[] {
   const base = enginesForVertical(vertical);
   return base.filter((e) => {
+    // Founder-only-tools gate — never in /app sidebar regardless of role.
+    if (TENANT_HIDDEN_SLUGS.has(e.slug)) return false;
     // Feature-flag gate (e.g. marketing tab).
     if (e.featureFlag && flags[e.featureFlag] !== true) return false;
     // RBAC gate (founder-only engines + per-role minimum).

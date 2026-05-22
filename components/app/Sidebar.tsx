@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronRight, Radar } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import {
   ENGINES,
   ENGINE_GROUPS,
@@ -194,28 +194,16 @@ export function Sidebar({
         />
       )}
 
-      {/* Discreet Founders Portal door — only rendered for the founder
-          allow-list (Ricardo/Josh), and never when already inside the
-          founders shell. Absent from the DOM for tenants entirely, so
-          Felipe (or any future paying owner) never sees it. Mirrors the
-          gladiuscrm.com sidebar-footer pattern: muted, Radar icon, one
-          click to the War Room. */}
-      {isFounder && product !== "founders" && (
-        <Link
-          href="/founders/war-room"
-          prefetch={false}
-          onClick={onNavigate}
-          title="Cross-tenant operator's bridge. Founders only."
-          className="flex items-center gap-2 mt-2 px-2 py-1.5 rounded-md text-[12px] text-g-text-faint hover:text-g-accent hover:bg-g-surface-2 transition-colors border-t border-g-border-subtle pt-2"
-        >
-          <Radar className="h-3.5 w-3.5 shrink-0" />
-          <span className="truncate">Founders Portal</span>
-        </Link>
+      {/* Founders Portal door + version watermark removed from the
+          tenant sidebar 2026-05-22 per founder ask. Founders navigate
+          to /founders/war-room directly (typed URL or bookmark). The
+          founders shell renders its own version watermark inside its
+          own SECRET_TABS block. */}
+      {product === "founders" && (
+        <div className="px-2 pt-2 pb-1 text-[10px] font-geist-mono text-g-text-faint border-t border-g-border-subtle">
+          {buildVersion()}
+        </div>
       )}
-
-      <div className="px-2 pt-2 pb-1 text-[10px] font-geist-mono text-g-text-faint border-t border-g-border-subtle">
-        {buildVersion()}
-      </div>
     </nav>
   );
 }

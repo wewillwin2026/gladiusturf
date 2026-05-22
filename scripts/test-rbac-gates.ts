@@ -35,11 +35,17 @@ for (const s of ["today", "customers", "leads", "quotes", "crew", "pricing", "in
 check("owner: NO 'api' (founder-only)", !owner.has("api"));
 check("owner: NO 'integrations' (founder-only)", !owner.has("integrations"));
 
-console.log("Founder god-mode (owner role + isFounder) — sees everything");
+console.log("Founder impersonating — clean tenant sidebar (no founder tools)");
+// 2026-05-22: founder ask — Bright Lights doesn't need analytics/trust/
+// integrations/api/changelog in the /app sidebar. Those tools live on
+// /founders/war-room; founders reach them by direct URL when needed.
 const god = slugs("owner", true);
-check("founder: HAS 'api'", god.has("api"));
-check("founder: HAS 'integrations'", god.has("integrations"));
-check("founder: HAS 'settings'", god.has("settings"));
+check("founder impersonating: NO 'api' in /app sidebar (war-room only)", !god.has("api"));
+check("founder impersonating: NO 'integrations' in /app sidebar", !god.has("integrations"));
+check("founder impersonating: NO 'analytics' in /app sidebar", !god.has("analytics"));
+check("founder impersonating: NO 'trust' in /app sidebar", !god.has("trust"));
+check("founder impersonating: NO 'changelog' in /app sidebar", !god.has("changelog"));
+check("founder impersonating: HAS 'settings'", god.has("settings"));
 
 console.log("Manager (admin) — money/reports yes, Settings/Team no");
 const mgr = slugs("admin");
@@ -75,7 +81,11 @@ check("admin BLOCKED from /app/settings (owner-only)", !isAppPathAllowed("/app/s
 check("admin ALLOWED /app/invoices", isAppPathAllowed("/app/invoices", "admin", false));
 check("owner(Felipe) ALLOWED /app/settings", isAppPathAllowed("/app/settings", "owner", false));
 check("owner(Felipe) BLOCKED /app/api (founder-only)", !isAppPathAllowed("/app/api", "owner", false));
+check("owner(Felipe) BLOCKED /app/analytics (founder-only)", !isAppPathAllowed("/app/analytics", "owner", false));
+check("owner(Felipe) BLOCKED /app/trust (founder-only)", !isAppPathAllowed("/app/trust", "owner", false));
+check("owner(Felipe) BLOCKED /app/changelog (founder-only)", !isAppPathAllowed("/app/changelog", "owner", false));
 check("founder god-mode ALLOWED /app/api", isAppPathAllowed("/app/api", "owner", true));
+check("founder god-mode ALLOWED /app/analytics", isAppPathAllowed("/app/analytics", "owner", true));
 check("viewer ALLOWED /app (dashboard) — no redirect loop", isAppPathAllowed("/app", "viewer", false));
 check("viewer ALLOWED /app/customers/new (sub-path)", isAppPathAllowed("/app/customers/new", "viewer", false));
 check("viewer ALLOWED /app/account/security (non-engine)", isAppPathAllowed("/app/account/security", "viewer", false));
