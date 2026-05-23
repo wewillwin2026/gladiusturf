@@ -103,18 +103,24 @@ export function Sidebar({
           href={base}
           prefetch
           onClick={onNavigate}
-          className="group block px-1 py-1.5 rounded-md hover:bg-g-surface-2 transition-colors"
+          className="group block px-1 py-2 rounded-md hover:bg-g-surface-2 transition-colors"
         >
-          <span className="block w-full rounded-md bg-white px-3 py-2.5 border border-g-accent/40 shadow-[0_2px_8px_rgba(0,0,0,0.25)]">
-            {/* Plain <img> — file ships from /public; bypass next/image. */}
+          {/* No white box, no border, no shadow — the logo is gold-on-black
+              by design (see public/tenant-logos/bright-lights-encina.png).
+              mix-blend-mode:lighten drops the black background against the
+              navy sidebar — pure gold lines float on the sidebar, no card
+              outline. Size is generous (≈140 px tall cap) so the 500px
+              source still renders at ~2x retina density. */}
+          <span className="block w-full">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={logoUrl}
               alt={tenantName ?? "Tenant logo"}
-              className="block w-full h-auto max-h-14 object-contain"
+              className="block mx-auto h-auto w-full max-w-[180px] max-h-36 object-contain"
+              style={{ mixBlendMode: "lighten" }}
             />
           </span>
-          <span className="mt-2 flex items-center justify-center gap-1.5 text-[10px] uppercase tracking-[0.14em] text-g-accent">
+          <span className="mt-1 flex items-center justify-center gap-1.5 text-[10px] uppercase tracking-[0.14em] text-g-accent">
             <span className="inline-flex h-1.5 w-1.5 rounded-full bg-g-success" />
             {product === "demo"
               ? "Demo"
