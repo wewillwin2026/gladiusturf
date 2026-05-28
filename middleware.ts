@@ -1,7 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { defenseWire } from "@/lib/defense/wire";
 
 /**
  * Lightweight middleware:
+ *   0. AWAIS Defense per-request wire — per-request bot scoring + kill-chain
+ *      detection on public marketing routes. /app/** (tenant CRM) is skipped
+ *      so the defense layer never blocks authenticated tenants.
  *   1. Permanent redirect /preview/* → /app/* (24h+ grace for the URLs we
  *      shipped this morning).
  *   2. Optional cookie pre-check on /app/** and /founders/war-room/** so
@@ -14,6 +18,21 @@ import { NextResponse, type NextRequest } from "next/server";
  */
 export function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
+
+  // 0. AWAIS Defense — runs first on public routes only. Authenticated
+  //    tenant routes (/app/**) bypass defense entirely so a legitimate
+  //    crew lead never sees a 403 from a kill-chain false-positive.
+  //    FLAG verdicts attach `x-gx-flag` to the downstream response.
+  let flagReason: string | null = null;
+  if (!pathname.startsWith("/app")) {
+    const verdict = defenseWire(req, pathname);
+    if (verdict.kind === "BLOCK") {
+      return verdict.response;
+    }
+    if (verdict.kind === "FLAG") {
+      flagReason = verdict.reason.slice(0, 200);
+    }
+  }
 
   // 1. /preview/* → /app/*. The old /preview shipped /preview/engines/[slug]
   //    drill-ins that don't exist in /app anymore; redirect those to the
@@ -96,20 +115,23 @@ export function middleware(req: NextRequest) {
   void search;
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set("x-gt-path", pathname);
-  return NextResponse.next({ request: { headers: requestHeaders } });
+  if (flagReason) {
+    requestHeaders.set("x-gx-flag", flagReason);
+  }
+  const res = NextResponse.next({ request: { headers: requestHeaders } });
+  if (flagReason) {
+    res.headers.set("x-gx-flag", flagReason);
+  }
+  return res;
 }
 
 export const config = {
+  // Run on every path EXCEPT Next internals + static assets. Defense
+  // needs to see public marketing routes (/, /lighting, /demo/*, etc.)
+  // so kill-chain + bot scoring can fire on the surface attackers
+  // actually hit. The internal cookie gates (/app, /founders/war-room,
+  // /demo/bright-lights-encina) still trigger from this matcher.
   matcher: [
-    "/preview",
-    "/preview/:path*",
-    "/app",
-    "/app/:path*",
-    "/founders/war-room",
-    "/founders/war-room/:path*",
-    "/demo/sample-lighting-co",
-    "/demo/sample-lighting-co/:path*",
-    "/demo/bright-lights-encina",
-    "/demo/bright-lights-encina/:path*",
+    "/((?!_next/static|_next/image|favicon\\.ico|robots\\.txt|sitemap\\.xml|.*\\.(?:png|jpg|jpeg|gif|webp|svg|ico|css|js(?!on)|map|woff|woff2|ttf|eot)).*)",
   ],
 };
