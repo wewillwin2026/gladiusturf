@@ -6,6 +6,7 @@ import { GeistMono } from "geist/font/mono";
 import { StickyCtaBar } from "@/components/sticky-cta-bar";
 import { TrackingScript } from "@/components/tracking-script";
 import { UtmCapture } from "@/components/utm-capture";
+import { MktBeacon } from "@/components/mkt-beacon";
 import "./globals.css";
 import "./(app-and-founders)/app.css";
 
@@ -79,6 +80,7 @@ export default function RootLayout({
         <StickyCtaBar />
         <TrackingScript />
         <UtmCapture />
+        <MktBeacon />
         {process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN && (
           <Script
             src="https://plausible.io/js/script.tagged-events.js"
