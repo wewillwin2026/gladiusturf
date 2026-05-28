@@ -23,13 +23,18 @@ const CSP = [
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self' https://hooks.stripe.com",
-  "frame-ancestors 'none'",
+  // Allow embedding by the Ecosystem HQ (founders portal at gladiuscrm.com)
+  // for the Verticals tab's live-preview iframes. Everywhere else is locked.
+  "frame-ancestors 'self' https://gladiuscrm.com https://www.gladiuscrm.com",
   "upgrade-insecure-requests",
 ].join("; ");
 
 const SECURITY_HEADERS = [
   { key: "Content-Security-Policy", value: CSP },
-  { key: "X-Frame-Options", value: "DENY" },
+  // SAMEORIGIN (not DENY) so CSP frame-ancestors can layer in the HQ
+  // exception. Modern browsers prefer CSP frame-ancestors; X-Frame-Options
+  // is the legacy fallback.
+  { key: "X-Frame-Options", value: "SAMEORIGIN" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   {
