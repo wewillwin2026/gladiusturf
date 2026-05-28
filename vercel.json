@@ -5,6 +5,11 @@
     { "path": "/api/cron/inventory-aging", "schedule": "0 12 * * 1" },
     { "path": "/api/cron/transparency-snapshot", "schedule": "30 0 * * *" },
     { "path": "/api/cron/auto-review-ask", "schedule": "0 14 * * *" },
-    { "path": "/api/cron/owners-daily-briefing", "schedule": "0 11 * * *" }
+    { "path": "/api/cron/owners-daily-briefing", "schedule": "0 11 * * *" },
+    { "path": "/api/cron/sentinel-critical-flows", "schedule": "* * * * *" },
+    { "path": "/api/cron/sentinel-schema-drift", "schedule": "0 4 * * *" },
+    { "path": "/api/cron/sentinel-tenant-isolation", "schedule": "30 4 * * *" },
+    { "path": "/api/cron/sentinel-iq-recompute", "schedule": "0 6 * * *" },
+    { "path": "/api/cron/sentinel-federation-drain", "schedule": "0 * * * *" }
   ]
 }
