@@ -10,6 +10,7 @@
     { "path": "/api/cron/sentinel-schema-drift", "schedule": "0 4 * * *" },
     { "path": "/api/cron/sentinel-tenant-isolation", "schedule": "30 4 * * *" },
     { "path": "/api/cron/sentinel-iq-recompute", "schedule": "0 6 * * *" },
-    { "path": "/api/cron/sentinel-federation-drain", "schedule": "0 * * * *" }
+    { "path": "/api/cron/sentinel-federation-drain", "schedule": "0 * * * *" },
+    { "path": "/api/cron/mesh-broadcast", "schedule": "* * * * *" }
   ]
 }
