@@ -31,6 +31,8 @@ const RESOURCES_LINKS = [
   { href: "/compare", label: "Compare" },
   { href: "/integrations", label: "Integrations" },
   { href: "/security", label: "Security" },
+  { href: "/changelog", label: "Changelog" },
+  { href: "/awais/mesh", label: "AWAIS Mesh" },
   { href: "/manifesto", label: "Manifesto" },
 ];
 

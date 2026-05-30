@@ -19,6 +19,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/platform",
     "/integrations",
     "/security",
+    "/changelog",
+    "/awais/mesh",
     "/field",
     "/score",
     "/portal",
