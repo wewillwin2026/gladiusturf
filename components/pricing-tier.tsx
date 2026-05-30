@@ -35,14 +35,14 @@ export function PricingTier({
       )}
     >
       {tier.featured && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-lime-bright px-3 py-1 text-[10px] font-bold uppercase tracking-crest text-forest">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-lime-bright px-3 py-1 text-[12px] font-bold uppercase tracking-crest text-forest">
           Most popular
         </div>
       )}
 
       <p
         className={cn(
-          "text-[11px] font-semibold uppercase tracking-crest",
+          "text-[13px] font-semibold uppercase tracking-crest",
           tier.featured ? "text-moss-bright" : "text-champagne-bright"
         )}
       >

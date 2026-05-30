@@ -135,17 +135,99 @@
       opacity: 0;
     }
   }
-  @keyframes gt-loop-typewriter {
+  /* Energy-core reveal (replaces the prior gt-loop-typewriter character-
+     by-character effect 2026-05-30). The AI-drafted line emerges from
+     blur+scale with a champagne glow; concentric moss/champagne rings
+     pulse outward from the card center; the core radial halo breathes
+     in sync. All three keyframes are scoped to scene 2's 8s slot
+     (25%-53%) so the rest of the loop is untouched. */
+  @keyframes gt-loop-reveal {
     0%,
     25% {
-      width: 0;
+      opacity: 0;
+      transform: scale(0.7);
+      filter: blur(14px);
+      text-shadow:
+        0 0 0 rgba(157, 255, 138, 0),
+        0 0 0 rgba(212, 178, 122, 0);
+    }
+    34% {
+      opacity: 1;
+      transform: scale(1);
+      filter: blur(0);
+      text-shadow:
+        0 0 18px rgba(157, 255, 138, 0.55),
+        0 0 40px rgba(212, 178, 122, 0.3);
     }
     47% {
-      width: 100%;
+      opacity: 1;
+      filter: blur(0);
+      text-shadow:
+        0 0 12px rgba(157, 255, 138, 0.35),
+        0 0 28px rgba(212, 178, 122, 0.2);
     }
     53%,
     100% {
-      width: 100%;
+      opacity: 0;
+      filter: blur(0);
+      text-shadow: none;
+    }
+  }
+  @keyframes gt-loop-ring {
+    0%,
+    25% {
+      transform: translate(-50%, -50%) scale(0.4);
+      opacity: 0;
+    }
+    32% {
+      opacity: 1;
+    }
+    47% {
+      transform: translate(-50%, -50%) scale(4.2);
+      opacity: 0;
+    }
+    53%,
+    100% {
+      transform: translate(-50%, -50%) scale(4.2);
+      opacity: 0;
+    }
+  }
+  @keyframes gt-loop-ring-2 {
+    0%,
+    28% {
+      transform: translate(-50%, -50%) scale(0.4);
+      opacity: 0;
+    }
+    35% {
+      opacity: 1;
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(5);
+      opacity: 0;
+    }
+    53%,
+    100% {
+      transform: translate(-50%, -50%) scale(5);
+      opacity: 0;
+    }
+  }
+  @keyframes gt-loop-core {
+    0%,
+    25% {
+      transform: translate(-50%, -50%) scale(0.4);
+      opacity: 0;
+    }
+    35% {
+      transform: translate(-50%, -50%) scale(1.05);
+      opacity: 1;
+    }
+    47% {
+      transform: translate(-50%, -50%) scale(0.95);
+      opacity: 0.75;
+    }
+    53%,
+    100% {
+      opacity: 0;
     }
   }
   .gt-loop-1 {
@@ -160,22 +242,37 @@
   .gt-loop-4 {
     animation: gt-loop-4 8s ease-in-out infinite;
   }
-  .gt-loop-typewriter {
-    animation: gt-loop-typewriter 8s steps(40, end) infinite;
-    white-space: nowrap;
-    overflow: hidden;
+  .gt-loop-reveal {
+    animation: gt-loop-reveal 8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
     display: inline-block;
+  }
+  .gt-loop-ring {
+    animation: gt-loop-ring 8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+  .gt-loop-ring-2 {
+    animation: gt-loop-ring-2 8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+  .gt-loop-core {
+    animation: gt-loop-core 8s ease-in-out infinite;
   }
   @media (prefers-reduced-motion: reduce) {
     .gt-loop-1,
     .gt-loop-2,
     .gt-loop-3,
     .gt-loop-4,
-    .gt-loop-typewriter {
+    .gt-loop-reveal,
+    .gt-loop-ring,
+    .gt-loop-ring-2,
+    .gt-loop-core {
       animation: none;
     }
     .gt-loop-1 {
       opacity: 1;
+    }
+    .gt-loop-ring,
+    .gt-loop-ring-2,
+    .gt-loop-core {
+      opacity: 0;
     }
   }
 }

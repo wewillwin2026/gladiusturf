@@ -19,10 +19,12 @@ export function Pill({ children, className, tone = "champagne" }: PillProps) {
       : tone === "moss"
         ? "border-moss/30 bg-moss/5 text-moss-bright"
         : "border-champagne/30 bg-champagne/5 text-champagne-bright";
+  // 2026-05-30: bumped from text-xs (12px) → text-[13px] per founder ask
+  // to fix cramped category pills site-wide. Tracking unchanged.
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium tracking-crest",
+        "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[13px] font-medium tracking-crest",
         toneCls,
         className
       )}

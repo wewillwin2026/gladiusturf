@@ -120,7 +120,7 @@ export function SocialProofStrip() {
                   </div>
                 ))}
               </div>
-              <p className="mt-auto border-t border-bone/10 pt-3 text-[11px] leading-relaxed text-bone/70">
+              <p className="mt-auto border-t border-bone/10 pt-3 text-[13px] leading-relaxed text-bone/75">
                 We&rsquo;ll tell you the honest count over a dressed-up
                 customer list. That doesn&rsquo;t change in month two.
               </p>

@@ -25,10 +25,12 @@ export function Eyebrow({
         : tone === "moss"
           ? "text-moss-bright"
           : "text-champagne-bright";
+  // 2026-05-30: bumped from text-xs (12px) → text-[13px] per founder ask
+  // to fix cramped eyebrows site-wide. Tracking unchanged.
   return (
     <p
       className={cn(
-        "text-xs font-semibold uppercase tracking-crest",
+        "text-[13px] font-semibold uppercase tracking-crest",
         toneCls,
         className
       )}

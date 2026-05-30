@@ -67,7 +67,7 @@ function Column({
 }) {
   return (
     <div>
-      <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-bone/65">
+      <h4 className="text-[13px] font-semibold uppercase tracking-[0.2em] text-bone/70">
         {title}
       </h4>
       <ul className="mt-5 flex flex-col gap-3 text-[14px]">
@@ -102,12 +102,12 @@ export function Footer() {
         <div className="grid grid-cols-2 gap-x-8 gap-y-12 md:grid-cols-8">
           <div className="col-span-2 md:col-span-2">
             <LogoMark size={56} theme="dark" tone="bone" withWordmark />
-            <p className="mt-6 max-w-xs text-[13px] leading-[1.6] text-bone/75">
+            <p className="mt-6 max-w-xs text-[14px] leading-[1.6] text-bone/75">
               All-in-one software for landscape companies. Answers the
               phones, sends the quotes, dispatches the crews, and chases the
               invoices — so you can run the business.
             </p>
-            <div className="mt-6 flex items-center gap-4 text-[12px] text-bone/65">
+            <div className="mt-6 flex items-center gap-4 text-[13px] text-bone/70">
               <a
                 href="https://x.com/gladiusturf"
                 aria-label="GladiusTurf on X"
@@ -159,10 +159,10 @@ export function Footer() {
 
         <div className="mt-16 flex flex-col gap-4 border-t border-bone/10 pt-10 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-6">
-            <p className="text-[12px] text-bone/70">
+            <p className="text-[13px] text-bone/75">
               © {new Date().getFullYear()} Gladius Inc. · Built for crew owners.
             </p>
-            <ul className="flex items-center gap-4 text-[12px] text-bone/70">
+            <ul className="flex items-center gap-4 text-[13px] text-bone/75">
               {LEGAL_LINKS.map((l) => (
                 <li key={l.href}>
                   <a

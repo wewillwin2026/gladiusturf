@@ -42,7 +42,7 @@ export function SignInDropdown() {
             "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
           )}
         >
-          <DropdownMenu.Label className="px-3 pb-2 pt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-bone/45">
+          <DropdownMenu.Label className="px-3 pb-2 pt-1 text-[12px] font-semibold uppercase tracking-[0.18em] text-bone/60">
             Pick your vertical
           </DropdownMenu.Label>
 
@@ -52,7 +52,7 @@ export function SignInDropdown() {
 
           <DropdownMenu.Separator className="mx-2 my-1 h-px bg-bone/10" />
 
-          <p className="px-3 py-2 text-[11px] leading-relaxed text-bone/45">
+          <p className="px-3 py-2 text-[13px] leading-relaxed text-bone/60">
             Real customer? Pick the live vertical above. New here?{" "}
             <Link
               href="/demo"
@@ -99,12 +99,12 @@ function SignInItem({ vertical }: { vertical: VerticalDef }) {
         </span>
 
         {isLive ? (
-          <span className="inline-flex items-center gap-1 rounded-full border border-honey-bright/40 bg-honey/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-honey-bright">
+          <span className="inline-flex items-center gap-1 rounded-full border border-honey-bright/40 bg-honey/10 px-2 py-0.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-honey-bright">
             Live · Sign in
             <ArrowRight className="h-2.5 w-2.5" aria-hidden />
           </span>
         ) : (
-          <span className="rounded-full border border-bone/15 bg-bone/[0.04] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-bone/55">
+          <span className="rounded-full border border-bone/15 bg-bone/[0.04] px-2 py-0.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-bone/55">
             Waitlist
           </span>
         )}

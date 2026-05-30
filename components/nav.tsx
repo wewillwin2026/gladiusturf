@@ -156,7 +156,7 @@ export function Nav() {
                   Live verticals route to /app/login (magic-link form);
                   waitlist verticals route to their /<vertical> page. */}
               <div className="mb-8">
-                <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-bone/40">
+                <h4 className="text-[13px] font-semibold uppercase tracking-[0.2em] text-bone/55">
                   Sign in to your workspace
                 </h4>
                 <ul className="mt-4 flex flex-col gap-3 text-base">
@@ -182,11 +182,11 @@ export function Nav() {
                             {v.name}
                           </span>
                           {isLive ? (
-                            <span className="rounded-full border border-honey-bright/40 bg-honey/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-honey-bright">
+                            <span className="rounded-full border border-honey-bright/40 bg-honey/10 px-2 py-0.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-honey-bright">
                               Live · Sign in
                             </span>
                           ) : (
-                            <span className="rounded-full border border-bone/15 bg-bone/[0.04] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-bone/55">
+                            <span className="rounded-full border border-bone/15 bg-bone/[0.04] px-2 py-0.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-bone/65">
                               Waitlist
                             </span>
                           )}
@@ -199,7 +199,7 @@ export function Nav() {
 
               {MOBILE_SECTIONS.map((section) => (
                 <div key={section.title} className="mb-8">
-                  <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-bone/55">
+                  <h4 className="text-[13px] font-semibold uppercase tracking-[0.2em] text-bone/65">
                     {section.title}
                   </h4>
                   <ul className="mt-4 flex flex-col gap-3 text-base">
