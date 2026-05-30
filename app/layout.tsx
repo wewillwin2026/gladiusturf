@@ -88,6 +88,11 @@ export default function RootLayout({
             strategy="afterInteractive"
           />
         )}
+        <Script
+          src="https://gladiusbdc.com/api/onyx/pulse/embed.js"
+          strategy="afterInteractive"
+          data-onyx-pulse-tenant="gladiusturf"
+        />
       </body>
     </html>
   );
