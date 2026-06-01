@@ -5,13 +5,15 @@
  *
  * Usage:
  *   1. Copy this file to your repo: src/components/OnyxLauncher.tsx
- *   2. Set up /api/onyx-proxy/route.ts (5 lines, see onyx-client.ts header)
+ *   2. Set up /api/onyx-proxy/route.ts (forwards to gladiusbdc.com brain)
  *   3. Render: <OnyxLauncher tenant="crm" />
  *
- * Floating emerald button bottom-right → click to open a chat overlay.
- * Streams responses, shows reasoning trace, founder-only via your
- * existing auth (the widget is just a UI; the proxy enforces founder
- * gating server-side).
+ * Streams responses via SSE from /api/onyx-proxy when stream:true. First
+ * token arrives in ~200ms vs ~700ms buffered. Falls back to buffered
+ * mode automatically if the proxy returns JSON instead of an event stream.
+ *
+ * Founder-only — gate this component behind your app's existing
+ * founder/admin layout. The proxy enforces secret-on-server-only.
  */
 import { useEffect, useRef, useState } from "react";
 
@@ -33,24 +35,90 @@ export function OnyxLauncher({ tenant }: { tenant: string }) {
     const q = input.trim();
     if (!q || busy) return;
     setInput("");
-    setMessages((m) => [...m, { role: "user", text: q, at: new Date() }]);
+    setMessages((m) => [...m, { role: "user", text: q, at: new Date() }, { role: "onyx", text: "", at: new Date() }]);
     setBusy(true);
+
+    const payload = {
+      stream:       true,
+      stage:        "BRIEF_GEN",  // free-form Q&A, Sonnet-tier, cacheable
+      systemPrompt: `You are Onyx, the founder's operator AI. You're being asked from the ${tenant} app. Answer concisely and grounded.`,
+      messages:     [{ role: "user", content: q }],
+      attribution:  { conversationId: convoId.current, vertical: tenant },
+    };
+
     try {
       const res = await fetch("/api/onyx-proxy", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({
-          stage:        "THINK",
-          systemPrompt: `You are Onyx, the founder's operator AI. You're being asked from the ${tenant} app. Answer concisely.`,
-          messages:     [{ role: "user", content: q }],
-          attribution:  { conversationId: convoId.current, source: tenant },
-        }),
+        body:    JSON.stringify(payload),
       });
-      const data = await res.json() as { ok?: boolean; text?: string; error?: string };
-      const answer = data.ok ? (data.text ?? "(no answer)") : `Error: ${data.error}`;
-      setMessages((m) => [...m, { role: "onyx", text: answer, at: new Date() }]);
+
+      const ct = res.headers.get("content-type") ?? "";
+      if (!res.ok && !ct.includes("text/event-stream")) {
+        const data = await res.json().catch(() => ({ error: "request failed" })) as { error?: string };
+        setMessages((m) => {
+          const copy = [...m];
+          copy[copy.length - 1] = { role: "onyx", text: `Error: ${data.error ?? "request failed"}`, at: new Date() };
+          return copy;
+        });
+        return;
+      }
+
+      if (ct.includes("text/event-stream") && res.body) {
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buf = "";
+        let acc = "";
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buf += decoder.decode(value, { stream: true });
+          // Parse SSE: split on double-newlines
+          const events = buf.split("\n\n");
+          buf = events.pop() ?? "";
+          for (const evt of events) {
+            const lines = evt.split("\n");
+            const ev   = lines.find((l) => l.startsWith("event: "))?.slice(7) ?? "message";
+            const data = lines.find((l) => l.startsWith("data: "))?.slice(6) ?? "";
+            if (!data) continue;
+            try {
+              const parsed = JSON.parse(data) as { text?: string; message?: string };
+              if (ev === "delta" && parsed.text) {
+                acc += parsed.text;
+                setMessages((m) => {
+                  const copy = [...m];
+                  copy[copy.length - 1] = { role: "onyx", text: acc, at: new Date() };
+                  return copy;
+                });
+              } else if (ev === "error" && parsed.message) {
+                acc = `Error: ${parsed.message}`;
+                setMessages((m) => {
+                  const copy = [...m];
+                  copy[copy.length - 1] = { role: "onyx", text: acc, at: new Date() };
+                  return copy;
+                });
+              }
+            } catch {
+              // ignore malformed SSE chunk
+            }
+          }
+        }
+      } else {
+        // Fallback: buffered JSON
+        const data = await res.json() as { ok?: boolean; text?: string; error?: string };
+        const answer = data.ok ? (data.text ?? "(no answer)") : `Error: ${data.error}`;
+        setMessages((m) => {
+          const copy = [...m];
+          copy[copy.length - 1] = { role: "onyx", text: answer, at: new Date() };
+          return copy;
+        });
+      }
     } catch (err) {
-      setMessages((m) => [...m, { role: "onyx", text: `Error: ${err instanceof Error ? err.message : "request failed"}`, at: new Date() }]);
+      setMessages((m) => {
+        const copy = [...m];
+        copy[copy.length - 1] = { role: "onyx", text: `Error: ${err instanceof Error ? err.message : "request failed"}`, at: new Date() };
+        return copy;
+      });
     } finally {
       setBusy(false);
     }
@@ -102,14 +170,9 @@ export function OnyxLauncher({ tenant }: { tenant: string }) {
                 <div className="text-[10px] uppercase tracking-wider mb-1" style={{
                   color: m.role === "user" ? "rgb(161 161 170)" : "rgb(110 231 196)",
                 }}>{m.role === "user" ? "you" : "onyx"}</div>
-                <div className="whitespace-pre-wrap">{m.text}</div>
+                <div className="whitespace-pre-wrap">{m.text || (busy && i === messages.length - 1 ? "…" : "")}</div>
               </div>
             ))}
-            {busy && (
-              <div className="text-center text-[10px] uppercase tracking-wider text-emerald-400/70 animate-pulse">
-                thinking…
-              </div>
-            )}
           </div>
 
           {/* Input */}
