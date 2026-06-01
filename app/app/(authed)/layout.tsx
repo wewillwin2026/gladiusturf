@@ -4,6 +4,7 @@ import { AppShell } from "@/components/app/AppShell";
 import { readAppSession } from "@/lib/app/session";
 import { isFounderEmail } from "@/lib/founders/auth";
 import { isAppPathAllowed } from "@/lib/app/access";
+import { OnyxLauncher } from "@/components/OnyxLauncher";
 
 /**
  * Resolve a tenant's brand logo URL.
@@ -80,6 +81,7 @@ export default async function AppAuthedLayout({
         logoUrl={logoUrl}
       >
         {children}
+        {isFounder && <OnyxLauncher tenant="turf" />}
       </AppShell>
     );
   }
