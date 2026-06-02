@@ -81,7 +81,9 @@ export default async function AppAuthedLayout({
         logoUrl={logoUrl}
       >
         {children}
-        {isFounder && <OnyxLauncher tenant="turf" />}
+        {/* Onyx Launcher visible to every signed-in turf user (was
+            founder-only). 2026-06-02 demo-prep. */}
+        <OnyxLauncher tenant="turf" />
       </AppShell>
     );
   }

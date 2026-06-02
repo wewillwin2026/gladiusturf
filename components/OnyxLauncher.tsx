@@ -19,17 +19,47 @@ import { useEffect, useRef, useState } from "react";
 
 interface Message { role: "user" | "onyx"; text: string; at: Date }
 
+const HIDDEN_LS_KEY = "onyx-launcher-hidden";
+
 export function OnyxLauncher({ tenant }: { tenant: string }) {
   const [open, setOpen]         = useState(false);
+  const [hidden, setHidden]     = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput]       = useState("");
   const [busy, setBusy]         = useState(false);
   const convoId                 = useRef<string>(`${tenant}-${Math.random().toString(36).slice(2, 10)}`);
   const scrollRef               = useRef<HTMLDivElement>(null);
 
+  // Visibility opt-out — dealer can hide the floating widget.
+  // Backend telemetry (Pulse pixel, brain logging, knowledge ingest)
+  // is SEPARATE and keeps running regardless. This only suppresses
+  // the visible UI.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setHidden(localStorage.getItem(HIDDEN_LS_KEY) === "1");
+  }, []);
+
+  function hide() {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(HIDDEN_LS_KEY, "1");
+    }
+    setHidden(true);
+    setOpen(false);
+  }
+  // Expose a way to bring it back: window.__onyxShow()
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    (window as unknown as { __onyxShow?: () => void }).__onyxShow = () => {
+      localStorage.removeItem(HIDDEN_LS_KEY);
+      setHidden(false);
+    };
+  }, []);
+
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, busy]);
+
+  if (hidden) return null;
 
   async function send() {
     const q = input.trim();
@@ -146,11 +176,18 @@ export function OnyxLauncher({ tenant }: { tenant: string }) {
               <div className="text-[10px] uppercase tracking-[0.2em] text-emerald-400/80">Onyx</div>
               <div className="text-sm text-zinc-100 font-semibold">Ask the brain · {tenant}</div>
             </div>
-            <button
-              onClick={() => setOpen(false)}
-              className="text-zinc-500 hover:text-zinc-200 text-xl leading-none"
-              aria-label="Close"
-            >×</button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={hide}
+                className="text-[10px] uppercase tracking-[0.15em] text-zinc-500 hover:text-amber-400 transition"
+                title="Hide Onyx floating widget. Backend learning + telemetry continue. Run window.__onyxShow() in the console to bring it back."
+              >Hide</button>
+              <button
+                onClick={() => setOpen(false)}
+                className="text-zinc-500 hover:text-zinc-200 text-xl leading-none"
+                aria-label="Close"
+              >×</button>
+            </div>
           </header>
 
           {/* Messages */}
