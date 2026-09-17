@@ -308,6 +308,17 @@ section{padding:92px 0}
 .plan li{padding:7px 0 7px 24px;position:relative;color:var(--ink-soft);font-size:.94rem}
 .plan li::before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:800}
 .plan .btn{width:100%;text-align:center}
+.pricecheck{margin-top:34px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px 26px 18px}
+.pc-head h3{margin:6px 0 14px;font-size:1.25rem}
+.pc-table{width:100%;border-collapse:collapse;font-size:.93rem}
+.pc-table th{text-align:left;color:var(--ink-faint);font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line)}
+.pc-table td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
+.pc-table tr:last-child td{border-bottom:none}
+.pc-us td{background:var(--green-tint)}
+.pc-us td:first-child{border-radius:10px 0 0 10px}
+.pc-us td:last-child{border-radius:0 10px 10px 0}
+.pc-note{color:var(--ink-faint);font-size:.82rem;margin:12px 2px 0}
+@media(max-width:760px){.pc-table th:nth-child(3),.pc-table td:nth-child(3){display:none}}
 .price-note{color:var(--ink-faint);font-size:.92rem;margin-top:22px;max-width:64ch}
 .switch{background:var(--green-deep);color:#fff;border-radius:var(--r-lg);padding:40px;display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:56px}
 @media(max-width:860px){.switch{grid-template-columns:1fr}}
@@ -1017,7 +1028,7 @@ button.bell{background:none;border:0;padding:0;color:inherit;cursor:pointer}
       <div class="plan">
         <h3>Independent</h3>
         <p class="who">One crew, one owner, done leaking revenue.</p>
-        <div class="amount num">$597<small>/mo</small></div>
+        <div class="amount num">$399<small>/mo</small></div>
         <div class="per">per crew, unlimited seats</div>
         <ul>
           <li>All three engines included</li>
@@ -1031,7 +1042,7 @@ button.bell{background:none;border:0;padding:0;color:inherit;cursor:pointer}
         <span class="pop-tag">Most landscape companies</span>
         <h3>Professional</h3>
         <p class="who">2 to 10 crews, ready to add a truck without adding chaos.</p>
-        <div class="amount num">$1,497<small>/mo</small></div>
+        <div class="amount num">$499<small>/mo</small></div>
         <div class="per">per crew, unlimited seats</div>
         <ul>
           <li>Everything in Independent</li>
@@ -1044,7 +1055,7 @@ button.bell{background:none;border:0;padding:0;color:inherit;cursor:pointer}
       <div class="plan">
         <h3>Enterprise</h3>
         <p class="who">10 or more crews with branches, fleets, and foremen.</p>
-        <div class="amount num">$3,997<small>/mo</small></div>
+        <div class="amount num">$624<small>/mo</small></div>
         <div class="per">per crew, unlimited seats</div>
         <ul>
           <li>Everything in Professional</li>
@@ -1056,6 +1067,21 @@ button.bell{background:none;border:0;padding:0;color:inherit;cursor:pointer}
       </div>
     </div>
     <p class="price-note">Every plan carries the 30 day money back guarantee and a data export if you leave. Pricing is per crew so seasonal hires never cost you a seat.</p>
+
+    <div class="pricecheck">
+      <div class="pc-head"><span class="kick">Price check</span><h3>What the others charge for less</h3></div>
+      <table class="pc-table">
+        <thead><tr><th>Platform</th><th>Published price</th><th>Seats</th><th>The catch</th></tr></thead>
+        <tbody>
+          <tr class="pc-us"><td><b>GladiusTurf</b></td><td class="num"><b>$399/mo</b></td><td>Unlimited</td><td>None. Every engine, every plan, humans approve every send.</td></tr>
+          <tr><td>Jobber Grow</td><td class="num">$199/mo</td><td>10, then $29 per user</td><td>AI receptionist, marketing, and pipeline are paid add-ons, $29 to $99 each per month.</td></tr>
+          <tr><td>LMN</td><td class="num">$297 to $648/mo</td><td>Varies by plan</td><td>Built for estimating and job costing, not for answering your leads at 9 PM.</td></tr>
+          <tr><td>Service Autopilot</td><td class="num">$49 to $499/mo</td><td>Plus per user fees</td><td>The automations you actually want live in the upper tiers.</td></tr>
+          <tr><td>Aspire</td><td class="num">Call sales</td><td>Custom</td><td>No published price. Bring a procurement committee and a quarter.</td></tr>
+        </tbody>
+      </table>
+      <p class="pc-note">Competitor figures are published rates from each vendor's public pricing page or software listings as of September 2026 and can change. Feature sets differ, check their sites for current details.</p>
+    </div>
 
     <div class="switch">
       <div><span class="step-k">48 hrs</span><h3>Switch without lifting a finger</h3><p>We move your customers, active jobs, and open invoices off Jobber, LMN, Aspire, or Service Autopilot.</p></div>
@@ -1477,7 +1503,7 @@ button.bell{background:none;border:0;padding:0;color:inherit;cursor:pointer}
   var onyxOut = document.getElementById('onyxOut');
   var typTimer = null;
   var brain = [
-    {k:['price','cost','how much','pricing','expensive','plan'], a:'Flat per crew with unlimited seats. Independent $597, Professional $1,497, Enterprise $3,997 a month. Every engine on every plan, and annual prepay gets two months free.'},
+    {k:['price','cost','how much','pricing','expensive','plan'], a:'Flat per crew with unlimited seats. Independent $399, Professional $499, Enterprise $624 a month. Every engine on every plan, and annual prepay gets two months free.'},
     {k:['switch','migrat','jobber','lmn','aspire','service autopilot','servicetitan','move'], a:'48 hours, done for you. We move your customers, jobs, and open invoices off Jobber, LMN, Aspire, or Service Autopilot while you keep working.'},
     {k:['quickbook','accounting','sync'], a:'You keep QuickBooks. Gladius syncs invoices and payments both ways, no double entry.'},
     {k:['guarantee','refund','money back','risk'], a:'30 day money back. If the first recovered quote or invoice has not shown up, we refund the month and you keep your data export.'},
