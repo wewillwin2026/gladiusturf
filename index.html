@@ -525,6 +525,39 @@ button.bell{background:none;border:0;padding:0;color:inherit;cursor:pointer}
   .stickycta{transition:none}
 }
 </style>
+<style id="mfix">
+@media(max-width:960px){
+  .crm .side{display:flex;flex-direction:row;align-items:center;gap:4px;padding:10px 10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .crm .side::-webkit-scrollbar{display:none}
+  .crm .side .lockup,.crm .side .grp,.crm .side .side-foot{display:none}
+  .crm .snav{flex-direction:row;gap:6px;flex:1 0 auto}
+  .crm .snav button{flex:0 0 auto;white-space:nowrap;padding:8px 13px;border-radius:999px}
+  .mbar{gap:8px}
+  .mbar .search{min-width:0;flex:1}
+  .mbar .search .kbd{display:none}
+  #tourBtn,#heroWatch{display:none}
+  #clock{display:none}
+  .mbar-right span[style]{display:none}
+  .view{padding:14px}
+  .crm{min-height:0}
+  #view-sched,#view-inv,#view-cust{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .grid-sched{min-width:620px}
+  .invtable{min-width:560px}
+}
+@media(max-width:820px){
+  .board{display:flex;overflow-x:auto;gap:12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:6px;scrollbar-width:none}
+  .board::-webkit-scrollbar{display:none}
+  .board .col{flex:0 0 76%;max-width:300px;scroll-snap-align:start}
+  .convs{scrollbar-width:none}
+  .convs::-webkit-scrollbar{display:none}
+}
+@media(max-width:560px){
+  .hero{padding:56px 0 44px}
+  .kpis{gap:10px}
+  .view{padding:12px}
+  .crm .snav button svg{display:none}
+}
+</style>
 </head>
 <body>
 
@@ -1572,5 +1605,10 @@ button.bell{background:none;border:0;padding:0;color:inherit;cursor:pointer}
   }, {passive:true});
 })();
 </script>
+<script id="vidkick">(function(){var v=document.querySelector('.herovid');if(!v)return;v.muted=true;v.setAttribute('muted','');v.playsInline=true;function go(){var p=v.play();if(p&&p.catch){p.catch(function(){});}}
+if(v.readyState>=2){go();}else{v.addEventListener('loadeddata',go);}
+document.addEventListener('touchstart',function h(){go();document.removeEventListener('touchstart',h);},{passive:true});
+document.addEventListener('visibilitychange',function(){if(!document.hidden){go();}});
+})();</script>
 </body>
 </html>
