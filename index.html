@@ -558,6 +558,25 @@ button.bell{background:none;border:0;padding:0;color:inherit;cursor:pointer}
   .crm .snav button svg{display:none}
 }
 </style>
+<style id="mfix2">
+@media(max-width:960px){
+  .crm{overflow:visible;border-radius:16px}
+  .crm .view{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .inbox{grid-template-columns:1fr;gap:12px}
+  .inbox .convs{max-height:190px;overflow-y:auto;border-right:none;border-bottom:1px solid var(--line)}
+  .grid-sched{min-width:560px}
+  .invtable{min-width:520px;font-size:.86rem}
+  .invtable th,.invtable td{padding:8px 9px;white-space:nowrap}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .dash-grid{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  .crm{border-radius:14px}
+  .crm .view{padding:12px}
+  .kpis{grid-template-columns:1fr}
+  .board .col{flex:0 0 82%}
+}
+</style>
 </head>
 <body>
 
