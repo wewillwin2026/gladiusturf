@@ -1,0 +1,11 @@
+{
+  "git": {
+    "deploymentEnabled": {
+      "*": false,
+      "static-launch": true
+    }
+  },
+  "github": {
+    "silent": true
+  }
+}
